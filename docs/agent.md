@@ -33,6 +33,10 @@ Các quyết định đã chốt:
 | Antigravity | Dev | Đọc `task.md` mục Hôm nay, code đúng task giao, ghi log sau khi xong | Mở rộng scope; tự sửa schema khi chưa được giao |
 | Claude Code | Dev theo yêu cầu | Chỉ làm 1 task cụ thể được người dùng chỉ định sau khi đọc agent/task | Tự nhận thêm việc; bỏ qua agent/task |
 
+### Context bắt buộc cho Antigravity
+
+Trước mỗi phiên, Antigravity phải đọc `docs/agent.md`, `docs/mvp_spec.md`, `db/schema.sql` và `docs/task.md` theo đúng thứ tự. Chỉ thực hiện các checkbox thuộc mục `## Hôm nay`; không tự mở rộng scope, không đổi kiến trúc, không sửa schema nếu task không chỉ rõ. Với task backend, phải giữ secret trong `.env` local (không ghi vào `.env.example`), không commit `backend/venv/`, và ghi log Done/Blocked vào `docs/task.md` sau khi kiểm tra. Nếu thiếu file, lỗi dependency, lỗi credential hoặc gặp mâu thuẫn tài liệu, dừng phần liên quan và ghi rõ lý do vào `## Cần xác nhận với người dùng`.
+
 ## 4. Quy trình làm việc hàng ngày
 
 1. Người dùng dán PCCV mới nhất đầu phiên.
@@ -41,9 +45,18 @@ Các quyết định đã chốt:
 4. Antigravity chỉ làm đúng Hôm nay, ghi log Done/Blocked kèm lý do.
 5. Claude Code, nếu được gọi, chỉ làm đúng task được chỉ định.
 
+## 4.1. Cơ chế dọn trạng thái đã hoàn thành
+
+- Sau khi Codex review và xác nhận Definition of Done, đánh dấu task `Done` rồi rút gọn còn một dòng trong bảng lũy kế.
+- Xóa mô tả triển khai và log chi tiết của task đã nghiệm thu; không lặp lại task đó trong các phiên sau.
+- Chỉ giữ trong `task.md` các task đang làm, blocker/cần xác nhận, backlog chưa tới lượt và bản tóm tắt Done.
+- Codex kiểm tra độ dài `task.md` cuối phiên; nếu vượt 300 dòng thì tiếp tục rút gọn các mục Done cũ nhất trước.
+- Không xóa lịch sử Git hoặc tài liệu nguồn chính thức; cơ chế này chỉ dọn nội dung trạng thái trong `task.md`.
+
 ## 5. Quy tắc cứng
 
 - Không thay đổi quyết định khóa ở mục 2 nếu chưa có xác nhận rõ ràng từ người dùng.
 - Mọi phiên kết thúc bằng cập nhật `task.md`.
 - Nếu tài liệu mâu thuẫn, ghi vào `task.md` mục `Cần xác nhận với người dùng`, không tự chọn.
 - Không tạo file trạng thái/config khác ngoài `task.md` và `agent.md`.
+- `task.md` là nguồn trạng thái duy nhất; không tạo archive trạng thái riêng.

@@ -6,6 +6,7 @@
 
 # Python and Streamlit runtime artefacts
 __pycache__/
+backend/venv/
 *.py[cod]
 .pytest_cache/
 .mypy_cache/
