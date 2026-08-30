@@ -1,0 +1,43 @@
+# Secrets and machine-specific configuration
+.env
+.env.*
+!.env.example
+*.local
+
+# Python and Streamlit runtime artefacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.streamlit/secrets.toml
+
+# Local AI models, caches, generated media, and logs
+models/
+checkpoints/
+outputs/
+generated/
+logs/
+cache/
+*.ckpt
+*.safetensors
+*.pt
+*.pth
+
+# Unreviewed hand-offs, prototypes, and manual-test artefacts.
+# Keep production source, automated tests, and approved documentation tracked.
+clustering_deliverables/
+experiments/
+prototypes/
+scratch/
+manual-test-output/
+
+# Tool/editor state
+.agents/
+.codex/
+.vscode/
+.idea/
+*.tmp
+*.bak
