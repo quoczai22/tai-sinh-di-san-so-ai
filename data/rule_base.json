@@ -133,14 +133,12 @@
       "name": "Hoa cúc 12 cánh nhọn để mộc",
       "origin": "Bát Tràng",
       "region": "Hà Nội",
-      "cultural_meaning": "SRC003 xác lập motif này là CHỈ DẤU NIÊN ĐẠI/TÁC GIẢ dùng để nhận diện tác phẩm của tượng nhân Đỗ Xuân Vy. LƯU Ý MÂU THUẪN NGUỒN: SRC001 lại xếp hoa cúc nói chung vào nhóm 'biểu trưng của Phật giáo'. Hai nguồn không thống nhất về ý nghĩa biểu tượng.",
+      "cultural_meaning": "Bông hoa cúc 12 cánh nhọn để mộc, in bằng khuôn rồi gắn quanh cổ lư hương và chân đế chân đèn. Tài liệu nguồn khảo sát họa tiết này ở vai trò chỉ dấu nhận diện niên đại và tác giả, cụ thể là các tác phẩm của tượng nhân Đỗ Xuân Vy ở Bát Tràng cuối thế kỷ 16.",
       "preserve": [],
-      "modifiable": ["core_motif", "background", "color_palette", "composition_layout", "product_context", "material_texture"],
-      "restricted": ["symbolic_element"],
-      "rule_sources": {
-        "symbolic_element": "SRC001"
-      },
-      "source_note": "SRC003 — Nguyễn Đình Chiến (2022), mục 1 trong '4 loại chỉ dấu': 'nhiều hoa văn trên hiện vật này sẽ được coi là hoa văn chuẩn để so sánh đối chiếu cho các trường hợp khác không ghi niên đại. Bông hoa cúc 12 cánh nhọn để mộc là một trường hợp như thế.' Tài liệu cho biết 'chúng tôi biết có 6 chân đèn và lư hương mang trang trí loại hoa văn này' của Đỗ Xuân Vy. SRC003 KHÔNG khẳng định motif này thiếu ý nghĩa thiêng liêng — chỉ xác lập vai trò chỉ dấu kỹ thuật. Vì SRC001 gọi hoa cúc là 'biểu trưng của Phật giáo', symbolic_element xếp restricted (RESTRICT - cảnh báo) thay vì modifiable. Cũng lưu ý: chân đèn mang motif này là đồ cung tiến — 'Người đặt hàng chân đèn này để cung tiến là vợ chồng Phò mã Mạc Ngọc Liễn và Công chúa Phúc Thành.'"
+      "modifiable": ["core_motif", "background", "color_palette", "composition_layout", "product_context", "material_texture", "symbolic_element"],
+      "restricted": [],
+      "rule_sources": {},
+      "source_note": "SRC003 — Nguyễn Đình Chiến (2022), mục 1 trong '4 loại chỉ dấu': 'nhiều hoa văn trên hiện vật này sẽ được coi là hoa văn chuẩn để so sánh đối chiếu cho các trường hợp khác không ghi niên đại. Bông hoa cúc 12 cánh nhọn để mộc là một trường hợp như thế.' Tài liệu cho biết 'chúng tôi biết có 6 chân đèn và lư hương mang trang trí loại hoa văn này' của Đỗ Xuân Vy. Về phạm vi nguồn: SRC001 có câu 'hoa sen, hoa cúc biểu trưng của Phật giáo' nhưng đó là phát biểu về hoa cúc nói chung trong đoạn tổng kết, không khảo sát riêng biến thể 12 cánh nhọn để mộc; SRC003 mới là nguồn khảo sát trực tiếp đúng họa tiết này và chỉ xác lập vai trò chỉ dấu kỹ thuật. Xem QĐ-02 trong docs/rule_base_sources.md. Lưu ý bối cảnh: chân đèn mang họa tiết này là đồ cung tiến — 'Người đặt hàng chân đèn này để cung tiến là vợ chồng Phò mã Mạc Ngọc Liễn và Công chúa Phúc Thành.'"
     },
     {
       "heritage_id": "BT011",

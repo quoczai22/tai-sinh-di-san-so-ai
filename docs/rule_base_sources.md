@@ -49,9 +49,10 @@ vào nguồn nhóm B, phải ghi rõ điều đó trong `source_note`.
    SRC001 thân bài: *"đề tài Bát bảo của **Đạo giáo**"*; tổng kết cùng tài liệu: *"bát bảo của **Nho giáo**"*.
    Ảnh hưởng: `BT007`.
 
-2. **Hoa cúc — có phải biểu tượng Phật giáo?**
+2. **Hoa cúc — có phải biểu tượng Phật giáo?** *(đã xử lý — xem QĐ-02)*
    SRC001 tổng kết: *"hoa sen, **hoa cúc** biểu trưng của Phật giáo"*. SRC003 chỉ trình bày hoa cúc
-   12 cánh nhọn như **chỉ dấu niên đại/tác giả**. Ảnh hưởng: `BT010` (`symbolic_element` → `restricted`).
+   12 cánh nhọn như **chỉ dấu niên đại/tác giả**. Kết luận: đây là vấn đề **phạm vi phát biểu**
+   chứ không phải mâu thuẫn thực sự — hai nguồn không nói về cùng một đối tượng. Ảnh hưởng: `BT010`.
 
 3. **Bát quái không được gán tôn giáo ở bất kỳ tài liệu nào.**
    Cụm "Đạo giáo" chỉ xuất hiện 2 lần trong toàn bộ 7 tài liệu, cả 2 đều ở SRC001 và đều nói về đề tài
@@ -93,6 +94,35 @@ Theo đó, có cơ sở để nâng `material_texture` lên `restricted` cho cá
 không được tái hiện vật lý; ràng buộc chất liệu ở đây không bảo vệ được giá trị mà tài liệu mô tả.
 Bằng chứng vẫn được lưu lại ở đây để quyết định này truy ngược được, và để có thể đảo chiều
 nếu phạm vi sản phẩm mở rộng sang vật phẩm gốm thật.
+
+### QĐ-02 — `BT010.symbolic_element` trả về `modifiable` (31/08/2026)
+
+**Tình huống.** BT010 (hoa cúc 12 cánh nhọn để mộc) từng được xếp `symbolic_element` vào
+`restricted` vì hai nguồn tưởng như bất đồng:
+
+- SRC003 khảo sát họa tiết này như **chỉ dấu niên đại/tác giả** của Đỗ Xuân Vy.
+- SRC001 có câu *"hoa sen, hoa cúc biểu trưng của Phật giáo"*.
+
+**Phân tích.** Hai phát biểu **khác phạm vi**, không thực sự đối đầu nhau:
+
+| | Đối tượng phát biểu | Mức khảo sát |
+|---|---|---|
+| SRC001 | "hoa cúc" nói chung | Một vế trong câu liệt kê ở đoạn tổng kết |
+| SRC003 | Đúng biến thể *12 cánh nhọn để mộc* | Một mục riêng, khảo sát 6 hiện vật mang họa tiết này |
+
+SRC003 là nguồn **cụ thể hơn và trực tiếp hơn** cho đúng đối tượng mà BT010 mô tả.
+SRC001 không khảo sát riêng biến thể 12 cánh nhọn.
+
+**Quyết định: `symbolic_element` → `modifiable`**, gỡ `restricted`, gỡ `rule_sources`.
+Chủ sở hữu Rule Base xác định hoa cúc 12 cánh nhọn để mộc không mang chức năng biểu tượng
+tôn giáo trong phạm vi bộ dữ liệu này.
+
+**Ranh giới không được vượt.** Rule Base **không** ghi mệnh đề *"hoa cúc không phải biểu tượng
+Phật giáo"* — không tài liệu nào phát biểu điều đó, và viết vậy sẽ vi phạm quy tắc 3 ở mục 5.
+File chỉ ghi lập luận phạm vi cùng quyết định này, để người đọc tự đánh giá được.
+
+**Điều kiện xét lại.** Nếu tìm được nguồn khảo sát trực tiếp biến thể 12 cánh nhọn và gán cho nó
+ý nghĩa Phật giáo, quyết định này phải được mở lại.
 
 ---
 
