@@ -1,0 +1,24 @@
+# ============================================================
+# TAI SINH DI SAN SO - AI Environment (SD1.5 + ControlNet)
+# Target: Windows 11, Python 3.11, RTX 4060 Laptop 8GB VRAM
+#
+# LUU Y: torch KHONG nam trong file nay.
+# Torch phai cai rieng tu index CUDA cua PyTorch (xem scripts/01_setup_env.ps1)
+# vi pip mac dinh se keo ban CPU-only.
+# ============================================================
+
+# --- Core diffusion stack ---
+diffusers>=0.31.0
+transformers>=4.44.0
+accelerate>=0.34.0
+safetensors>=0.4.5
+huggingface_hub>=0.25.0
+
+# --- Image processing / ControlNet preprocessing ---
+opencv-python>=4.10.0
+pillow>=10.4.0
+numpy>=1.26.0
+
+# --- Tien ich ---
+python-dotenv>=1.0.1
+tqdm>=4.66.0
