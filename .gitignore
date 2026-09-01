@@ -50,3 +50,9 @@ CLAUDE.md
 .idea/
 *.tmp
 *.bak
+
+# Local-only project management and assignment documents
+docs/agent.md
+docs/task.md
+docs/PCCV.xlsx
+docs/Phan_Cong_Cong_Viec_Chi_Tiet.md
