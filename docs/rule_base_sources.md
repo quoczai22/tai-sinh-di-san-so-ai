@@ -35,11 +35,19 @@ vào nguồn nhóm B, phải ghi rõ điều đó trong `source_note`.
 
 ---
 
-## 2. Tài liệu đã có nhưng CHƯA gán mã SRC
+## 2. Tài liệu bối cảnh — vào corpus RAG nhưng KHÔNG được viện dẫn làm căn cứ rule
 
-| File | Nguồn gốc | Lý do chưa gán |
+| Mã | File | Nguồn gốc |
 |---|---|---|
-| `Làng gốm Bát Tràng – Hồn đất Thăng Long trong ngọn lửa ngàn năm – Bảo tàng Hà Nội.pdf` | [baotanghanoi.com.vn](https://baotanghanoi.com.vn/lang-gom-bat-trang-hon-dat-thang-long-trong-ngon-lua-ngan-nam/) | Bài PR trưng bày. Rà toàn văn: **0 họa tiết được mô tả, 0 minh văn, 0 hiện vật định danh, 0 niên hiệu, 0 chú thích nguồn**. Không đủ tư cách chống đỡ bất kỳ quyết định preserve/modifiable nào. Chỉ dùng cho phần văn bản bối cảnh của Cultural Passport |
+| **CTX001** | `Làng gốm Bát Tràng – Hồn đất Thăng Long trong ngọn lửa ngàn năm – Bảo tàng Hà Nội.pdf` | [baotanghanoi.com.vn](https://baotanghanoi.com.vn/lang-gom-bat-trang-hon-dat-thang-long-trong-ngon-lua-ngan-nam/) |
+
+Tài liệu này **có** trong corpus RAG (cung cấp bối cảnh làng nghề, lịch sử tụ cư, mô tả men),
+nhưng mang tiền tố `CTX` chứ không phải `SRC` vì rà toàn văn cho thấy: **0 họa tiết được mô tả,
+0 minh văn, 0 hiện vật định danh, 0 niên hiệu, 0 chú thích nguồn**.
+
+**Quy ước bắt buộc:** mọi giá trị trong `rule_sources` của `data/rule_base.json` phải khớp
+`^SRC\d{3}$`. Bất kỳ mã `CTX` nào xuất hiện ở đó đều là lỗi và phải bị validator từ chối.
+Xem spec mục 19.1.
 
 ---
 
