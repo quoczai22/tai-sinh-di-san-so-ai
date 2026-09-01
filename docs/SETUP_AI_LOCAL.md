@@ -55,25 +55,29 @@ Ba thứ này **luôn** ghi vào ổ hệ thống, bất kể project nằm ở 
 | Thư mục tạm khi pip giải nén wheel | `%LOCALAPPDATA%\Temp` | ~5 GB, giải phóng sau khi cài |
 | HuggingFace cache (model) | `%USERPROFILE%\.cache\huggingface` | ~3.5 GB |
 
-**Mặc định `01_setup_env.ps1` không đổi gì cả** — nó chỉ báo dung lượng còn trống
-và cảnh báo nếu thiếu chỗ. Muốn chuyển sang ổ khác thì truyền tham số:
+Các script **không kiểm tra dung lượng trống** và cũng không đổi đường dẫn nào trên máy
+bạn — bạn tự lo phần này trước khi chạy. Muốn chuyển cache sang ổ khác thì đặt biến môi
+trường **trước khi** gọi script:
 
 ```powershell
-.\scripts\01_setup_env.ps1 -ModelRoot "E:\AI_Models"            # chỉ phiên này
-.\scripts\01_setup_env.ps1 -ModelRoot "E:\AI_Models" -Persist   # nhớ vĩnh viễn
+$env:HF_HOME       = "E:\AI_Models\huggingface"
+$env:PIP_CACHE_DIR = "E:\AI_Models\pip-cache"
+$env:TMP = $env:TEMP = "E:\AI_Models\tmp"   # pip giải nén wheel torch cần ~5 GB tạm
+.\scripts\01_setup_env.ps1
 ```
 
-`-Persist` ghi `HF_HOME` và `PIP_CACHE_DIR` vào biến môi trường mức User, nghĩa là
-**mọi dự án Python sau này trên máy đó** cũng dùng thư mục này. Đây là tác dụng phụ
-ngoài phạm vi dự án nên phải bật thủ công. Gỡ bỏ:
+Cách này chỉ có tác dụng trong phiên PowerShell hiện tại — đúng thứ ta muốn, vì
+`TMP`/`TEMP` được rất nhiều phần mềm khác dùng chung, ghi đè vĩnh viễn rất dễ gây họa.
+
+Nếu thực sự muốn nhớ vĩnh viễn — lưu ý **mọi dự án Python sau này trên máy đó** cũng sẽ
+dùng thư mục này, tác dụng phụ ngoài phạm vi dự án nên phải tự bật:
 
 ```powershell
-[Environment]::SetEnvironmentVariable('HF_HOME', $null, 'User')
-[Environment]::SetEnvironmentVariable('PIP_CACHE_DIR', $null, 'User')
+[Environment]::SetEnvironmentVariable('HF_HOME', 'E:\AI_Models\huggingface', 'User')
+[Environment]::SetEnvironmentVariable('PIP_CACHE_DIR', 'E:\AI_Models\pip-cache', 'User')
 ```
 
-Biến `TMP`/`TEMP` chỉ đổi trong phiên chạy script, không bao giờ ghi vĩnh viễn — rất
-nhiều phần mềm khác cũng đọc biến này.
+Gỡ bỏ: đặt lại `$null` cho hai biến trên.
 
 ## Nếu máy bạn khác cấu hình
 
@@ -103,16 +107,19 @@ Script pin sẵn `torch==2.13.0`. Muốn đổi:
 .\scripts\01_setup_env.ps1 -TorchVersion ""       # lay ban moi nhat, KHONG pin
 ```
 
-Hai file requirements phục vụ hai mục đích khác nhau:
+`requirements.txt` chỉ khai báo **khoảng** phiên bản — đủ để dựng một môi trường chạy
+được, nhưng hai máy cài cách nhau vài tuần có thể ra hai bộ thư viện khác nhau.
 
-| File | Dùng khi | Cách dùng |
-|---|---|---|
-| `requirements.txt` | Chỉ cần môi trường **chạy được** | mặc định |
-| `requirements-lock.txt` | Cần tái lập **chính xác** môi trường đã kiểm chứng | thêm cờ `-Lock` |
+Khi cần tái lập **chính xác** môi trường đã cho ra số đo ở bảng trên, sinh lock file
+ngay trên máy đó:
 
 ```powershell
-.\scripts\01_setup_env.ps1 -Lock
+.\venv\Scripts\Activate.ps1
+python -m pip freeze > requirements-lock.txt
 ```
+
+Máy khác dựng lại: chạy `01_setup_env.ps1` để có torch đúng kênh CUDA, rồi
+`pip install -r requirements-lock.txt` đè lên.
 
 ### Giới hạn của tính tái lập
 

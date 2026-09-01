@@ -1,5 +1,4 @@
 import os
-import shutil
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -11,16 +10,7 @@ load_dotenv(ROOT / ".env")
 HF_HOME = os.environ.get("HF_HOME")
 CACHE_DIR = Path(HF_HOME) if HF_HOME else Path.home() / ".cache" / "huggingface"
 
-NEEDED_GB = 4.0
-free_gb = shutil.disk_usage(CACHE_DIR.anchor).free / 1024**3
 print(f"Cache dich : {CACHE_DIR}" + ("" if HF_HOME else "  (mac dinh he thong)"))
-print(f"Con trong  : {free_gb:.1f} GB  (can ~{NEEDED_GB:.0f} GB)")
-if free_gb < NEEDED_GB:
-    print(f"\n[!] Khong du cho tren o {CACHE_DIR.anchor}")
-    print("    Don dep o dia, hoac chay lai:")
-    print("      .\\scripts\\01_setup_env.ps1 -ModelRoot 'E:\\AI_Models'")
-    if input("    Van muon thu? (y/N) ").strip().lower() != "y":
-        raise SystemExit(1)
 print()
 
 from huggingface_hub import snapshot_download
