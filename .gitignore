@@ -1,18 +1,52 @@
-venv/
-__pycache__/
-*.pyc
+# Secrets and machine-specific configuration
 .env
-outputs/
-models/
-*.safetensors
-*.ckpt
-*.pt
+.env.*
+!.env.example
+*.local
+
+# Python and virtual environments
+venv/
+backend/venv/
+__pycache__/
+*.py[cod]
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 .ipynb_checkpoints/
+.streamlit/secrets.toml
 
+# Local AI models, caches, generated media, and logs
+models/
+checkpoints/
+outputs/
+generated/
+logs/
+cache/
+*.ckpt
+*.safetensors
+*.pt
+*.pth
 
+# Data and scripts
 scripts/00_cleanup_c_drive.ps1
-
 data/documents/*
 !data/documents/.gitkeep
 
+# Unreviewed hand-offs, prototypes, and manual-test artefacts.
+clustering_deliverables/
+experiments/
+prototypes/
+scratch/
+manual-test-output/
+
+# Tool/editor state & Assistant configs
 CLAUDE.md
+.agents/
+.codex/
+.vscode/
+.idea/
+*.tmp
+*.bak
