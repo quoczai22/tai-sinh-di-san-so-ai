@@ -3,116 +3,44 @@
     Cai dat moi truong AI local cho du an (PyTorch CUDA + diffusers).
 
 .DESCRIPTION
-    MAC DINH: khong dong vao bat ky duong dan nao cua may ban.
-    pip va HuggingFace dung thu muc cache mac dinh cua he dieu hanh:
-        pip  -> %LOCALAPPDATA%\pip\Cache
-        HF   -> %USERPROFILE%\.cache\huggingface
-    Tong cong can khoang 12 GB trong tren o he thong (thuong la C:).
+    Script chi lam mot viec ma pip khong tu lam duoc: chon dung kenh CUDA
+    va cai torch tu index rieng cua PyTorch.
 
-    CHI khi truyen -ModelRoot thi script moi chuyen cache sang o khac.
-    Dung tuy chon nay neu o C sap day.
+    Ly do phai co: "pip install torch" tren Windows keo ve ban CPU-only.
+    Cai xong khong bao loi gi ca, den luc chay moi phat hien
+    torch.cuda.is_available() = False. Phai dung --index-url tro toi
+    download.pytorch.org/whl/<kenh> moi lay duoc ban CUDA.
 
-.PARAMETER ModelRoot
-    Thu muc chua cache pip + HuggingFace, vi du "D:\AI_Models".
-    Bo trong = giu nguyen mac dinh he thong (khuyen nghi cho da so nguoi dung).
+    Script KHONG dong vao duong dan nao tren may ban. pip va HuggingFace
+    dung thu muc cache mac dinh cua he dieu hanh:
+        pip -> %LOCALAPPDATA%\pip\Cache
+        HF  -> %USERPROFILE%\.cache\huggingface
 
-.PARAMETER Persist
-    Chi co tac dung khi da truyen -ModelRoot.
-    Ghi HF_HOME / PIP_CACHE_DIR vinh vien vao bien moi truong User,
-    tuc la MOI du an Python sau nay tren may cung dung thu muc do.
-    Khong co co nay thi chi ap dung trong phien PowerShell hien tai.
+.PARAMETER CudaChannel
+    Kenh wheel PyTorch. Mac dinh "auto" = doc nvidia-smi roi tu chon.
+    Ghi de bang: cu118 | cu126 | cu128 | cpu
+
+.PARAMETER TorchVersion
+    Phien ban torch can pin. Truyen chuoi rong de lay ban moi nhat cua kenh.
 
 .EXAMPLE
     .\scripts\01_setup_env.ps1
-    Cai binh thuong, cache nam o vi tri mac dinh cua Windows.
+    Cai binh thuong, tu phat hien GPU.
 
 .EXAMPLE
-    .\scripts\01_setup_env.ps1 -ModelRoot "E:\AI_Models" -Persist
-    Chuyen cache sang o E va nho vinh vien.
+    .\scripts\01_setup_env.ps1 -CudaChannel cu128
+    Ep dung kenh cu128 (RTX 50xx / Blackwell).
 #>
 param(
-    [string]$ModelRoot = "",
-    [switch]$Persist,
-
     [ValidateSet("auto", "cu118", "cu126", "cu128", "cpu")]
     [string]$CudaChannel = "auto",
 
-    [string]$TorchVersion = "2.13.0",
-
-    [switch]$Lock
+    [string]$TorchVersion = "2.13.0"
 )
 
 $ErrorActionPreference = "Stop"
 
-function Get-FreeGB($path) {
-    $qualifier = Split-Path -Qualifier $path       # vi du "C:"
-    $drive = Get-PSDrive $qualifier.TrimEnd(":") -ErrorAction SilentlyContinue
-    if ($drive) { return [math]::Round($drive.Free / 1GB, 1) }
-    return $null
-}
-
 Write-Host "=== SETUP MOI TRUONG AI LOCAL ===`n" -ForegroundColor Cyan
-
-
-# quyet dinh noi dat cache
-
-if ([string]::IsNullOrWhiteSpace($ModelRoot)) {
-    # --- Che do mac dinh: KHONG thay doi gi ---
-    $hfPath  = if ($env:HF_HOME) { $env:HF_HOME } else { Join-Path $env:USERPROFILE ".cache\huggingface" }
-    $pipPath = if ($env:PIP_CACHE_DIR) { $env:PIP_CACHE_DIR } else { Join-Path $env:LOCALAPPDATA "pip\Cache" }
-
-    Write-Host "[i] Che do mac dinh - khong thay doi duong dan nao tren may ban." -ForegroundColor Gray
-    Write-Host "    HuggingFace cache : $hfPath"
-    Write-Host "    pip cache         : $pipPath"
-    Write-Host "    (Muon doi cho: chay lai voi -ModelRoot 'E:\AI_Models')`n" -ForegroundColor Gray
-}
-else {
-    # --- Che do chuyen huong: nguoi dung chu dong yeu cau ---
-    $hfPath  = Join-Path $ModelRoot "huggingface"
-    $pipPath = Join-Path $ModelRoot "pip-cache"
-    $tmpPath = Join-Path $ModelRoot "tmp"
-    foreach ($p in @($hfPath, $pipPath, $tmpPath)) {
-        if (-not (Test-Path $p)) { New-Item -ItemType Directory -Force -Path $p | Out-Null }
-    }
-
-    $env:HF_HOME = $hfPath
-    $env:PIP_CACHE_DIR = $pipPath
-    # TMP chi doi trong phien nay: pip giai nen wheel torch can ~5GB tam thoi.
-    # Khong ghi vinh vien vi rat nhieu phan mem khac cung dung bien TMP.
-    $env:TMP = $tmpPath
-    $env:TEMP = $tmpPath
-
-    Write-Host "[OK] Cache chuyen sang: $ModelRoot" -ForegroundColor Green
-    Write-Host "     HF_HOME       = $hfPath"
-    Write-Host "     PIP_CACHE_DIR = $pipPath"
-    Write-Host "     TMP/TEMP      = $tmpPath  (chi trong phien nay)"
-
-    if ($Persist) {
-        [Environment]::SetEnvironmentVariable("HF_HOME", $hfPath, "User")
-        [Environment]::SetEnvironmentVariable("PIP_CACHE_DIR", $pipPath, "User")
-        Write-Host "[!] Da ghi VINH VIEN vao bien moi truong User." -ForegroundColor Yellow
-        Write-Host "    Moi du an Python sau nay tren may cung se dung thu muc nay." -ForegroundColor Yellow
-        Write-Host "    Muon go bo: [Environment]::SetEnvironmentVariable('HF_HOME', `$null, 'User')" -ForegroundColor DarkGray
-    }
-    else {
-        Write-Host "[i] Chi ap dung trong phien PowerShell nay (them -Persist de nho vinh vien)." -ForegroundColor Gray
-    }
-    Write-Host ""
-}
-
-
-# canh bao dung luong
-
-$freeHF = Get-FreeGB $hfPath
-$freePip = Get-FreeGB $pipPath
-Write-Host "[i] Dung luong trong: cache HF $freeHF GB | cache pip $freePip GB"
-Write-Host "    Can khoang 12 GB (torch ~3GB + wheel tam ~5GB + model ~3.5GB)."
-if (($freeHF -ne $null -and $freeHF -lt 12) -or ($freePip -ne $null -and $freePip -lt 12)) {
-    Write-Host "[!] KHONG DU CHO. Hay don dep o dia, hoac chay lai voi -ModelRoot tro sang o khac." -ForegroundColor Red
-    $answer = Read-Host "    Van muon tiep tuc? (y/N)"
-    if ($answer -ne "y") { Write-Host "Da dung." -ForegroundColor Yellow; exit 1 }
-}
-Write-Host ""
 
 
 # Buoc 1: kich hoat venv
@@ -187,14 +115,8 @@ if ($LASTEXITCODE -ne 0) {
 
 # Buoc 4: diffusers stack
 
-if ($Lock) {
-    $req = Join-Path $PSScriptRoot "..\requirements-lock.txt"
-    Write-Host "`n[..] Cai tu requirements-lock.txt (ban chinh xac da kiem chung)..." -ForegroundColor Yellow
-}
-else {
-    $req = Join-Path $PSScriptRoot "..\requirements.txt"
-    Write-Host "`n[..] Cai tu requirements.txt (khoang phien ban linh hoat)..." -ForegroundColor Yellow
-}
+$req = Join-Path $PSScriptRoot "..\requirements.txt"
+Write-Host "`n[..] Cai diffusers stack tu requirements.txt..." -ForegroundColor Yellow
 python -m pip install -r $req
 
 
