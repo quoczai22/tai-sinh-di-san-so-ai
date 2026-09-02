@@ -4,7 +4,7 @@
 > Mọi mã `SRCxxx` xuất hiện trong `rule_base.json` PHẢI có một dòng tương ứng ở đây, và file
 > tài liệu tương ứng PHẢI tồn tại trong `data/documents/`.
 >
-> Cập nhật lần cuối: 31/08/2026 (bổ sung SRC005, SRC006 sau vòng rà soát tài liệu chưa gán mã).
+> Cập nhật lần cuối: 03/09/2026 (rút BT003, BT004 khỏi dataset — xem QĐ-03).
 
 ---
 
@@ -96,7 +96,7 @@ Theo đó, có cơ sở để nâng `material_texture` lên `restricted` cho cá
 (BT001, BT006, BT007, BT008, BT009, BT011, BT012).
 
 **Quyết định: KHÔNG nâng.** Chủ sở hữu Rule Base quyết định vẫn cho phép người dùng thay đổi
-`material_texture` — giữ `modifiable` (ALLOW) cho toàn bộ 13 mục.
+giữ `modifiable` (ALLOW) cho toàn bộ dataset (13 mục tại thời điểm quyết định, 11 sau QĐ-03).
 
 **Lý do ghi nhận:** sản phẩm đích của hệ thống là thiết kế in trên áo thun, nơi chất liệu men gốm
 không được tái hiện vật lý; ràng buộc chất liệu ở đây không bảo vệ được giá trị mà tài liệu mô tả.
@@ -131,6 +131,36 @@ File chỉ ghi lập luận phạm vi cùng quyết định này, để người
 
 **Điều kiện xét lại.** Nếu tìm được nguồn khảo sát trực tiếp biến thể 12 cánh nhọn và gán cho nó
 ý nghĩa Phật giáo, quyết định này phải được mở lại.
+
+### QĐ-03 — Rút `BT003` và `BT004` khỏi dataset MVP (03/09/2026)
+
+**Tình huống.** Heritage Dataset (spec mục 7.1) bắt buộc mỗi mẫu có `image_path` kèm nguồn và
+giấy phép rõ ràng. Không tìm được ảnh hiện vật có nguồn hợp lệ cho hai mẫu:
+
+| Mã | Tên | Nguồn rule cũ |
+|---|---|---|
+| `BT003` | Tứ linh (Long-Ly-Quy-Phượng) trên chân đèn/lư hương | `core_motif` → SRC001, `symbolic_element` → SRC002 |
+| `BT004` | Chữ Phật / chữ Vạn khắc nổi | `core_motif` → SRC002, `symbolic_element` → SRC002 |
+
+**Quyết định: rút khỏi `data/rule_base.json`.** Dataset còn **11 mẫu**, vẫn nằm trong khoảng
+10-15 mẫu mà spec mục 20 (ngày 3) yêu cầu.
+
+**Mã không được đánh số lại.** `BT003` và `BT004` để khuyết vĩnh viễn. `heritage_id` là định danh,
+không phải chỉ số thứ tự — đánh số lại sẽ làm sai lệch mọi trích dẫn trong tài liệu, mọi dòng đã
+nạp lên Supabase, và các ảnh minh chứng đã chụp. Hai mã này **không được tái sử dụng** cho mẫu mới.
+
+**Vì sao chọn đúng hai mẫu này.** Cả hai thuộc cùng một profile phân loại với BT001, BT002, BT007
+(`preserve` = `core_motif` + `symbolic_element`), nên rút đi không làm mất nhóm quyết định nào.
+`BT006` cũng thiếu ảnh nhưng **được giữ lại**: nó là mẫu **duy nhất** trong dataset có
+`restricted` khác rỗng. Rút BT006 sẽ khiến nhóm `restricted` của spec mục 6.2 rỗng trên toàn
+dataset — RESTRICT chỉ còn tới được qua fail-safe, không bao giờ tới được từ căn cứ tài liệu.
+
+**Bằng chứng không bị xoá.** Hai mẫu vẫn còn đầy đủ trong lịch sử git. Corpus RAG **không đổi**:
+tài liệu SRC001/SRC002 vẫn mô tả tứ linh và chữ Vạn, và các đoạn văn đó vẫn truy xuất được.
+Việc rút mẫu chỉ thu hẹp danh sách họa tiết người dùng chọn được, không thu hẹp tri thức nền.
+
+**Điều kiện xét lại.** Tìm được ảnh hiện vật có nguồn và giấy phép hợp lệ thì khôi phục lại được
+nguyên trạng từ git, không phải soạn lại `source_note`.
 
 ---
 

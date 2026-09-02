@@ -14,6 +14,7 @@ Chạy:
     python scripts/06_push_to_supabase.py            # nap + kiem tra
     python scripts/06_push_to_supabase.py --verify   # chi kiem tra, khong ghi
     python scripts/06_push_to_supabase.py --schema   # chi in cot that tren DB
+    python scripts/06_push_to_supabase.py --prune    # xoa dong DB khong con trong file
     python scripts/06_push_to_supabase.py --clear    # xoa sach du lieu da nap
 """
 from __future__ import annotations
@@ -145,6 +146,42 @@ def build_rows(L: dict) -> dict[str, list[dict]]:
             "rule_entries": rule_rows, "document_chunks": chunk_rows}
 
 
+def prune(c, rows: dict) -> int:
+    """Xoá dòng còn trên DB nhưng không còn trong artifact local.
+
+    Cần thiết vì push() dùng upsert — upsert ghi đè và thêm mới, KHÔNG xoá. Rút một
+    heritage khỏi rule_base.json rồi chỉ chạy push thì dòng cũ nằm lại trên DB im lặng.
+
+    Thứ tự bắt buộc: bảng con trước bảng cha, nếu không sẽ vi phạm khoá ngoại.
+    """
+    print("[DON]")
+    order = [("rule_entries", "rule_id"), ("document_chunks", "chunk_id"),
+             ("documents", "document_id"), ("heritage_items", "heritage_id"),
+             ("sources", "source_id")]
+    total = 0
+    for table, key in order:
+        want = {r[key] for r in rows[table]}
+        have = set()
+        start = 0
+        while True:                       # PostgREST trả tối đa 1000 dòng mỗi lần
+            page = c.table(table).select(key).range(start, start + 999).execute().data
+            have |= {r[key] for r in page}
+            if len(page) < 1000:
+                break
+            start += 1000
+        extra = sorted(have - want)
+        if not extra:
+            print(f"  {table:17} khong co dong du")
+            continue
+        for i in range(0, len(extra), BATCH):
+            c.table(table).delete().in_(key, extra[i:i + BATCH]).execute()
+        total += len(extra)
+        shown = ", ".join(extra[:6]) + (" ..." if len(extra) > 6 else "")
+        print(f"  {table:17} xoa {len(extra):4} dong: {shown}")
+    print(f"  Tong cong xoa {total} dong")
+    return total
+
+
 def push(c, rows: dict, schema: dict) -> dict[str, set[str]]:
     print("[NAP]")
     dropped_all: dict[str, set[str]] = {}
@@ -216,6 +253,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--verify", action="store_true")
     ap.add_argument("--schema", action="store_true")
+    ap.add_argument("--prune", action="store_true",
+                    help="xoa dong con tren DB nhung khong con trong file local")
     ap.add_argument("--clear", action="store_true")
     args = ap.parse_args()
 
@@ -239,7 +278,10 @@ def main() -> int:
 
     dropped = {}
     if not args.verify:
-        dropped = push(c, rows, schema)
+        # Dọn trước rồi mới nạp: nếu nạp trước, dòng dư vẫn đếm vào số dòng lúc kiểm tra.
+        prune(c, rows)
+        if not args.prune:                    # --prune = chi don, khong nap
+            dropped = push(c, rows, schema)
     errs = verify(c, L, rows)
 
     if dropped:
