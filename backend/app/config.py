@@ -1,6 +1,8 @@
 # pyrefly: ignore [missing-import]
 from pathlib import Path
+# pyrefly: ignore [missing-import]
 from pydantic import model_validator
+# pyrefly: ignore [missing-import]
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _APP_DIR = Path(__file__).resolve().parent

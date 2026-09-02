@@ -10,6 +10,7 @@ if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
 import pytest
+# pyrefly: ignore [missing-import]
 from fastapi.testclient import TestClient
 
 from app.main import app
