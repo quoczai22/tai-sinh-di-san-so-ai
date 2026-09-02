@@ -1,35 +1,17 @@
 # pyrefly: ignore [missing-import]
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
 
-from app.supabase_client import get_supabase_client
+from app.routers import health, heritage, rule_base
 
-app = FastAPI(title="Tai Sinh Di San So AI Backend")
+app = FastAPI(
+    title="Tai Sinh Di San So AI Backend",
+    description="Backend API cho dự án Tái sinh Di sản Số AI — Gốm Bát Tràng",
+    version="1.0.0",
+)
 
-
-@app.get("/")
-def root():
-    return {"message": "Tai Sinh Di San So AI API đang chạy"}
-
-
-@app.get("/health")
-def health_check():
-    try:
-        client = get_supabase_client()
-    except RuntimeError as e:
-        return JSONResponse(
-            content={"status": "degraded", "supabase": f"not_configured: {e}"},
-            status_code=503,
-        )
-
-    try:
-        client.table("sources").select("source_id").limit(1).execute()
-        return {"status": "ok", "supabase": "reachable"}
-    except Exception as e:
-        return JSONResponse(
-            content={"status": "degraded", "supabase": f"error: {type(e).__name__}"},
-            status_code=503,
-        )
+app.include_router(health.router)
+app.include_router(heritage.router)
+app.include_router(rule_base.router)
 
 
 if __name__ == "__main__":
