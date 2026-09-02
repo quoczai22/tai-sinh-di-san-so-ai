@@ -121,7 +121,8 @@ class MockSupabaseClient:
 def client(monkeypatch):
     """Fixture cung cấp FastAPI TestClient với Supabase Client đã được mock."""
     mock_instance = MockSupabaseClient()
-    monkeypatch.setattr("app.main.get_supabase_client", lambda: mock_instance)
+    monkeypatch.setattr("app.services.heritage_service.get_supabase_client", lambda: mock_instance)
+    monkeypatch.setattr("app.supabase_client.get_supabase_client", lambda: mock_instance)
     return TestClient(app)
 
 
@@ -129,19 +130,34 @@ def client(monkeypatch):
 # TEST CASES
 # ============================================================
 
-def test_get_heritage_list(client):
-    """1. GET /heritage trả 200 và danh sách các hiện vật."""
-    response = client.get("/heritage")
+def test_root_endpoint(client):
+    """1. GET / trả 200 và thông báo chào mừng."""
+    response = client.get("/")
     assert response.status_code == 200
-    data = response.json()
-    assert isinstance(data, list)
-    assert len(data) == 2
-    assert data[0]["heritage_id"] == "BT001"
-    assert data[1]["heritage_id"] == "BT002"
+    assert response.json() == {"message": "Tai Sinh Di San So AI API đang chạy"}
+
+
+def test_health_check_ok(client):
+    """2. GET /health trả 200 khi Supabase kết nối bình thường."""
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok", "supabase": "reachable"}
+
+
+def test_get_heritage_list(client):
+    """3. GET /heritage và /heritage-items trả 200 và danh sách các hiện vật."""
+    for path in ("/heritage", "/heritage-items"):
+        response = client.get(path)
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+        assert len(data) == 2
+        assert data[0]["heritage_id"] == "BT001"
+        assert data[1]["heritage_id"] == "BT002"
 
 
 def test_get_heritage_item_valid(client):
-    """2. GET /heritage/BT001 trả 200 và thông tin hiện vật."""
+    """4. GET /heritage/BT001 trả 200 và thông tin hiện vật."""
     response = client.get("/heritage/BT001")
     assert response.status_code == 200
     data = response.json()
@@ -151,44 +167,46 @@ def test_get_heritage_item_valid(client):
 
 
 def test_get_heritage_item_not_found(client):
-    """3. GET /heritage/DOES_NOT_EXIST trả 404."""
+    """5. GET /heritage/DOES_NOT_EXIST trả 404."""
     response = client.get("/heritage/DOES_NOT_EXIST")
     assert response.status_code == 404
     assert "không tồn tại" in response.json().get("detail", "")
 
 
 def test_get_rule_base_valid(client):
-    """4. GET /heritage/BT001/rule-base trả 200 và đủ 6 nhóm thuộc tính."""
-    response = client.get("/heritage/BT001/rule-base")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["heritage_id"] == "BT001"
+    """6. GET /heritage/BT001/rule-base và /rule-base/BT001 trả 200 và đủ 6 nhóm thuộc tính."""
+    for path in ("/heritage/BT001/rule-base", "/rule-base/BT001"):
+        response = client.get(path)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["heritage_id"] == "BT001"
 
-    # Kiểm tra đủ 6 nhóm trường bắt buộc theo MVP Spec mục 7.2
-    for field in ("preserve", "modifiable", "restricted", "rule_sources", "source_notes", "locators"):
-        assert field in data, f"Thiếu trường {field} trong Rule Base response"
+        # Kiểm tra đủ 6 nhóm trường bắt buộc theo MVP Spec
+        for field in ("preserve", "modifiable", "restricted", "rule_sources", "source_notes", "locators"):
+            assert field in data, f"Thiếu trường {field} trong Rule Base response"
 
-    assert "core_motif" in data["preserve"]
-    assert "symbolic_element" in data["preserve"]
-    assert data["rule_sources"]["core_motif"] == "SRC001"
-    assert "thành lư" in data["locators"]["core_motif"]
-    assert "SRC001" in data["source_notes"]["core_motif"]
+        assert "core_motif" in data["preserve"]
+        assert "symbolic_element" in data["preserve"]
+        assert data["rule_sources"]["core_motif"] == "SRC001"
+        assert "thành lư" in data["locators"]["core_motif"]
+        assert "SRC001" in data["source_notes"]["core_motif"]
 
 
 def test_get_rule_base_null_fail_closed(client):
-    """5. RPC trả null (mã không tồn tại) -> HTTP 404 (Fail-closed)."""
-    response = client.get("/heritage/BT999_UNKNOWN/rule-base")
-    assert response.status_code == 404
-    assert "không tồn tại" in response.json().get("detail", "")
+    """7. RPC trả null (mã không tồn tại) -> HTTP 404 (Fail-closed)."""
+    for path in ("/heritage/BT999_UNKNOWN/rule-base", "/rule-base/BT999_UNKNOWN"):
+        response = client.get(path)
+        assert response.status_code == 404
+        assert "không tồn tại" in response.json().get("detail", "")
 
 
 def test_unconfigured_or_db_error_returns_503(monkeypatch):
-    """6. Thiếu credential / DB lỗi -> HTTP 503."""
-    # Giả lập get_supabase_client() ném RuntimeError khi thiếu cấu hình
+    """8. Thiếu credential / DB lỗi -> HTTP 503."""
     def mock_fail_client():
         raise RuntimeError("SUPABASE_URL chưa được cấu hình trong .env")
 
-    monkeypatch.setattr("app.main.get_supabase_client", mock_fail_client)
+    monkeypatch.setattr("app.services.heritage_service.get_supabase_client", mock_fail_client)
+    monkeypatch.setattr("app.supabase_client.get_supabase_client", mock_fail_client)
     test_client = TestClient(app)
 
     # Kiểm tra /health trả 503
