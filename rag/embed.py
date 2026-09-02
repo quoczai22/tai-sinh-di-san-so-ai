@@ -31,14 +31,17 @@ BATCH_SIZE = 8
 
 NORM_TOLERANCE = 1e-3    # sai số cho phép khi kiểm chuẩn hoá L2
 
-# Truy vấn thử: mỗi câu gắn với một heritage_id trong rule_base, và nguồn kỳ vọng lấy từ chính `rule_sources` / `source_note` của mục đó.
+# Truy vấn thử: mỗi câu gắn với một heritage_id trong rule_base, và nguồn kỳ vọng lấy từ
+# chính `rule_sources` / `source_note` của mục đó. Dấu "—" nghĩa là câu truy vấn không
+# ứng với heritage_id nào — nó vẫn kiểm được corpus vì tài liệu có mô tả nội dung này,
+# dù họa tiết không (hoặc không còn) nằm trong dataset. Xem QĐ-03 trong docs/rule_base_sources.md.
 PROBES = [
     ("hoa sen tạo hình trên lư hương gốm thờ",        {"SRC001", "SRC006"}, "BT001"),
     ("bát quái tám quẻ trổ thủng trên nắp đỉnh thờ",  {"SRC001"},           "BT006"),
     ("chữ Thọ trong ô hình lá đề",                    {"SRC003"},           "BT005"),
     ("ống nhổ và bình vôi gắn tục ăn trầu",           {"SRC004"},           "BT013"),
     ("men rạn là đặc trưng riêng của lò Bát Tràng",   {"SRC005", "SRC001", "SRC006"}, "—"),
-    ("bộ tứ linh long ly quy phượng trên chân đèn",   {"SRC001", "SRC002"}, "BT003"),
+    ("bộ tứ linh long ly quy phượng trên chân đèn",   {"SRC001", "SRC002"}, "—"),
 ]
 
 
