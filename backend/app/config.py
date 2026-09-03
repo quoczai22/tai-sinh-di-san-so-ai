@@ -1,4 +1,4 @@
-# pyrefly: ignore [missing-import]
+import urllib.parse
 from pathlib import Path
 # pyrefly: ignore [missing-import]
 from pydantic import model_validator
@@ -17,6 +17,14 @@ class Settings(BaseSettings):
     DATABASE_URL: str = ""
     SUPABASE_DB_CONNECTION_STRING: str = ""
 
+    # Optional individual DB variables
+    DB_CONNECTION: str = "postgresql"
+    DB_HOST: str = ""
+    DB_PORT: int | str = ""
+    DB_DATABASE: str = ""
+    DB_USERNAME: str = ""
+    DB_PASSWORD: str = ""
+
     model_config = SettingsConfigDict(
         env_file=(_BACKEND_DIR / ".env", _REPO_ROOT / ".env"),
         env_file_encoding="utf-8",
@@ -25,6 +33,15 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def normalize_settings(self) -> "Settings":
+        # Tự động tạo DATABASE_URL nếu dùng các biến rời rạc DB_HOST, DB_USERNAME,...
+        if not self.DATABASE_URL and self.DB_HOST and self.DB_USERNAME:
+            driver = "postgresql" if self.DB_CONNECTION in ("pgsql", "postgres", "postgresql") else self.DB_CONNECTION
+            port_str = f":{self.DB_PORT}" if self.DB_PORT else ""
+            db_name = self.DB_DATABASE or "postgres"
+            encoded_pwd = urllib.parse.quote_plus(self.DB_PASSWORD) if self.DB_PASSWORD else ""
+            auth = f"{self.DB_USERNAME}:{encoded_pwd}" if encoded_pwd else self.DB_USERNAME
+            self.DATABASE_URL = f"{driver}://{auth}@{self.DB_HOST}{port_str}/{db_name}"
+
         # Chuẩn hóa SUPABASE_URL nếu được cấu hình qua SUPABASE_DB_CONNECTION_STRING
         if not self.SUPABASE_URL and self.SUPABASE_DB_CONNECTION_STRING.startswith(("http://", "https://")):
             self.SUPABASE_URL = self.SUPABASE_DB_CONNECTION_STRING

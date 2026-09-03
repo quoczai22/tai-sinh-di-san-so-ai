@@ -16,3 +16,4 @@ def list_heritage_items():
 def get_heritage_item(heritage_id: str):
     """Lấy thông tin chi tiết một hiện vật di sản theo heritage_id."""
     return heritage_service.get_heritage_by_id(heritage_id)
+
