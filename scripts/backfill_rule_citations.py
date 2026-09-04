@@ -173,25 +173,105 @@ def run_dry_run(json_path: Path, execute: bool = False):
     print(f"- Số dòng cập nhật an toàn (hiện đang rỗng): {len(safe_update_rows)}")
     print(f"- Số dòng đã khớp hoàn toàn (không thay đổi): {len(no_change_rows)}")
 
-    print("\n--- CHẾ ĐỘ THỰC THI ---")
-    if not execute:
-        print("[DRY-RUN ONLY] Script chạy ở chế độ kiểm tra an toàn.")
-        print("[DRY-RUN ONLY] Tuyệt đối KHÔNG INSERT, KHÔNG UPDATE, KHÔNG can thiệp live database.")
-        print("[DRY-RUN ONLY] Trạng thái: SẴN SÀNG (Đang chờ xác nhận cuối của người dùng để thực thi).")
-    else:
-        print("[EXECUTE] Chế độ thực thi live chưa được cấp phép trong phiên này.")
+def run_execute(json_path: Path):
+    """Thực thi UPDATE an toàn trên live DB cho 11 di sản thuộc MVP."""
+    print("=" * 70)
+    print("BACKFILL RULE CITATIONS — LIVE EXECUTION")
+    print("=" * 70)
+
+    candidates, excluded = load_rule_base_json(json_path)
+    client = get_supabase_client()
+    resp = client.table("rule_entries").select("*").execute()
+    db_rows = resp.data or []
+    db_map = {r["rule_id"]: r for r in db_rows if "rule_id" in r}
+
+    updated_count = 0
+    skipped_count = 0
+
+    for rule_id, cand in candidates.items():
+        if rule_id in db_map:
+            current = db_map[rule_id]
+            curr_note = current.get("source_note") or ""
+            curr_loc = current.get("locator") or ""
+            new_note = cand.get("source_note") or ""
+            new_loc = cand.get("locator") or ""
+
+            # Chỉ cập nhật khi có căn cứ nguồn (cand có source_id) và có sự khác biệt
+            if cand.get("source_id"):
+                if curr_note != new_note or curr_loc != new_loc:
+                    print(f"[*] Đang cập nhật {rule_id}:")
+                    print(f"    - Locator cũ: '{curr_loc}' -> Locator mới: '{new_loc}'")
+                    client.table("rule_entries").update({
+                        "source_note": new_note,
+                        "locator": new_loc,
+                    }).eq("rule_id", rule_id).execute()
+                    updated_count += 1
+                else:
+                    skipped_count += 1
+
+    print(f"\n[EXECUTION COMPLETED] Số dòng đã UPDATE: {updated_count} | Số dòng giữ nguyên: {skipped_count}")
+
+
+def run_verify():
+    """Kiểm tra và xác minh trạng thái live DB sau khi đối chiếu/backfill."""
+    print("=" * 70)
+    print("BACKFILL RULE CITATIONS — POST-AUDIT & VERIFICATION")
+    print("=" * 70)
+
+    client = get_supabase_client()
+    resp = client.table("rule_entries").select("*").order("rule_id").execute()
+    rows = resp.data or []
+
+    not_null_notes = [r for r in rows if r.get("source_note")]
+    null_notes = [r for r in rows if not r.get("source_note")]
+
+    print(f"- Tổng số dòng trong rule_entries: {len(rows)}")
+    print(f"- Số dòng có source_note != NULL: {len(not_null_notes)}")
+    print(f"- Số dòng có source_note == NULL: {len(null_notes)}")
+
+    print("\n- Chi tiết các dòng có căn cứ trích dẫn (source_note != NULL):")
+    for r in not_null_notes:
+        loc_snippet = (r.get("locator") or "")[:60]
+        print(f"  * {r['rule_id']}: source_id={r.get('source_id')} | locator='{loc_snippet}...'")
+
+    # Mẫu kiểm tra BT005
+    bt005_rows = [r for r in rows if r.get("heritage_id") == "BT005" and r.get("category") == "core_motif"]
+    if bt005_rows:
+        bt005 = bt005_rows[0]
+        print("\n- Kiểm tra mẫu BT005:core_motif:")
+        print(f"  + rule_id: {bt005.get('rule_id')}")
+        print(f"  + source_id: {bt005.get('source_id')}")
+        print(f"  + locator: '{bt005.get('locator')}'")
+        print(f"  + source_note snippet: '{str(bt005.get('source_note'))[:80]}...'")
+
+    # Test RPC get_rule_base cho BT001 và BT005
+    print("\n- Kiểm tra RPC get_rule_base qua Supabase:")
+    for hid in ("BT001", "BT005"):
+        rpc_res = client.rpc("get_rule_base", {"p_heritage_id": hid}).execute()
+        data = rpc_res.data
+        if data:
+            print(f"  + get_rule_base('{hid}') -> OK (preserve: {data.get('preserve')}, locators keys: {list(data.get('locators', {}).keys())})")
+        else:
+            print(f"  + get_rule_base('{hid}') -> NULL/FAIL")
 
     print("=" * 70)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Dry-run backfill rule citations to Supabase rule_entries (MVP Scope).")
+    parser = argparse.ArgumentParser(description="Dry-run and verification for backfill rule citations to Supabase rule_entries (MVP Scope).")
     parser.add_argument("--json-path", type=Path, default=ROOT_DIR / "data" / "rule_base.json", help="Đường dẫn file rule_base.json")
-    parser.add_argument("--dry-run", action="store_true", default=True, help="Chạy chế độ dry-run (mặc định)")
-    parser.add_argument("--execute", action="store_true", default=False, help="Chạy cập nhật live (cần xác nhận)")
+    parser.add_argument("--dry-run", action="store_true", default=False, help="Chạy chế độ dry-run")
+    parser.add_argument("--execute", action="store_true", default=False, help="Chạy cập nhật live")
+    parser.add_argument("--verify", action="store_true", default=False, help="Chạy kiểm tra sau cập nhật")
     args = parser.parse_args()
 
-    run_dry_run(args.json_path, execute=args.execute)
+    if args.verify:
+        run_verify()
+    elif args.execute:
+        run_execute(args.json_path)
+    else:
+        # Mặc định là dry-run
+        run_dry_run(args.json_path, execute=False)
 
 
 if __name__ == "__main__":
