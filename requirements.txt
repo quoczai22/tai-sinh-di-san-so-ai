@@ -16,3 +16,7 @@ pdfplumber>=0.11.10
 
 python-dotenv>=1.0.1
 tqdm>=4.66.0
+
+# LLM co thi giac — CHI dung cho scripts/07_describe_heritage.py (chay offline
+# mot lan de viet mo ta hoa van). Pipeline sinh anh KHONG goi LLM.
+# google-genai>=1.0

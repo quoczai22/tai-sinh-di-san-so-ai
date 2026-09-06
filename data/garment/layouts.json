@@ -1,0 +1,100 @@
+{
+  "_meta": {
+    "note": "Cách bố trí hoa văn trên áo dài. Toạ độ [x0,y0,x1,y1] theo tỉ lệ HỘP BAO CỦA VÙNG ÁO (không phải của cả ảnh), nên đổi ảnh mẫu vẫn còn đúng.",
+    "scale": "Co hoa tiet so voi be ngang vung in. Voi conditioning giu nguyen mon do (phuong an A), hoa van co chua dang vat chua — nen dat scale CAO de moi vung chi hien 1-2 lan lap. Lap nhieu se thanh giay dan tuong hinh cai binh.",
+    "regions": "Nhiều vùng thì hoa văn xuất hiện ở tất cả các vùng đó."
+  },
+  "layouts": {
+    "front_panel": {
+      "label": "Dải thân trước",
+      "regions": [
+        [
+          0.3,
+          0.02,
+          0.7,
+          0.72
+        ]
+      ],
+      "scale": 0.95
+    },
+    "full_body": {
+      "label": "Phủ toàn thân",
+      "regions": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "scale": 0.55
+    },
+    "hem_band": {
+      "label": "Băng gấu tà",
+      "regions": [
+        [
+          0.0,
+          0.58,
+          1.0,
+          1.0
+        ]
+      ],
+      "scale": 0.62
+    },
+    "shoulder": {
+      "label": "Vai và ngực",
+      "regions": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.3
+        ]
+      ],
+      "scale": 0.85
+    },
+    "shoulder_hem": {
+      "label": "Vai kết hợp gấu tà",
+      "regions": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.24
+        ],
+        [
+          0.0,
+          0.66,
+          1.0,
+          1.0
+        ]
+      ],
+      "scale": 0.78
+    },
+    "side_stripe": {
+      "label": "Dải dọc lệch phải",
+      "regions": [
+        [
+          0.58,
+          0.0,
+          0.95,
+          1.0
+        ]
+      ],
+      "scale": 1.0
+    },
+    "center_medallion": {
+      "label": "Ô giữa ngực",
+      "regions": [
+        [
+          0.28,
+          0.06,
+          0.72,
+          0.34
+        ]
+      ],
+      "scale": 1.1
+    }
+  },
+  "default": "front_panel"
+}

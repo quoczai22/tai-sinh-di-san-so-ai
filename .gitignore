@@ -21,7 +21,6 @@ htmlcov/
 # Local AI models, caches, generated media, and logs
 models/
 checkpoints/
-outputs/
 generated/
 logs/
 cache/
