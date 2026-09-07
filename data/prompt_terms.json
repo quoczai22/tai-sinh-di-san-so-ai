@@ -1,0 +1,68 @@
+{
+  "_meta": {
+    "purpose": "Anh xa tieng Viet -> tieng Anh cho Prompt Builder giai doan 1 (v6). SD1.5 dung CLIP gan nhu thuan tieng Anh.",
+    "budget": "base_description <= 21 token, do bang tokenizer cua SD1.5",
+    "status": "Mo ta do LLM co thi giac sinh, CHUA duoc nguoi ra soat. Dat reviewed_by_human=true sau khi kiem tra tung muc.",
+    "note": "Khoa la ten file trong data/heritage/ (khong co duoi).",
+    "constraints": "<= 21 token; cam moi tu chi hinh dang vat chua"
+  },
+  "terms": {
+    "BT_Hac_XP": {
+      "name_en": "Bat Trang peacock and lotus",
+      "base_description": "Blue and white peacocks and lotus flowers with fine gold detailing.",
+      "source": "llm_vision",
+      "llm_model": "gemini/gemini-3.7-flash",
+      "generated_on": "2026-09-06",
+      "reviewed_by_human": true
+    },
+    "HSBT_XP-300x300": {
+      "name_en": "Bat Trang monochrome lotus motif",
+      "base_description": "Black ink wash lotus blossoms, leaves, and thorny stems on white background.",
+      "source": "llm_vision",
+      "llm_model": "gemini/gemini-3.7-flash",
+      "generated_on": "2026-09-06",
+      "reviewed_by_human": true
+    },
+    "BHV_UU_XP1-600x600": {
+      "name_en": "Bat Trang peacocks and blossoms",
+      "base_description": "Peacocks, blooming pink flowers, and blue waves on vibrant yellow ground.",
+      "source": "llm_vision",
+      "llm_model": "gemini/gemini-3.7-flash",
+      "generated_on": "2026-09-06",
+      "reviewed_by_human": true
+    },
+    "MB_2C_XP_31": {
+      "name_en": "Bat Trang ship and waves",
+      "base_description": "Blue sailing ship on rolling ocean waves with yellow floral background.",
+      "source": "llm_vision",
+      "llm_model": "gemini/gemini-3.7-flash",
+      "generated_on": "2026-09-06",
+      "reviewed_by_human": true
+    },
+    "BT010_2": {
+      "name_en": "Bat Trang blue chrysanthemum scroll",
+      "base_description": "Cobalt blue chrysanthemum blossoms and scrolling leafy vines on white background.",
+      "source": "llm_vision",
+      "llm_model": "gemini/gemini-3.7-flash",
+      "generated_on": "2026-09-06",
+      "reviewed_by_human": true
+    },
+    "binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien": {
+      "name_en": "Bat Trang gilded lotus",
+      "base_description": "Gilded embossed lotus blossoms and leaves on a white background.",
+      "source": "llm_vision",
+      "llm_model": "gemini/gemini-3.7-flash",
+      "generated_on": "2026-09-06",
+      "reviewed_by_human": true
+    }
+  },
+  "labels_en": {
+    "core_motif": "the main motif form",
+    "symbolic_element": "its traditional symbolic meaning",
+    "color_palette": "color palette",
+    "background": "background",
+    "composition_layout": "composition and layout",
+    "product_context": "product context",
+    "material_texture": "surface texture"
+  }
+}

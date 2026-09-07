@@ -31,36 +31,6 @@
       "source_note": "SRC002 — Nguyễn Đình Chiến (2019), Gia đình tượng nhân Đỗ Phủ lưu danh trên gốm Bát Tràng thế kỷ 16-17. Bộ chân đèn + lư hương do Đỗ Xuân Vy tạo tác niên hiệu Hưng Trị 3 (1590), trang trí 'hình rồng yên ngựa và mây', '4 chân quì chạm nổi đầu rồng'; minh văn cho biết được 'cúng dường chùa Thanh Quang làm vật Tam bảo'. Cặp chân đèn niên hiệu Hưng Trị 2 (1589) được 'cúng dường chùa Quan Âm làm vật Tam bảo'. SRC002: 'Bộ chân đèn và lư hương này đã được Thủ tướng Chính phủ công nhận là Bảo vật quốc gia đợt 2, Quyết định số 2599 QĐ/TTg ngày 30 tháng 12 năm 2013.'"
     },
     {
-      "heritage_id": "BT003",
-      "name": "Tứ linh (Long-Ly-Quy-Phượng) trên chân đèn/lư hương",
-      "origin": "Bát Tràng",
-      "region": "Hà Nội",
-      "cultural_meaning": "Bộ 4 linh vật đặt trong 4 ô tròn hình bông hoa, trang trí trên chân đèn men rạn niên hiệu Hoằng Định (1600-1618) do gia đình tượng nhân Đỗ Phủ tạo tác.",
-      "preserve": ["core_motif", "symbolic_element"],
-      "modifiable": ["background", "color_palette", "composition_layout", "product_context", "material_texture"],
-      "restricted": [],
-      "rule_sources": {
-        "core_motif": "SRC001",
-        "symbolic_element": "SRC002"
-      },
-      "source_note": "SRC001 (nguyên văn): chân đèn niên hiệu Hoằng Định trang trí nổi gồm 'các băng dây hoa lá, lông công, bộ tứ linh Long - Ly - Quy - Phượng trong 4 ô hình bông hoa tròn, băng lá đề trong có chữ Vạn'. SRC002 (nguyên văn) mô tả cùng hiện vật: 'lá đề bên trong có chữ Vạn, lông công và bộ tứ linh (Long , Ly, Quy, Phượng) đặt trong 4 ô tròn hình bông hoa'. Bối cảnh nghi lễ (cung tiến, Tam bảo) chỉ được ghi nhận ở SRC002, không có trong SRC001. SRC005 xác nhận độc lập hiện vật này: 'cặp chân đèn do Đỗ Phủ tạo tác có minh văn ghi rõ niên hiệu Hoằng Định đời vua Lê Kính Tông', và cho biết ở mức khái quát rằng 'Minh văn chủ yếu thấy xuất hiện trên đồ gốm thờ cúng, được đặt hàng làm để cung tiến vào các đình, đền, chùa, quán'."
-    },
-    {
-      "heritage_id": "BT004",
-      "name": "Chữ Phật / chữ Vạn khắc nổi",
-      "origin": "Bát Tràng",
-      "region": "Hà Nội",
-      "cultural_meaning": "Minh văn tôn giáo thể hiện trực tiếp trên đồ thờ, gắn với Phật giáo và bối cảnh cung tiến chùa.",
-      "preserve": ["core_motif", "symbolic_element"],
-      "modifiable": ["background", "color_palette", "composition_layout", "product_context", "material_texture"],
-      "restricted": [],
-      "rule_sources": {
-        "core_motif": "SRC002",
-        "symbolic_element": "SRC002"
-      },
-      "source_note": "SRC002 — Nguyễn Đình Chiến (2019): chân đèn Bảo tàng Nam Định do Đỗ Xuân Vy tạo tác, 'Trang trí nổi để mộc gồm các dải hoa, chữ Phật, hình chim phượng múa, tượng rồng có cánh ở phần trên'; chân đèn niên hiệu Hoằng Định của Đỗ Phủ có 'lá đề bên trong có chữ Vạn'."
-    },
-    {
       "heritage_id": "BT005",
       "name": "Chữ Thọ trong ô hình lá đề",
       "origin": "Bát Tràng",
