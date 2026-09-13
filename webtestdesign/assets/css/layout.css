@@ -1,0 +1,364 @@
+/* ==========================================================================
+   LAYOUT.CSS - Khung sườn chung (Floating Pill Navbar, Containers, Footer)
+   ========================================================================== */
+
+/* Main Containers */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* ==========================================================================
+   FLOATING PILL NAVIGATION (Framer Style)
+   ========================================================================== */
+.framer-nav-wrapper {
+    position: fixed;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    pointer-events: none; /* Allows click through outside pill */
+    padding: 0 16px;
+}
+
+.framer-navbar {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    padding: 10px 18px 10px 22px;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 40px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
+    transition: var(--transition);
+}
+
+.framer-navbar:hover {
+    border-color: rgba(203, 213, 225, 0.95);
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
+}
+
+/* Logo */
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+}
+
+.nav-logo-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+/* Nav Menu Links & Stepper */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    list-style: none;
+}
+
+.stepper-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: var(--transition);
+    cursor: pointer;
+    user-select: none;
+}
+
+.stepper-item:hover {
+    color: var(--text-primary);
+}
+
+.stepper-item.active {
+    background: #0f172a;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
+}
+
+.stepper-item.completed {
+    background: #eff6ff;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.stepper-arrow {
+    color: #cbd5e1;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+}
+
+/* Stepper Hover Card (Xem tiến trình con khi hover) */
+.stepper-item.has-popover {
+    position: relative;
+}
+
+.stepper-hover-card {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    width: 290px;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(15, 23, 42, 0.06);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1000;
+    text-align: left;
+}
+
+.stepper-hover-card::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 10px;
+    height: 10px;
+    background: #ffffff;
+    border-top: 1px solid rgba(15, 23, 42, 0.06);
+    border-left: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.stepper-item.has-popover:hover .stepper-hover-card {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+}
+
+.hover-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.hover-card-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #2563eb;
+    box-shadow: 0 0 8px #2563eb;
+}
+
+.hover-card-phases {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.hover-phase-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: #f8fafc;
+    transition: background 0.2s ease;
+}
+
+.hover-phase-item:hover {
+    background: #eff6ff;
+}
+
+.hover-phase-num {
+    font-size: 11px;
+    font-weight: 800;
+    color: #1d4ed8;
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    padding: 2px 6px;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.hover-phase-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.hover-phase-info strong {
+    font-size: 12px;
+    color: #0f172a;
+    line-height: 1.3;
+}
+
+.hover-phase-info small {
+    font-size: 10.5px;
+    color: #64748b;
+    line-height: 1.2;
+}
+
+.hover-card-footer {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #2563eb;
+    padding-top: 4px;
+}
+
+/* Nav Right Actions */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mvp-badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: #eff6ff;
+    color: var(--primary);
+    border: 1px solid #bfdbfe;
+}
+
+/* ==========================================================================
+   FOOTER LAYOUT
+   ========================================================================== */
+.site-footer {
+    border-top: 1px solid var(--border-subtle);
+    padding: 60px 0 30px;
+    margin-top: 100px;
+    background: #ffffff;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.footer-text {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   FRAMER EDITOR BAR (Widget góc dưới)
+   ========================================================================== */
+#__framer-editorbar-container {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: calc(2147483647);
+    width: max-content;
+    cursor: pointer;
+}
+
+#__framer-editorbar-label {
+    background-color: #111;
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    height: fit-content;
+    opacity: 0;
+    padding: 4px 10px;
+    transition: opacity 0.3s ease-out;
+    font-weight: 500;
+    flex-shrink: 0;
+    pointer-events: none;
+    user-select: none;
+}
+
+#__framer-editorbar-button {
+    all: unset;
+    align-items: center;
+    border-radius: 50%;
+    display: flex;
+    height: 32px;
+    justify-content: center;
+    width: 32px;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+#__framer-editorbar-button:hover {
+    transform: scale(1.08);
+}
+
+#__framer-editorbar-container:hover #__framer-editorbar-label,
+#__framer-editorbar-label.__framer-editorbar-button-tooltip-visible {
+    opacity: 1;
+}
+
+#__framer-editorbar-label,
+#__framer-editorbar-button {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background-color: rgba(34, 34, 34, 0.85);
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 12px, rgba(255, 255, 255, 0.15) 0px 0px 0px 1px;
+    color: #fff;
+}
+
+#__framer-editorbar-loading-spinner {
+    width: 13px;
+    height: 13px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: __framer-loading-spin 0.8s linear infinite;
+}
+
+@keyframes __framer-loading-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+    .framer-navbar {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
