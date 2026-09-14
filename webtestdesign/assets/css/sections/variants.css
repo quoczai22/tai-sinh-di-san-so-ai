@@ -100,34 +100,6 @@
     transition: transform 0.3s ease;
 }
 
-.variant-code-badge {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    font-size: 12px;
-    font-weight: 800;
-    padding: 5px 12px;
-    border-radius: 6px;
-    background: linear-gradient(135deg, #991b1b 0%, #b91c1c 45%, #7f1d1d 100%);
-    color: #fef08a;
-    border: 1.5px solid rgba(254, 240, 138, 0.85);
-    box-shadow: 0 4px 14px rgba(185, 28, 28, 0.6), inset 0 0 0 1px rgba(254, 240, 138, 0.3);
-    z-index: 4;
-    letter-spacing: 0.08em;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.variant-code-badge::before {
-    content: "✦";
-    font-size: 9px;
-    color: #fde047;
-    opacity: 0.9;
-}
-
 /* Lớp phủ Gradient Tối Cung Đình (Layer) */
 .variant-layer {
     position: absolute;
@@ -179,18 +151,6 @@
     line-height: 1.3;
     margin: 0;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-}
-
-.variant-rule-desc {
-    font-size: 12.5px;
-    color: #cbd5e1;
-    line-height: 1.5;
-    margin: 0 0 6px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
 }
 
 /* Nút Hộ Chiếu - Khí Thế Máu Đỏ Da Vàng Đất Việt */

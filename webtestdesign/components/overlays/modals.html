@@ -14,9 +14,9 @@
                 <div class="pipeline-title-group">
                     <h3>
                         <span class="pipeline-live-dot" aria-hidden="true"></span>
-                        <span>Quy trình tạo thiết kế — 4 pha mô phỏng (MVP v6.1)</span>
+                        <span>Đang tạo bộ thiết kế của bạn</span>
                     </h3>
-                    <p id="pipeline-status-text">Đang khởi động nạp trọng số mô hình ControlNet & SD1.5...</p>
+                    <p id="pipeline-status-text">Đang khơi mở cảm hứng từ hiện vật bạn đã chọn...</p>
                 </div>
                 <div id="pipeline-percentage" style="font-size: 20px; font-weight: 800; color: #1d4ed8;">0%</div>
             </div>
@@ -35,8 +35,8 @@
                             src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" hidden>
                     </div>
                     <span class="stage-num-badge">Pha 01 · 25%</span>
-                    <h4 class="stage-card-title">Tách nền & Canny</h4>
-                    <p class="stage-card-desc">Bỏ đường bao bình, chỉ trích xuất hoa văn gốc.</p>
+                    <h4 class="stage-card-title">Gìn giữ đường nét</h4>
+                    <p class="stage-card-desc">Lắng nghe những chi tiết đặc trưng từ hiện vật.</p>
                 </div>
 
                 <!-- Pha 2 -->
@@ -46,8 +46,8 @@
                             src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" hidden>
                     </div>
                     <span class="stage-num-badge">Pha 02 · 50%</span>
-                    <h4 class="stage-card-title">Sinh hoa văn phẳng</h4>
-                    <p class="stage-card-desc">SD1.5 + ControlNet tạo hoa văn tuần hoàn liền mạch.</p>
+                    <h4 class="stage-card-title">Khơi mở hoa văn</h4>
+                    <p class="stage-card-desc">Phát triển cảm hứng thành những mảng họa tiết mới.</p>
                 </div>
 
                 <!-- Pha 3 -->
@@ -57,8 +57,8 @@
                             src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" hidden>
                     </div>
                     <span class="stage-num-badge">Pha 03 · 75%</span>
-                    <h4 class="stage-card-title">Ghép nếp vải Áo Dài</h4>
-                    <p class="stage-card-desc">Uốn theo nếp gấp qua Displacement & Shading map.</p>
+                    <h4 class="stage-card-title">Dệt lên tà áo</h4>
+                    <p class="stage-card-desc">Đưa hoa văn hòa vào dáng áo dài Việt Nam.</p>
                 </div>
 
                 <!-- Pha 4 -->
@@ -68,8 +68,8 @@
                             src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" hidden>
                     </div>
                     <span class="stage-num-badge">Pha 04 · 100%</span>
-                    <h4 class="stage-card-title">Lượt hoàn thiện</h4>
-                    <p class="stage-card-desc">img2img denoise 0.40 tạo độ rủ tơ tằm tự nhiên.</p>
+                    <h4 class="stage-card-title">Hoàn thiện thiết kế</h4>
+                    <p class="stage-card-desc">Chuẩn bị bộ sưu tập để bạn chiêm ngưỡng.</p>
                 </div>
             </div>
 
@@ -77,15 +77,14 @@
             <div class="pipeline-modal-footer" id="pipeline-modal-footer" style="display: none;">
                 <div class="pipeline-footer-info">
                     <span class="success-icon">✨</span>
-                    <span><strong>Xử lý hoàn tất!</strong> Bấm vào thẻ pha bên trên để soi chi tiết, hoặc bấm tiếp tục
-                        để xem 4 thiết kế Áo Dài.</span>
+                    <span><strong>Thiết kế đã sẵn sàng.</strong> Mời bạn khám phá bộ áo dài vừa được tạo.</span>
                 </div>
                 <div class="pipeline-footer-buttons">
                     <button class="btn-stay-inspector" id="btn-stay-inspector" type="button">
                         <span>Đóng cửa sổ</span>
                     </button>
                     <button class="btn-modal-goto-curate" id="btn-modal-goto-curate" type="button">
-                        <span>Xem 4 Thiết Kế Áo Dài (Bước 4) →</span>
+                        <span>Xem bộ thiết kế →</span>
                     </button>
                 </div>
             </div>
@@ -170,6 +169,7 @@
                         <div class="modal-cultural-desc" id="modal-desc">
                             Mô tả khảo cứu văn hóa...
                         </div>
+                        <p class="modal-provenance">Mô tả nội bộ do nhóm biên soạn, không phải trích dẫn học thuật.</p>
                         <div class="glaze-palette-box">
                             <span class="glaze-label">Bảng màu men trích xuất:</span>
                             <div class="glaze-dots" id="modal-glaze-dots"></div>
@@ -201,7 +201,7 @@
                         <polyline points="2 17 12 22 22 17"></polyline>
                         <polyline points="2 12 12 17 22 12"></polyline>
                     </svg>
-                    <span>VIỆT NAM DIGITAL HERITAGE PASSPORT</span>
+                    <span>Hộ chiếu thiết kế</span>
                 </div>
                 <button class="modal-close-btn" id="passport-close-btn"
                     style="position: static; background: rgba(255,255,255,0.15); color: #fff;" aria-label="Đóng">
@@ -231,7 +231,7 @@
                 <div class="passport-details-col">
                     <div>
                         <div class="passport-similarity-box">
-                            <div style="font-size: 12px; font-weight: 700; color: #166534; text-transform: uppercase;">
+                            <div style="font-size: 12px; font-weight: 700; color: #166534;">
                                 Độ tương đồng hoa văn gốc (Visual Similarity)</div>
                             <div style="font-size: 24px; font-weight: 800; color: #15803d;"
                                 id="passport-similarity-val">88.4% (Tham khảo)</div>
@@ -246,16 +246,13 @@
                         </div>
 
                         <div class="passport-field-group">
-                            <div class="passport-field-label">Di sản nguồn (Heritage ID)</div>
-                            <div class="passport-field-value" id="passport-heritage-id">BT001 · Niên hiệu Vĩnh Thịnh
-                            </div>
+                            <div class="passport-field-label">Bố cục</div>
+                            <div class="passport-field-value" id="passport-layout">Thân trước</div>
                         </div>
 
                         <div class="passport-field-group">
-                            <div class="passport-field-label">Mã chứng thực Audit Trail (Seed)</div>
-                            <div class="passport-field-value"
-                                style="font-family: monospace; font-size: 13px; color: #475569;" id="passport-seed">
-                                #SEED_42_CONTROLNET_W0.85</div>
+                            <div class="passport-field-label">Bảng màu</div>
+                            <div class="passport-field-value" id="passport-palette-mode">Màu men gốc</div>
                         </div>
 
                         <div class="passport-field-group">

@@ -31,23 +31,33 @@
     }
 }
 
-/* Chú cá chép trưởng thành quẫy đuôi vươn mình ngược dòng */
-.river-carp.carp-leader {
-    animation: carpLeaderSwim 7s ease-in-out infinite alternate;
-    transform-origin: 680px 1420px;
+/* Chú cá chép trưởng thành to bự quẫy đuôi vươn mình ngược dòng */
+.carp-float-anim {
+    animation: carpGentleFloat 4s ease-in-out infinite alternate;
 }
 
-@keyframes carpLeaderSwim {
-    0% {
-        transform: translate(680px, 1420px) rotate(-48deg) translateY(0);
-    }
+.carp-float-anim.anim-delay-1 {
+    animation-delay: -1.2s;
+    animation-duration: 4.5s;
+}
 
-    50% {
-        transform: translate(684px, 1410px) rotate(-45deg) translateY(-8px) scale(1.02);
+.carp-float-anim.anim-delay-2 {
+    animation-delay: -2.4s;
+    animation-duration: 5s;
+}
+
+.carp-float-anim.anim-delay-3 {
+    animation-delay: -0.8s;
+    animation-duration: 3.8s;
+}
+
+@keyframes carpGentleFloat {
+    0% {
+        transform: translateY(0px) rotate(0deg);
     }
 
     100% {
-        transform: translate(676px, 1428px) rotate(-51deg) translateY(6px) scale(0.99);
+        transform: translateY(-8px) rotate(2.5deg);
     }
 }
 
@@ -98,23 +108,38 @@
     }
 }
 
-/* Cá chép nhỏ bơi song hành */
-.river-carp.carp-companion {
-    animation: carpCompanionSwim 6s ease-in-out infinite alternate;
-    transform-origin: 420px 1260px;
+/* Khóm hoa sen Bát Tràng đung đưa êm dịu */
+.lotus-float-anim {
+    animation: lotusGentleSway 6s ease-in-out infinite alternate;
 }
 
-@keyframes carpCompanionSwim {
-    0% {
-        transform: translate(420px, 1260px) rotate(-15deg);
-    }
+.lotus-float-anim.anim-delay-2 {
+    animation-delay: -2s;
+    animation-duration: 5.5s;
+}
 
-    50% {
-        transform: translate(424px, 1252px) rotate(-12deg) scale(1.03);
+@keyframes lotusGentleSway {
+    0% {
+        transform: translateY(0px) rotate(0deg);
     }
 
     100% {
-        transform: translate(416px, 1268px) rotate(-18deg) scale(0.98);
+        transform: translateY(-5px) rotate(1.5deg);
+    }
+}
+
+/* Cụm mây thời Lê bồng bềnh */
+.cloud-float-anim {
+    animation: cloudDriftSlow 7s ease-in-out infinite alternate;
+}
+
+@keyframes cloudDriftSlow {
+    0% {
+        transform: translateY(0px);
+    }
+
+    100% {
+        transform: translateY(-8px);
     }
 }
 

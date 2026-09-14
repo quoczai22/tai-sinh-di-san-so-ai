@@ -285,10 +285,8 @@
 }
 
 .hero-editorial-grid {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 48px;
-    align-items: center;
+    display: block;
+    max-width: 760px;
     text-align: left;
 }
 
@@ -326,10 +324,7 @@
 }
 
 .hero-title-editorial .highlight {
-    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #d97706 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #1d4ed8;
 }
 
 .hero-desc-editorial {

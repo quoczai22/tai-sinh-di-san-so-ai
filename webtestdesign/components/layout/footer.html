@@ -35,49 +35,298 @@
                          C 1000 170, 1260 50, 1560 120" stroke="url(#footerRiverGrad1)" stroke-width="64"
                     fill="none" />
 
+                <!-- 1b. Dải dòng chảy phụ tầng dưới (Secondary River Current) - Tăng độ uốn lượn sâu sắc của lòng sông -->
+                <path class="footer-stream-ribbon-sub" d="M -90 110
+                         C 210 175, 470 70, 750 135
+                         C 1030 205, 1280 85, 1560 155" stroke="url(#footerRiverGrad1)" stroke-width="42"
+                    fill="none" opacity="0.4" />
+
                 <!-- 2. Dải dòng chảy chính của khúc sông (Main River Current) -->
                 <path class="footer-stream-ribbon-main" d="M -100 60
                          C 190 130, 450 20, 730 90
                          C 1010 160, 1270 40, 1560 110" stroke="url(#footerRiverGrad2)" stroke-width="28"
                     fill="none" />
 
-                <!-- 3. Sống dòng sông dát vàng ánh kim đứt nét đồng điệu Bước 1 -->
+                <!-- 3. Sống dòng sông dát vàng ánh kim đứt nét đồng điệu khúc sông di sản -->
                 <path class="footer-stream-spine" d="M -100 60
                          C 190 130, 450 20, 730 90
                          C 1010 160, 1270 40, 1560 110" stroke="url(#footerRiverSpine)" stroke-width="2.5"
                     stroke-dasharray="14 10" fill="none" />
 
-                <!-- 4. Đường gợn sóng lăn tăn (Ripples) phủ đều các khoảng -->
-                <path d="M -40 90 C 180 140, 380 60, 560 50" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="8 6"
+                <!-- 4. Đường gợn sóng lăn tăn (Ripples) phủ đều các khoảng uốn lượn -->
+                <path d="M -40 90 C 140 140, 320 80, 480 60" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="8 6"
                     fill="none" opacity="0.65" />
-                <path d="M 680 90 C 880 150, 1080 75, 1280 45" stroke="#2dd4bf" stroke-width="1.8"
-                    stroke-dasharray="8 6" fill="none" opacity="0.65" />
-                <path d="M 1180 55 C 1300 80, 1420 115, 1560 100" stroke="#f59e0b" stroke-width="1.8"
-                    stroke-dasharray="6 6" fill="none" opacity="0.7" />
+                <path d="M 60 115 C 180 155, 300 125, 420 85" stroke="#2dd4bf" stroke-width="1.4" stroke-dasharray="6 6"
+                    fill="none" opacity="0.6" />
+                <path d="M 480 60 C 640 90, 780 135, 920 120" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="8 6"
+                    fill="none" opacity="0.65" />
+                <path d="M 540 85 C 680 115, 800 155, 940 140" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="7 5"
+                    fill="none" opacity="0.55" />
+                <path d="M 920 120 C 1040 165, 1160 110, 1300 65" stroke="#2dd4bf" stroke-width="1.8" stroke-dasharray="8 6"
+                    fill="none" opacity="0.65" />
+                <path d="M 1120 75 C 1220 90, 1340 105, 1500 90" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="6 6"
+                    fill="none" opacity="0.65" />
 
-                <!-- 5. Chú cá chép Bát Tràng bơi lội dưới khúc sông footer -->
-                <g class="footer-carp" transform="translate(640, 70) rotate(-14)">
-                    <path
-                        d="M -28 0 C -20 -15, 4 -18, 26 -10 C 40 -5, 48 0, 54 0 C 48 0, 40 5, 26 10 C 4 18, -20 15, -28 0 Z"
-                        fill="rgba(245, 158, 11, 0.25)" stroke="#d97706" stroke-width="1.6" />
-                    <path d="M -28 0 C -44 -10, -62 -12, -72 -4 C -62 2, -48 2, -28 0 Z" fill="rgba(217, 119, 6, 0.28)"
-                        stroke="#b45309" stroke-width="1.2" />
-                    <path d="M -28 0 C -44 10, -62 12, -72 4 C -62 -2, -48 -2, -28 0 Z" fill="rgba(37, 99, 235, 0.25)"
-                        stroke="#2563eb" stroke-width="1.2" />
-                    <circle cx="40" cy="-3.5" r="2.2" fill="#78350f" />
-                    <circle cx="41" cy="-4.2" r="0.8" fill="#ffffff" />
-                    <path d="M 52 -2 C 60 -5, 68 -2, 74 -5" stroke="#d97706" stroke-width="1" stroke-linecap="round"
-                        fill="none" />
+                <!-- 4b. Vòng xoáy nước men lam Bát Tràng (River Whirlpool Eddies) -->
+                <g class="footer-river-eddies" opacity="0.65">
+                    <path d="M 230 125 C 248 138, 258 122, 250 108 C 238 96, 224 108, 232 120"
+                        stroke="#38bdf8" stroke-width="1.4" fill="none" stroke-linecap="round" />
+                    <path d="M 620 95 C 640 108, 652 92, 644 78 C 632 65, 615 78, 624 90"
+                        stroke="#38bdf8" stroke-width="1.4" fill="none" stroke-linecap="round" />
+                    <path d="M 1120 155 C 1142 170, 1156 152, 1146 136 C 1132 120, 1114 135, 1125 150"
+                        stroke="#2dd4bf" stroke-width="1.4" fill="none" stroke-linecap="round" />
                 </g>
 
-                <!-- 6. Bọt nước lấp lánh (River Sparkles) -->
-                <g class="footer-river-bubbles" fill="#38bdf8" opacity="0.6">
-                    <circle cx="280" cy="270" r="3.5" />
-                    <circle cx="310" cy="285" r="2.5" />
-                    <circle cx="700" cy="170" r="4" />
-                    <circle cx="720" cy="155" r="2.5" />
-                    <circle cx="1160" cy="140" r="4" fill="#fbbf24" />
-                    <circle cx="1180" cy="125" r="2.8" fill="#fbbf24" />
+                <!-- ==============================================================
+                     5. ĐÓA HOA SEN BÁT TRÀNG NỞ RỘ & LÁ SEN MEN NGỌC TRÊN DÒNG SÔNG FOOTER
+                     Hoa sen thanh khiết men rạn Bát Tràng bồng bềnh cùng sóng nước
+                     ============================================================== -->
+                <g class="footer-lotus-system" transform="translate(1210, 220)">
+                    <g class="footer-lotus-inner">
+                        <!-- Lá Sen Men Ngọc Bích Bồng Bềnh (Jade Green Lily Pad) -->
+                        <path d="M -5 18 C 35 2, 75 22, 80 50 C 85 78, 40 96, -5 88 C -50 96, -92 78, -88 50 C -84 22, -45 2, -5 18 Z"
+                            fill="rgba(13, 148, 136, 0.28)" stroke="#0d9488" stroke-width="1.8" />
+                        <!-- Khía cuống lá sen -->
+                        <path d="M -5 54 L -5 88" stroke="#0d9488" stroke-width="1.6" />
+                        <!-- Gân lá sen men ngọc tỏa tròn -->
+                        <path d="M -5 54 Q 30 40 68 35" stroke="#2dd4bf" stroke-width="1.2" fill="none" opacity="0.8" />
+                        <path d="M -5 54 Q 40 62 72 68" stroke="#2dd4bf" stroke-width="1.2" fill="none" opacity="0.8" />
+                        <path d="M -5 54 Q -40 40 -76 35" stroke="#2dd4bf" stroke-width="1.2" fill="none" opacity="0.8" />
+                        <path d="M -5 54 Q -45 62 -78 68" stroke="#2dd4bf" stroke-width="1.2" fill="none" opacity="0.8" />
+                        <path d="M -5 54 Q -5 32 -5 18" stroke="#2dd4bf" stroke-width="1.2" fill="none" opacity="0.8" />
+
+                        <!-- Gợn sóng nước lăn tăn quanh phiến lá sen -->
+                        <ellipse cx="-5" cy="54" rx="98" ry="42" stroke="#38bdf8" stroke-width="1.2"
+                            stroke-dasharray="6 8" fill="none" opacity="0.5" />
+
+                        <!-- Đóa Hoa Sen Men Rạn Nở Rộ (Grand Blooming Ceramic Lotus) -->
+                        <g class="footer-lotus-flower" transform="translate(-5, 30)">
+                            <!-- Cánh sen tầng ngoài xòe rộng (Outer Petals) -->
+                            <path d="M -5 15 C -45 10, -65 -15, -60 -35 C -45 -18, -25 5, -5 15 Z"
+                                fill="rgba(254, 243, 199, 0.60)" stroke="#d97706" stroke-width="1.6" />
+                            <path d="M -5 15 C 35 10, 55 -15, 50 -35 C 35 -18, 15 5, -5 15 Z"
+                                fill="rgba(254, 243, 199, 0.60)" stroke="#d97706" stroke-width="1.6" />
+
+                            <!-- Cánh sen tầng trung (Middle Petals) -->
+                            <path d="M -5 15 C -35 0, -45 -35, -30 -58 C -15 -35, -5 -5, -5 15 Z"
+                                fill="rgba(253, 230, 138, 0.70)" stroke="#b45309" stroke-width="1.6" />
+                            <path d="M -5 15 C 25 0, 35 -35, 20 -58 C 5 -35, -5 -5, -5 15 Z"
+                                fill="rgba(253, 230, 138, 0.70)" stroke="#b45309" stroke-width="1.6" />
+
+                            <!-- Cánh sen chính tâm vươn cao (Central Regal Petal) -->
+                            <path d="M -5 15 C -20 -10, -22 -50, -5 -72 C 12 -50, 10 -10, -5 15 Z"
+                                fill="rgba(254, 243, 199, 0.88)" stroke="#d97706" stroke-width="1.8" />
+
+                            <!-- Gân cánh hoa sen men rạn -->
+                            <path d="M -5 15 L -5 -65" stroke="#f59e0b" stroke-width="1.2" opacity="0.85" />
+                            <path d="M -5 15 Q -18 -25 -25 -50" stroke="#f59e0b" stroke-width="1" opacity="0.7" />
+                            <path d="M -5 15 Q 8 -25 15 -50" stroke="#f59e0b" stroke-width="1" opacity="0.7" />
+
+                            <!-- Gương sen & Nhụy sen hoàng kim (Golden Pistil) -->
+                            <ellipse cx="-5" cy="5" rx="14" ry="7" fill="#fbbf24" stroke="#d97706" stroke-width="1.2" />
+                            <circle cx="-11" cy="4" r="1.5" fill="#78350f" />
+                            <circle cx="-5" cy="3" r="1.5" fill="#78350f" />
+                            <circle cx="1" cy="4" r="1.5" fill="#78350f" />
+                            <circle cx="-8" cy="7" r="1.3" fill="#78350f" />
+                            <circle cx="-2" cy="7" r="1.3" fill="#78350f" />
+                        </g>
+
+                        <!-- Búp sen nhỏ e ấp bên cạnh (Small Lotus Bud) -->
+                        <g class="footer-lotus-bud" transform="translate(68, 22) scale(0.65) rotate(18)">
+                            <path d="M 0 10 C -15 0, -18 -25, 0 -45 C 18 -25, 15 0, 0 10 Z"
+                                fill="rgba(253, 230, 138, 0.75)" stroke="#d97706" stroke-width="1.8" />
+                            <path d="M 0 10 L 0 -40" stroke="#b45309" stroke-width="1.2" />
+                            <path d="M 0 10 Q 5 25 10 38" stroke="#0d9488" stroke-width="2" fill="none" />
+                        </g>
+                    </g>
+                </g>
+
+                <!-- ==============================================================
+                     6. CÁ CHÉP BÁT TRÀNG: 2 CON BU VÀO HOA SEN & 1 CON NHẢY CAO HÓA RỒNG
+                     - 2 cá chép quây quần bu quanh phiến lá và đóa sen nở rộ
+                     - 1 cá chép dũng mãnh phóng vút lên không trung hóa Rồng (Cá Chép Vượt Vũ Môn)
+                     ============================================================== -->
+                <!-- Chú cá chép 1 (Tả ngạn): Bơi sát bu vào đóa hoa sen từ bên trái -->
+                <g class="footer-carp footer-carp-1" transform="translate(1120, 240) rotate(-22) scale(0.86)">
+                    <g class="footer-carp-inner">
+                        <!-- Vây bơi (Pectoral & Ventral Fins) -->
+                        <path d="M 6 12 C 14 26, 28 30, 34 26 C 28 20, 18 14, 6 12 Z"
+                            fill="rgba(37, 99, 235, 0.35)" stroke="#2563eb" stroke-width="1.2" />
+                        <path d="M 6 -12 C 14 -26, 28 -30, 34 -26 C 28 -20, 18 -14, 6 -12 Z"
+                            fill="rgba(37, 99, 235, 0.35)" stroke="#2563eb" stroke-width="1.2" />
+                        <!-- Đuôi cá chép rực rỡ uốn lượn mềm mại -->
+                        <path d="M -30 0 C -48 -14, -70 -16, -82 -6 C -70 2, -52 2, -30 0 Z"
+                            fill="rgba(217, 119, 6, 0.35)" stroke="#b45309" stroke-width="1.3" />
+                        <path d="M -30 0 C -48 14, -70 16, -82 6 C -70 -2, -52 -2, -30 0 Z"
+                            fill="rgba(37, 99, 235, 0.32)" stroke="#2563eb" stroke-width="1.3" />
+                        <path d="M -30 0 C -42 -5, -60 -4, -68 0 C -60 4, -42 5, -30 0 Z"
+                            fill="rgba(245, 158, 11, 0.4)" stroke="#f59e0b" stroke-width="1.1" />
+                        <!-- Thân cá chép gốm men rạn & ánh vàng -->
+                        <path d="M -30 0 C -22 -17, 6 -20, 30 -11 C 46 -5, 56 0, 62 0 C 56 0, 46 5, 30 11 C 6 20, -22 17, -30 0 Z"
+                            fill="rgba(245, 158, 11, 0.35)" stroke="#d97706" stroke-width="1.8" />
+                        <!-- Vảy cá chép cách điệu -->
+                        <path d="M -6 -7 Q 2 -12 10 -7" stroke="#d97706" stroke-width="1.1" fill="none" opacity="0.75" />
+                        <path d="M 6 -4 Q 14 -8 22 -4" stroke="#d97706" stroke-width="1.1" fill="none" opacity="0.75" />
+                        <path d="M -6 7 Q 2 12 10 7" stroke="#d97706" stroke-width="1.1" fill="none" opacity="0.75" />
+                        <!-- Mắt cá chép tinh anh -->
+                        <circle cx="46" cy="-4" r="2.6" fill="#78350f" />
+                        <circle cx="47" cy="-4.8" r="0.9" fill="#ffffff" />
+                        <!-- Râu cá chép Bát Tràng -->
+                        <path d="M 60 -2 C 68 -6, 78 -3, 85 -7" stroke="#d97706" stroke-width="1.2" stroke-linecap="round" fill="none" />
+                        <path d="M 60 2 C 68 6, 78 3, 84 7" stroke="#d97706" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.7" />
+                    </g>
+                </g>
+
+                <!-- Chú cá chép 2 (Hữu ngạn): Bơi quây sát bu vào phiến lá sen từ bên phải -->
+                <g class="footer-carp footer-carp-2" transform="translate(1295, 245) rotate(-155) scale(0.84)">
+                    <g class="footer-carp-inner">
+                        <!-- Vây bơi -->
+                        <path d="M 6 12 C 14 26, 28 30, 34 26 C 28 20, 18 14, 6 12 Z"
+                            fill="rgba(13, 148, 136, 0.32)" stroke="#0d9488" stroke-width="1.2" />
+                        <path d="M 6 -12 C 14 -26, 28 -30, 34 -26 C 28 -20, 18 -14, 6 -12 Z"
+                            fill="rgba(13, 148, 136, 0.32)" stroke="#0d9488" stroke-width="1.2" />
+                        <!-- Đuôi mềm mại -->
+                        <path d="M -30 0 C -48 -14, -70 -16, -82 -6 C -70 2, -52 2, -30 0 Z"
+                            fill="rgba(37, 99, 235, 0.32)" stroke="#2563eb" stroke-width="1.3" />
+                        <path d="M -30 0 C -48 14, -70 16, -82 6 C -70 -2, -52 -2, -30 0 Z"
+                            fill="rgba(217, 119, 6, 0.35)" stroke="#b45309" stroke-width="1.3" />
+                        <!-- Thân cá -->
+                        <path d="M -30 0 C -22 -17, 6 -20, 30 -11 C 46 -5, 56 0, 62 0 C 56 0, 46 5, 30 11 C 6 20, -22 17, -30 0 Z"
+                            fill="rgba(251, 191, 36, 0.34)" stroke="#d97706" stroke-width="1.7" />
+                        <!-- Mắt -->
+                        <circle cx="46" cy="-4" r="2.4" fill="#78350f" />
+                        <circle cx="47" cy="-4.6" r="0.8" fill="#ffffff" />
+                        <!-- Râu -->
+                        <path d="M 60 -2 C 68 -5, 76 -2, 82 -5" stroke="#d97706" stroke-width="1.1" stroke-linecap="round" fill="none" />
+                    </g>
+                </g>
+
+                <!-- ==============================================================
+                     CÁ CHÉP THỨ 3: PHÓNG LÊN KHỎI MẶT NƯỚC THẬT CAO HÓA RỒNG (VƯỢT VŨ MÔN)
+                     Thân rồng vảy cá, sừng nhú mầm, bờm rực lửa, râu dài ngậm ngọc
+                     ============================================================== -->
+                <!-- Làn sóng, tia nước & bọt nước bắn tung tóe khi cá chép quẫy đuôi phóng lên -->
+                <g class="dragon-carp-splash" opacity="0.85">
+                    <!-- Vòng gợn sóng lan tỏa tại điểm cá phóng lên khỏi mặt nước -->
+                    <ellipse cx="1195" cy="195" rx="36" ry="11" stroke="#38bdf8" stroke-width="1.5"
+                        stroke-dasharray="5 5" fill="none" />
+                    <ellipse cx="1195" cy="195" rx="20" ry="6" stroke="#2dd4bf" stroke-width="1.3"
+                        stroke-dasharray="4 4" fill="none" />
+                    <!-- Vệt phóng vút lên không trung (Leap trajectory nối từ mặt nước lên thân rồng) -->
+                    <path d="M 1195 195 Q 1235 160 1275 130" stroke="#38bdf8" stroke-width="2.4"
+                        stroke-dasharray="7 5" stroke-linecap="round" fill="none" />
+                    <!-- Tia nước bắn tung tóe quanh điểm phóng -->
+                    <path d="M 1190 190 C 1175 175, 1158 168, 1142 165" stroke="#0ea5e9" stroke-width="1.6"
+                        stroke-linecap="round" fill="none" />
+                    <path d="M 1205 190 C 1222 176, 1238 168, 1252 166" stroke="#38bdf8" stroke-width="1.6"
+                        stroke-linecap="round" fill="none" />
+                    <path d="M 1195 188 C 1198 170, 1202 155, 1198 145" stroke="#67e8f9" stroke-width="1.8"
+                        stroke-linecap="round" fill="none" />
+                    <!-- Giọt nước bắn lên cao theo mình rồng -->
+                    <circle cx="1178" cy="172" r="2.8" fill="#38bdf8" />
+                    <circle cx="1218" cy="162" r="3.2" fill="#bae6fd" />
+                    <circle cx="1205" cy="145" r="2.4" fill="#fef08a" />
+                    <circle cx="1238" cy="132" r="2.8" fill="#38bdf8" />
+                    <circle cx="1225" cy="115" r="2.2" fill="#2dd4bf" />
+                </g>
+
+                <!-- Chú cá chép thứ 3: Bay vút lên cao, đầu hóa rồng, mọc sừng, bờm lửa, ngậm minh châu -->
+                <g class="footer-carp footer-carp-dragon" transform="translate(1275, 130) rotate(-26) scale(0.98)">
+                    <g class="footer-carp-inner">
+                        <!-- Bờm Rồng Lửa Dọc Lưng (Flaming Dragon Mane) -->
+                        <path d="M -12 -14 C -6 -28, 10 -32, 24 -22 C 32 -16, 40 -12, 48 -5 C 38 -8, 26 -6, 16 -12 C 4 -16, -4 -12, -12 -14 Z"
+                            fill="rgba(239, 68, 68, 0.45)" stroke="#dc2626" stroke-width="1.3" />
+                        <path d="M 10 -24 Q 22 -32 30 -22" stroke="#f59e0b" stroke-width="1.2" fill="none" />
+
+                        <!-- Vây Ngực Hóa Vuốt Rồng (Dragon Fin-Claws) -->
+                        <path d="M 8 12 C 18 28, 36 34, 44 28 C 36 20, 24 14, 8 12 Z"
+                            fill="rgba(245, 158, 11, 0.45)" stroke="#d97706" stroke-width="1.4" />
+                        <path d="M 10 -12 C 20 -28, 38 -34, 46 -28 C 38 -20, 26 -14, 10 -12 Z"
+                            fill="rgba(37, 99, 235, 0.42)" stroke="#2563eb" stroke-width="1.4" />
+
+                        <!-- Đuôi Rồng Lửa Tam Phân Rực Rỡ Uốn Lượn (Tri-furcated Flaming Dragon Tail) -->
+                        <path d="M -32 0 C -56 -18, -88 -22, -104 -10 C -86 2, -62 2, -32 0 Z"
+                            fill="rgba(217, 119, 6, 0.45)" stroke="#b45309" stroke-width="1.5" />
+                        <path d="M -32 0 C -56 18, -88 22, -104 10 C -86 -2, -62 -2, -32 0 Z"
+                            fill="rgba(37, 99, 235, 0.42)" stroke="#2563eb" stroke-width="1.5" />
+                        <path d="M -32 0 C -48 -6, -72 -6, -84 0 C -72 6, -48 6, -32 0 Z"
+                            fill="rgba(245, 158, 11, 0.55)" stroke="#f59e0b" stroke-width="1.3" />
+
+                        <!-- Thân Cá Chép Hóa Rồng Uốn Cong Mạnh Mẽ (Powerful Dragon-Carp Body) -->
+                        <path d="M -32 0 C -24 -20, 8 -24, 34 -13 C 52 -6, 64 0, 72 0 C 64 0, 52 6, 34 13 C 8 24, -24 20, -32 0 Z"
+                            fill="rgba(245, 158, 11, 0.42)" stroke="#b45309" stroke-width="2" />
+
+                        <!-- Sừng Rồng Hoàng Kim Nhú Mầm Trên Đỉnh Đầu (Sprouting Golden Dragon Horns) -->
+                        <path d="M 52 -8 C 58 -22, 68 -26, 74 -22 C 70 -18, 64 -14, 60 -6"
+                            fill="#fef08a" stroke="#d97706" stroke-width="1.5" stroke-linejoin="round" />
+                        <path d="M 46 -6 C 50 -16, 58 -20, 62 -16 C 58 -13, 54 -10, 50 -4"
+                            fill="#fef08a" stroke="#d97706" stroke-width="1.2" />
+
+                        <!-- Vảy Rồng Hoàng Kim Ánh Kim 3D -->
+                        <path d="M -8 -8 Q 2 -14 12 -8" stroke="#d97706" stroke-width="1.3" fill="none" />
+                        <path d="M 6 -5 Q 16 -10 26 -5" stroke="#d97706" stroke-width="1.3" fill="none" />
+                        <path d="M -8 8 Q 2 14 12 8" stroke="#d97706" stroke-width="1.3" fill="none" />
+                        <path d="M 6 5 Q 16 10 26 5" stroke="#d97706" stroke-width="1.3" fill="none" />
+
+                        <!-- Cặp Râu Rồng Hoàng Kim Uốn Lượn Dài Uy Nghi (Majestic Dragon Whiskers) -->
+                        <path d="M 70 -3 C 86 -12, 102 -8, 118 -15 C 108 -9, 96 -9, 82 -2"
+                            stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" fill="none" />
+                        <path d="M 70 3 C 86 12, 104 8, 120 15 C 110 9, 98 9, 84 2"
+                            stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" fill="none" />
+
+                        <!-- Viên Ngọc Minh Châu Hoàng Gia Phát Sáng Trước Miệng Rồng (Radiant Dragon Pearl) -->
+                        <circle cx="128" cy="-1" r="7" fill="rgba(254, 240, 138, 0.9)" stroke="#d97706" stroke-width="1.4" />
+                        <circle cx="128" cy="-1" r="3.5" fill="#ffffff" />
+                        <!-- Hào quang tỏa sáng quanh ngọc -->
+                        <circle cx="128" cy="-1" r="11" stroke="#fbbf24" stroke-width="0.8" stroke-dasharray="2 3" fill="none" opacity="0.75" />
+
+                        <!-- Mắt Rồng Tinh Anh Rực Sáng (Dragon Eye) -->
+                        <circle cx="56" cy="-4.5" r="3.2" fill="#78350f" />
+                        <circle cx="57" cy="-5.5" r="1.2" fill="#ffffff" />
+                        <path d="M 49 -8.5 Q 56 -12 64 -7" stroke="#b45309" stroke-width="1.5" fill="none" />
+                    </g>
+                </g>
+
+                <!-- 7. Bọt nước & Bong bóng nước dòng sông lan tỏa đều 2 bên và giữa màn hình (River Water Bubbles) -->
+                <g class="footer-river-bubbles" opacity="0.75">
+                    <!-- Nhóm 1: Dòng sông bên trái (Dưới cụm Dấu Ấn Di Sản) -->
+                    <circle cx="70" cy="80" r="2.8" fill="#38bdf8" />
+                    <circle cx="95" cy="68" r="3.4" fill="#2dd4bf" />
+                    <circle cx="125" cy="92" r="2.2" fill="#38bdf8" />
+                    <circle cx="175" cy="128" r="3.8" fill="#fbbf24" />
+                    <circle cx="205" cy="116" r="2.4" fill="#0284c7" />
+                    <circle cx="235" cy="138" r="3.2" fill="#38bdf8" />
+                    <circle cx="295" cy="108" r="2.6" fill="#2dd4bf" />
+                    <circle cx="335" cy="84" r="3.6" fill="#fbbf24" />
+                    <circle cx="365" cy="72" r="2.2" fill="#38bdf8" />
+                    <circle cx="415" cy="58" r="3.0" fill="#2dd4bf" />
+
+                    <!-- Nhóm 2: Dòng sông ở giữa màn hình (Dưới Hành Trình Giác Quan & Triết Lý) -->
+                    <circle cx="490" cy="52" r="2.6" fill="#38bdf8" />
+                    <circle cx="525" cy="68" r="3.6" fill="#2dd4bf" />
+                    <circle cx="565" cy="58" r="2.2" fill="#fbbf24" />
+                    <circle cx="610" cy="80" r="3.0" fill="#0284c7" />
+                    <circle cx="645" cy="96" r="4.0" fill="#38bdf8" />
+                    <circle cx="680" cy="82" r="2.5" fill="#2dd4bf" />
+                    <circle cx="725" cy="105" r="3.5" fill="#fbbf24" />
+                    <circle cx="765" cy="116" r="2.2" fill="#38bdf8" />
+                    <circle cx="810" cy="128" r="3.6" fill="#2dd4bf" />
+                    <circle cx="850" cy="138" r="2.4" fill="#0284c7" />
+                    <circle cx="895" cy="128" r="3.2" fill="#fbbf24" />
+
+                    <!-- Nhóm 3: Dòng sông bên phải màn hình (Khu vực Hoa Sen, Cá Chép & Địa Chỉ Di Sản) -->
+                    <circle cx="950" cy="155" r="3.2" fill="#38bdf8" />
+                    <circle cx="985" cy="138" r="2.4" fill="#2dd4bf" />
+                    <circle cx="1025" cy="122" r="3.8" fill="#fbbf24" />
+                    <circle cx="1070" cy="108" r="2.6" fill="#0284c7" />
+                    <circle cx="1110" cy="88" r="3.2" fill="#38bdf8" />
+                    <circle cx="1145" cy="145" r="2.5" fill="#2dd4bf" />
+                    <circle cx="1170" cy="195" r="3.6" fill="#fbbf24" />
+                    <circle cx="1235" cy="245" r="2.8" fill="#38bdf8" />
+                    <circle cx="1270" cy="240" r="3.5" fill="#2dd4bf" />
+                    <circle cx="1345" cy="78" r="2.8" fill="#fbbf24" />
+                    <circle cx="1380" cy="96" r="3.4" fill="#38bdf8" />
+                    <circle cx="1410" cy="115" r="2.2" fill="#2dd4bf" />
                 </g>
             </svg>
         </div>
