@@ -1,0 +1,75 @@
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1200px) {
+    .variants-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (max-height: 820px) {
+
+    .pipeline-modal-card,
+    .stage-lightbox-card,
+    .detail-modal-card {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-img-col img {
+        max-height: 220px;
+    }
+
+    .stage-img-preview {
+        height: 92px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .pipeline-stages-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .variants-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .passport-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .passport-visual-col {
+        border-right: none;
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .lightbox-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .lightbox-img-wrapper {
+        height: 280px;
+    }
+}
+
+@media (max-width: 640px) {
+    .pipeline-stages-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .variants-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pipeline-modal-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pipeline-footer-buttons {
+        width: 100%;
+        flex-direction: column;
+    }
+}
+

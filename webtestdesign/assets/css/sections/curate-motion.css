@@ -1,0 +1,302 @@
+/* ==========================================================================
+   HOẠT HỌA RỒNG THỜI LÝ ĐỒNG BỘ CÙNG PHƯỢNG HOÀNG (Harmonized Long Phụng Motion)
+   Chuyển động vừa phải, uyển chuyển, thanh tao như Phượng Hoàng Thăng Long
+   ========================================================================== */
+.antique-dragon-group {
+    animation: dragonAntiqueHover 14s ease-in-out infinite alternate;
+    transform-origin: center;
+}
+
+@keyframes dragonAntiqueHover {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-8px) scale(1.008);
+    }
+
+    100% {
+        transform: translateY(5px) scale(0.996);
+    }
+}
+
+/* 1. Sống lưng 12 khúc uốn lấp lánh ánh kim đồng bộ cùng sống lưng phượng */
+.antique-dragon-spine {
+    animation: dragonSpineGleam 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes dragonSpineGleam {
+    0% {
+        stroke-opacity: 0.65;
+        stroke-dashoffset: 0;
+    }
+
+    100% {
+        stroke-opacity: 1;
+        stroke-dashoffset: 60;
+    }
+}
+
+/* 2. Vệt sáng năng lượng chạy lướt êm ái dọc 12 khúc uốn (đồng bộ nhịp 6.5s với phượng) */
+.antique-dragon-pulse-line {
+    stroke-dasharray: 120 550;
+    animation: dragonSpinePulseTravel 6.5s linear infinite;
+}
+
+@keyframes dragonSpinePulseTravel {
+    0% {
+        stroke-dashoffset: 1400;
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 0.95;
+    }
+
+    80% {
+        opacity: 0.95;
+    }
+
+    100% {
+        stroke-dashoffset: -1400;
+        opacity: 0;
+    }
+}
+
+/* 3. Đầu rồng uy nghi gật nhẹ thanh thoát (đồng bộ nhịp 6s với thân phượng) */
+.dragon-head-group {
+    animation: dragonHeadFloat 6s ease-in-out infinite alternate;
+    transform-origin: 1435px 105px;
+}
+
+@keyframes dragonHeadFloat {
+    0% {
+        transform: translate(1435px, 105px) rotate(0deg);
+    }
+
+    50% {
+        transform: translate(1433px, 102px) rotate(-1.5deg);
+    }
+
+    100% {
+        transform: translate(1436px, 107px) rotate(1deg);
+    }
+}
+
+/* 4. Râu rồng & Bờm rồng uốn lượn lả lướt vừa phải (đồng bộ 4.5s - 5s như cánh phượng) */
+.dragon-whisker-group {
+    transform-origin: -35px -5px;
+    animation: dragonWhiskerWave 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes dragonWhiskerWave {
+    0% {
+        transform: rotate(0deg) skewX(0deg);
+    }
+
+    50% {
+        transform: rotate(2deg) skewX(1deg) scale(1.01);
+    }
+
+    100% {
+        transform: rotate(-1.5deg) skewX(-0.8deg) scale(0.99);
+    }
+}
+
+.dragon-whisker-strand.whisker-2 {
+    animation: dragonWhiskerStrand2 5.5s ease-in-out infinite alternate;
+    transform-origin: -30px 8px;
+}
+
+@keyframes dragonWhiskerStrand2 {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(-2.5deg) scale(1.015);
+    }
+}
+
+.dragon-mane-group {
+    animation: dragonManeBreeze 5s ease-in-out infinite alternate;
+    transform-origin: 35px -10px;
+}
+
+@keyframes dragonManeBreeze {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(1.5deg) scaleY(1.015);
+    }
+
+    100% {
+        transform: rotate(-1deg) scaleY(0.985);
+    }
+}
+
+/* 5. Lưỡi rồng mác lửa vươn nhẹ tới ngọc */
+.dragon-tongue {
+    animation: dragonTongueFlicker 4s ease-in-out infinite alternate;
+    transform-origin: -45px 2px;
+}
+
+@keyframes dragonTongueFlicker {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1.03) translateX(-1px);
+        opacity: 0.95;
+    }
+}
+
+/* 6. Hạt Minh Châu tỏa hào quang hoàng kim (đồng bộ 3.5s với mắt ngọc phượng) */
+.dragon-pearl-group {
+    animation: pearlFloatGleam 3.5s ease-in-out infinite alternate;
+    transform-origin: 1360px 95px;
+}
+
+@keyframes pearlFloatGleam {
+    0% {
+        transform: translate(1360px, 95px) scale(1);
+        filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.4));
+    }
+
+    100% {
+        transform: translate(1359px, 93px) scale(1.06);
+        filter: drop-shadow(0 0 12px rgba(217, 119, 6, 0.7));
+    }
+}
+
+.dragon-pearl-flames {
+    animation: pearlFlamesSpin 14s linear infinite;
+    transform-origin: 0 0;
+}
+
+@keyframes pearlFlamesSpin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* 7. Móng vuốt rồng co duỗi uyển chuyển */
+.dragon-claw.claw-left {
+    animation: clawFlexLeft 6s ease-in-out infinite alternate;
+    transform-origin: 380px 240px;
+}
+
+@keyframes clawFlexLeft {
+    0% {
+        transform: translate(380px, 240px) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(381px, 238px) rotate(1.2deg);
+    }
+}
+
+.dragon-claw.claw-right {
+    animation: clawFlexRight 6s ease-in-out infinite alternate;
+    transform-origin: 850px 750px;
+}
+
+@keyframes clawFlexRight {
+    0% {
+        transform: translate(850px, 750px) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(848px, 752px) rotate(-1.5deg);
+    }
+}
+
+/* 8. Sóng nước Thủy Ba dập dềnh êm ái (đồng bộ nhịp 10s mây sương) */
+.antique-thuy-ba-group {
+    animation: thuyBaWaveFlow 10s ease-in-out infinite alternate;
+}
+
+@keyframes thuyBaWaveFlow {
+    0% {
+        transform: translate(0, 980px);
+    }
+
+    50% {
+        transform: translate(5px, 977px);
+    }
+
+    100% {
+        transform: translate(-4px, 982px);
+    }
+}
+
+/* 9. Đuôi rồng xòe ngọn lửa thời Lý vẫy lượn thướt tha */
+.dragon-tail-flame {
+    animation: dragonTailFlutter 5.5s ease-in-out infinite alternate;
+    transform-origin: 340px 900px;
+}
+
+@keyframes dragonTailFlutter {
+    0% {
+        transform: translate(340px, 900px) rotate(0deg) scale(1);
+    }
+
+    50% {
+        transform: translate(340px, 900px) rotate(2deg) scale(1.02);
+    }
+
+    100% {
+        transform: translate(340px, 900px) rotate(-1.5deg) scale(0.99);
+    }
+}
+
+.antique-clouds-group .cloud-cluster {
+    animation: antiqueCloudDrift 10s ease-in-out infinite alternate;
+}
+
+.antique-clouds-group .cloud-cluster:nth-child(2) {
+    animation-delay: -3s;
+    animation-duration: 13s;
+}
+
+.antique-clouds-group .cloud-cluster:nth-child(3) {
+    animation-delay: -6s;
+    animation-duration: 11s;
+}
+
+@keyframes antiqueCloudDrift {
+    0% {
+        transform: translate(0, 0);
+        opacity: 0.55;
+    }
+
+    100% {
+        transform: translate(6px, -8px);
+        opacity: 0.75;
+    }
+}
+
+.antique-lotus-flank {
+    animation: lotusSway 8s ease-in-out infinite alternate;
+    transform-origin: bottom left;
+}
+
+@keyframes lotusSway {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(1.2deg);
+    }
+}
+

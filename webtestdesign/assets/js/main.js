@@ -82,7 +82,34 @@ const HERITAGE_ITEMS = [
 let currentSelectedItem = null;
 let currentActiveFilter = "all";
 
+/** Nạp ảnh động an toàn: modal chỉ hiện ảnh khi tệp đã sẵn sàng. */
+function setDynamicImage(image, source) {
+    if (!image) return;
+
+    const host = image.closest('.stage-img-preview, .modal-img-col, .passport-visual-col, .lightbox-img-wrapper');
+    image.hidden = true;
+    host?.classList.add('is-loading');
+
+    const settle = (loaded) => {
+        image.hidden = !loaded;
+        host?.classList.remove('is-loading');
+    };
+
+    image.addEventListener('load', () => settle(true), { once: true });
+    image.addEventListener('error', () => settle(false), { once: true });
+    image.src = source;
+}
+
+function setPipelineProgress(progressBar, percentage) {
+    if (progressBar) progressBar.style.setProperty('--progress', String(percentage / 100));
+}
+
+let studioInitialized = false;
+
 function initStudio() {
+    if (studioInitialized) return;
+    studioInitialized = true;
+
     console.log('Studio Tái Sinh Di Sản Số AI - Khởi tạo thành công.');
 
     // 1. Render danh sách 6 hiện vật
@@ -96,13 +123,26 @@ function initStudio() {
 
     // 4. Framer Editor Bar toggle
     initEditorBar();
+
+    // 5. Khởi tạo Bát Tràng Gooey Liquid Footer
+    initGlazeLiquidFooter();
+}
+function startStudioWhenReady() {
+    if (window.componentsReady) {
+        window.componentsReady
+            .then(initStudio)
+            .catch((error) => console.error('Không thể khởi tạo giao diện:', error));
+        return;
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initStudio, { once: true });
+    } else {
+        initStudio();
+    }
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initStudio);
-} else {
-    initStudio();
-}
+startStudioWhenReady();
 
 /**
  * Render 6 thẻ hiện vật vào lưới
@@ -210,9 +250,8 @@ function selectHeritageItem(item) {
     const modalDots = document.getElementById('modal-glaze-dots');
 
     if (modal && modalImg && modalTitle && modalMeta && modalDesc && modalDots) {
-        modalImg.src = item.image;
-        modalImg.alt = item.name;
-        modalTitle.textContent = `${item.id} — ${item.name}`;
+        setDynamicImage(modalImg, item.image);
+        modalTitle.innerHTML = `<span class="modal-artifact-code">${item.id}</span><span class="modal-artifact-name">${item.name}</span>`;
         modalMeta.textContent = `${item.dynasty} · ${item.glaze} Bát Tràng`;
         modalDesc.textContent = item.desc;
 
@@ -371,10 +410,10 @@ function openPipelineModal(item) {
     const modalFooter = document.getElementById('pipeline-modal-footer');
 
     // Nạp ảnh thực tế cho 4 pha của hiện vật
-    document.getElementById('stage-img-1').src = `./assets/images/pipeline_steps/${item.id}_canny.png`;
-    document.getElementById('stage-img-2').src = `./assets/images/pipeline_steps/${item.id}_pattern.png`;
-    document.getElementById('stage-img-3').src = `./assets/images/pipeline_steps/${item.id}_composite.png`;
-    document.getElementById('stage-img-4').src = `./assets/images/curate/${item.id}_V1.png`;
+    setDynamicImage(document.getElementById('stage-img-1'), `./assets/images/pipeline_steps/${item.id}_canny.png`);
+    setDynamicImage(document.getElementById('stage-img-2'), `./assets/images/pipeline_steps/${item.id}_pattern.png`);
+    setDynamicImage(document.getElementById('stage-img-3'), `./assets/images/pipeline_steps/${item.id}_composite.png`);
+    setDynamicImage(document.getElementById('stage-img-4'), `./assets/images/curate/${item.id}_V1.png`);
 
     const stageCards = [
         document.getElementById('stage-card-1'),
@@ -390,7 +429,7 @@ function openPipelineModal(item) {
         }
     });
 
-    if (progressBar) progressBar.style.width = '100%';
+    setPipelineProgress(progressBar, 100);
     if (percentText) percentText.textContent = '100%';
     if (statusText) statusText.textContent = `✨ Quy trình 4 pha kỹ thuật: ${item.name} (${item.id}). Bấm vào từng pha để soi chi tiết.`;
     if (modalFooter) modalFooter.style.display = 'flex';
@@ -418,10 +457,10 @@ function runVisualPipeline(item) {
     ];
 
     // Nạp ảnh thực tế cho 4 pha của hiện vật
-    document.getElementById('stage-img-1').src = `./assets/images/pipeline_steps/${item.id}_canny.png`;
-    document.getElementById('stage-img-2').src = `./assets/images/pipeline_steps/${item.id}_pattern.png`;
-    document.getElementById('stage-img-3').src = `./assets/images/pipeline_steps/${item.id}_composite.png`;
-    document.getElementById('stage-img-4').src = `./assets/images/curate/${item.id}_V1.png`;
+    setDynamicImage(document.getElementById('stage-img-1'), `./assets/images/pipeline_steps/${item.id}_canny.png`);
+    setDynamicImage(document.getElementById('stage-img-2'), `./assets/images/pipeline_steps/${item.id}_pattern.png`);
+    setDynamicImage(document.getElementById('stage-img-3'), `./assets/images/pipeline_steps/${item.id}_composite.png`);
+    setDynamicImage(document.getElementById('stage-img-4'), `./assets/images/curate/${item.id}_V1.png`);
 
     // Reset trạng thái các card và footer
     if (modalFooter) modalFooter.style.display = 'none';
@@ -431,14 +470,14 @@ function runVisualPipeline(item) {
         }
     });
 
-    if (progressBar) progressBar.style.width = '0%';
+    setPipelineProgress(progressBar, 0);
     if (percentText) percentText.textContent = '0%';
     if (pipelineModal) pipelineModal.classList.add('active');
 
     // Pha 1: 0% -> 25% (0.7s)
     statusText.textContent = "Pha 1/4: Tách nền & Canny trích xuất hoa văn phẳng từ hiện vật...";
     stageCards[0]?.classList.add('running');
-    if (progressBar) progressBar.style.width = '25%';
+    setPipelineProgress(progressBar, 25);
     if (percentText) percentText.textContent = '25%';
 
     setTimeout(() => {
@@ -448,7 +487,7 @@ function runVisualPipeline(item) {
         // Pha 2: 25% -> 50% (1.5s)
         statusText.textContent = "Pha 2/4: SD1.5 + ControlNet sinh hoa văn tuần hoàn liền mạch (Circular Tile)...";
         stageCards[1]?.classList.add('running');
-        if (progressBar) progressBar.style.width = '50%';
+        setPipelineProgress(progressBar, 50);
         if (percentText) percentText.textContent = '50%';
 
         setTimeout(() => {
@@ -458,7 +497,7 @@ function runVisualPipeline(item) {
             // Pha 3: 50% -> 75% (2.3s)
             statusText.textContent = "Pha 3/4: Displacement Map & Shading Map uốn hoa văn theo nếp vải áo dài...";
             stageCards[2]?.classList.add('running');
-            if (progressBar) progressBar.style.width = '75%';
+            setPipelineProgress(progressBar, 75);
             if (percentText) percentText.textContent = '75%';
 
             setTimeout(() => {
@@ -468,7 +507,7 @@ function runVisualPipeline(item) {
                 // Pha 4: 75% -> 100% (3.0s)
                 statusText.textContent = "Pha 4/4: img2img Denoise 0.40 tạo độ rủ tơ tằm tự nhiên cho bộ sưu tập...";
                 stageCards[3]?.classList.add('running');
-                if (progressBar) progressBar.style.width = '100%';
+                setPipelineProgress(progressBar, 100);
                 if (percentText) percentText.textContent = '100%';
 
                 setTimeout(() => {
@@ -554,7 +593,7 @@ function openStageLightbox(stageNumber) {
     const modal = document.getElementById('stage-lightbox-modal');
     if (!modal) return;
 
-    document.getElementById('lightbox-main-img').src = details.getImage(item.id);
+    setDynamicImage(document.getElementById('lightbox-main-img'), details.getImage(item.id));
     document.getElementById('lightbox-caption').textContent = `${details.caption} (${item.id})`;
     document.getElementById('lightbox-phase-badge').textContent = details.badge;
     document.getElementById('lightbox-title').textContent = details.title;
@@ -658,30 +697,44 @@ function renderCurateSection(item, shouldScroll = true) {
     VARIANTS.forEach(v => {
         const card = document.createElement('article');
         card.className = 'variant-card';
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', `${v.name} - ${v.similarity} tương đồng`);
         card.innerHTML = `
             <div class="variant-img-wrap">
-                <span class="similarity-badge">★ ${v.similarity} Tương đồng</span>
+                <img class="variant-img" src="${v.img}" alt="${v.name}" loading="lazy">
+                <span class="similarity-badge">★ ${v.similarity}</span>
                 <span class="variant-code-badge">V${v.vNumber}</span>
-                <img src="${v.img}" alt="${v.name}" loading="lazy">
             </div>
-            <div class="variant-body">
-                <div>
-                    <h4 class="variant-name">${v.name}</h4>
-                    <p class="variant-rule-desc">${v.rule}</p>
-                </div>
-                <button class="variant-btn-select" type="button">
+            <div class="variant-layer" aria-hidden="true"></div>
+            <div class="variant-info">
+                <span class="variant-tagline">TÁI SINH DI SẢN · ${v.similarity} TƯƠNG ĐỒNG</span>
+                <h4 class="variant-name">${v.name}</h4>
+                <p class="variant-rule-desc">${v.rule}</p>
+                <button class="variant-btn-select" type="button" aria-label="Xem hộ chiếu ${v.name}">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                         <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
                         <polyline points="2 17 12 22 22 17"></polyline>
                         <polyline points="2 12 12 17 22 12"></polyline>
                     </svg>
-                    <span>CHỌN & XUẤT PASSPORT</span>
+                    <span>XEM HỘ CHIẾU PASSPORT →</span>
                 </button>
             </div>
         `;
 
-        card.querySelector('.variant-btn-select').addEventListener('click', () => {
+        // Click vào card hoặc bấm nút đều chọn và mở Hộ Chiếu Thiết Kế chi tiết
+        card.addEventListener('click', () => {
+            document.querySelectorAll('.variant-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
             openDesignPassport(item, v);
+        });
+
+        // Hỗ trợ phím Enter / Space cho bàn phím
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                card.click();
+            }
         });
 
         variantsGrid.appendChild(card);
@@ -703,8 +756,8 @@ function openDesignPassport(item, variant) {
     const passportModal = document.getElementById('passport-modal');
     if (!passportModal) return;
 
-    document.getElementById('passport-aodai-img').src = variant.img;
-    document.getElementById('passport-origin-thumb').src = item.image;
+    setDynamicImage(document.getElementById('passport-aodai-img'), variant.img);
+    setDynamicImage(document.getElementById('passport-origin-thumb'), item.image);
     document.getElementById('passport-origin-name').textContent = `${item.id} — ${item.name}`;
 
     document.getElementById('passport-similarity-val').textContent = `${variant.similarity} (Tham khảo)`;
@@ -793,6 +846,77 @@ function initEditorBar() {
     if (editorBarBtn && editorBarLabel) {
         editorBarBtn.addEventListener('click', () => {
             editorBarLabel.classList.toggle('__framer-editorbar-button-tooltip-visible');
+        });
+    }
+}
+
+/**
+ * Khởi tạo Bát Tràng Gooey Liquid Footer (Dòng men lỏng Bát Tràng)
+ * Tạo các hạt men nổi dâng trào và điều hướng thông minh Bước 1 - Bước 4
+ */
+function initGlazeLiquidFooter() {
+    const container = document.getElementById("glaze-particle-container");
+    if (container) {
+        container.innerHTML = '';
+        const fragment = document.createDocumentFragment();
+
+        // 1. Tạo chuỗi bong bóng chân sóng liên tục (Base Meniscus) để mép trên lượn sóng tự nhiên, KHÔNG có đường thẳng
+        const baseBubbleCount = window.innerWidth < 640 ? 18 : 34;
+        const step = 100 / (baseBubbleCount - 1);
+        for (let b = 0; b < baseBubbleCount; b++) {
+            const baseSpan = document.createElement("span");
+            baseSpan.classList.add("glaze-base-bubble");
+            baseSpan.style.setProperty("--dim", `${3.5 + Math.random() * 2.5}rem`);
+            baseSpan.style.setProperty("--pos-x", `${b * step - 2 + (Math.random() * 2 - 1)}%`);
+            baseSpan.style.setProperty("--dur", `${2.5 + Math.random() * 2}s`);
+            baseSpan.style.setProperty("--delay", `${-1 * (Math.random() * 5)}s`);
+            fragment.appendChild(baseSpan);
+        }
+
+        // 2. Tạo các giọt men gốm lỏng dâng trào và tách bọt (Rising Particles)
+        const particleCount = window.innerWidth < 640 ? 25 : 55;
+        for (let i = 0; i < particleCount; i++) {
+            const span = document.createElement("span");
+            span.classList.add("glaze-particle");
+            span.style.setProperty("--dim", `${2.2 + Math.random() * 4}rem`);
+            span.style.setProperty("--uplift", `${5 + Math.random() * 7.5}rem`);
+            span.style.setProperty("--pos-x", `${Math.random() * 100}%`);
+            span.style.setProperty("--dur", `${2.6 + Math.random() * 2.8}s`);
+            span.style.setProperty("--delay", `${-1 * (Math.random() * 10)}s`);
+            fragment.appendChild(span);
+        }
+
+        container.appendChild(fragment);
+    }
+
+    // Điều hướng về Bước 1 (Khảo cứu Hiện vật Gốm)
+    const linkStep1 = document.getElementById('footer-link-step1');
+    if (linkStep1) {
+        linkStep1.addEventListener('click', (e) => {
+            e.preventDefault();
+            updateStepper(1);
+            const catalog = document.getElementById('heritage-cards-section') || document.getElementById('hien-vat');
+            if (catalog) {
+                catalog.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
+
+    // Điều hướng đến Bước 4 (Bộ Sưu Tập Áo Dài)
+    const linkStep4 = document.getElementById('footer-link-step4');
+    if (linkStep4) {
+        linkStep4.addEventListener('click', (e) => {
+            e.preventDefault();
+            const curateSection = document.getElementById('curate-section');
+            if (curateSection) {
+                const variantsGrid = document.getElementById('variants-grid');
+                if (!variantsGrid || !variantsGrid.children.length) {
+                    renderAodaiVariants(HERITAGE_ITEMS[0]);
+                }
+                curateSection.style.display = 'block';
+                updateStepper(4);
+                curateSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         });
     }
 }

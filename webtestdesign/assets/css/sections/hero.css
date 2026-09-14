@@ -1,0 +1,399 @@
+/* ==========================================================================
+   STYLE.CSS - Style nội dung, Hero, Cards & Hiệu ứng đặc biệt
+   ========================================================================== */
+
+/* ==========================================================================
+   DẢI RỒNG THĂNG LONG UỐN LƯỢN (CELESTIAL HERITAGE DRAGON FLOW)
+   Cầu nối màu sắc: Lam công nghệ ➔ Men ngọc ➔ Vàng men rạn ➔ Lụa ngà cổ điển
+   ========================================================================== */
+.main-content-flow {
+    position: relative;
+    overflow: hidden;
+}
+
+.dragon-stream-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.dragon-svg-canvas {
+    width: 100%;
+    height: 100%;
+    min-height: 1400px;
+    opacity: 0.88;
+    animation: dragonDrift 16s ease-in-out infinite alternate;
+}
+
+/* ==========================================================================
+   PHƯỢNG HOÀNG THĂNG LONG TÁI SINH DI SẢN (Celestial Heritage Phoenix)
+   ========================================================================== */
+.phoenix-svg-canvas {
+    width: 100%;
+    height: 100%;
+    min-height: 1400px;
+    opacity: 0.94;
+    animation: phoenixHover 14s ease-in-out infinite alternate;
+}
+
+@keyframes phoenixHover {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-10px) scale(1.01);
+    }
+
+    100% {
+        transform: translateY(6px) scale(0.995);
+    }
+}
+
+.phoenix-celestial-body {
+    animation: phoenixBodyFloat 6s ease-in-out infinite alternate;
+    transform-origin: center;
+}
+
+@keyframes phoenixBodyFloat {
+    0% {
+        transform: translate(1260px, 150px) rotate(0deg);
+    }
+
+    50% {
+        transform: translate(1256px, 144px) rotate(-1.5deg);
+    }
+
+    100% {
+        transform: translate(1264px, 154px) rotate(1deg);
+    }
+}
+
+.phoenix-wings {
+    animation: phoenixWingsFlap 4.5s ease-in-out infinite alternate;
+    transform-origin: 0 0;
+}
+
+@keyframes phoenixWingsFlap {
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    100% {
+        transform: scale(1.03) rotate(-2deg);
+    }
+}
+
+.phoenix-path-spine {
+    animation: phoenixSpineGleam 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes phoenixSpineGleam {
+    0% {
+        stroke-opacity: 0.65;
+        stroke-dashoffset: 0;
+    }
+
+    100% {
+        stroke-opacity: 1;
+        stroke-dashoffset: 60;
+    }
+}
+
+.phoenix-pulse-line {
+    stroke-dasharray: 120 550;
+    animation: phoenixPulseTravel 6.5s linear infinite;
+}
+
+@keyframes phoenixPulseTravel {
+    0% {
+        stroke-dashoffset: 1400;
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 0.95;
+    }
+
+    80% {
+        opacity: 0.95;
+    }
+
+    100% {
+        stroke-dashoffset: -1400;
+        opacity: 0;
+    }
+}
+
+.phoenix-ocellus {
+    animation: phoenixOcellusGlow 3.5s ease-in-out infinite alternate;
+}
+
+.phoenix-ocellus:nth-child(even) {
+    animation-delay: -1.75s;
+}
+
+@keyframes phoenixOcellusGlow {
+    0% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 4px rgba(96, 165, 250, 0.4));
+    }
+
+    100% {
+        transform: scale(1.12);
+        filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.7));
+    }
+}
+
+.phoenix-cloud-mist path {
+    animation: phoenixMistDrift 10s ease-in-out infinite alternate;
+}
+
+.phoenix-cloud-mist path:nth-child(2) {
+    animation-delay: -3s;
+    animation-duration: 13s;
+}
+
+.phoenix-cloud-mist path:nth-child(3) {
+    animation-delay: -6s;
+    animation-duration: 11s;
+}
+
+@keyframes phoenixMistDrift {
+    0% {
+        transform: translateY(0);
+        opacity: 0.55;
+    }
+
+    100% {
+        transform: translateY(-12px);
+        opacity: 0.75;
+    }
+}
+
+@keyframes dragonDrift {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-14px) scale(1.015);
+    }
+
+    100% {
+        transform: translateY(8px) scale(0.995);
+    }
+}
+
+.dragon-path-spine {
+    animation: spinePulse 5s ease-in-out infinite alternate;
+}
+
+@keyframes spinePulse {
+    0% {
+        stroke-opacity: 0.6;
+        stroke-dashoffset: 0;
+    }
+
+    100% {
+        stroke-opacity: 1;
+        stroke-dashoffset: 60;
+    }
+}
+
+.dragon-pulse-line {
+    stroke-dasharray: 100 500;
+    animation: pulseTravel 7s linear infinite;
+}
+
+@keyframes pulseTravel {
+    0% {
+        stroke-dashoffset: 1200;
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 0.95;
+    }
+
+    80% {
+        opacity: 0.95;
+    }
+
+    100% {
+        stroke-dashoffset: -1200;
+        opacity: 0;
+    }
+}
+
+.dragon-clouds-group path {
+    animation: cloudDrift 12s ease-in-out infinite alternate;
+}
+
+@keyframes cloudDrift {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(10px, -12px);
+    }
+}
+
+/* Cầu nối chuyển sắc giữa Nền Hiện Đại Sứ Trắng và Lụa Ngà Cổ Điển */
+.dragon-wave-bridge {
+    width: 100%;
+    margin-top: 40px;
+    margin-bottom: -1px;
+    position: relative;
+    z-index: 10;
+    line-height: 0;
+}
+
+.wave-bridge-svg {
+    width: 100%;
+    height: 70px;
+    display: block;
+}
+
+/* Ambient Glow Background - 3 màu sáng: Xanh lam men gốm, Vàng men rạn & Nền trắng sứ */
+.hero-glow {
+    display: none;
+    position: absolute;
+    top: -120px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 720px;
+    height: 500px;
+    background: transparent;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Hero Section - Phong cách Editorial Stitch */
+.hero-section {
+    position: relative;
+    padding-top: 130px;
+    padding-bottom: 60px;
+    z-index: 1;
+}
+
+.hero-editorial-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 48px;
+    align-items: center;
+    text-align: left;
+}
+
+.hero-tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #c2410c;
+    margin-bottom: 16px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.hero-tag::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 2px;
+    background-color: #c2410c;
+}
+
+.hero-title-editorial {
+    font-family: var(--font-serif);
+    font-size: clamp(34px, 4.2vw, 54px);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.hero-title-editorial .highlight {
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #d97706 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-desc-editorial {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 28px;
+}
+
+/* Callout Box Stitch "Quy trình tương tác" */
+.interactive-flow-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 28px 24px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.interactive-flow-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #1d4ed8, #f59e0b);
+}
+
+.flow-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 18px;
+}
+
+.flow-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.flow-step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+}
+
+.flow-step-num {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--primary);
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    padding: 2px 8px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+

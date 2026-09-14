@@ -1,0 +1,284 @@
+    <!-- ==========================================================================
+         BƯỚC 3: MODAL TIẾN TRÌNH PIPELINE 4 PHA (Live Pipeline Modal)
+         ========================================================================== -->
+    <div class="pipeline-modal-overlay" id="pipeline-modal">
+        <div class="pipeline-modal-card">
+            <button class="modal-close-btn" id="pipeline-close-btn" aria-label="Đóng">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="pipeline-header">
+                <div class="pipeline-title-group">
+                    <h3>
+                        <span class="pipeline-live-dot" aria-hidden="true"></span>
+                        <span>Quy trình tạo thiết kế — 4 pha mô phỏng (MVP v6.1)</span>
+                    </h3>
+                    <p id="pipeline-status-text">Đang khởi động nạp trọng số mô hình ControlNet & SD1.5...</p>
+                </div>
+                <div id="pipeline-percentage" style="font-size: 20px; font-weight: 800; color: #1d4ed8;">0%</div>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="pipeline-progress-bar-wrap">
+                <div class="pipeline-progress-bar" id="pipeline-progress-bar"></div>
+            </div>
+
+            <!-- 4 Stage Cards Grid -->
+            <div class="pipeline-stages-grid">
+                <!-- Pha 1 -->
+                <div class="pipeline-stage-card" id="stage-card-1" data-stage="1">
+                    <div class="stage-img-preview">
+                        <img id="stage-img-1" alt="Canny Lineart"
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" hidden>
+                    </div>
+                    <span class="stage-num-badge">Pha 01 · 25%</span>
+                    <h4 class="stage-card-title">Tách nền & Canny</h4>
+                    <p class="stage-card-desc">Bỏ đường bao bình, chỉ trích xuất hoa văn gốc.</p>
+                </div>
+
+                <!-- Pha 2 -->
+                <div class="pipeline-stage-card" id="stage-card-2" data-stage="2">
+                    <div class="stage-img-preview">
+                        <img id="stage-img-2" alt="Pattern Seamless Tile"
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" hidden>
+                    </div>
+                    <span class="stage-num-badge">Pha 02 · 50%</span>
+                    <h4 class="stage-card-title">Sinh hoa văn phẳng</h4>
+                    <p class="stage-card-desc">SD1.5 + ControlNet tạo hoa văn tuần hoàn liền mạch.</p>
+                </div>
+
+                <!-- Pha 3 -->
+                <div class="pipeline-stage-card" id="stage-card-3" data-stage="3">
+                    <div class="stage-img-preview">
+                        <img id="stage-img-3" alt="Composite Shading Map"
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" hidden>
+                    </div>
+                    <span class="stage-num-badge">Pha 03 · 75%</span>
+                    <h4 class="stage-card-title">Ghép nếp vải Áo Dài</h4>
+                    <p class="stage-card-desc">Uốn theo nếp gấp qua Displacement & Shading map.</p>
+                </div>
+
+                <!-- Pha 4 -->
+                <div class="pipeline-stage-card" id="stage-card-4" data-stage="4">
+                    <div class="stage-img-preview">
+                        <img id="stage-img-4" alt="img2img Denoise Final"
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" hidden>
+                    </div>
+                    <span class="stage-num-badge">Pha 04 · 100%</span>
+                    <h4 class="stage-card-title">Lượt hoàn thiện</h4>
+                    <p class="stage-card-desc">img2img denoise 0.40 tạo độ rủ tơ tằm tự nhiên.</p>
+                </div>
+            </div>
+
+            <!-- Action footer khi hoàn thành 100% (Ẩn khi đang chạy, hiện khi xong) -->
+            <div class="pipeline-modal-footer" id="pipeline-modal-footer" style="display: none;">
+                <div class="pipeline-footer-info">
+                    <span class="success-icon">✨</span>
+                    <span><strong>Xử lý hoàn tất!</strong> Bấm vào thẻ pha bên trên để soi chi tiết, hoặc bấm tiếp tục
+                        để xem 4 thiết kế Áo Dài.</span>
+                </div>
+                <div class="pipeline-footer-buttons">
+                    <button class="btn-stay-inspector" id="btn-stay-inspector" type="button">
+                        <span>Đóng cửa sổ</span>
+                    </button>
+                    <button class="btn-modal-goto-curate" id="btn-modal-goto-curate" type="button">
+                        <span>Xem 4 Thiết Kế Áo Dài (Bước 4) →</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL SOI CHI TIẾT TỪNG PHA (Stage Detail Lightbox Modal)
+         ========================================================================== -->
+    <div class="stage-lightbox-overlay" id="stage-lightbox-modal">
+        <div class="stage-lightbox-card">
+            <button class="modal-close-btn" id="lightbox-close-btn" aria-label="Đóng">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="lightbox-grid">
+                <div class="lightbox-img-col">
+                    <div class="lightbox-img-wrapper">
+                        <img id="lightbox-main-img" alt="Soi chi tiết pha"
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" hidden>
+                    </div>
+                    <div class="lightbox-caption" id="lightbox-caption">Ảnh chi tiết pha kỹ thuật</div>
+                </div>
+                <div class="lightbox-info-col">
+                    <span class="lightbox-badge" id="lightbox-phase-badge">Pha 01 / 04</span>
+                    <h3 class="lightbox-title" id="lightbox-title">Trích xuất hoa văn Canny</h3>
+                    <p class="lightbox-desc" id="lightbox-desc">Mô tả giải thuật kỹ thuật...</p>
+
+                    <div class="lightbox-specs-table">
+                        <div class="spec-row">
+                            <span class="spec-label">Thuật toán / Model:</span>
+                            <span class="spec-value" id="lightbox-spec-model">ControlNet Canny 1.1</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Độ phân giải:</span>
+                            <span class="spec-value" id="lightbox-spec-res">1024 × 1024 px</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Thông số then chốt:</span>
+                            <span class="spec-value" id="lightbox-spec-params">Threshold: 100/200</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Mục đích bảo tồn:</span>
+                            <span class="spec-value" id="lightbox-spec-purpose">Bảo lưu 100% hình thái di sản</span>
+                        </div>
+                    </div>
+
+                    <div class="lightbox-nav-buttons">
+                        <button class="btn-lightbox-nav" id="lightbox-prev-btn" type="button">← Pha trước</button>
+                        <button class="btn-lightbox-nav" id="lightbox-next-btn" type="button">Pha kế tiếp →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         BƯỚC 2: MODAL CHI TIẾT KHẢO CỨU HIỆN VẬT
+         ========================================================================== -->
+    <div class="detail-modal-overlay" id="detail-modal">
+        <div class="detail-modal-card">
+            <button class="modal-close-btn" id="modal-close-btn" aria-label="Đóng">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="modal-grid">
+                <div class="modal-img-col">
+                    <img id="modal-img" alt="Hiện vật"
+                        src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" hidden>
+                </div>
+                <div class="modal-info-col">
+                    <div>
+                        <span class="modal-step-badge">Bước 2 — Chiêm ngưỡng hiện vật</span>
+                        <h3 class="modal-title" id="modal-title">Tên hiện vật</h3>
+                        <div class="modal-meta" id="modal-meta">Niên hiệu • Chất men</div>
+                        <div class="modal-cultural-desc" id="modal-desc">
+                            Mô tả khảo cứu văn hóa...
+                        </div>
+                        <div class="glaze-palette-box">
+                            <span class="glaze-label">Bảng màu men trích xuất:</span>
+                            <div class="glaze-dots" id="modal-glaze-dots"></div>
+                        </div>
+                    </div>
+                    <button class="modal-cta-btn" id="generate-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z">
+                            </path>
+                        </svg>
+                        <span>TẠO BỘ 4 THIẾT KẾ ÁO DÀI</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         HỘ CHIẾU THIẾT KẾ: DESIGN PASSPORT MODAL
+         ========================================================================== -->
+    <div class="passport-modal-overlay" id="passport-modal">
+        <div class="passport-card">
+            <div class="passport-card-header">
+                <div class="passport-header-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                    <span>VIỆT NAM DIGITAL HERITAGE PASSPORT</span>
+                </div>
+                <button class="modal-close-btn" id="passport-close-btn"
+                    style="position: static; background: rgba(255,255,255,0.15); color: #fff;" aria-label="Đóng">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="passport-grid">
+                <div class="passport-visual-col">
+                    <img class="passport-aodai-img" id="passport-aodai-img" alt="Thiết kế đã chọn"
+                        src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" hidden>
+                    <div class="passport-compare-row">
+                        <img class="passport-compare-thumb" id="passport-origin-thumb" alt="Hiện vật gốc"
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" hidden>
+                        <div>
+                            <div><strong>Hiện vật đối chiếu gốc</strong></div>
+                            <div id="passport-origin-name" style="font-size: 12px; color: var(--text-muted);">Gốm Bát
+                                Tràng</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="passport-details-col">
+                    <div>
+                        <div class="passport-similarity-box">
+                            <div style="font-size: 12px; font-weight: 700; color: #166534; text-transform: uppercase;">
+                                Độ tương đồng hoa văn gốc (Visual Similarity)</div>
+                            <div style="font-size: 24px; font-weight: 800; color: #15803d;"
+                                id="passport-similarity-val">88.4% (Tham khảo)</div>
+                            <div style="font-size: 12px; color: #166534; margin-top: 2px;">*Đo bằng mô hình CLIP giữa
+                                hoa văn sinh ra và hoa văn hiện vật.</div>
+                        </div>
+
+                        <div class="passport-field-group">
+                            <div class="passport-field-label">Thiết kế bạn đã chọn</div>
+                            <div class="passport-field-value" id="passport-variant-title">Biến thể 1 — Tôn trọng nguyên
+                                bản</div>
+                        </div>
+
+                        <div class="passport-field-group">
+                            <div class="passport-field-label">Di sản nguồn (Heritage ID)</div>
+                            <div class="passport-field-value" id="passport-heritage-id">BT001 · Niên hiệu Vĩnh Thịnh
+                            </div>
+                        </div>
+
+                        <div class="passport-field-group">
+                            <div class="passport-field-label">Mã chứng thực Audit Trail (Seed)</div>
+                            <div class="passport-field-value"
+                                style="font-family: monospace; font-size: 13px; color: #475569;" id="passport-seed">
+                                #SEED_42_CONTROLNET_W0.85</div>
+                        </div>
+
+                        <div class="passport-field-group">
+                            <div class="passport-field-label">Bảng màu men hiện vật</div>
+                            <div class="glaze-dots" id="passport-palette-dots" style="margin-top: 6px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="passport-actions">
+                        <button class="btn-export-passport" id="btn-export-passport">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            <span>LƯU HỘ CHIẾU (PNG)</span>
+                        </button>
+                        <button class="btn-reset-studio" id="btn-reset-studio">
+                            <span>Chọn hiện vật khác</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

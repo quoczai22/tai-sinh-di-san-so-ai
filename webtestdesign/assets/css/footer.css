@@ -1,0 +1,291 @@
+/* ==========================================================================
+   FOOTER BÁT TRÀNG ĐỒNG BỘ NỀN TRẮNG SỨ SÁNG TẠO (HERITAGE WHITE FOOTER)
+   Phong cách thanh lịch vẽ Dòng Sông Di Sản Bát Tràng uốn lượn đồng bộ Bước 1
+   ========================================================================== */
+.showcase-section {
+    padding-bottom: 120px;
+}
+
+.bat-trang-glaze-footer {
+    position: relative;
+    margin-top: 0;
+    background: transparent;
+    color: #1e293b;
+    z-index: 10;
+    padding: 0 0 48px;
+    border-top: none;
+    box-shadow: none;
+    overflow: visible;
+    isolation: isolate;
+}
+
+.bat-trang-glaze-footer::before {
+    display: none;
+}
+
+/* Khung Canvas Dòng Sông Uốn Lượn Ở Nền Footer */
+.footer-river-backdrop {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.footer-river-svg {
+    width: 100% !important;
+    height: 100%;
+    display: block;
+    opacity: 0.92;
+}
+
+.footer-stream-ribbon-deep {
+    animation: footerRiverDeepWave 11s ease-in-out infinite alternate;
+}
+
+@keyframes footerRiverDeepWave {
+    0% {
+        stroke-dashoffset: 0;
+        opacity: 0.22;
+    }
+
+    100% {
+        stroke-dashoffset: 60;
+        opacity: 0.35;
+    }
+}
+
+.footer-stream-ribbon-main {
+    animation: footerRiverMainWave 7s linear infinite;
+}
+
+@keyframes footerRiverMainWave {
+    0% {
+        stroke-dashoffset: 0;
+    }
+
+    100% {
+        stroke-dashoffset: -240;
+    }
+}
+
+.footer-stream-spine {
+    animation: footerRiverSpinePulse 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes footerRiverSpinePulse {
+    0% {
+        stroke-dashoffset: 0;
+        stroke-opacity: 0.65;
+    }
+
+    100% {
+        stroke-dashoffset: 50;
+        stroke-opacity: 0.95;
+    }
+}
+
+.footer-carp {
+    animation: footerCarpSwim 6s ease-in-out infinite alternate;
+    transform-origin: 640px 150px;
+}
+
+@keyframes footerCarpSwim {
+    0% {
+        transform: translate(640px, 150px) rotate(-14deg) translateY(0);
+    }
+
+    50% {
+        transform: translate(644px, 144px) rotate(-10deg) translateY(-5px) scale(1.02);
+    }
+
+    100% {
+        transform: translate(636px, 156px) rotate(-18deg) translateY(5px) scale(0.98);
+    }
+}
+
+.footer-river-bubbles circle {
+    animation: bubbleFloat 4s ease-in-out infinite alternate;
+}
+
+.footer-river-bubbles circle:nth-child(even) {
+    animation-delay: -2s;
+    animation-duration: 5s;
+}
+
+.glaze-liquid-hero-wrapper,
+.glaze-particle-container {
+    display: none !important;
+}
+
+.glaze-footer-inner {
+    position: relative;
+    z-index: 2;
+    padding-top: 32px;
+}
+
+.glaze-footer-grid {
+    display: grid;
+    grid-template-columns: minmax(280px, 1.75fr) minmax(145px, 0.8fr) minmax(155px, 0.9fr) minmax(230px, 1.15fr);
+    gap: clamp(32px, 4vw, 60px);
+    padding: 16px 0 44px;
+    align-items: start;
+}
+
+.footer-identity {
+    max-width: 420px;
+}
+
+.footer-mark {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 18px;
+    color: #1f5d8d;
+    border: 1px solid rgba(31, 93, 141, 0.42);
+    border-radius: 50%;
+}
+
+.footer-mark svg {
+    width: 22px;
+    height: 22px;
+}
+
+.footer-eyebrow {
+    margin: 0 0 12px;
+    color: #9a4b15;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+}
+
+.footer-identity h2 {
+    margin: 0;
+    color: #102d4e;
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 2.2vw, 2.05rem);
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.footer-intro,
+.footer-column-note {
+    margin: 16px 0 0;
+    color: #465b70;
+    font-size: 13.5px;
+    line-height: 1.75;
+}
+
+.footer-column,
+.footer-invitation {
+    text-align: left;
+}
+
+.footer-col-title {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    color: #9a4b15;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.footer-col-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.footer-col-links li a {
+    color: #1c4f7c;
+    font-size: 13.5px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+.footer-col-links li a:hover {
+    color: #a84e06;
+    transform: translateX(4px);
+}
+
+.footer-col-links li a:focus-visible,
+.footer-cta:focus-visible {
+    outline: 2px solid #a84e06;
+    outline-offset: 4px;
+}
+
+.footer-invitation {
+    padding: 0 0 0 26px;
+    border-left: 1px solid rgba(180, 119, 44, 0.45);
+}
+
+.footer-place {
+    margin: 16px 0 0;
+    color: #172b4b;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.footer-platform-note {
+    margin: 16px 0 0;
+    color: #52657c;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+.footer-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 10px 16px;
+    border: 1px solid rgba(31, 93, 141, 0.52);
+    border-radius: 999px;
+    color: #1c4f7c;
+    font-size: 12px;
+    font-weight: 700;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.footer-cta:hover {
+    background: #1c4f7c;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+/* Dải đáy bản quyền */
+.footer-bottom-bar {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    border-top: 1px solid rgba(31, 93, 141, 0.16);
+    padding-top: 24px;
+}
+
+.footer-copy-text {
+    font-size: 12px;
+    color: #465b70;
+    letter-spacing: 0.02em;
+    margin: 0;
+}
+
+.footer-note {
+    margin: 0;
+    max-width: 420px;
+    color: #52657c;
+    font-size: 12px;
+    text-align: right;
+    line-height: 1.6;
+}
+

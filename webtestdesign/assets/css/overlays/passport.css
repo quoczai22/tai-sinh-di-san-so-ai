@@ -1,0 +1,182 @@
+/* ==========================================================================
+   DESIGN PASSPORT MODAL (Hộ Chiếu Di Sản Số)
+   ========================================================================== */
+.passport-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(8px);
+    z-index: 3000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(24px, 4vw, 48px);
+}
+
+.passport-modal-overlay.active {
+    display: flex;
+}
+
+.passport-card {
+    background: #ffffff;
+    border: 2px solid rgba(217, 119, 6, 0.3);
+    border-radius: 28px;
+    max-width: 860px;
+    width: 100%;
+    box-shadow: 0 30px 70px rgba(120, 53, 15, 0.2);
+    overflow: hidden;
+    position: relative;
+    animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.passport-card-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #78350f 100%);
+    border-bottom: 1px solid rgba(253, 230, 138, 0.3);
+    color: #fefce8;
+    padding: 20px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.passport-header-title {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fef08a;
+}
+
+.passport-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+}
+
+.passport-visual-col {
+    background: radial-gradient(circle at center, #ffffff 40%, #faf6ec 100%);
+    padding: 28px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    border-right: 1px solid rgba(217, 119, 6, 0.15);
+}
+
+.passport-aodai-img {
+    max-height: 280px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 22px rgba(120, 53, 15, 0.15));
+}
+
+.passport-compare-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.passport-compare-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    object-fit: contain;
+    border: 1px solid rgba(217, 119, 6, 0.2);
+    background: #fff;
+}
+
+.passport-details-col {
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #ffffff;
+}
+
+.passport-field-group {
+    margin-bottom: 14px;
+}
+
+.passport-field-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #78716c;
+    margin-bottom: 4px;
+}
+
+.passport-field-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1c1917;
+}
+
+.passport-similarity-box {
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border: 1.5px solid rgba(217, 119, 6, 0.35);
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+}
+
+.passport-similarity-box .passport-field-label {
+    color: #92400e;
+}
+
+.passport-similarity-box .passport-field-value {
+    color: #b45309;
+    font-weight: 800;
+}
+
+.passport-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-export-passport {
+    flex: 1;
+    padding: 12px 0;
+    background: linear-gradient(135deg, #1e3a8a, #0f172a);
+    border: 1px solid rgba(253, 230, 138, 0.3);
+    color: #fefce8;
+    border-radius: 12px;
+    font-size: 13.5px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: var(--transition);
+}
+
+.btn-export-passport:hover {
+    background: linear-gradient(135deg, #2563eb, #1e3a8a);
+    box-shadow: 0 6px 20px rgba(30, 58, 138, 0.35);
+    transform: translateY(-2px);
+    color: #ffffff;
+}
+
+.btn-reset-studio {
+    padding: 12px 18px;
+    background: #f1f5f9;
+    color: #475569;
+    border-radius: 12px;
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-reset-studio:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
