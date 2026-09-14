@@ -1,7 +1,4 @@
-/* ==========================================================================
-   HOẠT HỌA RỒNG THỜI LÝ ĐỒNG BỘ CÙNG PHƯỢNG HOÀNG (Harmonized Long Phụng Motion)
-   Chuyển động vừa phải, uyển chuyển, thanh tao như Phượng Hoàng Thăng Long
-   ========================================================================== */
+
 .antique-dragon-group {
     animation: dragonAntiqueHover 14s ease-in-out infinite alternate;
     transform-origin: center;
@@ -21,7 +18,6 @@
     }
 }
 
-/* 1. Sống lưng 12 khúc uốn lấp lánh ánh kim đồng bộ cùng sống lưng phượng */
 .antique-dragon-spine {
     animation: dragonSpineGleam 4.5s ease-in-out infinite alternate;
 }
@@ -38,7 +34,6 @@
     }
 }
 
-/* 2. Vệt sáng năng lượng chạy lướt êm ái dọc 12 khúc uốn (đồng bộ nhịp 6.5s với phượng) */
 .antique-dragon-pulse-line {
     stroke-dasharray: 120 550;
     animation: dragonSpinePulseTravel 6.5s linear infinite;
@@ -64,7 +59,6 @@
     }
 }
 
-/* 3. Đầu rồng uy nghi gật nhẹ thanh thoát (đồng bộ nhịp 6s với thân phượng) */
 .dragon-head-group {
     animation: dragonHeadFloat 6s ease-in-out infinite alternate;
     transform-origin: 1435px 105px;
@@ -84,7 +78,6 @@
     }
 }
 
-/* 4. Râu rồng & Bờm rồng uốn lượn lả lướt vừa phải (đồng bộ 4.5s - 5s như cánh phượng) */
 .dragon-whisker-group {
     transform-origin: -35px -5px;
     animation: dragonWhiskerWave 4.5s ease-in-out infinite alternate;
@@ -138,7 +131,6 @@
     }
 }
 
-/* 5. Lưỡi rồng mác lửa vươn nhẹ tới ngọc */
 .dragon-tongue {
     animation: dragonTongueFlicker 4s ease-in-out infinite alternate;
     transform-origin: -45px 2px;
@@ -156,7 +148,6 @@
     }
 }
 
-/* 6. Hạt Minh Châu tỏa hào quang hoàng kim (đồng bộ 3.5s với mắt ngọc phượng) */
 .dragon-pearl-group {
     animation: pearlFloatGleam 3.5s ease-in-out infinite alternate;
     transform-origin: 1360px 95px;
@@ -189,7 +180,6 @@
     }
 }
 
-/* 7. Móng vuốt rồng co duỗi uyển chuyển */
 .dragon-claw.claw-left {
     animation: clawFlexLeft 6s ease-in-out infinite alternate;
     transform-origin: 380px 240px;
@@ -220,7 +210,6 @@
     }
 }
 
-/* 8. Sóng nước Thủy Ba dập dềnh êm ái (đồng bộ nhịp 10s mây sương) */
 .antique-thuy-ba-group {
     animation: thuyBaWaveFlow 10s ease-in-out infinite alternate;
 }
@@ -239,7 +228,6 @@
     }
 }
 
-/* 9. Đuôi rồng xòe ngọn lửa thời Lý vẫy lượn thướt tha */
 .dragon-tail-flame {
     animation: dragonTailFlutter 5.5s ease-in-out infinite alternate;
     transform-origin: 340px 900px;
@@ -299,4 +287,3 @@
         transform: rotate(1.2deg);
     }
 }
-

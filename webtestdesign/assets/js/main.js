@@ -1,9 +1,3 @@
-/**
- * MAIN.JS - Xử lý tương tác Studio Tái Sinh Di Sản Số AI
- * Kết hợp phong cách Stitch by Google & Figma Make (MVP v6.1)
- */
-
-// Dữ liệu 6 hiện vật gốm Bát Tràng chuẩn hóa theo MVP spec v6.1 & rule_base.json
 const HERITAGE_ITEMS = [
     {
         id: "BT001",
@@ -82,7 +76,6 @@ const HERITAGE_ITEMS = [
 let currentSelectedItem = null;
 let currentActiveFilter = "all";
 
-/** Nạp ảnh động an toàn: modal chỉ hiện ảnh khi tệp đã sẵn sàng. */
 function setDynamicImage(image, source) {
     if (!image) return;
 
@@ -111,17 +104,9 @@ function initStudio() {
     studioInitialized = true;
 
     console.log('Studio Tái Sinh Di Sản Số AI - Khởi tạo thành công.');
-
-    // 1. Render danh sách 6 hiện vật
     renderHeritageCards(HERITAGE_ITEMS);
-
-    // 2. Khởi tạo Filter Chips
     initFilterChips();
-
-    // 3. Khởi tạo Modal chi tiết & Stepper
     initDetailModal();
-
-    // Liên kết footer dùng lại điều hướng của luồng chính.
     initFooterLinks();
     document.addEventListener('visibilitychange', () => {
         document.documentElement.classList.toggle('is-page-hidden', document.hidden);
@@ -144,9 +129,6 @@ function startStudioWhenReady() {
 
 startStudioWhenReady();
 
-/**
- * Render 6 thẻ hiện vật vào lưới
- */
 function renderHeritageCards(items) {
     const gridContainer = document.getElementById('heritage-cards-grid');
     if (!gridContainer) return;
@@ -157,9 +139,7 @@ function renderHeritageCards(items) {
         const card = document.createElement('article');
         card.className = `heritage-card ${currentSelectedItem?.id === item.id ? 'selected' : ''}`;
         card.setAttribute('data-id', item.id);
-
-        // Tạo dải chấm màu men (glaze dots)
-        const glazeDotsHtml = item.colors.map((color, index) => 
+        const glazeDotsHtml = item.colors.map((color, index) =>
             `<span class="glaze-dot" style="background-color: ${color};" title="${item.colorNames[index]} (${color})"></span>`
         ).join('');
 
@@ -189,8 +169,6 @@ function renderHeritageCards(items) {
                 </div>
             </div>
         `;
-
-        // Click để chọn hiện vật và mở Bước 2 (Modal / Drawer)
         card.addEventListener('click', () => {
             selectHeritageItem(item);
         });
@@ -199,9 +177,6 @@ function renderHeritageCards(items) {
     });
 }
 
-/**
- * Xử lý bộ lọc Filter Chips
- */
 function initFilterChips() {
     const chipBtns = document.querySelectorAll('.filter-chip');
     chipBtns.forEach(btn => {
@@ -222,13 +197,8 @@ function initFilterChips() {
     });
 }
 
-/**
- * Chọn hiện vật và hiển thị modal chi tiết (Bước 2)
- */
 function selectHeritageItem(item) {
     currentSelectedItem = item;
-
-    // Cập nhật class selected cho card
     document.querySelectorAll('.heritage-card').forEach(card => {
         if (card.getAttribute('data-id') === item.id) {
             card.classList.add('selected');
@@ -236,11 +206,7 @@ function selectHeritageItem(item) {
             card.classList.remove('selected');
         }
     });
-
-    // Cập nhật Stepper sang Bước 2
     updateStepper(2);
-
-    // Điền dữ liệu vào Modal
     const modal = document.getElementById('detail-modal');
     const modalImg = document.getElementById('modal-img');
     const modalTitle = document.getElementById('modal-title');
@@ -254,7 +220,7 @@ function selectHeritageItem(item) {
         modalMeta.textContent = `${item.dynasty} · ${item.glaze} Bát Tràng`;
         modalDesc.textContent = item.desc;
 
-        modalDots.innerHTML = item.colors.map((color, index) => 
+        modalDots.innerHTML = item.colors.map((color, index) =>
             `<span class="glaze-dot" style="background-color: ${color}; width: 22px; height: 22px;" title="${item.colorNames[index]} (${color})"></span>`
         ).join('');
 
@@ -262,9 +228,6 @@ function selectHeritageItem(item) {
     }
 }
 
-/**
- * Khởi tạo modal chi tiết và hành động Tạo thiết kế
- */
 function initDetailModal() {
     const modal = document.getElementById('detail-modal');
     const closeBtn = document.getElementById('modal-close-btn');
@@ -287,14 +250,10 @@ function initDetailModal() {
     if (generateBtn) {
         generateBtn.addEventListener('click', () => {
             if (!currentSelectedItem) return;
-
-            // Đóng modal bước 2 và chạy trực quan Bước 3
             modal.classList.remove('active');
             runVisualPipeline(currentSelectedItem);
         });
     }
-
-    // Các nút stepper trên Header
     const step1Btn = document.getElementById('step-1-btn');
     const step2Btn = document.getElementById('step-2-btn');
     const step3Btn = document.getElementById('step-3-btn');
@@ -336,17 +295,10 @@ function initDetailModal() {
             if (curateSection) curateSection.scrollIntoView({ behavior: 'smooth' });
         });
     }
-
-    // Khởi tạo nút đóng Passport Modal
     initPassportModal();
-
-    // Khởi tạo tương tác tiến trình.
     initPipelineControls();
 }
 
-/**
- * BƯỚC 3: Chạy trực quan Pipeline 4 pha kỹ thuật với tiến độ và ảnh preview thực tế
- */
 function runVisualPipeline(item) {
     updateStepper(3);
 
@@ -362,8 +314,6 @@ function runVisualPipeline(item) {
         document.getElementById('stage-card-3'),
         document.getElementById('stage-card-4')
     ];
-
-    // Reset trạng thái các card và footer
     if (modalFooter) modalFooter.style.display = 'none';
     stageCards.forEach(c => {
         if (c) {
@@ -374,8 +324,6 @@ function runVisualPipeline(item) {
     setPipelineProgress(progressBar, 0);
     if (percentText) percentText.textContent = '0%';
     if (pipelineModal) pipelineModal.classList.add('active');
-
-    // Pha 1: 0% -> 25% (0.7s)
     statusText.textContent = "Gìn giữ những đường nét đặc trưng từ hiện vật bạn đã chọn...";
     stageCards[0]?.classList.add('running');
     setPipelineProgress(progressBar, 25);
@@ -412,11 +360,7 @@ function runVisualPipeline(item) {
                     stageCards[3]?.classList.remove('running');
                     stageCards[3]?.classList.add('done');
                     statusText.textContent = "Thiết kế đã sẵn sàng để bạn chiêm ngưỡng.";
-
-                    // Hiển thị Footer điều khiển thay vì tự động tắt làm người dùng mất xem!
                     if (modalFooter) modalFooter.style.display = 'flex';
-
-                    // Sẵn sàng nội dung Bước 4 ở bên dưới
                     renderCurateSection(item, false);
 
                 }, 700);
@@ -428,9 +372,6 @@ function runVisualPipeline(item) {
     }, 700);
 }
 
-/**
- * Khởi tạo các nút điều khiển của Pipeline Modal và Section
- */
 function initPipelineControls() {
     const pipelineModal = document.getElementById('pipeline-modal');
     const closeBtn = document.getElementById('pipeline-close-btn');
@@ -460,9 +401,6 @@ function initPipelineControls() {
 
 }
 
-/**
- * BƯỚC 4: Hiển thị 4 thiết kế áo dài phái sinh thực tế
- */
 function renderCurateSection(item, shouldScroll = true) {
     if (shouldScroll) {
         updateStepper(4);
@@ -538,15 +476,11 @@ function renderCurateSection(item, shouldScroll = true) {
                 </button>
             </div>
         `;
-
-        // Click vào card hoặc bấm nút đều chọn và mở Hộ Chiếu Thiết Kế chi tiết
         card.addEventListener('click', () => {
             document.querySelectorAll('.variant-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
             openDesignPassport(item, v);
         });
-
-        // Hỗ trợ phím Enter / Space cho bàn phím
         card.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -572,9 +506,6 @@ function renderCurateSection(item, shouldScroll = true) {
     }
 }
 
-/**
- * Mở Hộ Chiếu Thiết Kế (Design Passport)
- */
 function openDesignPassport(item, variant) {
     const passportModal = document.getElementById('passport-modal');
     if (!passportModal) return;
@@ -590,7 +521,7 @@ function openDesignPassport(item, variant) {
 
     const dotsContainer = document.getElementById('passport-palette-dots');
     if (dotsContainer) {
-        dotsContainer.innerHTML = item.colors.map((c, i) => 
+        dotsContainer.innerHTML = item.colors.map((c, i) =>
             `<span class="glaze-dot" style="background-color: ${c}; width: 22px; height: 22px;" title="${item.colorNames[i]} (${c})"></span>`
         ).join('');
     }
@@ -598,9 +529,6 @@ function openDesignPassport(item, variant) {
     passportModal.classList.add('active');
 }
 
-/**
- * Khởi tạo sự kiện đóng & reset của Passport Modal
- */
 function initPassportModal() {
     const passportModal = document.getElementById('passport-modal');
     const closeBtn = document.getElementById('passport-close-btn');
@@ -635,9 +563,6 @@ function initPassportModal() {
     }
 }
 
-/**
- * Cập nhật trạng thái thanh Stepper 4 bước
- */
 function updateStepper(stepNumber) {
     const steps = [
         document.getElementById('step-1-btn'),

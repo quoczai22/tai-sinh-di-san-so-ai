@@ -1,45 +1,42 @@
-/* ==========================================================================
-   BASE.CSS - Reset, CSS Variables & Typography
-   ========================================================================== */
+
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap');
 
 :root {
-    /* Brand Color Palette - 3 màu sáng chủ đạo */
-    --primary: #1d4ed8;          /* Xanh lam gốm Bát Tràng rực rỡ */
+
+    --primary: #1d4ed8;
     --primary-light: #3b82f6;
-    --primary-subtle: #eff6ff;   /* Xanh lam nhạt */
-    --accent: #a84e06;           /* Màu men gốm / vàng hoàng thổ — tương phản tốt hơn trên nền sáng */
-    --accent-light: #fef3c7;    /* Vàng hoàng kim nhạt */
+    --primary-subtle: #eff6ff;
+    --accent: #a84e06;
+    --accent-light: #fef3c7;
     --accent-glow: rgba(217, 119, 6, 0.18);
-    
-    /* Neutral & Surfaces - Tông trắng sứ thanh nhã */
-    --bg-page: #f8fafc;          /* Trắng sứ ngọc trai canvas */
-    --bg-surface: #ffffff;       /* Trắng tinh khôi */
-    --bg-card: #ffffff;          /* Thẻ nền trắng nổi bật */
-    --border-subtle: #e2e8f0;    /* Viền xám sáng tinh tế */
+
+
+    --bg-page: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-card: #ffffff;
+    --border-subtle: #e2e8f0;
     --border-highlight: #cbd5e1;
 
-    /* Text Colors - Tương phản cao trên nền trắng */
-    --text-primary: #0f172a;     /* Chữ đen than đậm sắc nét */
-    --text-secondary: #475569;   /* Xám trầm thanh lịch */
+
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
     --text-muted: #52657c;
 
-    /* Pill Nav specific */
+
     --nav-bg: rgba(255, 255, 255, 0.88);
     --nav-border: rgba(226, 232, 240, 0.85);
 
-    /* Typography */
+
     --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     --font-serif: 'Playfair Display', Georgia, serif;
 
-    /* Shadows & Transitions */
+
     --shadow-sm: 0 2px 10px rgba(15, 23, 42, 0.05);
     --shadow-lg: 0 16px 36px rgba(15, 23, 42, 0.08);
     --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Reset */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -80,7 +77,6 @@ button {
     background: none;
 }
 
-/* Accessibility: Focus Visible cho bàn phím */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible {
@@ -89,7 +85,6 @@ input:focus-visible {
     border-radius: 6px;
 }
 
-/* Accessibility: Hỗ trợ giảm chuyển động cho người dùng nhạy cảm */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation-duration: 0.01ms !important;

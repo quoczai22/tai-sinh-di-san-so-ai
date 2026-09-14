@@ -1,6 +1,4 @@
-/* ==========================================================================
-   BƯỚC 3: MÀN HÌNH TIẾN TRÌNH PIPELINE 4 PHA (Live Pipeline Modal)
-   ========================================================================== */
+
 .pipeline-modal-overlay {
     position: fixed;
     top: 0;
@@ -152,4 +150,3 @@
     color: var(--text-muted);
     line-height: 1.4;
 }
-

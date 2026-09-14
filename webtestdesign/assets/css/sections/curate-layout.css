@@ -1,8 +1,4 @@
-/* ==========================================================================
-   KHU VỰC TUYỂN CHỌN BỘ SƯU TẬP ÁO DÀI (Bảo Tràng Di Sản Cổ Điển)
-   Thiết kế dạng Khung Tranh Hoàng Gia Cổ Điển độc lập (Imperial Classic Frame)
-   Tách biệt trọn vẹn giữa Bước 1 và Footer
-   ========================================================================== */
+
 .curate-section {
     padding: 88px 0 84px;
     background: linear-gradient(180deg, #ffffff 0%, #fcf9f2 20%, #f9f5ea 65%, #f6f0df 100%);
@@ -28,7 +24,6 @@
     background: linear-gradient(90deg, transparent, rgba(217, 119, 6, 0.7), transparent);
 }
 
-/* Canvas Họa Phẩm Cổ Điển Background */
 .curate-antique-artwork {
     position: absolute;
     inset: 0;
@@ -105,7 +100,6 @@
     margin: 0 auto;
 }
 
-/* Triện Hoa Sen Bát Tràng Dát Vàng & Đường Phân Cách Cổ Điển */
 .curate-antique-divider {
     display: flex;
     align-items: center;
@@ -148,9 +142,6 @@
     }
 }
 
-/* ==========================================================================
-   DẢI NÉT ĐỨT UỐN LƯỢN CHUYỂN TIẾP GIỮA BƯỚC 4 VÀ FOOTER (STEP 4 TO FOOTER DASHED WAVE)
-   ========================================================================== */
 .curate-to-footer-bridge {
     display: none !important;
     position: relative;
@@ -187,4 +178,3 @@
         stroke-opacity: 0.95;
     }
 }
-

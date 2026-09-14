@@ -1,11 +1,5 @@
-/* ==========================================================================
-   STYLE.CSS - Style nội dung, Hero, Cards & Hiệu ứng đặc biệt
-   ========================================================================== */
 
-/* ==========================================================================
-   DẢI RỒNG THĂNG LONG UỐN LƯỢN (CELESTIAL HERITAGE DRAGON FLOW)
-   Cầu nối màu sắc: Lam công nghệ ➔ Men ngọc ➔ Vàng men rạn ➔ Lụa ngà cổ điển
-   ========================================================================== */
+
 .main-content-flow {
     position: relative;
     overflow: hidden;
@@ -30,9 +24,6 @@
     animation: dragonDrift 16s ease-in-out infinite alternate;
 }
 
-/* ==========================================================================
-   PHƯỢNG HOÀNG THĂNG LONG TÁI SINH DI SẢN (Celestial Heritage Phoenix)
-   ========================================================================== */
 .phoenix-svg-canvas {
     width: 100%;
     height: 100%;
@@ -245,7 +236,6 @@
     }
 }
 
-/* Cầu nối chuyển sắc giữa Nền Hiện Đại Sứ Trắng và Lụa Ngà Cổ Điển */
 .dragon-wave-bridge {
     width: 100%;
     margin-top: 40px;
@@ -261,7 +251,6 @@
     display: block;
 }
 
-/* Ambient Glow Background - 3 màu sáng: Xanh lam men gốm, Vàng men rạn & Nền trắng sứ */
 .hero-glow {
     display: none;
     position: absolute;
@@ -276,7 +265,6 @@
     z-index: 0;
 }
 
-/* Hero Section - Phong cách Editorial Stitch */
 .hero-section {
     position: relative;
     padding-top: 130px;
@@ -334,7 +322,6 @@
     margin-bottom: 28px;
 }
 
-/* Callout Box Stitch "Quy trình tương tác" */
 .interactive-flow-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -391,4 +378,3 @@
     flex-shrink: 0;
     margin-top: 1px;
 }
-

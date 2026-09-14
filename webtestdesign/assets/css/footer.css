@@ -1,7 +1,4 @@
-/* ==========================================================================
-   FOOTER BÁT TRÀNG ĐỒNG BỘ NỀN TRẮNG SỨ SÁNG TẠO (HERITAGE WHITE FOOTER)
-   Phong cách thanh lịch vẽ Dòng Sông Di Sản Bát Tràng uốn lượn đồng bộ Bước 1
-   ========================================================================== */
+
 .showcase-section {
     padding-bottom: 120px;
 }
@@ -23,7 +20,6 @@
     display: none;
 }
 
-/* Khung Canvas Dòng Sông Uốn Lượn Ở Nền Footer */
 .footer-river-backdrop {
     position: absolute;
     inset: 0;
@@ -91,7 +87,6 @@
     animation: footerRiverDeepWave 13s ease-in-out infinite alternate;
 }
 
-/* Hiệu Ứng Bồng Bềnh Của Đóa Hoa Sen Men Rạn Trên Sóng Nước */
 .footer-lotus-inner {
     animation: footerLotusFloat 6s ease-in-out infinite alternate;
     transform-origin: 0 54px;
@@ -126,7 +121,6 @@
     }
 }
 
-/* Hiệu Ứng Bơi Lội Uyển Chuyển Của Đôi Cá Chép Bát Tràng */
 .footer-carp-1 .footer-carp-inner {
     animation: footerCarp1Swim 5.5s ease-in-out infinite alternate;
 }
@@ -164,7 +158,6 @@
     }
 }
 
-/* Hiệu Ứng Cá Chép Thứ 3 Phóng Lên Cao Hóa Rồng (Vượt Vũ Môn) */
 .footer-carp-dragon .footer-carp-inner {
     animation: footerDragonCarpSoar 5s ease-in-out infinite alternate;
 }
@@ -197,7 +190,6 @@
     }
 }
 
-/* Xoáy nước xoay tròn nhẹ nhàng */
 .footer-river-eddies path {
     animation: footerEddyPulse 7s ease-in-out infinite alternate;
 }
@@ -401,7 +393,6 @@
     transform: translateY(-2px);
 }
 
-/* Dải đáy bản quyền */
 .footer-bottom-bar {
     display: flex;
     justify-content: space-between;
@@ -425,4 +416,3 @@
     text-align: right;
     line-height: 1.6;
 }
-

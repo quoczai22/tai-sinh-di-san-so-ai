@@ -1,4 +1,4 @@
-/* Filter Chips Bar */
+
 .showcase-header-bar {
     display: flex;
     justify-content: space-between;
@@ -75,7 +75,6 @@
     font-weight: 600;
 }
 
-/* 6 Heritage Cards Grid */
 .cards-grid-6 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -107,7 +106,6 @@
     transform: translateY(-4px);
 }
 
-/* Khung ảnh cổ vật với hiệu ứng bục trưng bày bảo tàng */
 .card-img-wrap {
     height: 250px;
     background: radial-gradient(circle at 50% 55%, #ffffff 0%, #f3f6f9 85%, #e9eef4 100%);
@@ -120,7 +118,6 @@
     overflow: hidden;
 }
 
-/* Hiệu ứng nền ánh sáng vi tế phía sau hiện vật */
 .card-img-wrap::before {
     content: '';
     position: absolute;
@@ -136,7 +133,7 @@
     max-width: 90%;
     object-fit: contain;
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
-    /* Đổ bóng thực 3D cho cổ vật gốm sứ */
+
     filter: drop-shadow(0 12px 18px rgba(15, 23, 42, 0.13)) drop-shadow(0 4px 6px rgba(15, 23, 42, 0.08));
 }
 
@@ -199,7 +196,6 @@
     margin-bottom: 18px;
 }
 
-/* Glaze Palette Box */
 .glaze-palette-box {
     display: flex;
     align-items: center;
@@ -246,7 +242,6 @@
     z-index: 3;
 }
 
-/* Nút bấm hành động CTA */
 .card-action-btn {
     display: flex;
     align-items: center;
@@ -283,4 +278,3 @@
 .heritage-card.selected .card-action-btn svg {
     transform: translateX(4px);
 }
-

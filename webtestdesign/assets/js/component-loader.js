@@ -1,7 +1,4 @@
-/**
- * Nạp các HTML fragment cho giao diện tĩnh.
- * Chạy qua local web server (ví dụ: python -m http.server 5500).
- */
+
 window.componentsReady = (async () => {
     const slots = [...document.querySelectorAll('[data-component]')];
 

@@ -1,8 +1,5 @@
-/* ==========================================================================
-   LAYOUT.CSS - Khung sườn chung (Floating Pill Navbar, Containers, Footer)
-   ========================================================================== */
 
-/* Main Containers */
+
 .container {
     width: 100%;
     max-width: 1200px;
@@ -10,9 +7,6 @@
     padding: 0 24px;
 }
 
-/* ==========================================================================
-   FLOATING PILL NAVIGATION (Framer Style)
-   ========================================================================== */
 .framer-nav-wrapper {
     position: fixed;
     top: 20px;
@@ -22,7 +16,7 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    pointer-events: none; /* Allows click through outside pill */
+    pointer-events: none;
     padding: 0 16px;
 }
 
@@ -47,7 +41,6 @@
     box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
 }
 
-/* Logo */
 .nav-logo {
     display: flex;
     align-items: center;
@@ -69,7 +62,6 @@
     color: #fff;
 }
 
-/* Nav Menu Links & Stepper */
 .nav-links {
     display: flex;
     align-items: center;
@@ -115,7 +107,6 @@
     align-items: center;
 }
 
-/* Stepper Hover Card (Xem tiến trình con khi hover) */
 .stepper-item.has-popover {
     position: relative;
 }
@@ -235,7 +226,6 @@
     padding-top: 4px;
 }
 
-/* Nav Right Actions */
 .nav-actions {
     display: flex;
     align-items: center;
@@ -254,9 +244,6 @@
     border: 1px solid #bfdbfe;
 }
 
-/* ==========================================================================
-   FOOTER LAYOUT
-   ========================================================================== */
 .site-footer {
     border-top: 1px solid var(--border-subtle);
     padding: 60px 0 30px;
@@ -277,9 +264,6 @@
     color: var(--text-muted);
 }
 
-/* ==========================================================================
-   FRAMER EDITOR BAR (Widget góc dưới)
-   ========================================================================== */
 #__framer-editorbar-container {
     align-items: center;
     display: flex;
@@ -352,7 +336,6 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .nav-links {
         display: none;

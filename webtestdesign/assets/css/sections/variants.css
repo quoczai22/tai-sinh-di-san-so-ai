@@ -1,7 +1,4 @@
-/* ==========================================================================
-   LƯỚI BIẾN THỂ ÁO DÀI PHÁI SINH (Interactive Image-First Filter Cards)
-   Hiệu ứng làm mờ di chuột & lớp phủ thông tin hoàng gia theo cảm hứng DevFlash / CodeArry
-   ========================================================================== */
+
 .variants-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -9,7 +6,6 @@
     perspective: 1200px;
 }
 
-/* Hiệu ứng làm mờ & co nhẹ các thẻ KHÔNG hover khi người dùng rê chuột vào lưới */
 .variants-grid:hover>.variant-card:not(:hover) {
     filter: blur(4px) brightness(0.65) saturate(0.8);
     opacity: 0.55;
@@ -31,7 +27,6 @@
     flex-direction: column;
 }
 
-/* Góc Họa Tiết Triện Cổ Điển Hoàng Gia (Imperial Corner Accents) */
 .variant-card::before {
     content: '';
     position: absolute;
@@ -62,7 +57,6 @@
     transition: all 0.35s ease;
 }
 
-/* Thẻ Image Wrapper Full-bleed */
 .variant-img-wrap {
     position: absolute;
     inset: 0;
@@ -82,7 +76,6 @@
     display: block;
 }
 
-/* Badges nổi trên ảnh */
 .similarity-badge {
     position: absolute;
     top: 16px;
@@ -100,7 +93,6 @@
     transition: transform 0.3s ease;
 }
 
-/* Lớp phủ Gradient Tối Cung Đình (Layer) */
 .variant-layer {
     position: absolute;
     inset: 0;
@@ -117,7 +109,6 @@
     pointer-events: none;
 }
 
-/* Khối Thông Tin Trượt Lên Khi Hover (Info) */
 .variant-info {
     position: absolute;
     bottom: -60px;
@@ -153,7 +144,6 @@
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
-/* Nút Hộ Chiếu - Khí Thế Máu Đỏ Da Vàng Đất Việt */
 .variant-btn-select {
     display: flex;
     align-items: center;
@@ -211,9 +201,6 @@
     transform: scale(1.15) rotate(-5deg);
 }
 
-/* ==========================================================================
-   TRẠNG THÁI HOVER VÀ ACTIVE TRÊN THẺ ÁO DÀI
-   ========================================================================== */
 .variant-card:hover {
     transform: translateY(-6px) scale(1.015);
     border-color: rgba(15, 23, 42, 0.24);
@@ -243,7 +230,6 @@
     box-shadow: none;
 }
 
-/* Khi thẻ được bấm chọn */
 .variant-card.selected {
     border-color: rgba(15, 23, 42, 0.28);
     border-top-color: #a84e06;
@@ -261,4 +247,3 @@
         opacity: 1;
     }
 }
-

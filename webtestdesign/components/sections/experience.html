@@ -1,13 +1,10 @@
     <main class="main-content-flow">
-        <!-- ==============================================================
-             PHƯỢNG HOÀNG THĂNG LONG TÁI SINH DI SẢN (CELESTIAL HERITAGE PHOENIX)
-             Biểu tượng Phượng Hoàng uốn lượn: Lam men gốm AI ➔ Men ngọc ➔ Hoàng kim tơ tằm
-             ============================================================== -->
+
         <div class="dragon-stream-wrapper phoenix-theme" aria-hidden="true">
             <svg class="dragon-svg-canvas phoenix-svg-canvas" viewBox="0 0 1440 1800" fill="none"
                 preserveAspectRatio="none">
                 <defs>
-                    <!-- Gradient Dải Đuôi Phượng Hoàng: Lam cobalt AI -> Men ngọc bích -> Hổ phách hoàng kim -> Mờ tan êm dịu -->
+
                     <linearGradient id="phoenixBodyGrad" x1="0.88" y1="0.05" x2="0.25" y2="1">
                         <stop offset="0%" stop-color="#2563eb" stop-opacity="0.36" />
                         <stop offset="20%" stop-color="#3b82f6" stop-opacity="0.32" />
@@ -18,7 +15,7 @@
                         <stop offset="100%" stop-color="#b45309" stop-opacity="0" />
                     </linearGradient>
 
-                    <!-- Gradient Dải Lông Vũ Phụ -->
+
                     <linearGradient id="phoenixSecondaryGrad" x1="0.88" y1="0.05" x2="0.25" y2="1">
                         <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.30" />
                         <stop offset="35%" stop-color="#38bdf8" stop-opacity="0.26" />
@@ -27,7 +24,7 @@
                         <stop offset="100%" stop-color="#f59e0b" stop-opacity="0" />
                     </linearGradient>
 
-                    <!-- Gradient Sống Lưng & Chỉ Vàng Lông Vũ -->
+
                     <linearGradient id="phoenixSpineGrad" x1="0.88" y1="0.05" x2="0.25" y2="1">
                         <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.85" />
                         <stop offset="25%" stop-color="#38bdf8" stop-opacity="0.80" />
@@ -37,7 +34,7 @@
                         <stop offset="100%" stop-color="#f59e0b" stop-opacity="0" />
                     </linearGradient>
 
-                    <!-- Filter Ánh Sáng Mềm Mại -->
+
                     <filter id="phoenixGlow" x="-20%" y="-20%" width="140%" height="140%">
                         <feGaussianBlur stdDeviation="12" result="blur" />
                         <feComposite in="SourceGraphic" in2="blur" operator="over" />
@@ -49,30 +46,28 @@
                     </filter>
                 </defs>
 
-                <!-- Vệt Mây Ngũ Sắc Men Gốm Bay Lượn Quanh Phượng -->
+
                 <g class="phoenix-cloud-mist" opacity="0.65">
-                    <!-- Mây ngũ sắc Hero hữu -->
+
                     <path
                         d="M 1300 90 C 1370 50, 1430 110, 1400 170 C 1370 220, 1270 210, 1230 170 C 1200 130, 1240 90, 1300 90 Z"
                         fill="url(#phoenixBodyGrad)" filter="url(#phoenixGlow)" />
-                    <!-- Mây tả Hero -->
+
                     <path
                         d="M 160 420 C 230 380, 300 430, 270 490 C 240 540, 150 530, 120 480 C 100 440, 120 400, 160 420 Z"
                         fill="url(#phoenixSecondaryGrad)" filter="url(#phoenixGlow)" opacity="0.7" />
-                    <!-- Mây sườn tả cards -->
+
                     <path
                         d="M 180 840 C 260 800, 320 860, 290 920 C 260 960, 180 950, 140 910 C 110 870, 140 830, 180 840 Z"
                         fill="url(#phoenixBodyGrad)" filter="url(#phoenixGlow)" />
-                    <!-- Mây sườn hữu cards -->
+
                     <path
                         d="M 1240 1100 C 1320 1060, 1390 1120, 1360 1180 C 1320 1230, 1230 1210, 1190 1170 C 1160 1130, 1190 1090, 1240 1100 Z"
                         fill="url(#phoenixBodyGrad)" filter="url(#phoenixGlow)" />
                 </g>
 
-                <!-- ==============================================================
-                     DẢI ĐUÔI PHƯỢNG HOÀNG & DÒNG SÔNG DI SẢN UỐN LƯỢN HOÀNH TRÁNG (GRAND CELESTIAL STREAM)
-                     ============================================================== -->
-                <!-- 0. Dải Dòng Chảy Chìm Tầng Sâu (Deep River Undercurrent Glow) - Tỏa ánh sáng lung linh to bự -->
+
+
                 <path class="phoenix-river-deep" d="M 1280 200
                          C 1400 340, 1180 450, 940 490
                          C 680 530, 360 640, 280 820
@@ -82,7 +77,7 @@
                          C 440 1695, 180 1655, -60 1610" stroke="url(#phoenixSecondaryGrad)" stroke-width="78"
                     stroke-linecap="round" fill="none" opacity="0.38" filter="url(#phoenixGlow)" />
 
-                <!-- 1. Dải Lông Đuôi Phụ Bay Lượn Bồng Bềnh To Dày (Secondary Streamer) -->
+
                 <path class="phoenix-tail-secondary" d="M 1270 230
                          C 1380 360, 1190 460, 960 500
                          C 700 540, 380 650, 300 810
@@ -92,7 +87,7 @@
                          C 420 1675, 160 1635, -70 1590" stroke="url(#phoenixSecondaryGrad)" stroke-width="32"
                     stroke-linecap="round" fill="none" opacity="0.48" filter="url(#phoenixGlow)" />
 
-                <!-- 2. Thân & Dải Lông Đuôi Chính Hoàng Kim To Dày (Primary Grand Plume) -->
+
                 <path class="phoenix-tail-primary" d="M 1280 200
                          C 1400 340, 1180 450, 940 490
                          C 680 530, 360 640, 280 820
@@ -102,7 +97,7 @@
                          C 440 1695, 180 1655, -60 1610" stroke="url(#phoenixBodyGrad)" stroke-width="62"
                     stroke-linecap="round" fill="none" filter="url(#phoenixGlow)" />
 
-                <!-- 3. Sống Gân Vảy Rồng Hoàng Kim To Bự Như Cũ (Imperial Gold Dragon Spine & Scales) -->
+
                 <path class="phoenix-path-spine" d="M 1280 200
                          C 1400 340, 1180 450, 940 490
                          C 680 530, 360 640, 280 820
@@ -112,7 +107,7 @@
                          C 440 1695, 180 1655, -60 1610" stroke="url(#phoenixSpineGrad)" stroke-width="16"
                     stroke-linecap="round" stroke-dasharray="20 10" fill="none" />
 
-                <!-- 3b. Đường Viền Ánh Kim Nổi Khối 3D Chạy Song Hành Vảy Rồng -->
+
                 <path d="M 1280 196
                          C 1400 336, 1180 446, 940 486
                          C 680 526, 360 636, 280 816
@@ -122,7 +117,7 @@
                          C 440 1691, 180 1651, -60 1606" stroke="#fef08a" stroke-width="2.5"
                     stroke-linecap="round" fill="none" opacity="0.8" />
 
-                <!-- 4. Vệt Sáng Chuyển Động Dát Vàng (Light Pulse Ribbon) -->
+
                 <path class="phoenix-pulse-line" d="M 1280 200
                          C 1400 340, 1180 450, 940 490
                          C 680 530, 360 640, 280 820
@@ -132,7 +127,7 @@
                          C 440 1695, 180 1655, -60 1610" stroke="url(#phoenixSpineGrad)" stroke-width="4"
                     stroke-linecap="round" fill="none" />
 
-                <!-- 5. Dải Chỉ Men Lam Gốm Sứ Tơ Lụa Lăn Tăn Song Hành (Cyan Glaze Stitches) -->
+
                 <path class="phoenix-ripple-line" d="M 1270 216
                          C 1390 354, 1172 462, 932 502
                          C 672 542, 352 652, 272 832
@@ -142,7 +137,7 @@
                          C 432 1707, 172 1667, -68 1622" stroke="#0284c7" stroke-width="3"
                     stroke-linecap="round" stroke-dasharray="10 8" fill="none" opacity="0.85" />
 
-                <!-- 6. Dải Lông Đuôi Thứ 3 Lả Lướt Nhỏ Men Ngọc Bích -->
+
                 <path d="M 1250 250
                          C 1340 390, 1120 490, 910 530
                          C 670 570, 420 670, 340 820
@@ -152,14 +147,11 @@
                          C 420 1655, 170 1615, -60 1575" stroke="#2dd4bf" stroke-width="2.5"
                     stroke-linecap="round" stroke-dasharray="6 8" fill="none" opacity="0.7" />
 
-                <!-- ==============================================================
-                     HÌNH TƯỢNG PHƯỢNG HOÀNG THĂNG LONG TUNG CÁNH (HERITAGE PHOENIX HEAD & WINGS)
-                     Vị trí: Góc trên bên phải Hero
-                     ============================================================== -->
+
                 <g class="phoenix-celestial-body" transform="translate(1260, 150)">
-                    <!-- Đôi cánh phượng xòe rộng (Majestic Wings) -->
+
                     <g class="phoenix-wings">
-                        <!-- Cánh Thượng vươn cao lên góc phải (Upper Wing) -->
+
                         <path d="M -10,-20 C 40,-90 120,-110 160,-80 C 130,-60 80,-40 20,-10 Z"
                             fill="rgba(59, 130, 246, 0.28)" stroke="#3b82f6" stroke-width="1.8" />
                         <path d="M 20,-10 C 70,-70 145,-75 180,-45 C 145,-30 95,-15 35, 5 Z"
@@ -168,24 +160,24 @@
                             fill="rgba(13, 148, 136, 0.20)" stroke="#0d9488" stroke-width="1.5" />
                         <path d="M 45, 18 C 95,-15 155,-5 170, 20 C 135, 25 90, 25 40, 28 Z"
                             fill="rgba(217, 119, 6, 0.22)" stroke="#d97706" stroke-width="1.4" />
-                        <!-- Gân lông vũ cánh trên -->
+
                         <path d="M -5,-15 Q 80,-70 150,-78" stroke="#60a5fa" stroke-width="1.2" fill="none" />
                         <path d="M 15,-5 Q 95,-45 165,-42" stroke="#38bdf8" stroke-width="1.2" fill="none" />
                         <path d="M 30, 8 Q 105,-20 170,-8" stroke="#2dd4bf" stroke-width="1.2" fill="none" />
 
-                        <!-- Cánh Hạ dang ngang che chở (Lower Wing) -->
+
                         <path d="M -35, 10 C -90, 25 -140, 10 -170, -15 C -140, 8 -90, 35 -30, 32 Z"
                             fill="rgba(59, 130, 246, 0.24)" stroke="#3b82f6" stroke-width="1.6" />
                         <path d="M -30, 32 C -80, 50 -130, 40 -155, 15 C -125, 35 -75, 55 -20, 48 Z"
                             fill="rgba(13, 148, 136, 0.22)" stroke="#0d9488" stroke-width="1.5" />
                         <path d="M -20, 48 C -65, 70 -110, 65 -130, 42 C -105, 60 -60, 75 -10, 60 Z"
                             fill="rgba(217, 119, 6, 0.20)" stroke="#d97706" stroke-width="1.4" />
-                        <!-- Gân lông cánh dưới -->
+
                         <path d="M -35, 18 Q -105, 20 -155,-5" stroke="#60a5fa" stroke-width="1.2" fill="none" />
                         <path d="M -28, 38 Q -95, 45 -140, 22" stroke="#2dd4bf" stroke-width="1.2" fill="none" />
                     </g>
 
-                    <!-- Thân & Cổ Phượng Hoàng Duyên Dáng (Graceful Body & Neck) -->
+
                     <g class="phoenix-torso">
                         <path
                             d="M -20,-15 C -40,-35 -35,-65 -20,-85 C -5,-105 15,-100 20,-80 C 25,-60 10,-35 0,-15 C -5, 10 5, 35 15, 60 C 5, 65 -15, 40 -20,-15 Z"
@@ -193,19 +185,19 @@
                         <circle cx="-5" cy="-35" r="4.5" fill="#fef3c7" stroke="#b45309" stroke-width="1.2" />
                     </g>
 
-                    <!-- Đầu Phượng, Mào Mây & Mỏ Ngậm Ngọc (Phoenix Head & Crest) -->
+
                     <g class="phoenix-head" transform="translate(-15, -88)">
                         <path d="M 0,0 C -15,-10 -30,-8 -40, 2 C -30, 8 -15, 6 5, 10 C 15, 6 15,-4 0,0 Z"
                             fill="rgba(254, 243, 199, 0.85)" stroke="#b45309" stroke-width="1.6" />
                         <path d="M -40, 2 L -58, 6 L -38, 10 Z" fill="#d97706" stroke="#b45309" stroke-width="1.2" />
-                        <!-- Hạt ngọc minh châu tỏa sáng trước mỏ -->
+
                         <circle cx="-68" cy="8" r="9" fill="#93c5fd" filter="url(#phoenixSoftGlow)" />
                         <circle cx="-68" cy="8" r="4.5" fill="#ffffff" />
-                        <!-- Mắt phượng tinh anh -->
+
                         <circle cx="-16" cy="-1" r="3.2" fill="#78350f" />
                         <circle cx="-17" cy="-2" r="1.2" fill="#ffffff" />
                         <path d="M -24,-5 Q -14,-9 -6,-4" stroke="#b45309" stroke-width="1.2" fill="none" />
-                        <!-- Mào Phượng Thời Lý -->
+
                         <path d="M 2,-4 C 15,-25 35,-30 50,-20 C 40,-15 25,-15 12, 2" stroke="#2563eb"
                             stroke-width="1.8" fill="rgba(59, 130, 246, 0.3)" />
                         <path d="M 5, 0 C 25,-18 50,-18 68,-8 C 52,-5 35,-5 16, 6" stroke="#0d9488" stroke-width="1.6"
@@ -215,36 +207,33 @@
                     </g>
                 </g>
 
-                <!-- ==============================================================
-                     HOA VĂN LÔNG VŨ PHƯỢNG HOÀNG UỐN LƯỢN HOÀNG KIM (PHOENIX FILIGREE & CELESTIAL WISPS)
-                     Hoa văn uốn lượn duyên dáng của Phượng Hoàng Thăng Long bay vút lên trời cao
-                     ============================================================== -->
+
                 <g class="phoenix-filigree-system" opacity="0.92">
-                    <!-- 1. Các nhánh lông tơ phượng hoàng uốn cong mềm mại quanh sườn tả (Cạnh Thẻ 1) -->
+
                     <path class="phoenix-wisp" d="M 280 820 C 160 760, 120 660, 180 590 C 230 540, 300 600, 260 680 C 230 730, 180 770, 210 820"
                         stroke="url(#phoenixSecondaryGrad)" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.75" />
                     <path d="M 270 800 C 190 750, 160 670, 200 620" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"
                         stroke-dasharray="6 6" fill="none" opacity="0.8" />
 
-                    <!-- 2. Nhánh lông vũ phượng lả lướt giữa hai hàng thẻ (Khoảng giữa Thẻ 2 và Thẻ 5) -->
+
                     <path class="phoenix-wisp" d="M 620 1230 C 500 1180, 440 1090, 520 1020 C 580 970, 660 1040, 610 1120 C 580 1170, 540 1200, 570 1240"
                         stroke="url(#phoenixSecondaryGrad)" stroke-width="4.5" stroke-linecap="round" fill="none" opacity="0.75" />
                     <path d="M 610 1210 C 520 1160, 480 1090, 530 1040" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"
                         stroke-dasharray="8 6" fill="none" opacity="0.8" />
 
-                    <!-- 3. Dải lông đuôi phượng xòe cánh mềm mại phía hữu (Sườn Thẻ 3 và Thẻ 6) -->
+
                     <path class="phoenix-wisp" d="M 1260 1540 C 1380 1460, 1440 1360, 1380 1280 C 1320 1220, 1220 1290, 1270 1380 C 1310 1440, 1360 1480, 1300 1540"
                         stroke="url(#phoenixSecondaryGrad)" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.8" />
                     <path d="M 1240 1520 C 1340 1450, 1390 1370, 1350 1300" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round"
                         stroke-dasharray="8 6" fill="none" opacity="0.85" />
 
-                    <!-- 4. Lông tơ phượng hoàng uốn lượn nhịp nhàng dưới chân hàng thẻ số 2 (Thẻ 4, 5, 6) -->
+
                     <path class="phoenix-wisp" d="M 700 1705 C 840 1660, 920 1580, 880 1510 C 840 1460, 760 1500, 780 1580 C 800 1640, 850 1670, 790 1705"
                         stroke="url(#phoenixSecondaryGrad)" stroke-width="4.5" stroke-linecap="round" fill="none" opacity="0.75" />
                     <path d="M 440 1695 C 340 1660, 270 1590, 310 1520 C 350 1470, 420 1510, 400 1580"
                         stroke="#fbbf24" stroke-width="2.2" stroke-dasharray="6 6" fill="none" opacity="0.8" />
 
-                    <!-- 5. Các tia kim quang & hạt ngọc châu bay lượn cùng phượng hoàng -->
+
                     <g class="phoenix-sparks" fill="#fbbf24" opacity="0.8">
                         <circle cx="290" cy="800" r="4" filter="url(#phoenixGlow)" />
                         <circle cx="260" cy="760" r="2.5" />
@@ -257,7 +246,7 @@
                         <circle cx="420" cy="1680" r="4" filter="url(#phoenixGlow)" />
                     </g>
 
-                    <!-- 6. Cụm mây khánh thời Lê nâng đỡ dải phượng dưới chân thẻ -->
+
                     <g transform="translate(860, 1675) scale(1.3)">
                         <g class="cloud-float-anim">
                             <path
@@ -269,9 +258,7 @@
                     </g>
                 </g>
 
-                <!-- ==============================================================
-                     CÁC MẮT LÔNG PHƯỢNG (PHOENIX FEATHER EYES / OCELLI) TO SÁNG RỰC RỠ NHƯ CŨ
-                     ============================================================== -->
+
                 <g class="phoenix-ocellus" transform="translate(1280, 200)">
                     <circle cx="0" cy="0" r="22" fill="#60a5fa" filter="url(#phoenixGlow)" opacity="0.88" />
                     <circle cx="0" cy="0" r="12" fill="#ffffff" stroke="#2563eb" stroke-width="2" />
@@ -313,7 +300,7 @@
         <div class="hero-glow"></div>
         <section class="hero-section container">
             <div class="hero-editorial-grid">
-                <!-- Left Column: Editorial Headings -->
+
                 <div class="hero-left-col">
                     <h1 class="hero-title-editorial">
                         Tái sinh Hoa văn Gốm Bát Tràng<br>trên <span class="highlight">Tà Áo Dài Đương đại</span>
@@ -328,11 +315,9 @@
             </div>
         </section>
 
-        <!-- ==========================================================================
-             CATALOG SECTION: Kho báu Men sắc & Họa phẩm (Figma Make & Stitch)
-             ========================================================================== -->
+
         <section class="showcase-section container" id="hien-vat">
-            <!-- Header Bar -->
+
             <div class="showcase-header-bar">
                 <div class="showcase-title-group">
                     <h2>Kho báu Men sắc & Họa phẩm</h2>
@@ -344,7 +329,7 @@
                 </div>
             </div>
 
-            <!-- Filter Chips -->
+
             <div class="filter-chips-container">
                 <button class="filter-chip active" data-filter="all">Tất cả (6)</button>
                 <button class="filter-chip" data-filter="men-ran">Men rạn cổ</button>
@@ -353,16 +338,13 @@
                 <button class="filter-chip" data-filter="trang-tri">Đề tài Trang trí</button>
             </div>
 
-            <!-- 6 Heritage Cards Grid -->
+
             <div class="cards-grid-6" id="heritage-cards-grid">
-                <!-- Sẽ được render động và có sẵn dự phòng qua JS -->
+
             </div>
         </section>
 
-        <!-- ==========================================================================
-             DẢI SÓNG MÂY CHUYỂN TIẾP (DRAGON WAVE TRANSITION BRIDGE)
-             Hòa sắc mượt mà giữa Nền Sứ Hiện Đại & Nền Lụa Ngà Cổ Điển
-             ========================================================================== -->
+
         <div class="dragon-wave-bridge" id="dragon-wave-bridge" aria-hidden="true" style="display: none;">
             <svg class="wave-bridge-svg" viewBox="0 0 1440 70" fill="none" preserveAspectRatio="none">
                 <defs>

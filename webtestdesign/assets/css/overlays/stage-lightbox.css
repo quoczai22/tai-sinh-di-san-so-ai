@@ -1,6 +1,4 @@
-/* ==========================================================================
-   PIPELINE MODAL FOOTER & NÚT ĐIỀU KHIỂN
-   ========================================================================== */
+
 .pipeline-modal-card {
     position: relative;
 }
@@ -73,9 +71,6 @@
     border-color: #2563eb;
 }
 
-/* ==========================================================================
-   MODAL SOI CHI TIẾT TỪNG PHA (Stage Detail Lightbox Modal)
-   ========================================================================== */
 .stage-lightbox-overlay {
     position: fixed;
     top: 0;
@@ -214,4 +209,3 @@
     background: #2563eb;
     color: #ffffff;
 }
-
