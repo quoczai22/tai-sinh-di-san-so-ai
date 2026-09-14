@@ -9,7 +9,7 @@
     --primary: #1d4ed8;          /* Xanh lam gốm Bát Tràng rực rỡ */
     --primary-light: #3b82f6;
     --primary-subtle: #eff6ff;   /* Xanh lam nhạt */
-    --accent: #d97706;           /* Màu men gốm / vàng hoàng thổ */
+    --accent: #a84e06;           /* Màu men gốm / vàng hoàng thổ — tương phản tốt hơn trên nền sáng */
     --accent-light: #fef3c7;    /* Vàng hoàng kim nhạt */
     --accent-glow: rgba(217, 119, 6, 0.18);
     
@@ -23,7 +23,7 @@
     /* Text Colors - Tương phản cao trên nền trắng */
     --text-primary: #0f172a;     /* Chữ đen than đậm sắc nét */
     --text-secondary: #475569;   /* Xám trầm thanh lịch */
-    --text-muted: #64748b;
+    --text-muted: #52657c;
 
     /* Pill Nav specific */
     --nav-bg: rgba(255, 255, 255, 0.88);
@@ -78,4 +78,23 @@ button {
     border: none;
     outline: none;
     background: none;
+}
+
+/* Accessibility: Focus Visible cho bàn phím */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+/* Accessibility: Hỗ trợ giảm chuyển động cho người dùng nhạy cảm */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }

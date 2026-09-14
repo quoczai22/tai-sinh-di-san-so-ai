@@ -1,0 +1,155 @@
+/* ==========================================================================
+   BƯỚC 3: MÀN HÌNH TIẾN TRÌNH PIPELINE 4 PHA (Live Pipeline Modal)
+   ========================================================================== */
+.pipeline-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 2500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.pipeline-modal-overlay.active {
+    display: flex;
+}
+
+.pipeline-modal-card {
+    background: #ffffff;
+    border-radius: 28px;
+    max-width: 900px;
+    width: 100%;
+    padding: 36px 40px;
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.3);
+    animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pipeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.pipeline-title-group h3 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pipeline-live-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #2563eb;
+    border: 3px solid rgba(37, 99, 235, 0.16);
+}
+
+.pipeline-title-group p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.pipeline-progress-bar-wrap {
+    background: #f1f5f9;
+    height: 8px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    position: relative;
+}
+
+.pipeline-progress-bar {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #1d4ed8, #f59e0b);
+    border-radius: 10px;
+    transform: scaleX(var(--progress, 0));
+    transform-origin: left center;
+    transition: transform 0.4s ease;
+}
+
+.pipeline-stages-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.pipeline-stage-card {
+    background: #f8fafc;
+    border: 1.5px solid var(--border-subtle);
+    border-radius: 18px;
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s ease;
+    opacity: 0.5;
+}
+
+.pipeline-stage-card.running {
+    opacity: 1;
+    border-color: #2563eb;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1);
+    background: #eff6ff;
+}
+
+.pipeline-stage-card.done {
+    opacity: 1;
+    border-color: #1d4ed8;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+    background: #ffffff;
+}
+
+.stage-img-preview {
+    width: 100%;
+    height: 110px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stage-img-preview img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.stage-num-badge {
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 4px;
+}
+
+.stage-card-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.stage-card-desc {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+

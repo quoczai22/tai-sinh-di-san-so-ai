@@ -1,0 +1,133 @@
+    <!-- ==========================================================================
+         FOOTER BÁT TRÀNG ĐỒNG BỘ NỀN TRẮNG SỨ SÁNG TẠO (HERITAGE WHITE FOOTER)
+         Thiết kế nền trắng vẽ dòng sông uốn lượn đồng bộ Bước 1, không che hình vẽ
+         ========================================================================== -->
+    <footer class="site-footer bat-trang-glaze-footer" id="site-footer">
+        <!-- SVG Canvas Dòng Sông Di Sản Bát Tràng Trong Footer -->
+        <div class="footer-river-backdrop" aria-hidden="true">
+            <svg class="footer-river-svg" viewBox="0 0 1440 420" fill="none" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="footerRiverGrad1" x1="0" y1="0.5" x2="1" y2="0.5">
+                        <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.22" />
+                        <stop offset="30%" stop-color="#0ea5e9" stop-opacity="0.18" />
+                        <stop offset="65%" stop-color="#14b8a6" stop-opacity="0.16" />
+                        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.20" />
+                    </linearGradient>
+
+                    <linearGradient id="footerRiverGrad2" x1="0" y1="0.5" x2="1" y2="0.5">
+                        <stop offset="0%" stop-color="#2563eb" stop-opacity="0.30" />
+                        <stop offset="45%" stop-color="#0284c7" stop-opacity="0.25" />
+                        <stop offset="78%" stop-color="#d97706" stop-opacity="0.28" />
+                        <stop offset="100%" stop-color="#b45309" stop-opacity="0.32" />
+                    </linearGradient>
+
+                    <linearGradient id="footerRiverSpine" x1="0" y1="0.5" x2="1" y2="0.5">
+                        <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.75" />
+                        <stop offset="35%" stop-color="#38bdf8" stop-opacity="0.70" />
+                        <stop offset="70%" stop-color="#2dd4bf" stop-opacity="0.65" />
+                        <stop offset="100%" stop-color="#fbbf24" stop-opacity="0.80" />
+                    </linearGradient>
+                </defs>
+
+                <!-- 1. Dải dòng chảy sâu (Deep Current Ribbon) - Tràn trọn vẹn từ mép trái qua mép phải -->
+                <path class="footer-stream-ribbon-deep" d="M -120 70
+                         C 180 140, 440 30, 720 100
+                         C 1000 170, 1260 50, 1560 120" stroke="url(#footerRiverGrad1)" stroke-width="64"
+                    fill="none" />
+
+                <!-- 2. Dải dòng chảy chính của khúc sông (Main River Current) -->
+                <path class="footer-stream-ribbon-main" d="M -100 60
+                         C 190 130, 450 20, 730 90
+                         C 1010 160, 1270 40, 1560 110" stroke="url(#footerRiverGrad2)" stroke-width="28"
+                    fill="none" />
+
+                <!-- 3. Sống dòng sông dát vàng ánh kim đứt nét đồng điệu Bước 1 -->
+                <path class="footer-stream-spine" d="M -100 60
+                         C 190 130, 450 20, 730 90
+                         C 1010 160, 1270 40, 1560 110" stroke="url(#footerRiverSpine)" stroke-width="2.5"
+                    stroke-dasharray="14 10" fill="none" />
+
+                <!-- 4. Đường gợn sóng lăn tăn (Ripples) phủ đều các khoảng -->
+                <path d="M -40 90 C 180 140, 380 60, 560 50" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="8 6"
+                    fill="none" opacity="0.65" />
+                <path d="M 680 90 C 880 150, 1080 75, 1280 45" stroke="#2dd4bf" stroke-width="1.8"
+                    stroke-dasharray="8 6" fill="none" opacity="0.65" />
+                <path d="M 1180 55 C 1300 80, 1420 115, 1560 100" stroke="#f59e0b" stroke-width="1.8"
+                    stroke-dasharray="6 6" fill="none" opacity="0.7" />
+
+                <!-- 5. Chú cá chép Bát Tràng bơi lội dưới khúc sông footer -->
+                <g class="footer-carp" transform="translate(640, 70) rotate(-14)">
+                    <path
+                        d="M -28 0 C -20 -15, 4 -18, 26 -10 C 40 -5, 48 0, 54 0 C 48 0, 40 5, 26 10 C 4 18, -20 15, -28 0 Z"
+                        fill="rgba(245, 158, 11, 0.25)" stroke="#d97706" stroke-width="1.6" />
+                    <path d="M -28 0 C -44 -10, -62 -12, -72 -4 C -62 2, -48 2, -28 0 Z" fill="rgba(217, 119, 6, 0.28)"
+                        stroke="#b45309" stroke-width="1.2" />
+                    <path d="M -28 0 C -44 10, -62 12, -72 4 C -62 -2, -48 -2, -28 0 Z" fill="rgba(37, 99, 235, 0.25)"
+                        stroke="#2563eb" stroke-width="1.2" />
+                    <circle cx="40" cy="-3.5" r="2.2" fill="#78350f" />
+                    <circle cx="41" cy="-4.2" r="0.8" fill="#ffffff" />
+                    <path d="M 52 -2 C 60 -5, 68 -2, 74 -5" stroke="#d97706" stroke-width="1" stroke-linecap="round"
+                        fill="none" />
+                </g>
+
+                <!-- 6. Bọt nước lấp lánh (River Sparkles) -->
+                <g class="footer-river-bubbles" fill="#38bdf8" opacity="0.6">
+                    <circle cx="280" cy="270" r="3.5" />
+                    <circle cx="310" cy="285" r="2.5" />
+                    <circle cx="700" cy="170" r="4" />
+                    <circle cx="720" cy="155" r="2.5" />
+                    <circle cx="1160" cy="140" r="4" fill="#fbbf24" />
+                    <circle cx="1180" cy="125" r="2.8" fill="#fbbf24" />
+                </g>
+            </svg>
+        </div>
+
+        <div class="glaze-footer-inner">
+            <div class="container">
+                <div class="glaze-footer-grid">
+                    <div class="footer-identity">
+                        <div class="footer-mark" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M7 4h10l-1 5v8.2A2.8 2.8 0 0 1 13.2 20h-2.4A2.8 2.8 0 0 1 8 17.2V9L7 4Z" />
+                                <path d="M6 4h12M9 12h6M9 15h6" />
+                            </svg>
+                        </div>
+                        <p class="footer-eyebrow">DẤU ẤN DI SẢN</p>
+                        <h2>Tái sinh Di sản Số</h2>
+                        <p class="footer-intro">Không gian truy vấn bảo tồn một thuật cổ truyền. Nơi men rạn, lam chàm
+                            của gốm Bát Tràng hòa sắc cùng dáng hình tà áo dài lụa Việt Nam đương đại.</p>
+                    </div>
+
+                    <div class="footer-column">
+                        <h3 class="footer-col-title">HÀNH TRÌNH GIÁC QUAN</h3>
+                        <ul class="footer-col-links">
+                            <li><a href="#heritage-cards-section" id="footer-link-step1">Hiện vật Gốm Bát Tràng</a></li>
+                            <li><a href="#heritage-cards-section">Sắc thái Men Lam &amp; Men Rạn</a></li>
+                            <li><a href="#curate-section" id="footer-link-step4">Hồ Sơ Chứng Chỉ Di Sản</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h3 class="footer-col-title">TRIẾT LÝ GIỮ GÌN</h3>
+                        <p class="footer-column-note">Mỗi đường nét là một đối thoại giữa nghệ nhân xưa và thế hệ sáng
+                            tạo mai sau.</p>
+                    </div>
+
+                    <div class="footer-invitation">
+                        <p class="footer-eyebrow">ĐỊA CHỈ DI SẢN</p>
+                        <p class="footer-place">Hà Nội · Bát Tràng · Việt Nam</p>
+                        <p class="footer-platform-note">Nền tảng tinh hoa di sản và mỹ thuật</p>
+                    </div>
+                </div>
+
+                <!-- Dải Đáy Bản Quyền Tinh Tế -->
+                <div class="footer-bottom-bar">
+                    <p class="footer-copy-text">&copy; 2026 Tái sinh Di sản Số. Bảo tồn &amp; Trao truyền Văn hóa Việt
+                        Nam.</p>
+                    <p class="footer-note">Bản thiết kế trải nghiệm · Dữ liệu và kết quả hiện tại dùng cho mục đích minh
+                        họa.</p>
+                </div>
+            </div>
+        </div>
+    </footer>

@@ -1,0 +1,85 @@
+    <!-- ==========================================================================
+         STEPPER NAVIGATION BAR (Figma Make & Stitch Style)
+         ========================================================================== -->
+    <div class="framer-nav-wrapper">
+        <header class="framer-navbar">
+            <!-- Brand / Logo -->
+            <a href="./index.html" class="nav-logo" title="Di Sản Số - Gốm Bát Tràng">
+                <div class="nav-logo-icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </div>
+                <span>DIGITAL HERITAGE</span>
+            </a>
+
+            <!-- 4-Step Process Stepper -->
+            <nav>
+                <ul class="nav-links">
+                    <li class="stepper-item active" id="step-1-btn">
+                        <span>1. Chọn hiện vật</span>
+                    </li>
+                    <span class="stepper-arrow">→</span>
+                    <li class="stepper-item" id="step-2-btn">
+                        <span>2. Xem mô tả</span>
+                    </li>
+                    <span class="stepper-arrow">→</span>
+                    <li class="stepper-item has-popover" id="step-3-btn">
+                        <span>3. Đang tạo</span>
+                        <!-- Hover Card xem nhanh tiến trình con -->
+                        <div class="stepper-hover-card" id="step-3-hover-card">
+                            <div class="hover-card-header">
+                                <span class="hover-card-dot"></span>
+                                <span>Quy trình kỹ thuật 4 pha (MVP v6.1)</span>
+                            </div>
+                            <div class="hover-card-phases">
+                                <div class="hover-phase-item">
+                                    <span class="hover-phase-num">01</span>
+                                    <div class="hover-phase-info">
+                                        <strong>Tách nền & Canny</strong>
+                                        <small>Trích xuất viền hoa văn phẳng</small>
+                                    </div>
+                                </div>
+                                <div class="hover-phase-item">
+                                    <span class="hover-phase-num">02</span>
+                                    <div class="hover-phase-info">
+                                        <strong>Sinh hoa văn phẳng</strong>
+                                        <small>Seamless Tile tuần hoàn</small>
+                                    </div>
+                                </div>
+                                <div class="hover-phase-item">
+                                    <span class="hover-phase-num">03</span>
+                                    <div class="hover-phase-info">
+                                        <strong>Ghép nếp vải</strong>
+                                        <small>Displacement & Shading Map</small>
+                                    </div>
+                                </div>
+                                <div class="hover-phase-item">
+                                    <span class="hover-phase-num">04</span>
+                                    <div class="hover-phase-info">
+                                        <strong>Lượt hoàn thiện</strong>
+                                        <small>img2img Denoise 0.40 lụa tơ tằm</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hover-card-footer">
+                                <span>Nhấp để mở chi tiết 4 giai đoạn ↗</span>
+                            </div>
+                        </div>
+                    </li>
+                    <span class="stepper-arrow">→</span>
+                    <li class="stepper-item" id="step-4-btn">
+                        <span>4. Chọn thiết kế</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Phiên bản MVP -->
+            <div class="nav-actions">
+                <span class="mvp-badge">MVP v6.1</span>
+            </div>
+        </header>
+    </div>

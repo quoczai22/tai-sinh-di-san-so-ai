@@ -1,0 +1,348 @@
+    <section class="curate-section" id="curate-section" style="display: none;">
+        <!-- Canvas Họa Phẩm Cổ Điển: Rồng Thời Lý, Hoa Sen Gốm Dây, Mây Khánh & Sóng Nước Thủy Ba -->
+        <div class="curate-antique-artwork" aria-hidden="true">
+            <svg class="curate-antique-svg" viewBox="0 0 1600 1100" fill="none" preserveAspectRatio="none">
+                <defs>
+                    <!-- Pattern Vân Rạn Men Sứ Bát Tràng (Crackle Glaze) -->
+                    <pattern id="curateCracklePattern" width="160" height="160" patternUnits="userSpaceOnUse">
+                        <path
+                            d="M 0,40 L 45,20 L 90,55 L 140,30 L 160,50 M 45,20 L 50,85 L 95,110 L 160,95 M 90,55 L 125,120 L 110,160 M 0,115 L 50,85 M 95,110 L 60,160"
+                            stroke="#b45309" stroke-width="0.75" stroke-opacity="0.08" fill="none" />
+                    </pattern>
+
+                    <!-- Gradient Vàng Men Rạn Hoàng Gia -->
+                    <linearGradient id="antiqueGoldLine" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#d97706" stop-opacity="0.6" />
+                        <stop offset="50%" stop-color="#b45309" stop-opacity="0.45" />
+                        <stop offset="100%" stop-color="#78350f" stop-opacity="0.6" />
+                    </linearGradient>
+
+                    <!-- Filter Sóng Uốn Lượn Cực Êm Dịu & Chậm Rãi (Serene Ultra-Gentle Dragon Undulation) -->
+                    <filter id="dragonFluidUndulation" x="-20%" y="-20%" width="140%" height="140%">
+                        <feTurbulence type="fractalNoise" baseFrequency="0.005 0.010" numOctaves="2"
+                            result="fluidNoise">
+                            <animate attributeName="baseFrequency" dur="36s"
+                                values="0.005 0.010; 0.0065 0.013; 0.005 0.010" repeatCount="indefinite" />
+                        </feTurbulence>
+                        <feDisplacementMap in="SourceGraphic" in2="fluidNoise" scale="6.5" xChannelSelector="R"
+                            yChannelSelector="G" result="undulatedDragon" />
+                    </filter>
+
+                    <!-- Gradient Thân Rồng Cổ Điển -->
+                    <linearGradient id="antiqueDragonBody" x1="1" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.22" />
+                        <stop offset="40%" stop-color="#d97706" stop-opacity="0.18" />
+                        <stop offset="80%" stop-color="#b45309" stop-opacity="0.14" />
+                        <stop offset="100%" stop-color="#1e3a8a" stop-opacity="0.10" />
+                    </linearGradient>
+
+                    <!-- Gradient Ánh Lửa Châu Ngọc -->
+                    <radialGradient id="pearlGlow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#fef3c7" stop-opacity="0.9" />
+                        <stop offset="40%" stop-color="#f59e0b" stop-opacity="0.6" />
+                        <stop offset="100%" stop-color="#b45309" stop-opacity="0" />
+                    </radialGradient>
+                </defs>
+
+                <!-- Lớp nền Men Rạn Chìm -->
+                <rect width="1600" height="1100" fill="url(#curateCracklePattern)" />
+
+                <!-- ==============================================================
+                     1. RỒNG THỜI LÝ 12 KHÚC UỐN LƯỢN HÌNH SIN KINH ĐIỂN
+                     Đồng bộ chuyển động nhịp nhàng, vừa phải cùng Phượng Hoàng Thăng Long
+                     ============================================================== -->
+                <g class="antique-dragon-group">
+                    <!-- Thân rồng 12 khúc uốn lượn dày dặn mạ vàng men rạn -->
+                    <path class="antique-dragon-body-fill" d="M 1435,105
+                             C 1390,30 1310,35 1250,90
+                             C 1190,145 1110,45 1030,75
+                             C 950,105 880,45 800,80
+                             C 720,115 650,55 570,95
+                             C 470,145 370,110 270,180
+                             C 170,250 90,370 120,500
+                             C 150,630 260,685 380,660
+                             C 500,635 590,725 700,695
+                             C 810,665 900,735 1010,695
+                             C 1120,655 1220,725 1330,675
+                             C 1440,625 1540,715 1520,835
+                             C 1500,935 1390,955 1270,905
+                             C 1150,855 1040,945 920,915
+                             C 800,885 710,955 590,925
+                             C 490,895 410,935 340,900" stroke="url(#antiqueDragonBody)" stroke-width="52"
+                        stroke-linecap="round" stroke-linejoin="round" fill="none" />
+
+                    <!-- Đường sống lưng 12 khúc uốn dát vàng -->
+                    <path class="antique-dragon-spine" d="M 1435,105
+                             C 1390,30 1310,35 1250,90
+                             C 1190,145 1110,45 1030,75
+                             C 950,105 880,45 800,80
+                             C 720,115 650,55 570,95
+                             C 470,145 370,110 270,180
+                             C 170,250 90,370 120,500
+                             C 150,630 260,685 380,660
+                             C 500,635 590,725 700,695
+                             C 810,665 900,735 1010,695
+                             C 1120,655 1220,725 1330,675
+                             C 1440,625 1540,715 1520,835
+                             C 1500,935 1390,955 1270,905
+                             C 1150,855 1040,945 920,915
+                             C 800,885 710,955 590,925
+                             C 490,895 410,935 340,900" stroke="url(#antiqueGoldLine)" stroke-width="2.6"
+                        stroke-linecap="round" fill="none" />
+
+                    <!-- Vệt sáng năng lượng chạy dọc 12 khúc sống lưng rồng cổ -->
+                    <path class="antique-dragon-pulse-line" d="M 1435,105
+                             C 1390,30 1310,35 1250,90
+                             C 1190,145 1110,45 1030,75
+                             C 950,105 880,45 800,80
+                             C 720,115 650,55 570,95
+                             C 470,145 370,110 270,180
+                             C 170,250 90,370 120,500
+                             C 150,630 260,685 380,660
+                             C 500,635 590,725 700,695
+                             C 810,665 900,735 1010,695
+                             C 1120,655 1220,725 1330,675
+                             C 1440,625 1540,715 1520,835
+                             C 1500,935 1390,955 1270,905
+                             C 1150,855 1040,945 920,915
+                             C 800,885 710,955 590,925
+                             C 490,895 410,935 340,900" stroke="#fbbf24" stroke-width="3.5" stroke-linecap="round"
+                        fill="none" />
+
+                    <!-- Đuôi rồng thắt túi xòe ngọn lửa thời Lý -->
+                    <g class="dragon-tail-flame" transform="translate(340, 900)">
+                        <path d="M 0,0 C -30,-15 -60,-8 -85,-25 C -70,-5 -45,5 -15,10 Z" fill="#d97706"
+                            opacity="0.85" />
+                        <path d="M 0,0 C -40,5 -80,0 -110,-10 C -90,15 -55,20 -10,12 Z" fill="#b45309" opacity="0.9" />
+                        <path d="M 0,0 C -35,25 -70,30 -95,45 C -75,32 -45,22 -8,12 Z" fill="#f59e0b" opacity="0.8" />
+                        <path d="M -10,12 Q -60,25 -105,15" stroke="#f59e0b" stroke-width="1.8" fill="none" />
+                        <path d="M -15,10 Q -50,-5 -80,-20" stroke="#fbbf24" stroke-width="1.5" fill="none" />
+                    </g>
+
+                    <!-- Vây lưng rồng hình tia lửa thời Lý dọc 12 đỉnh sóng -->
+                    <path class="antique-dragon-fins" d="M 1390,45 Q 1405,25 1380,38
+                             M 1250,55 Q 1265,32 1240,48
+                             M 1110,48 Q 1125,25 1100,42
+                             M 970,55 Q 985,30 960,50
+                             M 830,55 Q 845,32 820,50
+                             M 690,65 Q 705,42 680,60
+                             M 560,95 Q 575,70 550,90
+                             M 390,135 Q 405,108 380,130
+                             M 240,210 Q 255,185 230,205
+                             M 140,320 Q 150,290 130,315
+                             M 110,440 Q 105,410 100,435
+                             M 140,560 Q 130,530 135,555
+                             M 230,640 Q 220,610 228,635
+                             M 370,640 Q 370,610 375,635
+                             M 510,640 Q 515,610 518,635
+                             M 680,680 Q 690,650 688,675
+                             M 820,660 Q 830,630 828,655
+                             M 990,680 Q 1005,650 998,675
+                             M 1130,650 Q 1145,620 1138,645
+                             M 1310,670 Q 1325,640 1318,665
+                             M 1460,670 Q 1480,640 1470,665
+                             M 1535,780 Q 1555,750 1540,775
+                             M 1480,880 Q 1500,850 1485,875
+                             M 1330,890 Q 1345,860 1338,885
+                             M 1160,870 Q 1175,840 1168,865
+                             M 980,900 Q 995,870 988,895
+                             M 790,890 Q 805,860 798,885
+                             M 610,910 Q 625,880 618,905
+                             M 450,900 Q 465,870 458,895" stroke="#d97706" stroke-width="1.8" stroke-linecap="round"
+                        fill="none" opacity="0.7" />
+
+                    <!-- Hạt Minh Châu Ngậm Ngọc & Hào Quang Cổ Điển -->
+                    <g class="dragon-pearl-group" transform="translate(1360, 95)">
+                        <circle cx="0" cy="0" r="36" fill="url(#pearlGlow)" />
+                        <circle class="pearl-core" cx="0" cy="0" r="14" fill="#fef3c7" stroke="#b45309"
+                            stroke-width="1.8" />
+                        <!-- Ngọn lửa châu báu (Flame Tongues) -->
+                        <g class="dragon-pearl-flames">
+                            <path d="M 0,-14 C -8,-28 0,-40 2,-46 C 8,-38 12,-26 8,-14" fill="#f59e0b" opacity="0.8" />
+                            <path d="M 14,0 C 28,-8 40,0 46,2 C 38,8 26,12 14,8" fill="#d97706" opacity="0.8" />
+                            <path d="M 0,14 C 8,28 0,40 -2,46 C -8,38 -12,26 -8,14" fill="#b45309" opacity="0.8" />
+                            <path d="M -14,0 C -28,8 -40,0 -46,-2 C -38,-8 -26,-12 -14,-8" fill="#f59e0b"
+                                opacity="0.8" />
+                        </g>
+                    </g>
+
+                    <!-- Đầu Rồng Thời Lý Chầu Về Tiêu Đề Áo Dài -->
+                    <g class="dragon-head-group" transform="translate(1435, 105)">
+                        <!-- Hàm trên vươn ra ngậm ngọc -->
+                        <path class="dragon-upper-jaw"
+                            d="M -45,-5 C -40,-25 -15,-30 5,-22 C 25,-15 45,-25 65,-15 C 80, -5 70, 15 50, 18 C 30, 20 15, 12 -5, 10 C -25, 8 -40, 15 -50, 5 Z"
+                            stroke="#b45309" stroke-width="2" fill="rgba(245, 158, 11, 0.15)" />
+                        <!-- Hàm dưới mở rộng uy nghi -->
+                        <path class="dragon-lower-jaw" d="M -45, 12 C -35, 28 -15, 32 10, 26 C 25, 22 35, 28 45, 20"
+                            stroke="#b45309" stroke-width="1.8" stroke-linecap="round" fill="none" />
+                        <!-- Lưỡi rồng mác lửa vươn tới ngọc -->
+                        <path class="dragon-tongue" d="M -45, 2 C -65, 0 -75, -8 -85, -2 C -75, 4 -60, 6 -45, 8"
+                            fill="#f59e0b" opacity="0.85" />
+                        <!-- Mắt rồng tinh anh -->
+                        <circle class="dragon-eye" cx="10" cy="-10" r="5" fill="#78350f" />
+                        <circle cx="8" cy="-12" r="1.8" fill="#fff" />
+                        <path d="M 0,-16 C 10,-20 25,-18 30,-12" stroke="#b45309" stroke-width="1.4" fill="none" />
+                        <!-- Mũi rồng sư tử uốn mây -->
+                        <path class="dragon-snout" d="M -40,-15 C -48,-30 -35,-42 -22,-36 C -15,-32 -18,-20 -25,-18"
+                            stroke="#d97706" stroke-width="1.6" fill="rgba(254, 243, 199, 0.5)" />
+                        <!-- Bờm rồng lượn sóng tơ lụa 3 tầng -->
+                        <g class="dragon-mane-group">
+                            <path class="dragon-mane-strand strand-1" d="M 35,-25 C 75,-55 125,-45 160,-65"
+                                stroke="#d97706" stroke-width="2" stroke-linecap="round" fill="none" />
+                            <path class="dragon-mane-strand strand-2" d="M 45,-10 C 90,-35 140,-25 175,-40"
+                                stroke="#b45309" stroke-width="1.8" stroke-linecap="round" fill="none" />
+                            <path class="dragon-mane-strand strand-3" d="M 50, 8 C 95,-10 145, 10 180,-8"
+                                stroke="#d97706" stroke-width="1.6" stroke-linecap="round" fill="none" />
+                        </g>
+                        <!-- Râu rồng uốn lượn chữ S kinh điển -->
+                        <g class="dragon-whisker-group">
+                            <path class="dragon-whisker-strand whisker-1" d="M -35, -5 C -65, -30 -85, 10 -115, -15"
+                                stroke="#b45309" stroke-width="1.8" stroke-linecap="round" fill="none" />
+                            <path class="dragon-whisker-strand whisker-2" d="M -30, 8 C -55, -10 -75, 25 -105, 5"
+                                stroke="#d97706" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.8" />
+                        </g>
+                    </g>
+
+                    <!-- Móng vuốt rồng mềm mại vươn ra tại các khúc uốn -->
+                    <g class="dragon-claw claw-left" transform="translate(360, 640)">
+                        <path d="M 0,0 C 20,-20 40,-15 55,-35 M 40,-15 Q 60,-25 75,-15 M 35,-5 Q 55,-10 65,5"
+                            stroke="#b45309" stroke-width="1.8" stroke-linecap="round" fill="none" />
+                    </g>
+                    <g class="dragon-claw claw-right" transform="translate(850, 750)">
+                        <path d="M 0,0 C 20,20 40,15 55,35 M 40,15 Q 60,25 75,15 M 35,5 Q 55,10 65,-5" stroke="#b45309"
+                            stroke-width="1.8" stroke-linecap="round" fill="none" />
+                    </g>
+                </g>
+
+                <!-- 2. CÁNH TẢ: KHÓM SEN GỐM BÁT TRÀNG CỔ TRUYỀN (Dây sen, đài sen & lá sen) -->
+                <g class="antique-lotus-flank" transform="translate(15, 170)">
+                    <path d="M 40,750 C 70,600 20,480 60,360 C 100,240 50,120 90,20" stroke="#b45309" stroke-width="2"
+                        stroke-linecap="round" stroke-dasharray="4 2" fill="none" opacity="0.45" />
+                    <path d="M 40,750 C 70,600 20,480 60,360 C 100,240 50,120 90,20" stroke="#d97706" stroke-width="1.2"
+                        stroke-linecap="round" fill="none" opacity="0.6" />
+
+                    <!-- Hoa Sen Nở Cung Đình -->
+                    <g class="lotus-flower" transform="translate(90, 25)">
+                        <path d="M 0,-40 C -12,-20 -10,10 0,25 C 10,10 12,-20 0,-40 Z" fill="rgba(217, 119, 6, 0.15)"
+                            stroke="#b45309" stroke-width="1.5" />
+                        <path d="M 0,25 C -15,10 -32,-8 -30,-28 C -22,-32 -8,-15 0,-5" fill="rgba(245, 158, 11, 0.12)"
+                            stroke="#b45309" stroke-width="1.4" />
+                        <path d="M 0,25 C 15,10 32,-8 30,-28 C 22,-32 8,-15 0,-5" fill="rgba(245, 158, 11, 0.12)"
+                            stroke="#b45309" stroke-width="1.4" />
+                        <path d="M 0,25 C -25,18 -48,0 -45,-15 C -35,-22 -18,-5 0,8" fill="rgba(217, 119, 6, 0.08)"
+                            stroke="#d97706" stroke-width="1.2" />
+                        <path d="M 0,25 C 25,18 48,0 45,-15 C 35,-22 18,-5 0,8" fill="rgba(217, 119, 6, 0.08)"
+                            stroke="#d97706" stroke-width="1.2" />
+                        <ellipse cx="0" cy="12" rx="10" ry="5" fill="#fef3c7" stroke="#b45309" stroke-width="1.2" />
+                        <circle cx="-5" cy="11" r="1" fill="#78350f" />
+                        <circle cx="0" cy="12" r="1" fill="#78350f" />
+                        <circle cx="5" cy="11" r="1" fill="#78350f" />
+                    </g>
+
+                    <!-- Búp sen non -->
+                    <g class="lotus-bud" transform="translate(45, 260) rotate(-20)">
+                        <path d="M 0,-25 C -10,-10 -8,10 0,18 C 8,10 10,-10 0,-25 Z" fill="rgba(245, 158, 11, 0.18)"
+                            stroke="#b45309" stroke-width="1.4" />
+                        <path d="M 0,18 C -12,8 -16,-5 -10,-18" stroke="#d97706" stroke-width="1.2" fill="none" />
+                        <path d="M 0,18 C 12,8 16,-5 10,-18" stroke="#d97706" stroke-width="1.2" fill="none" />
+                    </g>
+
+                    <!-- Lá sen xòe cách điệu men ngọc -->
+                    <g class="lotus-leaf" transform="translate(60, 480)">
+                        <path
+                            d="M 0,0 C -35,-25 -70,-15 -80,10 C -85,35 -60,55 -25,50 C 5,45 25,60 50,45 C 75,30 65,-5 40,-20 C 15,-35 -5,-20 0,0 Z"
+                            fill="rgba(13, 148, 136, 0.08)" stroke="#0d9488" stroke-width="1.4" opacity="0.6" />
+                        <path
+                            d="M 0,15 L -45,0 M 0,15 L -50,30 M 0,15 L -15,40 M 0,15 L 30,35 M 0,15 L 45,10 M 0,15 L 20,-10"
+                            stroke="#0d9488" stroke-width="1" opacity="0.45" />
+                    </g>
+                </g>
+
+                <!-- 3. CÁC CỤM MÂY KHÁNH & MÂY XOẮN CỔ ĐIỂN THỜI LÊ -->
+                <g class="antique-clouds-group">
+                    <g class="cloud-cluster" transform="translate(180, 110)">
+                        <path
+                            d="M 0,20 C -15,5 -10,-15 10,-20 C 25,-25 40,-10 45,5 C 55,-5 75,0 75,15 C 80,30 65,40 50,38 C 45,45 25,48 10,40 C -5,42 -10,32 0,20 Z"
+                            stroke="#d97706" stroke-width="1.4" fill="rgba(254, 243, 199, 0.4)"
+                            stroke-linecap="round" />
+                        <path d="M 65,30 C 95,35 120,20 135,5 C 145,-5 160,-2 165,10 C 168,22 155,30 145,25"
+                            stroke="#b45309" stroke-width="1.4" fill="none" stroke-linecap="round" />
+                    </g>
+                    <g class="cloud-cluster" transform="translate(720, 60)">
+                        <path
+                            d="M 0,15 C -12,0 -8,-15 8,-18 C 20,-20 32,-8 36,4 C 44,-4 60,0 60,12 C 64,24 52,32 40,30 C 36,36 20,38 8,32 C -4,34 -8,25 0,15 Z"
+                            stroke="#d97706" stroke-width="1.2" fill="rgba(254, 243, 199, 0.35)" opacity="0.75" />
+                        <path d="M 52,24 C 75,28 95,16 108,4 C 115,-4 128,0 130,8" stroke="#b45309" stroke-width="1.2"
+                            fill="none" />
+                    </g>
+                    <g class="cloud-cluster" transform="translate(1380, 520)">
+                        <path
+                            d="M 0,20 C -15,5 -10,-15 10,-20 C 25,-25 40,-10 45,5 C 55,-5 75,0 75,15 C 80,30 65,40 50,38 C 45,45 25,48 10,40 C -5,42 -10,32 0,20 Z"
+                            stroke="#d97706" stroke-width="1.3" fill="rgba(254, 243, 199, 0.4)" opacity="0.8" />
+                        <path d="M 65,30 C 95,35 120,20 135,5 C 145,-5 160,-2 165,10" stroke="#b45309"
+                            stroke-width="1.3" fill="none" />
+                    </g>
+                </g>
+
+                <!-- 4. THỦY BA SÓNG NƯỚC CUNG ĐÌNH CHÂN TRANG (Chân đế gốm ngự dụng) -->
+                <g class="antique-thuy-ba-group" transform="translate(0, 980)">
+                    <path
+                        d="M 0,50 Q 80,10 160,50 Q 240,10 320,50 Q 400,10 480,50 Q 560,10 640,50 Q 720,10 800,50 Q 880,10 960,50 Q 1040,10 1120,50 Q 1200,10 1280,50 Q 1360,10 1440,50 Q 1520,10 1600,50 L 1600,120 L 0,120 Z"
+                        fill="rgba(30, 58, 138, 0.04)" />
+                    <path
+                        d="M 0,65 C 40,40 80,40 120,65 C 160,90 200,90 240,65 C 280,40 320,40 360,65 C 400,90 440,90 480,65 C 520,40 560,40 600,65 C 640,90 680,90 720,65 C 760,40 800,40 840,65 C 880,90 920,90 960,65 C 1000,40 1040,40 1080,65 C 1120,90 1160,90 1200,65 C 1240,40 1280,40 1320,65 C 1360,90 1400,90 1440,65 C 1480,40 1520,40 1560,65 L 1600,75 L 1600,120 L 0,120 Z"
+                        fill="rgba(217, 119, 6, 0.06)" stroke="rgba(217, 119, 6, 0.35)" stroke-width="1.4" />
+                    <g stroke="#b45309" stroke-width="1.2" fill="none" opacity="0.6">
+                        <path d="M 120,65 C 110,55 95,58 98,68 C 100,74 108,74 108,70" />
+                        <path d="M 360,65 C 350,55 335,58 338,68 C 340,74 348,74 348,70" />
+                        <path d="M 600,65 C 590,55 575,58 578,68 C 580,74 588,74 588,70" />
+                        <path d="M 840,65 C 830,55 815,58 818,68 C 820,74 828,74 828,70" />
+                        <path d="M 1080,65 C 1070,55 1055,58 1058,68 C 1060,74 1068,74 1068,70" />
+                        <path d="M 1320,65 C 1310,55 1295,58 1298,68 C 1300,74 1308,74 1308,70" />
+                        <path d="M 1560,65 C 1550,55 1535,58 1538,68 C 1540,74 1548,74 1548,70" />
+                    </g>
+                </g>
+            </svg>
+        </div>
+
+        <div class="container curate-container-rel">
+            <div class="curate-header-bar">
+                <div class="curate-badge-antique-wrap">
+                    <svg class="antique-flourish-left" width="48" height="14" viewBox="0 0 48 14" fill="none">
+                        <path d="M 48,7 C 35,7 28,1 18,1 C 10,1 2,7 0,13 C 8,11 14,5 22,5 C 32,5 38,9 48,7 Z"
+                            fill="#d97706" opacity="0.65" />
+                        <circle cx="6" cy="7" r="2" fill="#b45309" />
+                    </svg>
+                    <span class="curate-heritage-badge">✦ BẢO TRÀNG DI SẢN · BỘ SƯU TẬP GIÁM TUYỂN ✦</span>
+                    <svg class="antique-flourish-right" width="48" height="14" viewBox="0 0 48 14" fill="none">
+                        <path d="M 0,7 C 13,7 20,1 30,1 C 38,1 46,7 48,13 C 40,11 34,5 26,5 C 16,5 10,9 0,7 Z"
+                            fill="#d97706" opacity="0.65" />
+                        <circle cx="42" cy="7" r="2" fill="#b45309" />
+                    </svg>
+                </div>
+                <h2 class="curate-title" id="curate-title">Bộ Sưu Tập Áo Dài Phái Sinh</h2>
+                <p class="curate-subtitle" id="curate-subtitle">
+                    Hòa sắc men gốm Bát Tràng ngàn năm cùng nghệ thuật may mặc tơ tằm đương đại. Mỗi tác phẩm là sự kết
+                    tinh giữa thuật toán AI chuẩn xác và linh hồn di sản dân tộc.
+                </p>
+                <div class="curate-antique-divider">
+                    <span class="antique-divider-line left"></span>
+                    <div class="antique-lotus-seal" title="Triện Hoa Sen Bát Tràng Dát Vàng">
+                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                            <rect x="3" y="3" width="22" height="22" rx="4" transform="rotate(45 14 14)"
+                                stroke="#d97706" stroke-width="1.2" fill="#fffbeb" />
+                            <circle cx="14" cy="14" r="3" fill="#b45309" />
+                            <path
+                                d="M 14,6 C 12,9 12,11 14,12 C 16,11 16,9 14,6 Z M 14,22 C 12,19 12,17 14,16 C 16,17 16,19 14,22 Z M 6,14 C 9,12 11,12 12,14 C 11,16 9,16 6,14 Z M 22,14 C 19,12 17,12 16,14 C 17,16 19,16 22,14 Z"
+                                fill="#d97706" />
+                        </svg>
+                    </div>
+                    <span class="antique-divider-line right"></span>
+                </div>
+            </div>
+
+            <div class="variants-grid" id="variants-grid">
+                <!-- Render động 4 biến thể áo dài qua JS -->
+            </div>
+        </div>
+    </section>

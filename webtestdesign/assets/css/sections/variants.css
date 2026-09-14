@@ -1,0 +1,304 @@
+/* ==========================================================================
+   LƯỚI BIẾN THỂ ÁO DÀI PHÁI SINH (Interactive Image-First Filter Cards)
+   Hiệu ứng làm mờ di chuột & lớp phủ thông tin hoàng gia theo cảm hứng DevFlash / CodeArry
+   ========================================================================== */
+.variants-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    perspective: 1200px;
+}
+
+/* Hiệu ứng làm mờ & co nhẹ các thẻ KHÔNG hover khi người dùng rê chuột vào lưới */
+.variants-grid:hover>.variant-card:not(:hover) {
+    filter: blur(4px) brightness(0.65) saturate(0.8);
+    opacity: 0.55;
+    transform: scale(0.97);
+}
+
+.variant-card {
+    height: 480px;
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    background: #0f172a;
+    border: 1px solid rgba(15, 23, 42, 0.16);
+    border-top: 3px solid rgba(168, 78, 6, 0.78);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+    transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Góc Họa Tiết Triện Cổ Điển Hoàng Gia (Imperial Corner Accents) */
+.variant-card::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 20px;
+    height: 20px;
+    border-top: 2px solid rgba(254, 240, 138, 0.85);
+    border-left: 2px solid rgba(254, 240, 138, 0.85);
+    border-top-left-radius: 8px;
+    pointer-events: none;
+    z-index: 5;
+    transition: all 0.35s ease;
+}
+
+.variant-card::after {
+    content: '';
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    border-bottom: 2px solid rgba(254, 240, 138, 0.85);
+    border-right: 2px solid rgba(254, 240, 138, 0.85);
+    border-bottom-right-radius: 8px;
+    pointer-events: none;
+    z-index: 5;
+    transition: all 0.35s ease;
+}
+
+/* Thẻ Image Wrapper Full-bleed */
+.variant-img-wrap {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #faf6ec;
+}
+
+.variant-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 12%;
+    pointer-events: none;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
+    display: block;
+}
+
+/* Badges nổi trên ảnh */
+.similarity-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(217, 119, 6, 0.45);
+    color: #92400e;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 4;
+    transition: transform 0.3s ease;
+}
+
+.variant-code-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 5px 12px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #991b1b 0%, #b91c1c 45%, #7f1d1d 100%);
+    color: #fef08a;
+    border: 1.5px solid rgba(254, 240, 138, 0.85);
+    box-shadow: 0 4px 14px rgba(185, 28, 28, 0.6), inset 0 0 0 1px rgba(254, 240, 138, 0.3);
+    z-index: 4;
+    letter-spacing: 0.08em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.variant-code-badge::before {
+    content: "✦";
+    font-size: 9px;
+    color: #fde047;
+    opacity: 0.9;
+}
+
+/* Lớp phủ Gradient Tối Cung Đình (Layer) */
+.variant-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top,
+            rgba(15, 23, 42, 0.96) 0%,
+            rgba(15, 23, 42, 0.82) 42%,
+            rgba(15, 23, 42, 0.25) 75%,
+            transparent 100%);
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 3;
+    pointer-events: none;
+}
+
+/* Khối Thông Tin Trượt Lên Khi Hover (Info) */
+.variant-info {
+    position: absolute;
+    bottom: -60px;
+    left: 0;
+    width: 100%;
+    padding: 24px 20px 22px;
+    opacity: 0;
+    transition: bottom 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: auto;
+}
+
+.variant-tagline {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fde047;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+.variant-name {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.3;
+    margin: 0;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.variant-rule-desc {
+    font-size: 12.5px;
+    color: #cbd5e1;
+    line-height: 1.5;
+    margin: 0 0 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Nút Hộ Chiếu - Khí Thế Máu Đỏ Da Vàng Đất Việt */
+.variant-btn-select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    padding: 13px 0;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #fffbeb;
+    background: linear-gradient(135deg, #991b1b 0%, #b91c1c 38%, #c2410c 75%, #b45309 100%);
+    border: 1.5px solid rgba(254, 240, 138, 0.75);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    position: relative;
+    overflow: hidden;
+}
+
+.variant-btn-select::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent 40%, rgba(254, 240, 138, 0.25) 50%, transparent 60%);
+    transform: rotate(30deg) translateY(-100%);
+    transition: transform 0.8s ease;
+    pointer-events: none;
+}
+
+.variant-btn-select:hover {
+    background: linear-gradient(135deg, #b91c1c 0%, #dc2626 38%, #d97706 75%, #f59e0b 100%);
+    border-color: #fef08a;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.24);
+    transform: translateY(-2px);
+    color: #ffffff;
+}
+
+.variant-btn-select:hover::before {
+    transform: rotate(30deg) translateY(100%);
+}
+
+.variant-btn-select svg {
+    color: #fef08a;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+    transition: transform 0.3s ease;
+}
+
+.variant-btn-select:hover svg {
+    transform: scale(1.15) rotate(-5deg);
+}
+
+/* ==========================================================================
+   TRẠNG THÁI HOVER VÀ ACTIVE TRÊN THẺ ÁO DÀI
+   ========================================================================== */
+.variant-card:hover {
+    transform: translateY(-6px) scale(1.015);
+    border-color: rgba(15, 23, 42, 0.24);
+    border-top-color: #a84e06;
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.2);
+    z-index: 10;
+}
+
+.variant-card:hover .variant-img {
+    transform: scale(1.08);
+}
+
+.variant-card:hover .variant-layer {
+    opacity: 1;
+}
+
+.variant-card:hover .variant-info {
+    bottom: 0;
+    opacity: 1;
+}
+
+.variant-card:hover::before,
+.variant-card:hover::after {
+    border-color: #fbbf24;
+    width: 24px;
+    height: 24px;
+    box-shadow: none;
+}
+
+/* Khi thẻ được bấm chọn */
+.variant-card.selected {
+    border-color: rgba(15, 23, 42, 0.28);
+    border-top-color: #a84e06;
+    box-shadow: 0 0 0 2px rgba(168, 78, 6, 0.22), 0 18px 36px rgba(15, 23, 42, 0.2);
+}
+
+@media (hover: none),
+(max-width: 640px) {
+    .variant-layer {
+        opacity: 0.85;
+    }
+
+    .variant-info {
+        bottom: 0;
+        opacity: 1;
+    }
+}
+

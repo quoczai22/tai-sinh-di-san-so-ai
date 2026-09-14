@@ -1,0 +1,417 @@
+    <main class="main-content-flow">
+        <!-- ==============================================================
+             PHƯỢNG HOÀNG THĂNG LONG TÁI SINH DI SẢN (CELESTIAL HERITAGE PHOENIX)
+             Biểu tượng Phượng Hoàng uốn lượn: Lam men gốm AI ➔ Men ngọc ➔ Hoàng kim tơ tằm
+             ============================================================== -->
+        <div class="dragon-stream-wrapper phoenix-theme" aria-hidden="true">
+            <svg class="dragon-svg-canvas phoenix-svg-canvas" viewBox="0 0 1440 1800" fill="none"
+                preserveAspectRatio="none">
+                <defs>
+                    <!-- Gradient Dải Đuôi Phượng Hoàng: Lam cobalt AI -> Men ngọc bích -> Hổ phách hoàng kim -->
+                    <linearGradient id="phoenixBodyGrad" x1="0.88" y1="0.05" x2="0.25" y2="1">
+                        <stop offset="0%" stop-color="#2563eb" stop-opacity="0.36" />
+                        <stop offset="20%" stop-color="#3b82f6" stop-opacity="0.32" />
+                        <stop offset="42%" stop-color="#0284c7" stop-opacity="0.30" />
+                        <stop offset="65%" stop-color="#0d9488" stop-opacity="0.28" />
+                        <stop offset="82%" stop-color="#d97706" stop-opacity="0.35" />
+                        <stop offset="100%" stop-color="#b45309" stop-opacity="0.42" />
+                    </linearGradient>
+
+                    <!-- Gradient Dải Lông Vũ Phụ -->
+                    <linearGradient id="phoenixSecondaryGrad" x1="0.88" y1="0.05" x2="0.25" y2="1">
+                        <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.30" />
+                        <stop offset="35%" stop-color="#38bdf8" stop-opacity="0.26" />
+                        <stop offset="70%" stop-color="#2dd4bf" stop-opacity="0.25" />
+                        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.32" />
+                    </linearGradient>
+
+                    <!-- Gradient Sống Lưng & Chỉ Vàng Lông Vũ -->
+                    <linearGradient id="phoenixSpineGrad" x1="0.88" y1="0.05" x2="0.25" y2="1">
+                        <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.85" />
+                        <stop offset="25%" stop-color="#38bdf8" stop-opacity="0.80" />
+                        <stop offset="50%" stop-color="#2dd4bf" stop-opacity="0.75" />
+                        <stop offset="75%" stop-color="#fbbf24" stop-opacity="0.85" />
+                        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.95" />
+                    </linearGradient>
+
+                    <!-- Filter Ánh Sáng Mềm Mại -->
+                    <filter id="phoenixGlow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="12" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+
+                    <filter id="phoenixSoftGlow" x="-30%" y="-30%" width="160%" height="160%">
+                        <feGaussianBlur stdDeviation="6" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                </defs>
+
+                <!-- Vệt Mây Ngũ Sắc Men Gốm Bay Lượn Quanh Phượng -->
+                <g class="phoenix-cloud-mist" opacity="0.55">
+                    <path
+                        d="M 1300 90 C 1370 50, 1430 110, 1400 170 C 1370 220, 1270 210, 1230 170 C 1200 130, 1240 90, 1300 90 Z"
+                        fill="url(#phoenixBodyGrad)" filter="url(#phoenixGlow)" />
+                    <path
+                        d="M 1040 360 C 1110 320, 1180 380, 1140 440 C 1100 480, 1020 460, 980 420 C 950 380, 990 340, 1040 360 Z"
+                        fill="url(#phoenixBodyGrad)" filter="url(#phoenixGlow)" />
+                    <path
+                        d="M 220 860 C 300 820, 360 880, 330 940 C 300 980, 220 970, 180 930 C 150 890, 180 850, 220 860 Z"
+                        fill="url(#phoenixBodyGrad)" filter="url(#phoenixGlow)" />
+                    <path
+                        d="M 1220 1320 C 1300 1280, 1370 1340, 1340 1400 C 1300 1450, 1210 1430, 1170 1390 C 1140 1350, 1170 1310, 1220 1320 Z"
+                        fill="url(#phoenixBodyGrad)" filter="url(#phoenixGlow)" />
+                </g>
+
+                <!-- ==============================================================
+                     DẢI ĐUÔI PHƯỢNG HOÀNG UỐN LƯỢN (PHOENIX TAIL STREAMERS)
+                     ============================================================== -->
+                <!-- 1. Dải Lông Đuôi Phụ Bay Lượn Bồng Bềnh (Secondary Streamer) -->
+                <path class="phoenix-tail-secondary" d="M 1250 250
+                         C 1360 380, 1220 480, 1020 520
+                         C 800 560, 560 640, 480 780
+                         C 400 920, 580 1060, 800 1180
+                         C 1020 1300, 1120 1460, 960 1620
+                         C 820 1740, 580 1790, 380 1760" stroke="url(#phoenixSecondaryGrad)" stroke-width="24"
+                    stroke-linecap="round" fill="none" filter="url(#phoenixGlow)" />
+
+                <!-- 2. Thân & Dải Lông Đuôi Chính (Primary Celestial Plume) -->
+                <path class="phoenix-tail-primary" d="M 1260 210
+                         C 1390 350, 1190 460, 950 510
+                         C 720 560, 470 650, 410 810
+                         C 340 980, 620 1120, 880 1230
+                         C 1140 1340, 1180 1520, 980 1680
+                         C 820 1800, 520 1830, 320 1780" stroke="url(#phoenixBodyGrad)" stroke-width="52"
+                    stroke-linecap="round" fill="none" filter="url(#phoenixGlow)" />
+
+                <!-- 3. Sống Gân Lông Vũ Dát Vàng (Phoenix Plume Spine) -->
+                <path class="phoenix-path-spine" d="M 1260 210
+                         C 1390 350, 1190 460, 950 510
+                         C 720 560, 470 650, 410 810
+                         C 340 980, 620 1120, 880 1230
+                         C 1140 1340, 1180 1520, 980 1680
+                         C 820 1800, 520 1830, 320 1780" stroke="url(#phoenixSpineGrad)" stroke-width="4"
+                    stroke-linecap="round" stroke-dasharray="14 10" fill="none" />
+
+                <!-- 4. Vệt Sáng Chuyển Động (Light Pulse Ribbon) -->
+                <path class="phoenix-pulse-line" d="M 1260 210
+                         C 1390 350, 1190 460, 950 510
+                         C 720 560, 470 650, 410 810
+                         C 340 980, 620 1120, 880 1230
+                         C 1140 1340, 1180 1520, 980 1680
+                         C 820 1800, 520 1830, 320 1780" stroke="url(#phoenixSpineGrad)" stroke-width="2.5"
+                    stroke-linecap="round" fill="none" />
+
+                <!-- 5. Dải Lông Đuôi Thứ 3 Lả Lướt Nhỏ (Tertiary Filigree Plume) -->
+                <path d="M 1240 260
+                         C 1320 420, 1100 520, 900 560
+                         C 680 600, 490 710, 430 860
+                         C 370 1020, 650 1160, 910 1260
+                         C 1120 1350, 1150 1500, 950 1650" stroke="url(#phoenixSecondaryGrad)" stroke-width="10"
+                    stroke-linecap="round" stroke-dasharray="8 6" fill="none" opacity="0.7" />
+
+                <!-- ==============================================================
+                     HÌNH TƯỢNG PHƯỢNG HOÀNG THĂNG LONG TUNG CÁNH (HERITAGE PHOENIX HEAD & WINGS)
+                     Vị trí: Góc trên bên phải Hero
+                     ============================================================== -->
+                <g class="phoenix-celestial-body" transform="translate(1260, 150)">
+                    <!-- Đôi cánh phượng xòe rộng (Majestic Wings) -->
+                    <g class="phoenix-wings">
+                        <!-- Cánh Thượng vươn cao lên góc phải (Upper Wing) -->
+                        <path d="M -10,-20 C 40,-90 120,-110 160,-80 C 130,-60 80,-40 20,-10 Z"
+                            fill="rgba(59, 130, 246, 0.28)" stroke="#3b82f6" stroke-width="1.8" />
+                        <path d="M 20,-10 C 70,-70 145,-75 180,-45 C 145,-30 95,-15 35, 5 Z"
+                            fill="rgba(37, 99, 235, 0.22)" stroke="#2563eb" stroke-width="1.6" />
+                        <path d="M 35, 5 C 90,-45 160,-40 185,-10 C 150, 2 105, 12 45, 18 Z"
+                            fill="rgba(13, 148, 136, 0.20)" stroke="#0d9488" stroke-width="1.5" />
+                        <path d="M 45, 18 C 95,-15 155,-5 170, 20 C 135, 25 90, 25 40, 28 Z"
+                            fill="rgba(217, 119, 6, 0.22)" stroke="#d97706" stroke-width="1.4" />
+                        <!-- Gân lông vũ cánh trên -->
+                        <path d="M -5,-15 Q 80,-70 150,-78" stroke="#60a5fa" stroke-width="1.2" fill="none" />
+                        <path d="M 15,-5 Q 95,-45 165,-42" stroke="#38bdf8" stroke-width="1.2" fill="none" />
+                        <path d="M 30, 8 Q 105,-20 170,-8" stroke="#2dd4bf" stroke-width="1.2" fill="none" />
+
+                        <!-- Cánh Hạ dang ngang che chở (Lower Wing) -->
+                        <path d="M -35, 10 C -90, 25 -140, 10 -170, -15 C -140, 8 -90, 35 -30, 32 Z"
+                            fill="rgba(59, 130, 246, 0.24)" stroke="#3b82f6" stroke-width="1.6" />
+                        <path d="M -30, 32 C -80, 50 -130, 40 -155, 15 C -125, 35 -75, 55 -20, 48 Z"
+                            fill="rgba(13, 148, 136, 0.22)" stroke="#0d9488" stroke-width="1.5" />
+                        <path d="M -20, 48 C -65, 70 -110, 65 -130, 42 C -105, 60 -60, 75 -10, 60 Z"
+                            fill="rgba(217, 119, 6, 0.20)" stroke="#d97706" stroke-width="1.4" />
+                        <!-- Gân lông cánh dưới -->
+                        <path d="M -35, 18 Q -105, 20 -155,-5" stroke="#60a5fa" stroke-width="1.2" fill="none" />
+                        <path d="M -28, 38 Q -95, 45 -140, 22" stroke="#2dd4bf" stroke-width="1.2" fill="none" />
+                    </g>
+
+                    <!-- Thân & Cổ Phượng Hoàng Duyên Dáng (Graceful Body & Neck) -->
+                    <g class="phoenix-torso">
+                        <path
+                            d="M -20,-15 C -40,-35 -35,-65 -20,-85 C -5,-105 15,-100 20,-80 C 25,-60 10,-35 0,-15 C -5, 10 5, 35 15, 60 C 5, 65 -15, 40 -20,-15 Z"
+                            fill="url(#phoenixBodyGrad)" stroke="#3b82f6" stroke-width="1.8" />
+                        <circle cx="-5" cy="-35" r="4.5" fill="#fef3c7" stroke="#b45309" stroke-width="1.2" />
+                    </g>
+
+                    <!-- Đầu Phượng, Mào Mây & Mỏ Ngậm Ngọc (Phoenix Head & Crest) -->
+                    <g class="phoenix-head" transform="translate(-15, -88)">
+                        <path d="M 0,0 C -15,-10 -30,-8 -40, 2 C -30, 8 -15, 6 5, 10 C 15, 6 15,-4 0,0 Z"
+                            fill="rgba(254, 243, 199, 0.85)" stroke="#b45309" stroke-width="1.6" />
+                        <path d="M -40, 2 L -58, 6 L -38, 10 Z" fill="#d97706" stroke="#b45309" stroke-width="1.2" />
+                        <!-- Hạt ngọc minh châu tỏa sáng trước mỏ -->
+                        <circle cx="-68" cy="8" r="9" fill="#93c5fd" filter="url(#phoenixSoftGlow)" />
+                        <circle cx="-68" cy="8" r="4.5" fill="#ffffff" />
+                        <!-- Mắt phượng tinh anh -->
+                        <circle cx="-16" cy="-1" r="3.2" fill="#78350f" />
+                        <circle cx="-17" cy="-2" r="1.2" fill="#ffffff" />
+                        <path d="M -24,-5 Q -14,-9 -6,-4" stroke="#b45309" stroke-width="1.2" fill="none" />
+                        <!-- Mào Phượng Thời Lý -->
+                        <path d="M 2,-4 C 15,-25 35,-30 50,-20 C 40,-15 25,-15 12, 2" stroke="#2563eb"
+                            stroke-width="1.8" fill="rgba(59, 130, 246, 0.3)" />
+                        <path d="M 5, 0 C 25,-18 50,-18 68,-8 C 52,-5 35,-5 16, 6" stroke="#0d9488" stroke-width="1.6"
+                            fill="rgba(13, 148, 136, 0.25)" />
+                        <path d="M 8, 4 C 30,-10 60,-8 78, 5 C 60, 5 40, 4 18, 10" stroke="#d97706" stroke-width="1.4"
+                            fill="rgba(217, 119, 6, 0.25)" />
+                    </g>
+                </g>
+
+                <!-- ==============================================================
+                     KHÚC SÔNG DI SẢN BÁT TRÀNG & ĐÀN CÁ CHÉP VƯƠN MÌNH (HERITAGE RIVER & KOI/CARP)
+                     Khúc sông uốn lượn nâng đỡ phượng hoàng bay lên, cá chép quẫy sóng
+                     tiền đề cho "Cá Chép Hóa Rồng" tại Bước 4
+                     ============================================================== -->
+                <g class="heritage-river-system" opacity="0.95">
+                    <!-- Dải dòng chảy ngầm của khúc sông (River Undercurrent Ribbon) -->
+                    <path class="river-flow-deep" d="M -60 1680
+                             C 200 1780, 520 1810, 780 1660
+                             C 1020 1520, 1180 1340, 1060 1150
+                             C 940 980, 680 940, 480 1060
+                             C 320 1160, 260 1380, 420 1520
+                             C 580 1640, 920 1600, 1220 1480
+                             C 1400 1400, 1500 1280, 1520 1160" stroke="url(#phoenixSecondaryGrad)" stroke-width="48"
+                        stroke-linecap="round" fill="none" opacity="0.38" filter="url(#phoenixGlow)" />
+
+                    <!-- Dải sóng nước chính khúc sông uốn lượn (Main River Current) -->
+                    <path class="river-flow-main" d="M -40 1660
+                             C 240 1750, 560 1760, 800 1620
+                             C 1040 1480, 1140 1310, 1020 1140
+                             C 910 990, 690 980, 520 1080
+                             C 360 1180, 320 1380, 480 1500
+                             C 640 1610, 960 1560, 1260 1430
+                             C 1420 1350, 1500 1240, 1510 1140" stroke="url(#phoenixSpineGrad)" stroke-width="16"
+                        stroke-linecap="round" stroke-dasharray="16 12" fill="none" opacity="0.82" />
+
+                    <!-- Các đường chỉ nước tơ lụa lăn tăn trên mặt sông (River Water Ripple Lines) -->
+                    <path d="M 120 1710 C 320 1760, 620 1720, 820 1580" stroke="#38bdf8" stroke-width="2.5"
+                        stroke-dasharray="8 6" fill="none" opacity="0.75" />
+                    <path d="M 280 1750 C 480 1780, 720 1720, 920 1550" stroke="#2dd4bf" stroke-width="2"
+                        stroke-dasharray="6 8" fill="none" opacity="0.65" />
+                    <path d="M 680 1060 C 850 1020, 1010 1120, 1060 1260" stroke="#60a5fa" stroke-width="2.5"
+                        stroke-dasharray="8 6" fill="none" opacity="0.7" />
+                    <path d="M 520 1140 C 400 1220, 380 1360, 460 1460" stroke="#fbbf24" stroke-width="2.2"
+                        stroke-dasharray="6 6" fill="none" opacity="0.75" />
+
+                    <!-- CÁ CHÉP BÁT TRÀNG 1: Chú cá chép trưởng thành dũng mãnh quẫy đuôi vươn mình ngược dòng hướng lên trời cao -->
+                    <g class="river-carp carp-leader" transform="translate(680, 1420) rotate(-48)">
+                        <!-- Thân cá chép uốn cong mềm mại -->
+                        <path class="carp-body" d="M -45 0
+                                 C -35 -24, 0 -30, 38 -18
+                                 C 62 -10, 75 0, 82 0
+                                 C 75 0, 62 10, 38 18
+                                 C 0 30, -35 24, -45 0 Z" fill="rgba(245, 158, 11, 0.22)" stroke="#d97706"
+                            stroke-width="2.2" filter="url(#phoenixSoftGlow)" />
+                        <!-- Sống lưng cá dát vàng ánh men gốm -->
+                        <path d="M -30 0 Q 15 -6 65 0" stroke="#b45309" stroke-width="1.8" stroke-dasharray="4 3"
+                            fill="none" />
+                        <!-- Vây lưng lượn sóng -->
+                        <path class="carp-dorsal-fin" d="M -10 -27 C 5 -42, 28 -38, 42 -16 C 30 -22, 10 -24, -10 -27 Z"
+                            fill="rgba(56, 189, 248, 0.35)" stroke="#0284c7" stroke-width="1.4" />
+                        <!-- Vây ngực rẽ nước vẫy lượn -->
+                        <path class="carp-pectoral-fin-l" d="M 12 16 C 18 36, 0 46, -12 40 C -4 32, 2 24, 12 16 Z"
+                            fill="rgba(251, 191, 36, 0.35)" stroke="#d97706" stroke-width="1.3" />
+                        <path class="carp-pectoral-fin-r"
+                            d="M 12 -16 C 18 -36, 0 -46, -12 -40 C -4 -32, 2 -24, 12 -16 Z"
+                            fill="rgba(251, 191, 36, 0.35)" stroke="#d97706" stroke-width="1.3" />
+                        <!-- Đuôi cá chép 3 cánh xòe hoa lụa mềm mại -->
+                        <g class="carp-tail-group">
+                            <path class="carp-tail-fluke fluke-center"
+                                d="M -45 0 C -68 -15, -95 -20, -110 -6 C -95 2, -75 2, -45 0 Z"
+                                fill="rgba(217, 119, 6, 0.32)" stroke="#b45309" stroke-width="1.5" />
+                            <path class="carp-tail-fluke fluke-left"
+                                d="M -45 0 C -68 15, -95 20, -110 6 C -95 -2, -75 -2, -45 0 Z"
+                                fill="rgba(37, 99, 235, 0.28)" stroke="#2563eb" stroke-width="1.4" />
+                            <path class="carp-tail-fluke fluke-mid"
+                                d="M -45 0 C -72 -4, -100 0, -118 0 C -98 8, -70 4, -45 0 Z"
+                                fill="rgba(13, 148, 136, 0.25)" stroke="#0d9488" stroke-width="1.2" />
+                        </g>
+                        <!-- Mắt cá chép tinh tường -->
+                        <circle cx="60" cy="-6" r="3.2" fill="#78350f" />
+                        <circle cx="61" cy="-7" r="1.2" fill="#ffffff" />
+                        <!-- Râu cá chép chầu nước -->
+                        <path d="M 78 -4 C 92 -10, 102 -4, 112 -8" stroke="#d97706" stroke-width="1.3"
+                            stroke-linecap="round" fill="none" />
+                        <path d="M 78 4 C 92 10, 102 4, 112 8" stroke="#d97706" stroke-width="1.3"
+                            stroke-linecap="round" fill="none" />
+                        <!-- Vảy cá hoa văn men gốm hình cánh cung -->
+                        <path d="M 5 -6 Q 15 -6 20 0 Q 15 6 5 6 M -10 -6 Q 0 -6 5 0 Q 0 6 -10 6" stroke="#d97706"
+                            stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.6" />
+                    </g>
+
+                    <!-- CÁ CHÉP BÁT TRÀNG 2: Cá chép nhỏ bơi song hành nâng cánh sóng -->
+                    <g class="river-carp carp-companion" transform="translate(420, 1260) rotate(-15)">
+                        <path class="carp-body"
+                            d="M -30 0 C -22 -16, 2 -20, 26 -12 C 42 -6, 50 0, 56 0 C 50 0, 42 6, 26 12 C 2 20, -22 16, -30 0 Z"
+                            fill="rgba(13, 148, 136, 0.22)" stroke="#0d9488" stroke-width="1.8" />
+                        <!-- Đuôi xòe -->
+                        <path d="M -30 0 C -48 -12, -68 -14, -78 -4 C -68 2, -52 2, -30 0 Z"
+                            fill="rgba(245, 158, 11, 0.28)" stroke="#d97706" stroke-width="1.3" />
+                        <path d="M -30 0 C -48 12, -68 14, -78 4 C -68 -2, -52 -2, -30 0 Z"
+                            fill="rgba(59, 130, 246, 0.25)" stroke="#3b82f6" stroke-width="1.2" />
+                        <!-- Mắt cá -->
+                        <circle cx="42" cy="-4" r="2.5" fill="#0f766e" />
+                        <circle cx="43" cy="-5" r="0.9" fill="#ffffff" />
+                        <!-- Râu cá -->
+                        <path d="M 54 -2 C 64 -6, 72 -3, 80 -6" stroke="#0d9488" stroke-width="1.1"
+                            stroke-linecap="round" fill="none" />
+                    </g>
+
+                    <!-- Bọt nước lấp lánh và sóng hoa sen quanh khúc sông -->
+                    <g class="river-bubbles" fill="#38bdf8" opacity="0.65">
+                        <circle cx="630" cy="1480" r="4.5" />
+                        <circle cx="650" cy="1495" r="3" />
+                        <circle cx="740" cy="1380" r="5" />
+                        <circle cx="760" cy="1360" r="3.5" />
+                        <circle cx="480" cy="1220" r="4" />
+                        <circle cx="390" cy="1320" r="5.5" />
+                        <circle cx="880" cy="1580" r="6" fill="#fbbf24" />
+                        <circle cx="910" cy="1560" r="4" fill="#fbbf24" />
+                    </g>
+
+                    <!-- Vòng xoáy nước cách điệu Bát Tràng (Water Whirlpools) -->
+                    <path
+                        d="M 720 1460 C 740 1445, 755 1455, 750 1470 C 742 1485, 715 1480, 712 1465 C 710 1445, 735 1435, 760 1445"
+                        stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.7" />
+                    <path d="M 460 1280 C 475 1270, 488 1278, 482 1290 C 475 1302, 455 1298, 452 1285" stroke="#2dd4bf"
+                        stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.65" />
+                </g>
+
+                <!-- ==============================================================
+                     CÁC MẮT LÔNG PHƯỢNG (PHOENIX FEATHER EYES / OCELLI) TẠI CÁC ĐIỂM UỐN
+                     ============================================================== -->
+                <g class="phoenix-ocellus" transform="translate(1260, 210)">
+                    <circle cx="0" cy="0" r="16" fill="#60a5fa" filter="url(#phoenixGlow)" opacity="0.85" />
+                    <circle cx="0" cy="0" r="9" fill="#ffffff" stroke="#2563eb" stroke-width="1.5" />
+                    <circle cx="0" cy="0" r="4" fill="#1e3a8a" />
+                </g>
+
+                <g class="phoenix-ocellus" transform="translate(950, 510)">
+                    <circle cx="0" cy="0" r="14" fill="#38bdf8" filter="url(#phoenixGlow)" opacity="0.8" />
+                    <circle cx="0" cy="0" r="8" fill="#f0fdfa" stroke="#0d9488" stroke-width="1.5" />
+                    <circle cx="0" cy="0" r="3.5" fill="#0f766e" />
+                </g>
+
+                <g class="phoenix-ocellus" transform="translate(410, 810)">
+                    <circle cx="0" cy="0" r="15" fill="#2dd4bf" filter="url(#phoenixGlow)" opacity="0.85" />
+                    <circle cx="0" cy="0" r="8.5" fill="#ffffff" stroke="#0d9488" stroke-width="1.5" />
+                    <circle cx="0" cy="0" r="4" fill="#0d9488" />
+                </g>
+
+                <g class="phoenix-ocellus" transform="translate(880, 1230)">
+                    <circle cx="0" cy="0" r="15" fill="#fbbf24" filter="url(#phoenixGlow)" opacity="0.85" />
+                    <circle cx="0" cy="0" r="8.5" fill="#fffbeb" stroke="#d97706" stroke-width="1.5" />
+                    <circle cx="0" cy="0" r="4" fill="#b45309" />
+                </g>
+
+                <g class="phoenix-ocellus" transform="translate(980, 1680)">
+                    <circle cx="0" cy="0" r="16" fill="#f59e0b" filter="url(#phoenixGlow)" opacity="0.9" />
+                    <circle cx="0" cy="0" r="9" fill="#fffbeb" stroke="#b45309" stroke-width="1.5" />
+                    <circle cx="0" cy="0" r="4" fill="#78350f" />
+                </g>
+            </svg>
+        </div>
+
+        <div class="hero-glow"></div>
+        <section class="hero-section container">
+            <div class="hero-editorial-grid">
+                <!-- Left Column: Editorial Headings -->
+                <div class="hero-left-col">
+                    <span class="hero-tag">Giai đoạn 01 • Khảo cứu hình thái</span>
+                    <h1 class="hero-title-editorial">
+                        Tái sinh Hoa văn Gốm Bát Tràng<br>trên <span class="highlight">Tà Áo Dài Đương đại</span>
+                    </h1>
+                    <p class="hero-desc-editorial">
+                        Hành trình sáng tạo với hai bước tinh tế: Lựa chọn bảo vật gốm di sản ngàn năm, tiếp tục chiêm
+                        ngưỡng chiều sâu men sắc và thưởng lãm các tác phẩm áo dài phái sinh được kiến tạo riêng từ linh
+                        hồn hiện vật.
+                    </p>
+                </div>
+
+                <!-- Right Column: Interactive Stitch Callout Box -->
+                <div class="hero-right-col">
+                    <div class="interactive-flow-card">
+                        <div class="flow-card-header">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb"
+                                stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z">
+                                </path>
+                            </svg>
+                            <span>Quy trình tương tác</span>
+                        </div>
+                        <div class="flow-steps">
+                            <div class="flow-step-item">
+                                <span class="flow-step-num">01</span>
+                                <div><strong>Chạm chọn 01 bảo vật gốm</strong> ưng ý bên dưới để mở lối chiêm ngưỡng và
+                                    khảo cứu chi tiết hoa văn.</div>
+                            </div>
+                            <div class="flow-step-item">
+                                <span class="flow-step-num">02</span>
+                                <div><strong>Hệ thống mở ra phối cảnh</strong> áo dài lụa truyền tải sắc men rạn và họa
+                                    tiết cổ truyền qua một nút bấm duy nhất.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             CATALOG SECTION: Kho báu Men sắc & Họa phẩm (Figma Make & Stitch)
+             ========================================================================== -->
+        <section class="showcase-section container" id="hien-vat">
+            <!-- Header Bar -->
+            <div class="showcase-header-bar">
+                <div class="showcase-title-group">
+                    <h2>Kho báu Men sắc & Họa phẩm</h2>
+                    <p>
+                        <span>Sáu hiện vật tiêu biểu đợt tuyển chọn</span>
+                        <span>•</span>
+                        <span class="museum-badge">● Nguyên bản viện bảo tàng & tư liệu di sản</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Filter Chips -->
+            <div class="filter-chips-container">
+                <button class="filter-chip active" data-filter="all">Tất cả (6)</button>
+                <button class="filter-chip" data-filter="men-ran">Men rạn cổ</button>
+                <button class="filter-chip" data-filter="men-lam">Men lam</button>
+                <button class="filter-chip" data-filter="phat-giao">Đồ thờ & Phật giáo</button>
+                <button class="filter-chip" data-filter="trang-tri">Đề tài Trang trí</button>
+            </div>
+
+            <!-- 6 Heritage Cards Grid -->
+            <div class="cards-grid-6" id="heritage-cards-grid">
+                <!-- Sẽ được render động và có sẵn dự phòng qua JS -->
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             DẢI SÓNG MÂY CHUYỂN TIẾP (DRAGON WAVE TRANSITION BRIDGE)
+             Hòa sắc mượt mà giữa Nền Sứ Hiện Đại & Nền Lụa Ngà Cổ Điển
+             ========================================================================== -->
+        <div class="dragon-wave-bridge" id="dragon-wave-bridge" aria-hidden="true" style="display: none;">
+            <svg class="wave-bridge-svg" viewBox="0 0 1440 70" fill="none" preserveAspectRatio="none">
+                <path d="M 0,25 C 320,65 540,5 840,40 C 1120,70 1320,15 1440,42 L 1440,70 L 0,70 Z" fill="#fcf9f2" />
+                <path d="M 0,38 C 360,78 600,18 900,50 C 1180,78 1360,28 1440,52" stroke="rgba(217, 119, 6, 0.35)"
+                    stroke-width="1.5" stroke-dasharray="8 6" />
+            </svg>
+        </div>
+    </main>
