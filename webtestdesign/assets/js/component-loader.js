@@ -7,7 +7,7 @@ window.componentsReady = (async () => {
 
     await Promise.all(slots.map(async (slot) => {
         const name = slot.dataset.component;
-        const response = await fetch(`./components/${name}.html`, { cache: 'no-store' });
+        const response = await fetch(`./components/${name}.html`);
 
         if (!response.ok) {
             throw new Error(`Không thể nạp component: ${name}`);

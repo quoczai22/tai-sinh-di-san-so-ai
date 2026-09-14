@@ -97,4 +97,14 @@ input:focus-visible {
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
     }
+
+    animate {
+        display: none;
+    }
+}
+
+html.is-page-hidden *,
+html.is-page-hidden *::before,
+html.is-page-hidden *::after {
+    animation-play-state: paused !important;
 }

@@ -123,6 +123,9 @@ function initStudio() {
 
     // Liên kết footer dùng lại điều hướng của luồng chính.
     initFooterLinks();
+    document.addEventListener('visibilitychange', () => {
+        document.documentElement.classList.toggle('is-page-hidden', document.hidden);
+    });
 }
 function startStudioWhenReady() {
     if (window.componentsReady) {
@@ -163,7 +166,7 @@ function renderHeritageCards(items) {
         card.innerHTML = `
             <div class="card-img-wrap">
                 <span class="badge-glaze">${item.glaze}</span>
-                <img src="${item.image}" alt="${item.name}" loading="lazy">
+                <img src="${item.image}" alt="${item.name}" loading="lazy" decoding="async">
             </div>
             <div class="heritage-card-content">
                 <div>
@@ -518,7 +521,7 @@ function renderCurateSection(item, shouldScroll = true) {
         card.setAttribute('aria-label', `${v.name} - ${v.similarity} tương đồng`);
         card.innerHTML = `
             <div class="variant-img-wrap">
-                <img class="variant-img" src="${v.img}" alt="${v.name}" loading="lazy">
+                <img class="variant-img" src="${v.img}" alt="${v.name}" loading="lazy" decoding="async">
                 <span class="similarity-badge">★ ${v.similarity}</span>
             </div>
             <div class="variant-layer" aria-hidden="true"></div>
