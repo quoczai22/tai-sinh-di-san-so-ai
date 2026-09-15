@@ -1,10 +1,77 @@
 from __future__ import annotations
 
+from html import escape
 from pathlib import Path
+import re
 
 import streamlit as st
 
 from .helpers import get_image_base64
+
+PALETTES = (
+    ("#3b4856", "#87929e", "#d8dfd5", "#a47e5b"),
+    ("#1d4ed8", "#3b82f6", "#d97706", "#f1f5f9"),
+    ("#475569", "#94a3b8", "#e2e8f0", "#b45309"),
+    ("#785d38", "#b4976a", "#e8dfcc", "#1e293b"),
+    ("#2d4059", "#4a7c59", "#de9b72", "#eae3d2"),
+    ("#334155", "#64748b", "#c2410c", "#f8fafc"),
+)
+
+
+def render_static_nav(step: int) -> None:
+    labels = ("1. Chọn hiện vật", "2. Xem hiện vật", "3. Đang tạo", "4. Chọn thiết kế")
+    items = "".join(
+        f'<a class="stepper-item {"active" if index + 1 == step else ""}" href="?go={index + 1}"><span>{label}</span></a>'
+        for index, label in enumerate(labels)
+    )
+    st.markdown(
+        f'''<div class="framer-nav-wrapper"><header class="framer-navbar"><a href="?go=1" class="nav-logo"><div class="nav-logo-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg></div><span>DIGITAL HERITAGE</span></a><nav><div class="nav-links">{items}</div></nav></header></div>''',
+        unsafe_allow_html=True,
+    )
+
+
+def render_static_catalog(heritage_dir: Path, items: list[dict]) -> None:
+    cards = []
+    for index, item in enumerate(items):
+        dots = "".join(f'<span class="glaze-dot" style="background-color:{color}"></span>' for color in PALETTES[index])
+        image = get_image_base64(heritage_dir / item["image_file"])
+        cards.append(
+            f'''<article class="heritage-card"><div class="card-img-wrap"><span class="badge-glaze">Gốm Bát Tràng</span><img src="{image}" alt="{escape(item["name"])}" loading="lazy"></div><div class="heritage-card-content"><div><div class="heritage-dynasty">{escape(item["era"])}</div><h3 class="heritage-title">{escape(item["name"])}</h3><p class="heritage-desc">{escape(item["category"])}</p></div><div><div class="glaze-palette-box"><span class="glaze-label">Màu men trích xuất</span><div class="glaze-dots">{dots}</div></div><a class="card-action-btn" href="?select={escape(item["id"])}"><span>Chiêm ngưỡng &amp; Tạo thiết kế</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></a></div></div></article>'''
+        )
+    st.markdown(
+        f'''<main class="main-content-flow"><section class="hero-section container"><div class="hero-editorial-grid"><div class="hero-left-col"><h1 class="hero-title-editorial">Tái sinh Hoa văn Gốm Bát Tràng<br>trên <span class="highlight">Tà Áo Dài Đương đại</span></h1><p class="hero-desc-editorial">Hành trình sáng tạo từ hiện vật gốm Bát Tràng đến những thiết kế áo dài được kiến tạo riêng từ linh hồn di sản.</p></div></div></section><section class="showcase-section container" id="hien-vat"><div class="showcase-header-bar"><div class="showcase-title-group"><h2>Kho báu Men sắc &amp; Họa phẩm</h2><p><span>Sáu hiện vật tiêu biểu đợt tuyển chọn</span><span>•</span><span class="museum-badge">● Nguyên bản viện bảo tàng &amp; tư liệu di sản</span></p></div></div><div class="filter-chips-container"><span class="filter-chip active">Tất cả (6)</span><span class="filter-chip">Men rạn cổ</span><span class="filter-chip">Men lam</span><span class="filter-chip">Đồ thờ &amp; Phật giáo</span><span class="filter-chip">Đề tài Trang trí</span></div><div class="cards-grid-6">{"".join(cards)}</div></section></main>''',
+        unsafe_allow_html=True,
+    )
+
+
+def render_static_detail(heritage_dir: Path, item: dict) -> None:
+    image = get_image_base64(heritage_dir / item["image_file"])
+    st.markdown(
+        f'''<div class="detail-modal-overlay active"><div class="detail-modal-card"><a class="modal-close-btn" href="?go=1" aria-label="Quay lại">←</a><div class="modal-grid"><div class="modal-img-col"><img alt="{escape(item["name"])}" src="{image}"></div><div class="modal-info-col"><div><span class="modal-step-badge">Bước 2 — Chiêm ngưỡng hiện vật</span><h3 class="modal-title">{escape(item["name"])}</h3><div class="modal-meta">{escape(item["subtitle"])}</div><div class="glaze-palette-box"><span class="glaze-label">Bảng màu men trích xuất</span><div class="glaze-dots">{"".join(f'<span class="glaze-dot" style="background-color:{color}"></span>' for color in PALETTES[0])}</div></div></div><a class="modal-cta-btn" href="?go=3"><span>TẠO BỘ 4 THIẾT KẾ ÁO DÀI</span></a></div></div></div></div>''',
+        unsafe_allow_html=True,
+    )
+
+
+def render_static_curate(root: Path, item: dict, variants: list[dict]) -> None:
+    template = (root / "webtestdesign" / "components" / "sections" / "curate.html").read_text(encoding="utf-8")
+    cards = []
+    for index, variant in enumerate(variants[:4]):
+        image = get_image_base64(root / variant.get("design_path", ""))
+        similarity = f'{float(variant.get("similarity_pattern_vs_ceramic", 0)) * 100:.1f}%'
+        label = escape(variant.get("layout_label", f"Biến thể {index + 1}"))
+        cards.append(
+            f'''<article class="variant-card"><div class="variant-img-wrap"><img class="variant-img" src="{image}" alt="{label}"><span class="similarity-badge">★ {similarity}</span></div><div class="variant-layer"></div><div class="variant-info"><span class="variant-tagline">ĐỘ TƯƠNG ĐỒNG THAM KHẢO · {similarity}</span><h4 class="variant-name">Biến thể {index + 1}</h4><a class="variant-btn-select" href="?choose={index + 1}"><span>Xem hộ chiếu thiết kế →</span></a></div></article>'''
+        )
+    template = template.replace(' style="display: none;"', '')
+    template = re.sub(r'<h2 class="curate-title"[^>]*>.*?</h2>', f'<h2 class="curate-title">Bộ Sưu Tập Áo Dài: {escape(item["name"])}</h2>', template, flags=re.S)
+    template = re.sub(r'<p class="curate-subtitle"[^>]*>.*?</p>', '<p class="curate-subtitle">Bốn thiết kế được kiến tạo từ hoa văn hiện vật bạn đã chọn.</p>', template, flags=re.S)
+    template = re.sub(r'(<div class="variants-grid"[^>]*>).*?(</div>)', rf'\1{"".join(cards)}\2', template, count=1, flags=re.S)
+    st.markdown(template, unsafe_allow_html=True)
+
+
+def render_static_footer(root: Path) -> None:
+    template = (root / "webtestdesign" / "components" / "layout" / "footer.html").read_text(encoding="utf-8")
+    st.markdown(template, unsafe_allow_html=True)
 
 
 def render_app(root: Path, heritage_dir: Path, heritage_items: list[dict], heritage_map: dict[str, dict]) -> None:
@@ -12,6 +79,26 @@ def render_app(root: Path, heritage_dir: Path, heritage_items: list[dict], herit
     HERITAGE_DIR = heritage_dir
     HERITAGE_ITEMS = heritage_items
     HERITAGE_MAP = heritage_map
+    selected = st.query_params.get("select")
+    requested_step = st.query_params.get("go")
+    chosen = st.query_params.get("choose")
+    if selected in HERITAGE_MAP:
+        st.session_state.selected_id = selected
+        st.session_state.step = 2
+        st.session_state.chosen_variant = None
+        st.session_state.show_passport = False
+        st.query_params.clear()
+    elif requested_step in {"1", "2", "3", "4"}:
+        st.session_state.step = int(requested_step)
+        st.query_params.clear()
+    elif chosen and chosen.isdigit():
+        index = int(chosen) - 1
+        variants = st.session_state.generated_variants
+        if 0 <= index < len(variants):
+            st.session_state.chosen_variant = variants[index]
+            st.session_state.show_passport = True
+            st.session_state.step = 4
+        st.query_params.clear()
     current_heritage = HERITAGE_MAP.get(st.session_state.selected_id, HERITAGE_ITEMS[0])
 
 
@@ -19,133 +106,21 @@ def render_app(root: Path, heritage_dir: Path, heritage_items: list[dict], herit
     # TOP NAVBAR
     # ==============================================================================
     step = st.session_state.step
-    p1_cls = "active" if step == 1 else ("completed" if step > 1 else "")
-    p2_cls = "active" if step == 2 else ("completed" if step > 2 else "")
-    p3_cls = "active" if step == 3 else ("completed" if step > 3 else "")
-    p4_cls = "active" if step == 4 else ""
-
-    st.markdown(
-        f"""
-        <div class="top-navbar">
-            <div class="brand-logo">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M8 2h8l2 5-3 6v7a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-7l-3-6 2-5z"/>
-                    <line x1="8" y1="2" x2="16" y2="2"/>
-                    <line x1="12" y1="13" x2="12" y2="20"/>
-                </svg>
-                <div>
-                    <div class="brand-title">DIGITAL HERITAGE</div>
-                    <div class="brand-subtitle">Di Sản Số · Gốm Bát Tràng</div>
-                </div>
-            </div>
-            <div class="steps-nav">
-                <span class="step-pill {p1_cls}">{'✓ ' if step > 1 else '1 '}Chọn hiện vật</span>
-                <span class="step-divider">—</span>
-                <span class="step-pill {p2_cls}">{'✓ ' if step > 2 else '2 '}Xem hiện vật</span>
-                <span class="step-divider">—</span>
-                <span class="step-pill {p3_cls}">{'✓ ' if step > 3 else '3 '}Đang tạo</span>
-                <span class="step-divider">—</span>
-                <span class="step-pill {p4_cls}">4 Chọn thiết kế</span>
-            </div>
-            <div>
-                <span class="badge-mvp">MVP v6.1</span>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    render_static_nav(step)
 
 
     # ==============================================================================
     # VIEW 1 — CHỌN HIỆN VẬT
     # ==============================================================================
     if st.session_state.step == 1:
-        st.markdown('<div class="view-step-label">BƯỚC 1 — CHỌN HIỆN VẬT</div>', unsafe_allow_html=True)
-        st.markdown('<div class="view-main-title">Tái Sinh Di Sản Số</div>', unsafe_allow_html=True)
-        st.markdown(
-            '<div class="view-description">'
-            'Chọn một hiện vật gốm Bát Tràng để bắt đầu hành trình tái sinh hoa văn thành thiết kế áo dài đương đại.'
-            '</div>',
-            unsafe_allow_html=True,
-        )
-
-        cols = st.columns(3)
-        for idx, item in enumerate(HERITAGE_ITEMS):
-            col = cols[idx % 3]
-            with col:
-                img_path = HERITAGE_DIR / item["image_file"]
-                img_b64 = get_image_base64(img_path)
-
-                st.markdown(
-                    f"""
-                    <div class="heritage-card">
-                        <div class="card-img-wrap">
-                            <img src="{img_b64}" alt="{item['name']}"/>
-                        </div>
-                        <div class="card-body">
-                            <span class="era-tag">{item['era']}</span>
-                            <div class="card-title">{item['name']}</div>
-                            <div class="card-desc">{item['category']}</div>
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-                if st.button("Khám phá hiện vật", key=f"btn_select_{item['id']}", use_container_width=True):
-                    st.session_state.selected_id = item["id"]
-                    st.session_state.step = 2
-                    st.session_state.chosen_variant = None
-                    st.session_state.show_passport = False
-                    st.rerun()
-                st.markdown("<div style='margin-bottom: 24px;'></div>", unsafe_allow_html=True)
+        render_static_catalog(HERITAGE_DIR, HERITAGE_ITEMS)
 
 
     # ==============================================================================
     # VIEW 2 — XEM HIỆN VẬT
     # ==============================================================================
     elif st.session_state.step == 2:
-        if st.button("← Quay lại danh sách", key="btn_back_to_list"):
-            st.session_state.step = 1
-            st.rerun()
-
-        st.markdown('<div class="view-step-label">BƯỚC 2 — XEM HIỆN VẬT</div>', unsafe_allow_html=True)
-
-        c_left, c_right = st.columns([1.1, 1.3], gap="large")
-
-        with c_left:
-            img_path = HERITAGE_DIR / current_heritage["image_file"]
-            img_b64 = get_image_base64(img_path)
-            st.markdown(
-                f"""
-                <div class="detail-img-container">
-                    <img src="{img_b64}" alt="{current_heritage['name']}"/>
-                </div>
-                <div class="detail-tag-bar">
-                    <span class="pill-tag accent">{current_heritage['era']}</span>
-                    <span class="pill-tag">Bát Tràng</span>
-                    <span class="pill-tag">Gốm truyền thống</span>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-        with c_right:
-            st.markdown(
-                f"""
-                <div class="view-main-title" style="font-size: 2.1rem; margin-bottom: 0.3rem;">{current_heritage['name']}</div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-            if st.button("TẠO THIẾT KẾ →", key="btn_start_generate", use_container_width=True, type="primary"):
-                st.session_state.generated_variants = []
-                st.session_state.step = 3
-                st.rerun()
-
-            st.markdown(
-                '<div class="btn-sub-note">Hệ thống sẽ tạo một số phương án để bạn chọn.</div>',
-                unsafe_allow_html=True,
-            )
+        render_static_detail(HERITAGE_DIR, current_heritage)
 
 
     # ==============================================================================
@@ -207,51 +182,11 @@ def render_app(root: Path, heritage_dir: Path, heritage_items: list[dict], herit
     # - Không ghi và không hiển thị audit log.
     # ==============================================================================
     elif st.session_state.step == 4:
-        st.markdown('<div class="view-step-label">BƯỚC 4 — CHỌN THIẾT KẾ</div>', unsafe_allow_html=True)
-        st.markdown('<div class="view-main-title">4 Thiết Kế Áo Dài</div>', unsafe_allow_html=True)
-        st.markdown(
-            f'<div class="view-description">Từ hoa văn: <strong>{current_heritage["name"]}</strong>. '
-            'Bấm "Chọn thiết kế này" để xem chi tiết Design Passport và đối chiếu độ tương đồng.</div>',
-            unsafe_allow_html=True,
-        )
-
         variants = st.session_state.generated_variants
-
         if not variants:
             st.warning("Chưa có thiết kế nào được tạo trong phiên này. Hãy quay lại hiện vật để bắt đầu.")
         else:
-            v_cols = st.columns(4)
-            for idx, var in enumerate(variants[:4]):
-                col = v_cols[idx]
-                with col:
-                    design_rel_path = var.get("design_path", "")
-                    design_file = ROOT / design_rel_path
-                    design_b64 = get_image_base64(design_file)
-                    layout_label = var.get("layout_label", f"Bố cục {idx + 1}")
-
-                    st.markdown(
-                        f"""
-                        <div class="aodai-card">
-                            <div class="aodai-img-wrap">
-                                <img src="{design_b64}" alt="{layout_label}"/>
-                                <span class="variant-index-badge">{idx + 1} / 4</span>
-                            </div>
-                            <div class="aodai-card-body">
-                                <div class="layout-title">{layout_label}</div>
-                                <div class="heritage-ref-text">{current_heritage['name']}</div>
-                            </div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-
-                    if st.button(f"Chọn thiết kế này →", key=f"btn_choose_v_{idx + 1}", use_container_width=True):
-                        st.session_state.chosen_variant = var
-                        st.session_state.show_passport = True
-                        st.rerun()
-
-                    st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
-
+            render_static_curate(ROOT, current_heritage, variants)
         # DESIGN PASSPORT DRAWER
         if st.session_state.show_passport and st.session_state.chosen_variant is not None:
             c_var = st.session_state.chosen_variant
@@ -339,3 +274,5 @@ def render_app(root: Path, heritage_dir: Path, heritage_items: list[dict], herit
                     if st.button("Đóng Passport ✕", key="btn_close_passport", use_container_width=True):
                         st.session_state.show_passport = False
                         st.rerun()
+
+    render_static_footer(ROOT)

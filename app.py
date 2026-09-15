@@ -22,4 +22,5 @@ HERITAGE_MAP = {item["id"]: item for item in HERITAGE_ITEMS}
 
 init_session(HERITAGE_ITEMS[0]["id"])
 inject_styles(ROOT / "streamlit_ui" / "styles.css")
+inject_styles(ROOT / "streamlit_ui" / "static_design.css")
 render_app(ROOT, HERITAGE_DIR, HERITAGE_ITEMS, HERITAGE_MAP)
