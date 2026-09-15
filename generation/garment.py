@@ -252,7 +252,11 @@ def _img2img_pipe():
         os.environ["SD15_MODEL_ID"], torch_dtype=torch.float16, variant="fp16",
         safety_checker=None, requires_safety_checker=False)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
-    pipe.to("cuda"); pipe.enable_attention_slicing()
+    if torch.cuda.get_device_properties(0).total_memory < 8 * 1024**3:
+        pipe.enable_model_cpu_offload()
+    else:
+        pipe.to("cuda")
+    pipe.enable_attention_slicing()
     return pipe
 
 

@@ -1,4 +1,8 @@
 # Core diffusion stack
+streamlit>=1.63.0
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.11.0+cu128
+torchvision==0.26.0+cu128
 diffusers>=0.31.0
 transformers>=4.44.0
 accelerate>=0.34.0

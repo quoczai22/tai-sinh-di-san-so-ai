@@ -65,10 +65,8 @@ def assemble_pattern(name_en: str, description: str, creative_direction: str = "
 
 @lru_cache(maxsize=1)
 def _tokenizer():
-    for line in (ROOT / ".env").read_text(encoding="utf-8").splitlines():
-        if "=" in line and not line.strip().startswith("#"):
-            k, v = line.split("=", 1)
-            os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+    from .stable_diffusion import load_env
+    load_env()
     from transformers import CLIPTokenizer          # noqa: PLC0415
     return CLIPTokenizer.from_pretrained(os.environ["SD15_MODEL_ID"], subfolder="tokenizer")
 

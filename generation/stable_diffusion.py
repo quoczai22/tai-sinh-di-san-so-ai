@@ -21,6 +21,8 @@ for _s in (sys.stdout, sys.stderr):
             pass
 
 ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_SD15_MODEL_ID = "stable-diffusion-v1-5/stable-diffusion-v1-5"
+DEFAULT_CONTROLNET_CANNY_ID = "lllyasviel/control_v11p_sd15_canny"
 
 STEPS = 25
 GUIDANCE = 7.5
@@ -28,10 +30,27 @@ SCHEDULER = "UniPCMultistep"      # chất lượng tốt với ít step → nha
 
 
 def load_env() -> None:
-    for line in (ROOT / ".env").read_text(encoding="utf-8").splitlines():
-        if "=" in line and not line.strip().startswith("#"):
-            k, v = line.split("=", 1)
-            os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+    env_file = ROOT / ".env"
+    if env_file.exists():
+        for line in env_file.read_text(encoding="utf-8").splitlines():
+            if "=" in line and not line.strip().startswith("#"):
+                k, v = line.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+    os.environ.setdefault("SD15_MODEL_ID", DEFAULT_SD15_MODEL_ID)
+    os.environ.setdefault("CONTROLNET_CANNY_ID", DEFAULT_CONTROLNET_CANNY_ID)
+    default_cache = ROOT / "digital-heritage-ai" / ".model-cache" / "huggingface"
+    cache_dir = Path(os.environ.setdefault("HF_HOME", str(default_cache)))
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
+
+def runtime_status() -> tuple[bool, str]:
+    try:
+        import torch
+    except ImportError:
+        return False, "Chưa cài PyTorch. Hãy cài dependencies của dự án trước."
+    if not torch.cuda.is_available():
+        return False, "Chưa nhận được GPU CUDA. Pipeline sinh ảnh không chạy bằng CPU."
+    return True, torch.cuda.get_device_name(0)
 
 
 class Generator:
@@ -43,7 +62,9 @@ class Generator:
         from diffusers import (ControlNetModel,             # noqa: PLC0415
                                StableDiffusionControlNetPipeline,
                                UniPCMultistepScheduler)
-        assert torch.cuda.is_available(), "Khong thay GPU — chay scripts/02_check_gpu.py"
+        ready, detail = runtime_status()
+        if not ready:
+            raise RuntimeError(detail)
         self.torch = torch
         t0 = time.time()
         cn = ControlNetModel.from_pretrained(
@@ -55,7 +76,12 @@ class Generator:
             # Tắt là quyết định có chủ đích, phải ghi vào docs/ai_disclosure.md.
             safety_checker=None, requires_safety_checker=False)
         pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
-        pipe.to("cuda")
+        p = torch.cuda.get_device_properties(0)
+        self.low_vram = p.total_memory < 8 * 1024**3
+        if self.low_vram:
+            pipe.enable_model_cpu_offload()
+        else:
+            pipe.to("cuda")
         pipe.enable_attention_slicing()
         try:
             pipe.vae.enable_slicing()
@@ -63,7 +89,6 @@ class Generator:
             pipe.enable_vae_slicing()
         self.pipe, self.controlnet = pipe, cn
         self.load_seconds = time.time() - t0
-        p = torch.cuda.get_device_properties(0)
         self.gpu = f"{p.name} {p.total_memory / 1024**3:.0f}GB"
 
     def generate(self, positive: str, negative: str, control: Image.Image,
@@ -93,7 +118,7 @@ class Generator:
         """
         import torch                                          # noqa: PLC0415
         mode = "circular" if on else "zeros"
-        for net in (self.pipe.unet, self.pipe.vae, self.controlnet):
+        for net in (self.pipe.unet, self.pipe.vae):
             for m in net.modules():
                 if isinstance(m, torch.nn.Conv2d):
                     m.padding_mode = mode

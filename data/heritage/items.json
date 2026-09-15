@@ -1,0 +1,56 @@
+[
+  {
+    "id": "BT_Hac_XP",
+    "name": "Bình gốm hoa lam công và sen",
+    "era": "Niên hiệu Chính Hòa",
+    "subtitle": "Niên hiệu Chính Hòa · Đồ thờ men lam",
+    "category": "Đồ thờ men lam Bát Tràng",
+    "image_file": "BT_Hac_XP.png",
+    "source_short": "Bảo tàng Lịch sử Quốc gia · Bộ sưu tập gốm men lam thế kỷ XVII–XVIII"
+  },
+  {
+    "id": "HSBT_XP-300x300",
+    "name": "Hoa sen trên gốm thờ Bát Tràng",
+    "era": "Niên hiệu Vĩnh Thịnh",
+    "subtitle": "Niên hiệu Vĩnh Thịnh (1705–1719)",
+    "category": "Biểu trưng Phật giáo · Lư hương men rạn",
+    "image_file": "HSBT_XP-300x300.png",
+    "source_short": "Lư hương men rạn niên hiệu Vĩnh Thịnh · Sưu tập đồ gốm men rạn có minh văn"
+  },
+  {
+    "id": "BHV_UU_XP1-600x600",
+    "name": "Bình hoa văn chim công hoa mẫu đơn",
+    "era": "Thế kỷ XVIII",
+    "subtitle": "Thế kỷ XVIII · Men hoàng lưu ly",
+    "category": "Đồ thờ gốm hoa lam · Men hoàng lưu ly",
+    "image_file": "BHV_UU_XP1-600x600.png",
+    "source_short": "Đồ gốm trang trí cung đình Bát Tràng thế kỷ XVIII"
+  },
+  {
+    "id": "MB_2C_XP_31",
+    "name": "Thuyền buồm và sóng nước",
+    "era": "Thế kỷ XIX",
+    "subtitle": "Thế kỷ XIX · Họa tiết hàng hải",
+    "category": "Đồ gốm xuất khẩu · Dấu ấn giao thương",
+    "image_file": "MB_2C_XP_31.png",
+    "source_short": "Sưu tập gốm Bát Tràng xuất khẩu thế kỷ XIX"
+  },
+  {
+    "id": "BT010_2",
+    "name": "Hoa cúc dây hoa lam",
+    "era": "Niên hiệu Cảnh Hưng",
+    "subtitle": "Niên hiệu Cảnh Hưng (1740–1786)",
+    "category": "Đề tài trang trí truyền thống · Men lam ngà",
+    "image_file": "BT010_2.jpg",
+    "source_short": "Chân đèn gốm men rạn Bát Tràng có minh văn thời Lê - Trịnh"
+  },
+  {
+    "id": "binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien",
+    "name": "Bình hoa sen dát vàng 24k",
+    "era": "Nghệ thuật đương đại",
+    "subtitle": "Nghệ thuật đương đại · Sứ trắng dát vàng",
+    "category": "Sứ trắng áp nổi · Dát vàng 24k",
+    "image_file": "binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien.jpg",
+    "source_short": "Tác phẩm nghệ nhân làng gốm Bát Tràng thế kỷ XXI"
+  }
+]
