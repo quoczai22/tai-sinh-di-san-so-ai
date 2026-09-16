@@ -1,4 +1,4 @@
-const HERITAGE_ITEMS = [
+let HERITAGE_ITEMS = [
     {
         id: "BT001",
         name: "Hoa sen trên gốm thờ Bát Tràng",
@@ -104,6 +104,17 @@ function initStudio() {
     studioInitialized = true;
 
     console.log('Studio Tái Sinh Di Sản Số AI - Khởi tạo thành công.');
+    loadLiveHeritageItems();
+}
+
+async function loadLiveHeritageItems() {
+    try {
+        const response = await fetch('http://127.0.0.1:8000/heritage');
+        if (!response.ok) throw new Error(`API ${response.status}`);
+        HERITAGE_ITEMS = await response.json();
+    } catch (error) {
+        console.warn('Không thể nạp metadata thật, dùng dữ liệu giao diện dự phòng.', error);
+    }
     renderHeritageCards(HERITAGE_ITEMS);
     initFilterChips();
     initDetailModal();
@@ -421,7 +432,7 @@ function renderCurateSection(item, shouldScroll = true) {
             layout: "Thân trước",
             palette: "Màu men gốc",
             similarity: "88.4%",
-            img: `./assets/images/curate/${item.id}_V1.png`
+            img: `${item.variantImageBase || `./assets/images/curate/${item.id}_V`}1_aodai.png`
         },
         {
             vNumber: 2,
@@ -429,7 +440,7 @@ function renderCurateSection(item, shouldScroll = true) {
             layout: "Phủ toàn thân",
             palette: "Tự do",
             similarity: "76.2%",
-            img: `./assets/images/curate/${item.id}_V2.png`
+            img: `${item.variantImageBase || `./assets/images/curate/${item.id}_V`}2_aodai.png`
         },
         {
             vNumber: 3,
@@ -437,7 +448,7 @@ function renderCurateSection(item, shouldScroll = true) {
             layout: "Băng gấu tà",
             palette: "Tự do",
             similarity: "68.5%",
-            img: `./assets/images/curate/${item.id}_V3.png`
+            img: `${item.variantImageBase || `./assets/images/curate/${item.id}_V`}3_aodai.png`
         },
         {
             vNumber: 4,
@@ -445,7 +456,7 @@ function renderCurateSection(item, shouldScroll = true) {
             layout: "Vai và ngực",
             palette: "Tự do",
             similarity: "54.1%",
-            img: `./assets/images/curate/${item.id}_V4.png`
+            img: `${item.variantImageBase || `./assets/images/curate/${item.id}_V`}4_aodai.png`
         }
     ];
 
