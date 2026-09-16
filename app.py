@@ -3,7 +3,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from streamlit_ui.helpers import init_session, inject_styles, load_heritage_items
+from streamlit_ui.helpers import init_session, inject_web_ui_styles, load_heritage_items
 from streamlit_ui.views import render_app
 
 
@@ -21,6 +21,5 @@ HERITAGE_ITEMS = load_heritage_items(DATA_DIR)
 HERITAGE_MAP = {item["id"]: item for item in HERITAGE_ITEMS}
 
 init_session(HERITAGE_ITEMS[0]["id"])
-inject_styles(ROOT / "streamlit_ui" / "styles.css")
-inject_styles(ROOT / "streamlit_ui" / "static_design.css")
+inject_web_ui_styles(ROOT)
 render_app(ROOT, HERITAGE_DIR, HERITAGE_ITEMS, HERITAGE_MAP)
