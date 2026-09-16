@@ -1,7 +1,6 @@
 # Secrets and machine-specific configuration
 .env
 .env.*
-!.env.example
 *.local
 
 # Python and virtual environments
@@ -60,3 +59,9 @@ docs/Phan_Cong_Cong_Viec_Chi_Tiet.md
 
 # Bỏ phần reports vì đây là note lại của từng thành viên
 reports/
+
+# AI-generated hand-off reports
+1509contextantigravity.md
+docs/1509contextantigravity.md
+docs/MVP_v6_1_Bao_cao_giai_thich.md
+docs/MVP_v6_1_Mind_Map_Prompt.docx
