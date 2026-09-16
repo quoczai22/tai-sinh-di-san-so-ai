@@ -310,7 +310,7 @@ function initDetailModal() {
     initPipelineControls();
 }
 
-function runVisualPipeline(item) {
+async function runVisualPipeline(item) {
     updateStepper(3);
 
     const pipelineModal = document.getElementById('pipeline-modal');
@@ -335,52 +335,38 @@ function runVisualPipeline(item) {
     setPipelineProgress(progressBar, 0);
     if (percentText) percentText.textContent = '0%';
     if (pipelineModal) pipelineModal.classList.add('active');
-    statusText.textContent = "Gìn giữ những đường nét đặc trưng từ hiện vật bạn đã chọn...";
-    stageCards[0]?.classList.add('running');
-    setPipelineProgress(progressBar, 25);
-    if (percentText) percentText.textContent = '25%';
-
-    setTimeout(() => {
-        stageCards[0]?.classList.remove('running');
-        stageCards[0]?.classList.add('done');
-
-        statusText.textContent = "Khơi mở những mảng hoa văn mới...";
-        stageCards[1]?.classList.add('running');
-        setPipelineProgress(progressBar, 50);
-        if (percentText) percentText.textContent = '50%';
-
-        setTimeout(() => {
-            stageCards[1]?.classList.remove('running');
-            stageCards[1]?.classList.add('done');
-
-            statusText.textContent = "Dệt cảm hứng lên tà áo dài Việt Nam...";
-            stageCards[2]?.classList.add('running');
-            setPipelineProgress(progressBar, 75);
-            if (percentText) percentText.textContent = '75%';
-
-            setTimeout(() => {
-                stageCards[2]?.classList.remove('running');
-                stageCards[2]?.classList.add('done');
-
-                statusText.textContent = "Hoàn thiện bộ thiết kế dành riêng cho bạn...";
-                stageCards[3]?.classList.add('running');
-                setPipelineProgress(progressBar, 100);
-                if (percentText) percentText.textContent = '100%';
-
-                setTimeout(() => {
-                    stageCards[3]?.classList.remove('running');
-                    stageCards[3]?.classList.add('done');
-                    statusText.textContent = "Thiết kế đã sẵn sàng để bạn chiêm ngưỡng.";
-                    if (modalFooter) modalFooter.style.display = 'flex';
-                    renderCurateSection(item, false);
-
-                }, 700);
-
-            }, 700);
-
-        }, 700);
-
-    }, 700);
+    statusText.textContent = "Đang gửi hiện vật tới pipeline RTX 4050...";
+    try {
+        const created = await fetch('http://127.0.0.1:8000/generate', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ heritage_id: item.id })
+        });
+        if (!created.ok) throw new Error(`API ${created.status}`);
+        const { job_id: jobId } = await created.json();
+        let result;
+        while (!result || ['queued', 'running'].includes(result.status)) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const response = await fetch(`http://127.0.0.1:8000/generate/${jobId}`);
+            if (!response.ok) throw new Error(`Job API ${response.status}`);
+            result = await response.json();
+            const progress = Number(result.progress || 0);
+            const stage = Math.min(4, Math.max(1, Math.ceil(progress / 25)));
+            stageCards.forEach((card, index) => card?.classList.toggle('done', index < stage - 1));
+            stageCards.forEach((card, index) => card?.classList.toggle('running', index === stage - 1));
+            setPipelineProgress(progressBar, progress);
+            if (percentText) percentText.textContent = `${progress}%`;
+            if (statusText) statusText.textContent = result.label || 'Đang xử lý...';
+        }
+        if (result.status !== 'completed') throw new Error(result.label || 'Pipeline thất bại');
+        stageCards.forEach(card => { card?.classList.remove('running'); card?.classList.add('done'); });
+        item.generatedVariants = result.variants;
+        statusText.textContent = "Thiết kế đã sẵn sàng để bạn chiêm ngưỡng.";
+        if (modalFooter) modalFooter.style.display = 'flex';
+        renderCurateSection(item, false);
+    } catch (error) {
+        statusText.textContent = `Không thể tạo thiết kế: ${error.message}`;
+        console.error('Pipeline API error:', error);
+    }
 }
 
 function initPipelineControls() {
@@ -459,6 +445,14 @@ function renderCurateSection(item, shouldScroll = true) {
             img: `${item.variantImageBase || `./assets/images/curate/${item.id}_V`}4_aodai.png`
         }
     ];
+    if (Array.isArray(item.generatedVariants) && item.generatedVariants.length === 4) {
+        item.generatedVariants.forEach((generated, index) => {
+            const variant = VARIANTS[index];
+            variant.img = generated.image_url;
+            variant.similarity = `${(Number(generated.similarity_pattern_vs_ceramic || 0) * 100).toFixed(1)}%`;
+            variant.layout = generated.layout_label || variant.layout;
+        });
+    }
 
     variantsGrid.innerHTML = '';
 
