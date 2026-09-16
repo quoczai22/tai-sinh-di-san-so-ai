@@ -11,6 +11,11 @@
       "console": "integratedTerminal",
       "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
       "preLaunchTask": "Start static Web UI (5500)",
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "Uvicorn running on .+",
+        "uriFormat": "http://127.0.0.1:5500/#heritage-cards-section"
+      },
       "justMyCode": true
     },
     {
