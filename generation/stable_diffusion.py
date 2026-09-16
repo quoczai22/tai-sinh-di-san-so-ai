@@ -68,9 +68,9 @@ class Generator:
         self.torch = torch
         t0 = time.time()
         cn = ControlNetModel.from_pretrained(
-            os.environ["CONTROLNET_CANNY_ID"], torch_dtype=torch.float16, variant="fp16")
+            os.environ["CONTROLNET_CANNY_ID"], dtype=torch.float16, variant="fp16")
         pipe = StableDiffusionControlNetPipeline.from_pretrained(
-            os.environ["SD15_MODEL_ID"], controlnet=cn, torch_dtype=torch.float16,
+            os.environ["SD15_MODEL_ID"], controlnet=cn, dtype=torch.float16,
             variant="fp16",
             # Safety checker cho false-positive trên hoạ tiết tôn giáo → ảnh đen.
             # Tắt là quyết định có chủ đích, phải ghi vào docs/ai_disclosure.md.

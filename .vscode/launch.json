@@ -6,7 +6,7 @@
       "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",
-      "args": ["api.main:app", "--host", "127.0.0.1", "--port", "8000"],
+      "args": ["api.main:app", "--host", "127.0.0.1", "--port", "8000", "--no-access-log"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe",

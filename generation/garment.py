@@ -249,7 +249,7 @@ def _img2img_pipe():
     from .stable_diffusion import load_env                    # noqa: PLC0415
     load_env()
     pipe = StableDiffusionImg2ImgPipeline.from_pretrained(
-        os.environ["SD15_MODEL_ID"], torch_dtype=torch.float16, variant="fp16",
+        os.environ["SD15_MODEL_ID"], dtype=torch.float16, variant="fp16",
         safety_checker=None, requires_safety_checker=False)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
     if torch.cuda.get_device_properties(0).total_memory < 8 * 1024**3:
@@ -303,7 +303,7 @@ def make_template(seed: int = 43) -> Path:
     load_env()
     GARMENT_DIR.mkdir(parents=True, exist_ok=True)
     pipe = StableDiffusionPipeline.from_pretrained(
-        os.environ["SD15_MODEL_ID"], torch_dtype=torch.float16, variant="fp16",
+        os.environ["SD15_MODEL_ID"], dtype=torch.float16, variant="fp16",
         safety_checker=None, requires_safety_checker=False)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
     pipe.to("cuda"); pipe.enable_attention_slicing()
