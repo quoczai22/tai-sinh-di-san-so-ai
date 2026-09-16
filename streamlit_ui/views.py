@@ -40,8 +40,6 @@ def render_app(project_root: Path, heritage_items: list[dict]) -> None:
         st.image(project_root / item["image_path"], caption=item["name"], width="stretch")
     with right:
         st.subheader(item["name"])
-        st.write(item["team_description"])
-        st.caption("Mô tả nội bộ do nhóm biên soạn, không phải trích dẫn học thuật.")
         st.caption(f"Bản quyền ảnh: {item['license_note']}")
         st.write(f"Conditioning mode: `{item['conditioning_mode']}`")
 
