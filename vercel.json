@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/web_ui/index.html" },
+    { "source": "/assets/(.*)", "destination": "/web_ui/assets/$1" },
+    { "source": "/components/(.*)", "destination": "/web_ui/components/$1" }
+  ],
+  "cleanUrls": true
+}
