@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-import json
 import os
 import threading
 import uuid
@@ -44,22 +43,16 @@ def heritage_items() -> list[dict]:
 
 
 def ui_items() -> list[dict]:
-    presentation = json.loads((PROJECT_ROOT / "data" / "heritage" / "items.json").read_text(encoding="utf-8"))
-    presentation_by_id = {item["id"]: item for item in presentation}
     result = []
     for item in heritage_items():
-        legacy = presentation_by_id.get(item["heritage_id"], {})
         result.append({
             "id": item["heritage_id"],
             "name": item["name"],
-            "dynasty": legacy.get("era", "Di sản Bát Tràng"),
-            "glaze": item["conditioning_mode"],
-            "category": ["all"],
-            "categoryLabel": legacy.get("category", "Hiện vật Bát Tràng"),
+            "dynasty": "Di sản Bát Tràng",
+            "conditioningMode": item["conditioning_mode"],
             "image": f"/media/heritage/{item['heritage_id']}",
             "colors": [],
             "colorNames": [],
-            "desc": item["team_description"],
             "licenseNote": item["license_note"],
             "variantImageBase": f"./assets/images/variants/{item['heritage_id']}_V",
         })

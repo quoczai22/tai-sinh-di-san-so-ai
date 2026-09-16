@@ -1,81 +1,7 @@
 const API_BASE_URL = (window.DH_API_BASE || 'http://127.0.0.1:8000').replace(/\/$/, '');
-let HERITAGE_ITEMS = [
-    {
-        id: "BT001",
-        name: "Hoa sen trên gốm thờ Bát Tràng",
-        dynasty: "Niên hiệu Vĩnh Thịnh (1705 - 1719)",
-        glaze: "Men rạn",
-        category: ["men-ran", "phat-giao"],
-        categoryLabel: "Biểu trưng Phật giáo · Lư hương men rạn",
-        image: "./assets/images/heritage/bt001.png",
-        colors: ["#3b4856", "#87929e", "#d8dfd5", "#a47e5b"],
-        colorNames: ["Xanh chàm men", "Xám rạn đá", "Trắng ngà cốt gốm", "Nâu hoàng thổ"],
-        desc: "Thành lư hương tạo hình bông sen nở với 3 lớp cánh nổi tinh xảo. Đế lư tạo hình chiếc lá sen úp trang nhã, biểu trưng cho sự thanh khiết trong Phật giáo Đại thừa."
-    },
-    {
-        id: "BT002",
-        name: "Rồng trên đồ thờ Bát Tràng",
-        dynasty: "Niên hiệu Hưng Trị (1590)",
-        glaze: "Men lam",
-        category: ["men-lam", "cung-dinh"],
-        categoryLabel: "Bảo vật Quốc gia · Đồ cung tiến chùa",
-        image: "./assets/images/heritage/bt002.png",
-        colors: ["#1d4ed8", "#3b82f6", "#d97706", "#f1f5f9"],
-        colorNames: ["Xanh lam gốm đậm", "Lam tràm hoa văn", "Vàng men rạn", "Men sứ trắng"],
-        desc: "Bộ chân đèn và lư hương do tượng nhân Đỗ Xuân Vy tạo tác, trang trí hình rồng yên ngựa và mây uốn lượn uy nghi. Đã được Thủ tướng Chính phủ công nhận Bảo vật Quốc gia."
-    },
-    {
-        id: "BT005",
-        name: "Chữ Thọ trong ô hình lá đề",
-        dynasty: "Thế kỷ XVII (1637)",
-        glaze: "Men rạn",
-        category: ["men-ran", "phat-giao"],
-        categoryLabel: "Chỉ dấu niên đại · Đồ thờ thế kỷ XVII",
-        image: "./assets/images/heritage/bt005.png",
-        colors: ["#475569", "#94a3b8", "#e2e8f0", "#b45309"],
-        colorNames: ["Xám tro cổ", "Men rạn hạt mè", "Trắng sương", "Nâu đất nung"],
-        desc: "Chữ Thọ thể hiện nổi để mộc tinh xảo trong ô lá đề Phật giáo trên chân đèn đế nghê quỳ, cung tiến vào chùa Thánh Ân năm Đinh Sửu (1637)."
-    },
-    {
-        id: "BT007",
-        name: "Bát bảo (kiếm, bút, cuốn thư, túi gấm...)",
-        dynasty: "Niên hiệu Gia Long (1802 - 1820)",
-        glaze: "Men rạn",
-        category: ["men-ran", "trang-tri"],
-        categoryLabel: "Bát bảo Đạo giáo · Nậm rượu men rạn ngà",
-        image: "./assets/images/heritage/bt007.png",
-        colors: ["#785d38", "#b4976a", "#e8dfcc", "#1e293b"],
-        colorNames: ["Vàng hổ phách", "Men ngà cổ", "Trắng hoàng gia", "Đen than mun"],
-        desc: "Đề tài Bát bảo Đạo giáo kết hợp triết lý Nho gia trên nậm rượu dáng hồ lô men rạn ngà, biểu trưng cho sự chúc phúc, trường thọ và văn hóa hiền tài đất Thăng Long."
-    },
-    {
-        id: "BT008",
-        name: "Tứ quý (tùng – cúc – trúc – mai)",
-        dynasty: "Niên hiệu Cảnh Hưng (1740 - 1786)",
-        glaze: "Men rạn",
-        category: ["men-ran", "trang-tri"],
-        categoryLabel: "Đề tài trang trí thuần túy · Bình men rạn",
-        image: "./assets/images/heritage/bt008.png",
-        colors: ["#2d4059", "#4a7c59", "#de9b72", "#eae3d2"],
-        colorNames: ["Lam đậm cổ vật", "Xanh tùng bách", "Vàng hoàng kim", "Trắng ngà men rạn"],
-        desc: "Bốn loài cây tượng trưng cho bốn mùa xuân - hạ - thu - đông tuần hoàn và khí chất người quân tử. Hoa văn chạm khắc tỉ mỉ dọc thân bình tứ giác độc bản."
-    },
-    {
-        id: "BT011",
-        name: "Hoa dây lá lật (băng hoa văn đường dềm)",
-        dynasty: "Thế kỷ XVIII (1735 - 1740)",
-        glaze: "Men rạn",
-        category: ["men-ran", "trang-tri"],
-        categoryLabel: "Chỉ dấu niên đại thế kỷ XVIII · Đỉnh thờ",
-        image: "./assets/images/heritage/bt011.png",
-        colors: ["#334155", "#64748b", "#c2410c", "#f8fafc"],
-        colorNames: ["Xám men gốm", "Xám tro nung", "Đỏ son gạch", "Trắng sứ mịn"],
-        desc: "Băng hoa văn hoa dây lá lật uốn lượn liên hoàn quanh cổ đỉnh thờ, tạo nhịp điệu chuyển động mềm mại, là nguồn cảm hứng lý tưởng để ứng dụng trên tà áo dài lụa."
-    }
-];
+let HERITAGE_ITEMS = [];
 
 let currentSelectedItem = null;
-let currentActiveFilter = "all";
 
 function setDynamicImage(image, source) {
     if (!image) return;
@@ -120,7 +46,6 @@ async function loadLiveHeritageItems() {
         console.warn('Không thể nạp metadata thật, dùng dữ liệu giao diện dự phòng.', error);
     }
     renderHeritageCards(HERITAGE_ITEMS);
-    initFilterChips();
     initDetailModal();
     initFooterLinks();
     document.addEventListener('visibilitychange', () => {
@@ -154,25 +79,20 @@ function renderHeritageCards(items) {
         const card = document.createElement('article');
         card.className = `heritage-card ${currentSelectedItem?.id === item.id ? 'selected' : ''}`;
         card.setAttribute('data-id', item.id);
-        const glazeDotsHtml = item.colors.map((color, index) =>
-            `<span class="glaze-dot" style="background-color: ${color};" title="${item.colorNames[index]} (${color})"></span>`
-        ).join('');
-
         card.innerHTML = `
             <div class="card-img-wrap">
-                <span class="badge-glaze">${item.glaze}</span>
+                <span class="badge-glaze">${item.conditioningMode || 'whole_object'}</span>
                 <img src="${item.image}" alt="${item.name}" loading="lazy" decoding="async">
             </div>
             <div class="heritage-card-content">
                 <div>
                     <div class="heritage-dynasty">${item.dynasty}</div>
                     <h3 class="heritage-title">${item.name}</h3>
-                    <p class="heritage-desc">${item.categoryLabel}</p>
+                    <p class="heritage-desc">Conditioning mode: ${item.conditioningMode || 'whole_object'}</p>
                 </div>
                 <div>
                     <div class="glaze-palette-box">
-                        <span class="glaze-label">Màu men trích xuất</span>
-                        <div class="glaze-dots">${glazeDotsHtml}</div>
+                        <span class="glaze-label">Hiện vật dùng toàn thể hình ảnh</span>
                     </div>
                     <button class="card-action-btn" type="button">
                         <span>Chiêm ngưỡng & Tạo thiết kế</span>
@@ -192,26 +112,6 @@ function renderHeritageCards(items) {
     });
 }
 
-function initFilterChips() {
-    const chipBtns = document.querySelectorAll('.filter-chip');
-    chipBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            chipBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            const filterValue = btn.getAttribute('data-filter');
-            currentActiveFilter = filterValue;
-
-            if (filterValue === 'all') {
-                renderHeritageCards(HERITAGE_ITEMS);
-            } else {
-                const filtered = HERITAGE_ITEMS.filter(item => item.category.includes(filterValue));
-                renderHeritageCards(filtered);
-            }
-        });
-    });
-}
-
 function selectHeritageItem(item) {
     currentSelectedItem = item;
     document.querySelectorAll('.heritage-card').forEach(card => {
@@ -227,17 +127,12 @@ function selectHeritageItem(item) {
     const modalTitle = document.getElementById('modal-title');
     const modalMeta = document.getElementById('modal-meta');
     const modalDesc = document.getElementById('modal-desc');
-    const modalDots = document.getElementById('modal-glaze-dots');
 
-    if (modal && modalImg && modalTitle && modalMeta && modalDesc && modalDots) {
+    if (modal && modalImg && modalTitle && modalMeta) {
         setDynamicImage(modalImg, item.image);
         modalTitle.textContent = item.name;
-        modalMeta.textContent = `${item.dynasty} · ${item.glaze} Bát Tràng`;
-        modalDesc.textContent = item.desc;
-
-        modalDots.innerHTML = item.colors.map((color, index) =>
-            `<span class="glaze-dot" style="background-color: ${color}; width: 22px; height: 22px;" title="${item.colorNames[index]} (${color})"></span>`
-        ).join('');
+        modalMeta.textContent = `${item.dynasty} · Conditioning mode: ${item.conditioningMode || 'whole_object'}`;
+        if (modalDesc) modalDesc.hidden = true;
 
         modal.classList.add('active');
     }
