@@ -3,12 +3,14 @@
   "tasks": [
     {
       "label": "Reset local web ports",
-      "type": "shell",
-      "command": "powershell",
+      "type": "process",
+      "command": "powershell.exe",
       "args": [
         "-NoProfile",
-        "-Command",
-        "$ports = 5500, 8000; foreach ($port in $ports) { $processIds = netstat -ano -p tcp | Select-String \":$port\\s+.*LISTENING\\s+(\\d+)$\" | ForEach-Object { [int]$_.Matches[0].Groups[1].Value }; foreach ($processId in $processIds) { Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue } }; exit 0"
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\.vscode\\reset-ports.ps1"
       ],
       "problemMatcher": []
     },
