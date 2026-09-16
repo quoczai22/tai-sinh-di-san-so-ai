@@ -1,3 +1,4 @@
+const API_BASE_URL = (window.DH_API_BASE || 'http://127.0.0.1:8000').replace(/\/$/, '');
 let HERITAGE_ITEMS = [
     {
         id: "BT001",
@@ -109,9 +110,12 @@ function initStudio() {
 
 async function loadLiveHeritageItems() {
     try {
-        const response = await fetch('http://127.0.0.1:8000/heritage');
+        const response = await fetch(`${API_BASE_URL}/heritage`);
         if (!response.ok) throw new Error(`API ${response.status}`);
-        HERITAGE_ITEMS = await response.json();
+        HERITAGE_ITEMS = (await response.json()).map(item => ({
+            ...item,
+            image: item.image.startsWith('/') ? `${API_BASE_URL}${item.image}` : item.image,
+        }));
     } catch (error) {
         console.warn('Không thể nạp metadata thật, dùng dữ liệu giao diện dự phòng.', error);
     }
@@ -337,7 +341,7 @@ async function runVisualPipeline(item) {
     if (pipelineModal) pipelineModal.classList.add('active');
     statusText.textContent = "Đang gửi hiện vật tới pipeline RTX 4050...";
     try {
-        const created = await fetch('http://127.0.0.1:8000/generate', {
+        const created = await fetch(`${API_BASE_URL}/generate`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ heritage_id: item.id })
         });
@@ -346,7 +350,7 @@ async function runVisualPipeline(item) {
         let result;
         while (!result || ['queued', 'running'].includes(result.status)) {
             await new Promise(resolve => setTimeout(resolve, 1000));
-            const response = await fetch(`http://127.0.0.1:8000/generate/${jobId}`);
+            const response = await fetch(`${API_BASE_URL}/generate/${jobId}`);
             if (!response.ok) throw new Error(`Job API ${response.status}`);
             result = await response.json();
             const progress = Number(result.progress || 0);
@@ -448,7 +452,9 @@ function renderCurateSection(item, shouldScroll = true) {
     if (Array.isArray(item.generatedVariants) && item.generatedVariants.length === 4) {
         item.generatedVariants.forEach((generated, index) => {
             const variant = VARIANTS[index];
-            variant.img = generated.image_url;
+            variant.img = generated.image_url.startsWith('/')
+                ? `${API_BASE_URL}${generated.image_url}`
+                : generated.image_url;
             variant.similarity = `${(Number(generated.similarity_pattern_vs_ceramic || 0) * 100).toFixed(1)}%`;
             variant.layout = generated.layout_label || variant.layout;
         });

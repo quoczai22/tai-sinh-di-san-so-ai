@@ -47,7 +47,7 @@ def ui_items() -> list[dict]:
             "glaze": item["conditioning_mode"],
             "category": ["all"],
             "categoryLabel": legacy.get("category", "Hiện vật Bát Tràng"),
-            "image": f"http://127.0.0.1:8000/media/heritage/{item['heritage_id']}",
+            "image": f"/media/heritage/{item['heritage_id']}",
             "colors": [],
             "colorNames": [],
             "desc": item["team_description"],
@@ -110,7 +110,7 @@ def generate_designs(request: GenerateRequest) -> dict:
                     variants=[
                         {
                             **variant,
-                            "image_url": f"http://127.0.0.1:8000/media/variant/{Path(variant['design_path']).name}",
+                            "image_url": f"/media/variant/{Path(variant['design_path']).name}",
                         }
                         for variant in variants
                     ],
