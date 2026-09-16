@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import json
+import os
 import threading
 import uuid
 
@@ -16,9 +17,16 @@ from streamlit_ui.heritage_data import load_heritage_metadata
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 app = FastAPI(title="Tái sinh Di sản Số API", version="0.1.0")
+allowed_origins = [
+    origin.strip()
+    for origin in os.getenv(
+        "WEB_UI_ORIGINS", "http://127.0.0.1:5500,http://localhost:5500"
+    ).split(",")
+    if origin.strip()
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5500", "http://localhost:5500"],
+    allow_origins=allowed_origins,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
