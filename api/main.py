@@ -32,6 +32,7 @@ app.add_middleware(
 )
 _jobs: dict[str, dict] = {}
 _jobs_lock = threading.Lock()
+_active_job_id: str | None = None
 
 
 class GenerateRequest(BaseModel):
@@ -96,14 +97,19 @@ def heritage_image(heritage_id: str) -> FileResponse:
 @app.post("/generate", status_code=202)
 def generate_designs(request: GenerateRequest) -> dict:
     from generation.streamlit_runner import generate_design_set
+    global _active_job_id
 
     if not any(item["heritage_id"] == request.heritage_id for item in heritage_items()):
         raise HTTPException(status_code=404, detail="Không tìm thấy hiện vật.")
     with _jobs_lock:
+        if _active_job_id is not None and _jobs.get(_active_job_id, {}).get("status") in {"queued", "running"}:
+            raise HTTPException(status_code=409, detail="Đang có một job GPU khác chạy. Vui lòng chờ job hiện tại hoàn tất.")
         job_id = uuid.uuid4().hex
         _jobs[job_id] = {"status": "queued", "progress": 0, "label": "Đang xếp hàng..."}
+        _active_job_id = job_id
 
     def run() -> None:
+        global _active_job_id
         def progress(value: int, label: str) -> None:
             with _jobs_lock:
                 _jobs[job_id].update(status="running", progress=value, label=label)
@@ -126,6 +132,9 @@ def generate_designs(request: GenerateRequest) -> dict:
         except Exception as exc:
             with _jobs_lock:
                 _jobs[job_id].update(status="failed", label=str(exc))
+        finally:
+            with _jobs_lock:
+                _active_job_id = None
 
     threading.Thread(target=run, daemon=True).start()
     return {"job_id": job_id, "status_url": f"/generate/{job_id}"}
