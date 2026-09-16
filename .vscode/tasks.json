@@ -8,7 +8,7 @@
       "args": [
         "-NoProfile",
         "-Command",
-        "$ports = 5500, 8000; foreach ($port in $ports) { $listeners = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue; foreach ($listener in $listeners) { Stop-Process -Id $listener.OwningProcess -Force -ErrorAction SilentlyContinue } }"
+        "$ports = 5500, 8000; foreach ($port in $ports) { $processIds = netstat -ano -p tcp | Select-String \":$port\\s+.*LISTENING\\s+(\\d+)$\" | ForEach-Object { [int]$_.Matches[0].Groups[1].Value }; foreach ($processId in $processIds) { Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue } }; exit 0"
       ],
       "problemMatcher": []
     },
