@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Tái sinh: Web UI + API",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["api.main:app", "--host", "127.0.0.1", "--port", "8000"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "preLaunchTask": "Start static Web UI (5500)",
+      "justMyCode": true
+    },
+    {
+      "name": "Streamlit: Tái sinh Di sản Số",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "streamlit",
+      "args": [
+        "run",
+        "app.py",
+        "--server.headless=true",
+        "--server.port=8501"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "justMyCode": true
+    }
+  ]
+}

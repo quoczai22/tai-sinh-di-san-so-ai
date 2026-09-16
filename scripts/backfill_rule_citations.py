@@ -26,6 +26,7 @@ if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
 try:
+    # pyrefly: ignore [missing-import]
     from app.supabase_client import get_supabase_client
 except ImportError:
     get_supabase_client = None

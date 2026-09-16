@@ -110,25 +110,6 @@
     background: #ffffff;
 }
 
-.stage-img-preview {
-    width: 100%;
-    height: 110px;
-    border-radius: 12px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    margin-bottom: 12px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.stage-img-preview img {
-    max-height: 100%;
-    max-width: 100%;
-    object-fit: contain;
-}
-
 .stage-num-badge {
     font-size: 12px;
     font-weight: 800;

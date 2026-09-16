@@ -11,7 +11,6 @@ REQUIRED_FIELDS = {
     "license",
     "license_note",
     "conditioning_mode",
-    "team_description",
 }
 
 

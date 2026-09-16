@@ -1,16 +1,12 @@
 
 .modal-img-col.is-loading,
-.passport-visual-col.is-loading,
-.lightbox-img-wrapper.is-loading,
-.stage-img-preview.is-loading {
+.passport-visual-col.is-loading {
     position: relative;
     overflow: hidden;
 }
 
 .modal-img-col.is-loading::after,
-.passport-visual-col.is-loading::after,
-.lightbox-img-wrapper.is-loading::after,
-.stage-img-preview.is-loading::after {
+.passport-visual-col.is-loading::after {
     content: "Đang chuẩn bị ảnh…";
     display: grid;
     place-items: center;
@@ -70,8 +66,4 @@
         display: block;
     }
 
-    .footer-note {
-        margin-top: 8px;
-        text-align: left;
-    }
 }

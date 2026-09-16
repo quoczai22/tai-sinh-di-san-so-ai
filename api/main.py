@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
+from api.audit import append_audit_event
 from streamlit_ui.heritage_data import load_heritage_metadata
 
 
@@ -38,6 +39,13 @@ class GenerateRequest(BaseModel):
     heritage_id: str
 
 
+class AuditRequest(BaseModel):
+    step: int
+    event: str
+    heritage_id: str | None = None
+    variant_name: str | None = None
+
+
 def heritage_items() -> list[dict]:
     return load_heritage_metadata(PROJECT_ROOT)
 
@@ -49,6 +57,7 @@ def ui_items() -> list[dict]:
             "id": item["heritage_id"],
             "name": item["name"],
             "dynasty": "Di sản Bát Tràng",
+            "description": item.get("team_description", ""),
             "conditioningMode": item["conditioning_mode"],
             "image": f"/media/heritage/{item['heritage_id']}",
             "colors": [],
@@ -100,6 +109,12 @@ def generate_designs(request: GenerateRequest) -> dict:
         job_id = uuid.uuid4().hex
         _jobs[job_id] = {"status": "queued", "progress": 0, "label": "Đang xếp hàng..."}
         _active_job_id = job_id
+    append_audit_event(PROJECT_ROOT, {
+        "step": 3,
+        "event": "generation_started",
+        "heritage_id": request.heritage_id,
+        "job_id": job_id,
+    })
 
     def run() -> None:
         global _active_job_id
@@ -122,15 +137,35 @@ def generate_designs(request: GenerateRequest) -> dict:
                         for variant in variants
                     ],
                 )
+            append_audit_event(PROJECT_ROOT, {
+                "step": 3,
+                "event": "generation_completed",
+                "heritage_id": request.heritage_id,
+                "job_id": job_id,
+            })
         except Exception as exc:
             with _jobs_lock:
                 _jobs[job_id].update(status="failed", label=str(exc))
+            append_audit_event(PROJECT_ROOT, {
+                "step": 3,
+                "event": "generation_failed",
+                "heritage_id": request.heritage_id,
+                "job_id": job_id,
+            })
         finally:
             with _jobs_lock:
                 _active_job_id = None
 
     threading.Thread(target=run, daemon=True).start()
     return {"job_id": job_id, "status_url": f"/generate/{job_id}"}
+
+
+@app.post("/audit", status_code=202)
+def record_audit_event(request: AuditRequest) -> dict:
+    if request.step not in {1, 2, 3, 4}:
+        raise HTTPException(status_code=422, detail="Bước audit phải từ 1 đến 4.")
+    is_recorded = append_audit_event(PROJECT_ROOT, request.model_dump(exclude_none=True))
+    return {"status": "recorded" if is_recorded else "unavailable"}
 
 
 @app.get("/generate/{job_id}")

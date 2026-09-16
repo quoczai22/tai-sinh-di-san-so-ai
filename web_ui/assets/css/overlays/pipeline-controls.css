@@ -1,0 +1,71 @@
+.pipeline-modal-card {
+    position: relative;
+}
+
+.pipeline-modal-footer {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    animation: fadeIn 0.3s ease;
+}
+
+.pipeline-footer-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+    color: #1e293b;
+}
+
+.pipeline-footer-info .success-icon {
+    font-size: 18px;
+}
+
+.pipeline-footer-buttons {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.btn-stay-inspector {
+    padding: 10px 18px;
+    background: #f1f5f9;
+    color: #475569;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-stay-inspector:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.btn-modal-goto-curate {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    color: #ffffff;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
+    transition: var(--transition);
+}
+
+.btn-modal-goto-curate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.22);
+}
+
+.pipeline-stage-card {
+    cursor: pointer;
+}
+
+.pipeline-stage-card:hover {
+    border-color: #2563eb;
+}

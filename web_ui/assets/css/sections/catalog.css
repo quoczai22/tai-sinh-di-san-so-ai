@@ -1,5 +1,12 @@
 
+.showcase-section {
+    position: relative;
+    z-index: 1;
+}
+
 .showcase-header-bar {
+    position: relative;
+    z-index: 2;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
@@ -29,50 +36,20 @@
 }
 
 .museum-badge {
+    position: relative;
+    z-index: 3;
+    isolation: isolate;
     display: inline-flex;
     align-items: center;
     gap: 6px;
     font-size: 12px;
     font-weight: 600;
     color: #b91c1c;
-    background: #fef2f2;
+    background: #fff7f5;
     border: 1px solid #fecaca;
     padding: 3px 10px;
     border-radius: 12px;
-}
-
-.filter-chips-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 32px;
-}
-
-.filter-chip {
-    padding: 7px 16px;
-    border-radius: 20px;
-    font-size: 13.5px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    background: #ffffff;
-    border: 1px solid var(--border-subtle);
-    cursor: pointer;
-    transition: var(--transition);
-    user-select: none;
-}
-
-.filter-chip:hover {
-    color: var(--text-primary);
-    border-color: #cbd5e1;
-    background: #f8fafc;
-}
-
-.filter-chip.active {
-    background: #0f172a;
-    color: #ffffff;
-    border-color: #0f172a;
-    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(148, 48, 27, 0.08);
 }
 
 .cards-grid-6 {

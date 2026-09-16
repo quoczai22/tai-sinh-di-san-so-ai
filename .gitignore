@@ -24,6 +24,7 @@ models/
 checkpoints/
 generated/
 logs/
+outputs/audit/
 cache/
 *.ckpt
 *.safetensors
