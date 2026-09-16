@@ -1,0 +1,72 @@
+{
+  "_meta": {
+    "purpose": "Heritage Dataset — thong tin hien vat de he thong hien thi cho nguoi dung (spec muc 4).",
+    "note": "team_description la noi dung noi bo do nhom bien soan, KHONG phai trich dan hoc thuat. Bat cu dau hien thi truong nay cho nguoi dung, UI PHAI kem ghi chu do (spec muc 7, dong 435).",
+    "schema": ["heritage_id", "name", "image_path", "image_source_url", "license",
+               "license_note", "conditioning_mode", "team_description"]
+  },
+  "items": {
+    "BT_Hac_XP": {
+      "heritage_id": "BT_Hac_XP",
+      "name": "Bình gốm dáng Tỏi hút lộc",
+      "image_path": "data/heritage/BT_Hac_XP.png",
+      "image_source_url": null,
+      "license": "unverified",
+      "license_note": "Ảnh tự thu thập, chưa xác minh bản quyền. Chỉ dùng nội bộ MVP.",
+      "conditioning_mode": "whole_object",
+      "team_description": "Bình gốm dáng củ tỏi Bát Tràng thường gọi là bình Tỏi hút lộc, gốm Chu Đậu gọi là bình Phú Quý. Không chỉ là những tuyệt tác hoàn hảo trang trí cho không gian ngôi nhà, mà còn thu hút tài lộc, mang lại vượng khí, phúc đức cho gia chủ. Tỏi hút lộc là một sản phẩm gốm trang trí, gốm sứ phong thủy được sử dụng rộng rãi, đặc biệt đối với những người hiểu về phong thủy, bình gốm dáng củ tỏi có tác dụng thu và giữ khí tốt, giúp lưu chuyển và hội tụ năng lượng. Nét tinh hoa của làng gốm sứ Bát Tràng được thể hiện trên bình tỏi ngày càng có tính thẩm mỹ cao, ý nghĩa sâu sắc."
+    },
+    "HSBT_XP-300x300": {
+      "heritage_id": "HSBT_XP-300x300",
+      "name": "Bình gốm hoa sen mực đen",
+      "image_path": "data/heritage/HSBT_XP-300x300.png",
+      "image_source_url": null,
+      "license": "unverified",
+      "license_note": "Ảnh tự thu thập, chưa xác minh bản quyền. Chỉ dùng nội bộ MVP.",
+      "conditioning_mode": "whole_object",
+      "team_description": "Hoa sen sống trong bùn lầy, nhưng vẫn vươn lên mạnh mẽ, nở rộ đẹp đẽ. Do đó, hoa sen chính là biểu tượng cho sự bất khuất, mạnh mẽ của con người trong xã hội, nơi mà có những chất làm cho thân và tâm dễ bị vấy bẩn. Không những thế, hoa sen được làm biểu tượng dưới chân phật nhằm thể hiện sự đức hạnh, từ bi và trí tuệ và sự thanh cao trong tâm hồn, nơi mà phẩm chất thánh thiện và lòng yêu thương, bác ái, cao thượng được trao cho nhau để cuộc sống tốt đẹp hơn. Hoa sen đã trở thành biểu tượng cho tình cảm lứa đôi, tình người với người chứa đựng sự gần gũi và thanh cao."
+    },
+    "BHV_UU_XP1-600x600": {
+      "heritage_id": "BHV_UU_XP1-600x600",
+      "name": "Bình gốm chim công phong thủy",
+      "image_path": "data/heritage/BHV_UU_XP1-600x600.png",
+      "image_source_url": null,
+      "license": "unverified",
+      "license_note": "Ảnh tự thu thập, chưa xác minh bản quyền. Chỉ dùng nội bộ MVP.",
+      "conditioning_mode": "whole_object",
+      "team_description": "Theo quan niệm phong thủy, chim được coi là biểu tượng cho sức mạnh của những cơ hội mới, đặc biệt khi bạn đang gặp phải vận hạn. Chim cũng được coi là biểu tượng của tình duyên và sự giàu có. Chim công thuộc loài chim quý rất đẹp và đem lại sự tao nhã. Theo chuyên gia phong thủy thì chim chóc thể hiện sức mạnh vô tận của trái đất và mỗi loài chim đều có những ý nghĩa phong thủy riêng cho ngôi nhà của bạn. Chim cũng được coi là biểu tượng của tình duyên và sự giàu có. Hình ảnh chim công thể hiện sự tự do bay nhảy khát khao tới sự viên mãn."
+    },
+    "MB_2C_XP_31": {
+      "heritage_id": "MB_2C_XP_31",
+      "name": "Bình gốm thuyền buồm – Thuận buồm xuôi gió",
+      "image_path": "data/heritage/MB_2C_XP_31.png",
+      "image_source_url": null,
+      "license": "unverified",
+      "license_note": "Ảnh tự thu thập, chưa xác minh bản quyền. Chỉ dùng nội bộ MVP.",
+      "conditioning_mode": "whole_object",
+      "team_description": "Họa tiết \"Thuận buồm xuôi gió\" là hoạ tiết vẽ cánh buồm được thổi căng bởi làn gió; chiếc thuyền sẽ di chuyển nhanh hơn khi có gió đẩy mạnh. Họa tiết \"Mã đáo thành công\" thường có tám con ngựa bởi tám – \"bát\" – khá gần âm với từ \"phát\", tức là phát đạt. Tranh phong thủy \"Mã đáo thành công\" được sử dụng rộng rãi trong đời sống bởi nó phù hợp với nhiều đối tượng, từ người làm ăn buôn bán, theo đuổi tiền tài cho tới người đang trên đường quan lộ, tìm kiếm danh vọng. Chiếc bình mang ý nghĩa với lời chúc gặp nhiều may mắn, thành đạt, hạnh phúc, bình yên, nhiều của cải, cũng là lời chúc bình an và cầu mong mọi việc điều thuận lợi."
+    },
+    "BT010_2": {
+      "heritage_id": "BT010_2",
+      "name": "Bình gốm cúc vạn thọ",
+      "image_path": "data/heritage/BT010_2.jpg",
+      "image_source_url": null,
+      "license": "unverified",
+      "license_note": "Ảnh tự thu thập, chưa xác minh bản quyền. Chỉ dùng nội bộ MVP.",
+      "conditioning_mode": "whole_object",
+      "team_description": "Cúc vạn thọ thường được trồng để trang trí sân vườn, làm cây cảnh, phục vụ cúng lễ và trưng bày trong dịp Tết Nguyên đán. Những chậu cúc vạn thọ màu vàng rực rỡ sẽ giúp cho không gian ngày thêm trở nên bừng sáng. Hoa còn mang ý nghĩa cầu mong sức khỏe, sự trường thọ và may mắn cho mọi người. Ngoài sự hiện diện như một đặc trưng cho mùa xuân, hai chữ vạn thọ còn có ý nghĩa về mặt tâm linh. Vạn biểu trưng cho sự tốt lành, cát tường, vô số. Thọ thể hiện trên bàn thờ gia tiên, trang ông táo lúc nào cũng có một bình hoa tươi nở vàng. Rồi người ta mừng tuổi, chúc thọ cho các bậc cao niên cũng thường lấy hình ảnh hoa vạn thọ để cầu mong trăm điều tốt đẹp. Hai chữ vạn thọ đủ nói lên được bao điều về giá trị tinh thần, tâm linh và truyền thống đạo đức, lòng biết ơn của thế hệ cha ông."
+    },
+    "binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien": {
+      "heritage_id": "binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien",
+      "name": "Bình hoa sứ trắng sen dát vàng 24k",
+      "image_path": "data/heritage/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien.jpg",
+      "image_source_url": null,
+      "license": "unverified",
+      "license_note": "Ảnh tự thu thập, chưa xác minh bản quyền. Chỉ dùng nội bộ MVP.",
+      "conditioning_mode": "whole_object",
+      "team_description": "Hoa sen từ lâu đã được xem là quốc hoa trong tâm thức người Việt, tượng trưng cho vẻ đẹp thuần khiết, bản lĩnh và sự vươn lên mạnh mẽ. Khi được thể hiện trên thân bình với họa tiết liên hoa mềm mại, từng cánh sen như đang nở rộ, mang theo thông điệp về sự bình an, hạnh phúc và những điều tốt đẹp. Bao quanh miệng bình và các chi tiết nổi bật là những đường kẻ chỉ vàng được thực hiện tỉ mỉ, tạo nên vẻ đẹp sang trọng nhưng không phô trương. Ánh vàng nhẹ nhàng làm nổi bật sắc men gốm, giúp tổng thể sản phẩm trở nên thanh lịch và đẳng cấp hơn. Không chỉ mang giá trị thẩm mỹ, sắc vàng còn tượng trưng cho sự thịnh vượng, thành công và may mắn. Vì vậy, chiếc bình không chỉ đẹp khi trưng bày mà còn gửi gắm lời chúc về một hành trình hợp tác thuận lợi và phát triển bền vững."
+    }
+  }
+}
+
+

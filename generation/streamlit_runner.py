@@ -14,6 +14,7 @@ SEED = 42
 def generate_design_set(
     heritage_id: str,
     on_progress: Callable[[int, str], None] | None = None,
+    output_dir: Path | None = None,
 ) -> list[dict]:
     def report(progress: int, label: str) -> None:
         if on_progress:
@@ -22,7 +23,8 @@ def generate_design_set(
     report(5, "Đang chuẩn bị hoa văn từ hiện vật...")
     prepared = cn.prepare(heritage_id, ornament_only=True, trim=True)
     source_colors = palette.dominant_colors(prepared["reference"], prepared["reference_mask"])
-    output_dir = OUT_DIR if OUT_DIR.is_absolute() else ROOT / OUT_DIR
+    output_dir = output_dir or OUT_DIR
+    output_dir = output_dir if output_dir.is_absolute() else ROOT / output_dir
     try:
         output_dir.mkdir(parents=True, exist_ok=True)
     except PermissionError:
