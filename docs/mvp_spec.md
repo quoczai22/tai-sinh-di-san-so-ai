@@ -1,22 +1,8 @@
-# TÁI SINH DI SẢN SỐ — MVP SPECIFICATION v6.1
+# TÁI SINH DI SẢN SỐ
 ## Generate-and-Curate · Sản phẩm: Áo dài Việt Nam
 
 > **Tagline:** "Một cú bấm ra cả bộ thiết kế từ hoa văn gốm — bạn chọn cái ưng ý."
 
-**Sửa đổi 06/09/2026 so với v6.0.** Bản này viết lại cho khớp kiến trúc đã dựng và
-đã đo, không phải kiến trúc dự kiến. Bốn thay đổi lớn:
-
-1. **Bỏ Creative Intensity khỏi giao diện người dùng.** Người dùng không còn chọn
-   "sáng tạo ít hay nhiều". Bấm một nút, hệ thống sinh cả bộ, người dùng chọn ảnh.
-2. **Generation Layer tách làm hai giai đoạn** — sinh hoa văn phẳng, rồi ghép lên
-   áo dài. v6.0 gộp làm một và **không chạy được** (đo được ở mục 5.1).
-3. **Bố cục hoa văn do hệ thống tự chọn**, không khai báo cố định.
-4. **Bỏ pilot áo dài** (v6.0 mục 5.4) — dáng áo nay đến từ ảnh mẫu, không do
-   SD1.5 vẽ, nên rủi ro đó không còn.
-
-**Hệ quả về định vị — cần nói rõ với đội.** v6.0 đặt giá trị ở *"người dùng kiểm
-soát và thấy được đánh đổi"*. Bỏ nút chọn thì luận điểm đó không còn. Giá trị mới
-nằm ở **pipeline sinh bộ thiết kế đa dạng có đo lường + người curate** — xem mục 13.
 
 ---
 
@@ -135,18 +121,7 @@ mà nổi lên từ chỗ hoa văn phân bố theo mặt cong của món đồ.
 
 ### 4.2. Tiêu chí tuyển ảnh — KHÔNG dùng độ phân giải
 
-Bỏ tiêu chí "≥1024px cạnh ngắn nhất" của v6.0. Đo được nó **sai**:
-
-```
-HSBT_XP-300x300    300px   77% mốc   ✅ hoa văn sắc nét, dùng tốt
-lo-hoa-gom         768px   49% mốc   ❌ ra ảnh chụp cái bình
-binh-hoa-su-trang 1024px   72% mốc   (đạt tiêu chí cũ mà kém hơn ảnh 300px)
-```
-
-Ảnh 300×300 cho kết quả tốt hơn ảnh 1024px, vì món đồ phủ kín khung nên toàn bộ
-512 pixel dành cho hoa văn.
-
-**Tiêu chí đúng: số pixel cạnh hoa văn sau khi bỏ nền và bóc đường bao, ≥60% của
+Số pixel cạnh hoa văn sau khi bỏ nền và bóc đường bao, ≥60% của
 một ảnh mốc đã kiểm.** Đo bằng `controlnet.prepare()`, tự động, và đúng với thứ
 pipeline thật sự dùng.
 
@@ -197,7 +172,7 @@ Nhóm `kaleidoscope…` chặn hoa văn đối xứng gương, xa nét vẽ men 
 **Kiểm 77 token trước khi nạp model.** CLIP cắt ở đó và không báo lỗi; vượt thì
 ném exception ngay thay vì chờ nạp model rồi mới hỏng.
 
-### 5.4. Bốn mức weight — nội bộ, KHÔNG phải lựa chọn của người dùng
+### 5.4. Bốn mức weight — nội bộ
 
 ```
 0,85  ·  0,65  ·  0,45  ·  0,25
@@ -407,15 +382,6 @@ người dùng thường chọn mức nào?
 **Thiết kế một biến số:** cùng hiện vật, cùng seed, cùng ảnh điều kiện — chỉ đổi
 weight. Similarity đo ở giai đoạn 1 nên bố cục và lượt hoàn thiện không gây nhiễu.
 
-**Số đo hiện có** (6 hiện vật × 4 mức, 06/09/2026):
-
-| weight | Similarity TB | thấp | cao |
-|---:|---:|---:|---:|
-| 0,85 | 0,770 | 0,668 | 0,926 |
-| 0,65 | 0,767 | 0,655 | 0,914 |
-| 0,45 | 0,711 | 0,637 | 0,773 |
-| 0,25 | 0,713 | 0,633 | 0,782 |
-
 **Phần thứ hai — thống kê lựa chọn của người dùng.** Đây là thực nghiệm mới mà kiến
 trúc curate mở ra: ghi lại `chosen` qua nhiều lượt dùng để biết người thật thích mức
 biến tấu nào. Trình bày như **quan sát sơ bộ trên tập mẫu nhỏ**, không phải kết luận
@@ -440,46 +406,11 @@ thống kê.
 
 ---
 
-## 11. HIỆU NĂNG ĐÃ ĐO
 
-RTX 4060 Laptop 8GB, SD1.5 fp16, 512×512, 25 step:
+## 11. ĐỊNH VỊ 
 
-```
-Nạp model                     6 s   (một lần)
-Sinh 1 hoa văn              5,6 s
-Chấm 7 bố cục               2,0 s
-Ghép ảnh                  <0,1 s
-Lượt hoàn thiện           ~5 s
-────────────────────────────────
-Một bộ 4 thiết kế          ~45 s
-Đỉnh VRAM                3,33 GB / 8 GB
-```
 
-Còn dư VRAM để nâng lên 768px hoặc sinh nhiều biến thể hơn.
-
----
-
-## 12. RỦI RO & GIỚI HẠN
-
-| Rủi ro | Mức | Ghi chú |
-|---|---|---|
-| Hoa văn còn bóng dáng vật chứa ở weight cao | Trung bình | Đã đo, **không gỡ được bằng xử lý ảnh** (mục 4.1). Chấp nhận có ý thức |
-| Aesthetic Score chưa dùng được | Trung bình | Đang là proxy CLIP, dao động 8,5–8,9 ở mọi biến thể — **không phân biệt được**. Cần LAION-Aesthetics thật, hoặc bỏ khỏi hồ sơ |
-| Bốn mức weight chỉ tách thành hai nhóm | Trung bình | Cần giãn sang 0,90/0,70/0,40/0,15 rồi đo lại (mục 5.4) |
-| Mô tả hiện vật do LLM sinh, chưa ai rà | Trung bình | `reviewed_by_human` phải đặt `true` từng mục trước khi vào hồ sơ |
-| Ảnh chưa xác minh bản quyền | Cao — với hồ sơ dự thi | `license: unverified` phải hiển thị trung thực, không được ghi "free" |
-| Lượt hoàn thiện làm giai đoạn 2 mất tính tất định | Thấp | Seed đã ghi log; giữ cả bản ghép thô |
-| Ảnh áo dài mẫu do SD sinh, bị cắt đầu | Thấp | Sinh lại với seed khác nếu cần |
-
----
-
-## 13. ĐỊNH VỊ — ĐÃ ĐỔI, CẦN ĐỘI THỐNG NHẤT
-
-**v6.0 định vị:** *"người dùng chọn mức trung thành, hệ thống đo đánh đổi"*. Bỏ nút
-chọn thì luận điểm này **không còn đứng được** — phải thay, không được giữ nguyên
-slide cũ.
-
-**Định vị mới — Core Innovation Statement:**
+**Core Innovation Statement:**
 
 > Chúng tôi đề xuất một pipeline hai giai đoạn đưa hoa văn gốm truyền thống lên
 > trang phục hiện đại: giai đoạn một tách hoa văn khỏi hình dáng hiện vật rồi sinh
@@ -496,27 +427,9 @@ slide cũ.
 
 **Từ khoá:** GENERATE — MEASURE — CURATE
 
-**Điều gì thật sự là đóng góp kỹ thuật** (nói được khi giám khảo hỏi sâu):
-
-1. Tách hai giai đoạn — giải quyết xung đột hình học giữa conditioning và sản phẩm,
-   có số đo P(áo dài) 0,000 → 1,000 chứng minh.
-2. Conditioning chỉ trên hoa văn, bóc đường bao hiện vật.
-3. Sinh tile liền mạch bằng circular padding, và phát hiện **không được áp lên
-   ControlNet** (seam tệ hơn 20 lần).
-4. Chọn bố cục tự động bằng chấm điểm, rẻ hơn một lần chạy SD.
-5. Ghép ảnh có displacement + shading + color grade — dáng áo đảm bảo đúng.
-
-**Câu trả lời chuẩn nếu giám khảo hỏi "trách nhiệm văn hoá nằm ở đâu?":**
-> "Ở phiên bản MVP này chúng tôi tập trung vào bài toán kỹ thuật: đưa hoa văn di sản
-> lên trang phục sao cho đúng dáng, đo được độ trung thành, và tái lập được. Việc
-> gắn kết với tư liệu học thuật có trích dẫn nằm ngoài phạm vi 21 ngày, đã cân nhắc
-> và loại bỏ có chủ đích. Chúng tôi ghi rõ điều đó trong hồ sơ thay vì tuyên bố quá
-> mức: mọi mô tả hiện vật đều đánh dấu là mô tả nội bộ của nhóm, và mọi ảnh đều ghi
-> `license: unverified` cho tới khi xác minh được."
-
 ---
 
-## 14. CẤU TRÚC MÃ NGUỒN
+## 12. CẤU TRÚC MÃ NGUỒN
 
 ```text
 generation/
@@ -544,17 +457,3 @@ data/
 **LLM chỉ chạy offline.** Pipeline sinh ảnh đọc file, không gọi API — nên cùng hiện
 vật + seed luôn cho cùng kết quả ở giai đoạn 1.
 
----
-
-## 15. VIỆC CÒN LẠI
-
-| # | Việc | Ai |
-|---|---|---|
-| 1 | Rà 6 mô tả do LLM sinh, đặt `reviewed_by_human: true` | BA |
-| 2 | Xác minh nguồn/giấy phép 6 ảnh, thay `unverified` | BA |
-| 3 | `data/metadata.json` theo schema mục 4 | AI/Data |
-| 4 | Giãn 4 mức weight, đo lại | AI/Data |
-| 5 | Thay Aesthetic proxy bằng LAION, hoặc bỏ khỏi hồ sơ | AI/Data |
-| 6 | Streamlit UI theo luồng mục 7 | DevOps |
-| 7 | Audit Log ghi `chosen` khi người dùng chọn | DevOps |
-| 8 | `generate_set()` theo hợp đồng mục 7.1 (trả 4, chịu lỗi từng biến thể) | AI/Data |

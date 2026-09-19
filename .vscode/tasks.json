@@ -17,18 +17,17 @@
     {
       "label": "Start static Web UI (5500)",
       "type": "shell",
-      "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "command": "${workspaceFolder}\\venv\\Scripts\\python.exe",
       "args": ["-m", "http.server", "5500", "--directory", "web_ui"],
       "dependsOn": "Reset local web ports",
       "dependsOrder": "sequence",
       "isBackground": true,
       "problemMatcher": {
         "owner": "local-web-ui",
-        "pattern": [
-          {
-            "regexp": "^$"
-          }
-        ],
+        "pattern": {
+          "regexp": "^(.*)$",
+          "message": 1
+        },
         "background": {
           "activeOnStart": true,
           "beginsPattern": "Serving HTTP on",
