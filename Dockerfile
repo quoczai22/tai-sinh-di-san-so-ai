@@ -7,6 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     HF_HOME=/cache/huggingface \
     DH_OUTPUT_DIR=/data/outputs \
+    DH_REQUIRE_API_KEY=1 \
     SD15_MODEL_ID=stable-diffusion-v1-5/stable-diffusion-v1-5 \
     CONTROLNET_CANNY_ID=lllyasviel/control_v11p_sd15_canny \
     PORT=7860

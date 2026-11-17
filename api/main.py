@@ -16,6 +16,24 @@ from streamlit_ui.heritage_data import load_heritage_metadata
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+def _enforce_api_key_config() -> None:
+    """Fail-closed khi deploy: DH_REQUIRE_API_KEY=1 mà DH_API_KEY trống thì không khởi động.
+
+    Chạy local không đặt DH_REQUIRE_API_KEY thì giữ hành vi cũ (bỏ qua kiểm tra khoá).
+    """
+    required = os.getenv("DH_REQUIRE_API_KEY", "").strip().lower() in {"1", "true", "yes"}
+    if required and not os.getenv("DH_API_KEY", "").strip():
+        raise RuntimeError(
+            "DH_REQUIRE_API_KEY=1 nhưng DH_API_KEY đang trống: từ chối khởi động để không mở "
+            "GPU cho truy cập tự do. Hãy đặt secret DH_API_KEY (Modal: secret "
+            "'tai-sinh-di-san-secret'; HF Space: Settings → Secrets)."
+        )
+
+
+_enforce_api_key_config()
+
 app = FastAPI(title="Tái sinh Di sản Số API", version="0.2.0")
 allowed_origins = [
     origin.strip()

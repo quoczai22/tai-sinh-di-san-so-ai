@@ -60,6 +60,8 @@ def fastapi_app():
 
     os.environ["HF_HOME"] = BAKED_HF_CACHE
     os.environ["DH_OUTPUT_DIR"] = OUTPUT_VOLUME_MOUNT
+    # Fail-closed: thiếu DH_API_KEY trong secret thì api.main từ chối khởi động.
+    os.environ["DH_REQUIRE_API_KEY"] = "1"
 
     from api.main import app as web_app
 

@@ -171,12 +171,15 @@ def main() -> int:
         env_8001_slow = {**env_8001, "DELAY": "120"}
         p8001_slow = subprocess.Popen([sys.executable, "mock_backend.py"], cwd=str(ROOT), env=env_8001_slow)
         procs.append(p8001_slow)
-        time.sleep(1.0)
+        # Chờ qua /heritage (không bị DELAY làm treo): mock phải đang nghe thật, nếu không cổng
+        # nhận "connection refused" ngay và test không hề chạm tới nhánh timeout.
+        assert wait_for_url("http://127.0.0.1:8001/heritage"), "8001 (DELAY=120) không khởi động được"
 
         t0 = time.time()
         code4, res4 = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"}, timeout=8.0)
         elapsed4 = time.time() - t0
         assert code4 in (200, 202) and res4.get("backend") == "hf", f"Mong đợi failover sang hf, nhận: {res4}"
+        assert elapsed4 >= 1.4, f"Failover quá nhanh ({elapsed4:.2f}s) — không phải do chạm MODAL_TIMEOUT_MS=1500"
         assert elapsed4 < 5.0, f"Bị treo quá lâu: {elapsed4:.2f}s"
         print(f"[PASS #4] DELAY=120 trên 8001 -> Timeout sau {elapsed4:.2f}s và tự động failover sang backend='{res4['backend']}'.")
 
@@ -190,6 +193,60 @@ def main() -> int:
         code2, res2 = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
         assert code2 in (200, 202) and res2.get("backend") == "hf", f"Mong đợi hf, nhận: {res2}"
         print(f"[PASS #2] Tắt mock 8001 -> Tự động chuyển sang 8002 (backend='{res2['backend']}').")
+
+        # ------------------------------------------------------------------
+        # Tiêu chí #2b: Modal sập + HF Space đang ngủ (503) -> job "warming" -> frontend poll
+        # /api/status -> Space thức -> job thật bắt đầu -> hoàn tất với backend="hf"
+        # ------------------------------------------------------------------
+        p8002.terminate()
+        p8002.wait(timeout=5)
+        warmup_calls = 2  # 2 lần /health đầu trả 503 "warming"
+        p8002 = subprocess.Popen(
+            [sys.executable, "mock_backend.py"], cwd=str(ROOT),
+            env={**env_8002, "WARMUP_CALLS": str(warmup_calls)},
+        )
+        procs.append(p8002)
+        # Chờ qua /heritage để KHÔNG tiêu lượt /health đang giả lập ngủ
+        assert wait_for_url("http://127.0.0.1:8002/heritage"), "8002 (WARMUP) không khởi động được"
+
+        code_w, res_w = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        assert code_w == 202, f"Mong đợi 202 warming, nhận {code_w}: {res_w}"
+        assert res_w.get("backend") == "hf" and res_w.get("warming") is True, f"Mong đợi job warming: {res_w}"
+        assert res_w["job_id"].startswith("warming_"), res_w
+        assert res_w.get("status_url", "").startswith("/api/status?"), res_w
+
+        # Mô phỏng đúng vòng poll của web_ui/assets/js/ui/pipeline.js
+        job_id, backend = res_w["job_id"], res_w["backend"]
+        seen_warming_poll = False
+        real_job_ids: set[str] = set()
+        result: dict = res_w
+        deadline = time.time() + 30
+        while result.get("status") in (None, "queued", "running") or result.get("warming"):
+            assert time.time() < deadline, f"Quá thời gian chờ HF thức dậy: {result}"
+            time.sleep(0.3)
+            code_s, result = http_json(
+                f"http://127.0.0.1:3010/api/status?job_id={job_id}&backend={backend}&heritage_id=BT_Hac_XP"
+            )
+            assert code_s == 200, f"/api/status trả {code_s}: {result}"
+            assert result.get("backend") != "demo", f"Rơi sang demo thay vì chờ HF thức: {result}"
+            if result.get("warming"):
+                seen_warming_poll = True
+            if result.get("job_id") and result["job_id"] != job_id:
+                job_id = result["job_id"]
+                real_job_ids.add(job_id)
+            if result.get("backend"):
+                backend = result["backend"]
+            if result.get("status") in ("completed", "failed"):
+                break
+
+        assert seen_warming_poll, "Không thấy lượt poll nào ở trạng thái warming"
+        assert len(real_job_ids) == 1 and not job_id.startswith("warming_"), (
+            f"Mong đợi đúng 1 job thật được tạo sau khi Space thức, nhận: {real_job_ids}"
+        )
+        assert result.get("status") == "completed" and result.get("backend") == "hf", f"Job HF chưa hoàn tất: {result}"
+        assert len(result.get("variants", [])) == 4, result
+        assert result["variants"][0]["image_url"].startswith("/api/media?backend=hf&file="), result["variants"][0]
+        print(f"[PASS #2b] HF Space ngủ (503 x{warmup_calls}) -> warming -> thức -> job {job_id[:8]}... hoàn tất với backend='hf'.")
 
         # ------------------------------------------------------------------
         # Tiêu chí #3: Tắt cả hai (8001 & 8002) -> Demo mode, có nhãn, số khớp variants.csv
@@ -210,7 +267,7 @@ def main() -> int:
             assert len(v["sha256_design"]) == 64
         print("[PASS #3] Tắt cả 8001 & 8002 -> Trả về Demo mode, đúng nhãn và khớp 100% số liệu variants.csv.")
 
-        print("\n=== TẤT CẢ TIÊU CHÍ NGHIỆM THU 1–8 ĐỀU ĐẠT (8/8 PASS) ===")
+        print("\n=== TẤT CẢ TIÊU CHÍ NGHIỆM THU 1–8 + #2b (HF ngủ -> thức) ĐỀU ĐẠT (9/9 PASS) ===")
         return 0
     finally:
         for p in procs:
