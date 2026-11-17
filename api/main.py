@@ -99,9 +99,64 @@ def _refresh_queue_labels_unlocked() -> None:
             job["label"] = f"Đang xếp hàng chờ GPU (vị trí #{idx})..."
 
 
-def _worker_loop() -> None:
-    from generation.streamlit_runner import generate_design_set
+def _mark_job_failed(job_id: str, heritage_id: str, exc: Exception) -> None:
+    with _jobs_cond:
+        if job_id in _jobs:
+            _jobs[job_id].update(status="failed", queue_position=0, label=str(exc))
+    append_audit_event(PROJECT_ROOT, {
+        "step": 3,
+        "event": "generation_failed",
+        "heritage_id": heritage_id,
+        "job_id": job_id,
+        "error": str(exc),
+    })
 
+
+def _run_job(job_id: str, heritage_id: str) -> None:
+    def progress(value: int, label: str) -> None:
+        with _jobs_cond:
+            if job_id in _jobs:
+                _jobs[job_id].update(
+                    status="running",
+                    queue_position=0,
+                    progress=value,
+                    label=label,
+                )
+
+    # Import ở đây (được gọi bên trong try của worker): thiếu torch/diffusers thì job báo
+    # "failed" ngay, thay vì làm chết luồng worker và kẹt mọi job ở "queued".
+    from generation.streamlit_runner import generate_design_set  # noqa: PLC0415
+
+    variants_out_dir = get_output_dir(PROJECT_ROOT) / "variants"
+    # Hậu tố job_id: mỗi lần sinh có file riêng, không ghi đè lần trước.
+    variants = generate_design_set(
+        heritage_id, progress, output_dir=variants_out_dir, name_suffix=job_id[:8]
+    )
+    gpu_name = variants[0].get("gpu") if variants else None
+    with _jobs_cond:
+        _jobs[job_id].update(
+            status="completed",
+            queue_position=0,
+            progress=100,
+            label="Đã tạo xong bốn thiết kế.",
+            gpu=gpu_name,
+            variants=[
+                {
+                    **variant,
+                    "image_url": f"/media/variant/{Path(variant['design_path']).name}",
+                }
+                for variant in variants
+            ],
+        )
+    append_audit_event(PROJECT_ROOT, {
+        "step": 3,
+        "event": "generation_completed",
+        "heritage_id": heritage_id,
+        "job_id": job_id,
+    })
+
+
+def _worker_loop() -> None:
     while True:
         with _jobs_cond:
             while not _queue:
@@ -119,55 +174,10 @@ def _worker_loop() -> None:
             )
             _refresh_queue_labels_unlocked()
 
-        def progress(value: int, label: str) -> None:
-            with _jobs_cond:
-                if job_id in _jobs:
-                    _jobs[job_id].update(
-                        status="running",
-                        queue_position=0,
-                        progress=value,
-                        label=label,
-                    )
-
         try:
-            variants_out_dir = get_output_dir(PROJECT_ROOT) / "variants"
-            variants = generate_design_set(heritage_id, progress, output_dir=variants_out_dir)
-            gpu_name = variants[0].get("gpu") if variants else None
-            with _jobs_cond:
-                _jobs[job_id].update(
-                    status="completed",
-                    queue_position=0,
-                    progress=100,
-                    label="Đã tạo xong bốn thiết kế.",
-                    gpu=gpu_name,
-                    variants=[
-                        {
-                            **variant,
-                            "image_url": f"/media/variant/{Path(variant['design_path']).name}",
-                        }
-                        for variant in variants
-                    ],
-                )
-            append_audit_event(PROJECT_ROOT, {
-                "step": 3,
-                "event": "generation_completed",
-                "heritage_id": heritage_id,
-                "job_id": job_id,
-            })
-        except Exception as exc:
-            with _jobs_cond:
-                _jobs[job_id].update(
-                    status="failed",
-                    queue_position=0,
-                    label=str(exc),
-                )
-            append_audit_event(PROJECT_ROOT, {
-                "step": 3,
-                "event": "generation_failed",
-                "heritage_id": heritage_id,
-                "job_id": job_id,
-                "error": str(exc),
-            })
+            _run_job(job_id, heritage_id)
+        except Exception as exc:  # noqa: BLE001 — worker không bao giờ được chết
+            _mark_job_failed(job_id, heritage_id, exc)
 
 
 def _ensure_worker_started_unlocked() -> None:

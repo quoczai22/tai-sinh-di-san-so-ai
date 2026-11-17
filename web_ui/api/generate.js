@@ -115,23 +115,15 @@ module.exports = async function handler(req, res) {
                 config.hfTimeoutMs
             );
 
-            // Nếu HF Space trả 503 vì đang ngủ / khởi động (warming):
-            // Thử poll ngắn tối đa 2 lần cách nhau 600ms; nếu vẫn đang thức dậy, trả job warming để frontend poll tiếp qua /api/status (không giữ kết nối dài trong Vercel Function).
+            // HF Space đang ngủ / khởi động (502/503): KHÔNG chờ trong function này
+            // (giữ tổng thời gian chạy của function ngắn). Trả ngay job "warming"
+            // để frontend poll tiếp qua /api/status.
             let wasWarming = false;
             if (healthRes.status === 503 || healthRes.status === 502) {
                 const errText = await healthRes.text().catch(() => '');
                 const isExplicitFail = errText.includes('FAIL=1');
                 if (!isExplicitFail) {
                     wasWarming = true;
-                    for (let attempt = 0; attempt < 2; attempt += 1) {
-                        await new Promise((r) => setTimeout(r, 600));
-                        healthRes = await fetchWithTimeout(
-                            `${config.hfSpaceUrl}/health`,
-                            { method: 'GET', headers: hfHeaders },
-                            config.hfTimeoutMs
-                        );
-                        if (healthRes.ok) break;
-                    }
                     if (!healthRes.ok) {
                         const warmingJobId = `warming_${encodeURIComponent(heritageId)}_${Date.now()}`;
                         const waitMs = Date.now() - t0;

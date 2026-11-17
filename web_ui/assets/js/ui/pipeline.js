@@ -4,6 +4,10 @@ import { createGenerationJob, fetchDemoVariants, fetchGenerationJob, recordAudit
 import { renderCurateSection } from './curate.js';
 import { updateStepper } from './stepper.js';
 
+// Giới hạn thời gian chờ một lần sinh (gồm cả lúc máy dự phòng thức dậy).
+// Quá mức này thì dừng hỏi trạng thái và chuyển sang kết quả đã sinh sẵn.
+const MAX_WAIT_MS = 8 * 60 * 1000;
+
 function pipelineUi() {
     return {
         modal: document.getElementById('pipeline-modal'),
@@ -95,6 +99,9 @@ export async function runVisualPipeline(item) {
 
         let result = initial;
         while (!result || ['queued', 'running'].includes(result.status) || result.warming) {
+            if (Date.now() - startTime > MAX_WAIT_MS) {
+                throw new Error('Quá thời gian chờ GPU');
+            }
             await new Promise((resolve) => setTimeout(resolve, 1200));
             result = await fetchGenerationJob(currentJobId, currentBackend, item.id);
             if (result.job_id && result.job_id !== currentJobId) {

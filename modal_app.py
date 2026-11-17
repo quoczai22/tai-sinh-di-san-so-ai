@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-import shutil
 
 import modal
 
@@ -29,18 +28,16 @@ APP_NAME = "tai-sinh-di-san-so-api"
 GPU_TYPE = os.environ.get("MODAL_GPU", "T4")
 SCALEDOWN_SECONDS = 900  # 15 phút (nằm trong khung 10–15 phút theo thiết kế)
 
-HF_VOLUME_MOUNT = "/data/hf-cache"
 OUTPUT_VOLUME_MOUNT = "/data/outputs"
+# Model (SD1.5, ControlNet, CLIP) đã tải sẵn vào image ở đường dẫn này (xem Dockerfile).
+# Đọc thẳng từ image — KHÔNG copy ~5GB sang Volume lúc khởi động (làm cold start rất chậm).
 BAKED_HF_CACHE = "/cache/huggingface"
 
 app = modal.App(APP_NAME)
 
-image = modal.Image.from_dockerfile(
-    path="Dockerfile",
-    context_mount=None,
-)
+# Chạy lệnh modal từ gốc repo để các lệnh COPY trong Dockerfile tìm thấy file.
+image = modal.Image.from_dockerfile("Dockerfile")
 
-hf_volume = modal.Volume.from_name("tai-sinh-di-san-hf-cache", create_if_missing=True)
 output_volume = modal.Volume.from_name("tai-sinh-di-san-outputs", create_if_missing=True)
 api_secret = modal.Secret.from_name("tai-sinh-di-san-secret")
 
@@ -52,25 +49,16 @@ api_secret = modal.Secret.from_name("tai-sinh-di-san-secret")
     scaledown_window=SCALEDOWN_SECONDS,
     timeout=900,
     volumes={
-        HF_VOLUME_MOUNT: hf_volume,
         OUTPUT_VOLUME_MOUNT: output_volume,
     },
     secrets=[api_secret],
 )
 @modal.asgi_app()
 def fastapi_app():
-    # Đồng bộ cache model đã nạp sẵn trong Dockerfile sang Volume nếu Volume mới tạo lần đầu
-    baked_dir = Path(BAKED_HF_CACHE)
-    vol_hf_dir = Path(HF_VOLUME_MOUNT)
-    vol_hf_dir.mkdir(parents=True, exist_ok=True)
-    if baked_dir.is_dir() and not any(vol_hf_dir.iterdir()):
-        shutil.copytree(baked_dir, vol_hf_dir, dirs_exist_ok=True)
-        hf_volume.commit()
-
     Path(OUTPUT_VOLUME_MOUNT, "variants").mkdir(parents=True, exist_ok=True)
     Path(OUTPUT_VOLUME_MOUNT, "audit").mkdir(parents=True, exist_ok=True)
 
-    os.environ["HF_HOME"] = HF_VOLUME_MOUNT
+    os.environ["HF_HOME"] = BAKED_HF_CACHE
     os.environ["DH_OUTPUT_DIR"] = OUTPUT_VOLUME_MOUNT
 
     from api.main import app as web_app

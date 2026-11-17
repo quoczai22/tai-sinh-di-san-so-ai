@@ -38,9 +38,11 @@ function getBackendConfig() {
     const modalKey = (process.env.MODAL_KEY || '').trim();
     const hfSpaceUrl = (process.env.HF_SPACE_URL || '').trim().replace(/\/$/, '');
     const hfToken = (process.env.HF_TOKEN || '').trim();
-    const modalTimeoutMs = Math.max(500, parseInt(process.env.MODAL_TIMEOUT_MS || '8000', 10));
-    const hfTimeoutMs = Math.max(500, parseInt(process.env.HF_TIMEOUT_MS || '8000', 10));
-    return { modalUrl, modalKey, hfSpaceUrl, hfToken, modalTimeoutMs, hfTimeoutMs };
+    const hfApiKey = (process.env.HF_API_KEY || '').trim();
+    // Mặc định 25 giây: đủ cho Modal khởi động container nguội trước khi bị coi là sập.
+    const modalTimeoutMs = Math.max(500, parseInt(process.env.MODAL_TIMEOUT_MS || '25000', 10));
+    const hfTimeoutMs = Math.max(500, parseInt(process.env.HF_TIMEOUT_MS || '6000', 10));
+    return { modalUrl, modalKey, hfSpaceUrl, hfToken, hfApiKey, modalTimeoutMs, hfTimeoutMs };
 }
 
 function buildBackendHeaders(backend, config = getBackendConfig()) {
@@ -48,13 +50,12 @@ function buildBackendHeaders(backend, config = getBackendConfig()) {
     if (backend === 'modal') {
         if (config.modalKey) headers['X-API-Key'] = config.modalKey;
     } else if (backend === 'hf') {
-        if (config.hfToken) {
-            headers['Authorization'] = `Bearer ${config.hfToken}`;
-            headers['X-API-Key'] = config.hfToken;
-        }
-        if (config.modalKey && !headers['X-API-Key']) {
-            headers['X-API-Key'] = config.modalKey;
-        }
+        // Authorization: Bearer HF_TOKEN -> để Hugging Face cho phép vào Space riêng tư.
+        // X-API-Key -> khoá ứng dụng, phải khớp DH_API_KEY đặt trong secret của Space.
+        // Dùng HF_API_KEY nếu có, không thì dùng chung MODAL_KEY. Không gửi HF_TOKEN vào X-API-Key.
+        if (config.hfToken) headers['Authorization'] = `Bearer ${config.hfToken}`;
+        const appKey = config.hfApiKey || config.modalKey;
+        if (appKey) headers['X-API-Key'] = appKey;
     }
     return headers;
 }

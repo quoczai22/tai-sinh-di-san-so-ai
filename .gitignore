@@ -65,3 +65,6 @@ reports/
 docs/1509contextantigravity.md
 docs/MVP_v6_1_Bao_cao_giai_thich.md
 docs/MVP_v6_1_Mind_Map_Prompt.docx
+
+# Gói upload Hugging Face Space (sinh bởi scripts/build_hf_space.py)
+dist/

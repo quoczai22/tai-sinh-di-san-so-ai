@@ -28,7 +28,7 @@ flowchart LR
 1. **Mở trang**: `web_ui/assets/js/app.js` gọi ngầm `GET /api/warmup` để đánh thức container Modal trong lúc giám khảo xem hiện vật.
 2. **Bấm tạo thiết kế**: Frontend gửi `POST /api/generate { "heritage_id": "..." }`.
 3. **Kiểm tra Rate Limit**: Cổng Vercel kiểm tra giới hạn theo IP (`RATE_LIMIT_PER_HOUR=5`). Nếu vượt ngưỡng, cổng trả ngay kết quả từ `demo_variants.json` kèm thông báo và nhãn **"Kết quả đã sinh sẵn — không phải sinh trực tiếp"**.
-4. **Gọi Modal GPU (Backend ①)**: Gửi `POST ${MODAL_URL}/generate` kèm header `X-API-Key: ${MODAL_KEY}` với timeout `MODAL_TIMEOUT_MS` (mặc định `8000` ms). Nếu nhận `job_id`, trả ngay cho frontend kèm `backend: "modal"`.
+4. **Gọi Modal GPU (Backend ①)**: Gửi `POST ${MODAL_URL}/generate` kèm header `X-API-Key: ${MODAL_KEY}` với timeout `MODAL_TIMEOUT_MS` (mặc định `25000` ms). Nếu nhận `job_id`, trả ngay cho frontend kèm `backend: "modal"`.
 5. **Failover sang HF Space (Backend ②)**: Nếu Modal lỗi hoặc quá thời gian chờ, cổng kiểm tra `GET ${HF_SPACE_URL}/health` kèm `Authorization: Bearer ${HF_TOKEN}`.
    - Nếu Space đang ngủ (`503`), cổng kích hoạt đánh thức và trả `backend: "hf", warming: true` để frontend hiển thị **"Đang khởi động máy dự phòng (2–3 phút)…"** và poll qua `/api/status` (không giữ kết nối dài trong Vercel Function).
    - Khi Space sẵn sàng, gửi `POST ${HF_SPACE_URL}/generate` và nhận `job_id`.
@@ -47,8 +47,10 @@ flowchart LR
 | `MODAL_URL` | `https://<workspace>--tai-sinh-di-san-so-api-fastapi-app.modal.run` | URL endpoint của Modal sau khi chạy `modal deploy` |
 | `MODAL_KEY` | `<chuỗi_bí_mật>` | Khóa bí mật khớp với `DH_API_KEY` trên Modal |
 | `HF_SPACE_URL` | `https://<user>-<space-name>.hf.space` | Direct URL của Hugging Face Docker Space dự phòng |
-| `HF_TOKEN` | `hf_...` | Read token của tài khoản Hugging Face để gọi Space riêng tư |
-| `MODAL_TIMEOUT_MS` | `8000` | Thời gian chờ tối đa (ms) khi gọi Modal trước khi chuyển sang HF Space |
+| `HF_TOKEN` | `hf_...` | Read token của tài khoản Hugging Face, gửi trong `Authorization: Bearer` để vào Space riêng tư |
+| `HF_API_KEY` | `<chuỗi_bí_mật>` (tuỳ chọn) | Khoá ứng dụng gửi trong `X-API-Key` tới Space, phải khớp `DH_API_KEY` của Space. Bỏ trống thì dùng `MODAL_KEY` |
+| `MODAL_TIMEOUT_MS` | `25000` | Thời gian chờ tối đa (ms) khi gọi Modal trước khi chuyển sang HF Space. Đặt theo cold start đo thật |
+| `HF_TIMEOUT_MS` | `6000` | Thời gian chờ mỗi lần gọi HF Space |
 | `RATE_LIMIT_PER_HOUR` | `5` | Số lượt sinh trực tiếp tối đa cho mỗi IP trong 1 giờ |
 
 ### 2.2. Trên Modal (Secret `tai-sinh-di-san-secret`)
@@ -56,7 +58,7 @@ flowchart LR
 | Biến môi trường | Giá trị | Mô tả |
 |---|---|---|
 | `DH_API_KEY` | `<chuỗi_bí_mật>` | Khớp với `MODAL_KEY` trên Vercel; chặn truy cập trái phép vào GPU |
-| `HF_HOME` | `/data/hf-cache` | Tự động gắn vào Modal Volume `tai-sinh-di-san-hf-cache` trong `modal_app.py` |
+| `HF_HOME` | `/cache/huggingface` | Model đã tải sẵn trong image (Dockerfile); `modal_app.py` tự đặt, không dùng Volume cho model |
 | `DH_OUTPUT_DIR` | `/data/outputs` | Tự động gắn vào Modal Volume `tai-sinh-di-san-outputs` trong `modal_app.py` |
 
 ### 2.3. Trên Hugging Face Space (Settings → Variables and secrets)
@@ -64,7 +66,7 @@ flowchart LR
 
 | Loại | Tên biến | Giá trị | Mô tả |
 |---|---|---|---|
-| Secret | `DH_API_KEY` | `<khớp_với_HF_TOKEN_hoặc_MODAL_KEY>` | Xác thực request từ cổng Vercel |
+| Secret | `DH_API_KEY` | `<khớp HF_API_KEY trên Vercel, hoặc MODAL_KEY nếu không đặt HF_API_KEY>` | Xác thực request từ cổng Vercel (header `X-API-Key`). **Không** đặt bằng `HF_TOKEN` |
 | Variable | `HF_HOME` | `/cache/huggingface` | Thư mục chứa sẵn trọng số model đã tải trong `Dockerfile` |
 | Variable | `DH_OUTPUT_DIR` | `/data/outputs` | Thư mục lưu ảnh biến thể và `audit.jsonl` |
 | Variable | `PORT` | `7860` | Cổng mặc định của Hugging Face Docker Space |
@@ -113,11 +115,14 @@ modal deploy modal_app.py
 
 ### 3.4. Triển khai Hugging Face Space (Backend ②)
 1. Tạo Space mới trên Hugging Face: chọn **Docker** (Blank), chế độ **Private**, phần cứng **T4 small**, đặt **Sleep time = 15 phút**.
-2. Thêm remote và đẩy nhánh lên Space:
+2. Đóng gói thư mục riêng cho Space rồi upload (không `git push` cả repo: Hugging Face từ chối file ảnh không qua LFS/Xet, và Space cần README có khai báo `sdk: docker`):
    ```powershell
-   git remote add hf https://huggingface.co/spaces/<user>/<space-name>
-   git push hf deploy/failover:main
+   pip install -U huggingface_hub
+   hf auth login
+   python scripts/build_hf_space.py
+   hf upload <user>/<space-name> dist/hf_space . --repo-type space
    ```
+   CLI cũ dùng `huggingface-cli login` và `huggingface-cli upload ...` với cùng tham số.
 3. Lấy **Direct URL** (`https://<user>-<space-name>.hf.space`) điền vào `HF_SPACE_URL` trên Vercel cùng `HF_TOKEN`.
 
 ---
@@ -154,7 +159,7 @@ modal deploy modal_app.py
 
 | Hạng mục đo | Môi trường | Giá trị ghi nhận | Ghi chú |
 |---|---|---|---|
-| **Modal Cold Start** (từ 0 container → sẵn sàng) | Modal NVIDIA T4 | *(Cập nhật khi chạy mục 9)* | Image đã nạp sẵn SD1.5 + ControlNet + CLIP + Volume `/data/hf-cache` |
+| **Modal Cold Start** (từ 0 container → sẵn sàng) | Modal NVIDIA T4 | *(Cập nhật khi chạy mục 9)* | Image đã nạp sẵn SD1.5 + ControlNet + CLIP (đọc thẳng từ image) |
 | **Thời gian sinh 1 bộ 4 thiết kế** | Modal NVIDIA T4 | *(Cập nhật khi chạy mục 9)* | Gồm 4 biến thể SD1.5 ControlNet + chấm điểm 7 bố cục CLIP + img2img polish |
 | **Thời gian Scale-down về 0** | Modal NVIDIA T4 | `900s` (15 phút) | Cấu hình `scaledown_window=900` trong `modal_app.py` |
 | **HF Space tự thức khi nhận API request** | HF Space Docker T4 (Private) | *(Cập nhật khi chạy mục 10)* | Kiểm tra khi Space đang ở trạng thái `Sleeping` |

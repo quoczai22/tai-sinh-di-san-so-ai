@@ -91,6 +91,8 @@ def main() -> int:
             "PORT": "8002",
             "DELAY": "0.8",
             "HF_TOKEN": "secret_hf_token_test",
+            # Space cũng kiểm tra khoá ứng dụng: cổng phải gửi HF_API_KEY qua X-API-Key
+            "DH_API_KEY": "secret_hf_app_key_test",
             "BACKEND_NAME": "HF Space NVIDIA T4",
         }
         env_gw = {
@@ -100,6 +102,7 @@ def main() -> int:
             "MODAL_KEY": "secret_modal_key_test",
             "HF_SPACE_URL": "http://127.0.0.1:8002",
             "HF_TOKEN": "secret_hf_token_test",
+            "HF_API_KEY": "secret_hf_app_key_test",
             "MODAL_TIMEOUT_MS": "1500",
             "RATE_LIMIT_PER_HOUR": "50",
         }
@@ -180,7 +183,8 @@ def main() -> int:
         # ------------------------------------------------------------------
         # Tiêu chí #2: Tắt mock 8001 -> Tự chuyển sang 8002 (HF Space)
         # ------------------------------------------------------------------
-        p8001_slow.terminate()
+        # kill: tiến trình đang treo request (DELAY=120) nên terminate có thể chờ quá lâu
+        p8001_slow.kill()
         p8001_slow.wait(timeout=5)
 
         code2, res2 = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})

@@ -35,6 +35,7 @@ def generate_design_set(
     heritage_id: str,
     on_progress: Callable[[int, str], None] | None = None,
     output_dir: Path | None = None,
+    name_suffix: str | None = None,
 ) -> list[dict]:
     def report(progress: int, label: str) -> None:
         if on_progress:
@@ -73,7 +74,8 @@ def generate_design_set(
             chosen = next((item for item in ranked if item["layout"] not in used_layouts), ranked[0])
             used_layouts.add(chosen["layout"])
             design = garment.polish(chosen["image"], strength=POLISH_STRENGTH, seed=SEED)
-            design_path = target_dir / f"{heritage_id}_V{index}_aodai.png"
+            tag = f"_{name_suffix}" if name_suffix else ""
+            design_path = target_dir / f"{heritage_id}_V{index}{tag}_aodai.png"
             design.save(design_path)
             sha256_full = hashlib.sha256(design_path.read_bytes()).hexdigest()
             similarity = scorer.similarity(prepared["reference"], design_pattern)
