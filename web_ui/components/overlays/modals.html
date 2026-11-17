@@ -148,40 +148,84 @@
                 </div>
 
                 <div class="passport-details-col">
-                    <div>
+                    <div class="passport-details-scroll">
+                        <div id="passport-mode-badge" class="passport-mode-badge is-demo">
+                            Kết quả đã sinh sẵn — không phải sinh trực tiếp
+                        </div>
+
                         <div class="passport-similarity-box">
                             <div style="font-size: 12px; font-weight: 700; color: #166534;">
                                 Độ tương đồng hoa văn gốc (Visual Similarity)</div>
-                            <div style="font-size: 24px; font-weight: 800; color: #15803d;"
-                                id="passport-similarity-val">88.4% (Tham khảo)</div>
+                            <div style="font-size: 20px; font-weight: 800; color: #15803d;"
+                                id="passport-similarity-val">Điểm CLIP — (tham khảo)</div>
                             <div style="font-size: 12px; color: #166534; margin-top: 2px;">*Đo bằng mô hình CLIP giữa
-                                hoa văn sinh ra và hoa văn hiện vật.</div>
+                                hoa văn sinh ra và hoa văn hiện vật (cosine similarity).</div>
                         </div>
 
-                        <div class="passport-field-group">
-                            <div class="passport-field-label">Thiết kế bạn đã chọn</div>
-                            <div class="passport-field-value" id="passport-variant-title">Biến thể 1 — Tôn trọng nguyên
-                                bản</div>
-                        </div>
+                        <div class="passport-meta-grid">
+                            <div class="passport-field-group">
+                                <div class="passport-field-label">Thiết kế bạn đã chọn</div>
+                                <div class="passport-field-value" id="passport-variant-title">Biến thể 1</div>
+                            </div>
 
-                        <div class="passport-field-group">
-                            <div class="passport-field-label">Bố cục</div>
-                            <div class="passport-field-value" id="passport-layout">Thân trước</div>
-                        </div>
+                            <div class="passport-field-group">
+                                <div class="passport-field-label">Bố cục</div>
+                                <div class="passport-field-value" id="passport-layout">—</div>
+                            </div>
 
+                            <div class="passport-field-group">
+                                <div class="passport-field-label">Mức biến tấu &amp; ControlNet</div>
+                                <div class="passport-field-value" id="passport-intensity">—</div>
+                            </div>
+
+                            <div class="passport-field-group">
+                                <div class="passport-field-label">Bảng màu</div>
+                                <div class="passport-field-value" id="passport-palette">—</div>
+                            </div>
+
+                            <div class="passport-field-group">
+                                <div class="passport-field-label">Seed &amp; Hoàn thiện</div>
+                                <div class="passport-field-value" id="passport-seed-polish">—</div>
+                            </div>
+
+                            <div class="passport-field-group">
+                                <div class="passport-field-label">Mô hình sinh ảnh</div>
+                                <div class="passport-field-value passport-mono" id="passport-models">—</div>
+                            </div>
+
+                            <div class="passport-field-group passport-field-full">
+                                <div class="passport-field-label">Môi trường thực thi &amp; Thời gian</div>
+                                <div class="passport-field-value passport-mono" id="passport-runtime">—</div>
+                            </div>
+
+                            <div class="passport-field-group passport-field-full">
+                                <div class="passport-field-label">SHA-256 ảnh thiết kế (64 ký tự)</div>
+                                <div class="passport-field-value passport-mono passport-hash" id="passport-sha256">—</div>
+                            </div>
+
+                            <div class="passport-field-group passport-field-full">
+                                <div class="passport-field-label">Positive Prompt</div>
+                                <div class="passport-field-value passport-prompt" id="passport-pos-prompt">—</div>
+                            </div>
+
+                            <div class="passport-field-group passport-field-full">
+                                <div class="passport-field-label">Negative Prompt</div>
+                                <div class="passport-field-value passport-prompt" id="passport-neg-prompt">—</div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="passport-actions">
-                        <button class="btn-export-passport" id="btn-export-passport">
+                        <button class="btn-export-passport" id="btn-export-passport" type="button">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2.2">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                 <polyline points="7 10 12 15 17 10"></polyline>
                                 <line x1="12" y1="15" x2="12" y2="3"></line>
                             </svg>
-                            <span>MỞ ẢNH THIẾT KẾ</span>
+                            <span>XUẤT PASSPORT (.JSON)</span>
                         </button>
-                        <button class="btn-reset-studio" id="btn-reset-studio">
+                        <button class="btn-reset-studio" id="btn-reset-studio" type="button">
                             <span>Chọn hiện vật khác</span>
                         </button>
                     </div>

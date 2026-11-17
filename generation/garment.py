@@ -273,7 +273,7 @@ def polish(composite: Image.Image, strength: float = 0.40, seed: int = 42,
 
     Ghép ảnh tất định làm được đúng chỗ và đúng dáng, nhưng không làm được ba
     thứ: hoà hoa văn vào sợi vải, phá tính lặp máy móc của lát gạch, và tạo biến
-    thiên tự nhiên ở nếp gấp. img2job ở denoise thấp làm cả ba.
+    thiên tự nhiên ở nếp gấp. img2img ở denoise thấp làm cả ba.
 
     `strength` 0,25-0,35 là vùng an toàn: đủ để hoà vào vải, chưa đủ để SD vẽ lại
     hoa văn thành thứ khác. Trên 0,45 thì hoạ tiết gốc bắt đầu biến dạng.
@@ -312,9 +312,6 @@ def make_template(seed: int = 43) -> Path:
                generator=torch.Generator("cuda").manual_seed(seed)).images[0]
     del pipe; torch.cuda.empty_cache()
     img.save(TEMPLATE)
-    PANEL_FILE.write_text(json.dumps({"panel": DEFAULT_PANEL,
-                                      "note": "x0,y0,x1,y1 theo tỉ lệ 0-1 của ảnh mẫu"},
-                                     ensure_ascii=False, indent=2), encoding="utf-8")
     return TEMPLATE
 
 

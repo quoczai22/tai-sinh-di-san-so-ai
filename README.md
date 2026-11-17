@@ -95,9 +95,14 @@ Mọi mô tả hiện vật hiển thị cho người dùng là nội dung do nh
 ```text
 .
 ├── app.py                    # Điểm vào Streamlit — UI kiểm chứng pipeline nội bộ
+├── Dockerfile                # Image GPU dùng chung cho Modal và Hugging Face Space (SD1.5 + ControlNet + CLIP nạp sẵn)
+├── modal_app.py              # Cấu hình deploy ASGI + GPU T4 + Volume + Secret trên Modal
+├── mock_backend.py           # Mock GPU backend phục vụ kiểm thử failover và hàng đợi FIFO không tốn GPU
+├── requirements-api.txt      # Dependencies cho môi trường API GPU (torch==2.13.0+cu126, diffusers, fastapi...)
+├── requirements-dev.txt      # Dependencies đầy đủ cho phát triển local (Streamlit, pdfplumber...)
 ├── api/
-│   ├── main.py                 # FastAPI: /heritage, /generate (job GPU nền), /audit, /media/*
-│   ├── audit.py                 # Ghi audit event ra outputs/audit/audit.jsonl (append-only)
+│   ├── main.py                 # FastAPI: /health (CPU), /health/gpu, /heritage, /generate (FIFO queue), /audit, /media/*
+│   ├── audit.py                 # Ghi audit event ra <DH_OUTPUT_DIR>/audit/audit.jsonl (append-only)
 │   └── README.md                # Hướng dẫn chạy API bridge cho web_ui
 ├── generation/                 # Generation Layer — lõi kỹ thuật của dự án
 │   ├── controlnet.py             # Tách nền, alpha mask, Canny CHỈ giữ hoa văn
@@ -105,39 +110,45 @@ Mọi mô tả hiện vật hiển thị cho người dùng là nội dung do nh
 │   ├── pattern.py                  # GIAI ĐOẠN 1 — sinh hoa văn phẳng, 4 mức Creative Intensity
 │   ├── palette.py                   # Khớp bảng màu hiện vật gốc bằng thống kê LAB (tất định)
 │   ├── layout_select.py              # Chấm điểm 7 bố cục bằng CLIP, tự chọn bố cục hợp nhất
-│   ├── garment.py                     # GIAI ĐOẠN 2 — ghép hoa văn lên áo dài (tất định, không SD)
+│   ├── garment.py                     # GIAI ĐOẠN 2 — ghép hoa văn lên áo dài (tất định) + hoàn thiện img2img
 │   ├── stable_diffusion.py             # Wrapper SD1.5 + ControlNet, quản lý VRAM
-│   └── streamlit_runner.py              # Điều phối end-to-end: generate_design_set(heritage_id)
+│   └── streamlit_runner.py              # Điều phối end-to-end: generate_design_set(heritage_id) + đủ trường Passport
 ├── evaluation/                  # Script đo lường/thực nghiệm dựa trên pipeline ở generation/
 │   ├── variants.py
+│   ├── variants.csv               # Kết quả thực nghiệm thật của 24 thiết kế (6 hiện vật × 4 biến thể)
 │   └── intensity_sweep.py
 ├── scripts/
 │   ├── 01_setup_env.ps1          # Cài PyTorch đúng kênh CUDA + dependencies
 │   ├── 02_check_gpu.py            # Xác nhận torch.cuda.is_available()
 │   ├── 03_download_models.py       # Tải SD1.5 + ControlNet (fp16)
 │   ├── 04_test_controlnet.py        # Smoke test pipeline, sinh ảnh tham chiếu ở outputs/
-│   └── 07_describe_heritage.py       # LLM thị giác viết mô tả hoa văn — CHẠY OFFLINE 1 LẦN
+│   ├── 07_describe_heritage.py       # LLM thị giác viết mô tả hoa văn — CHẠY OFFLINE 1 LẦN
+│   ├── export_demo_data.py           # Xuất evaluation/variants.csv thành JSON tĩnh cho chế độ Demo
+│   ├── dev_gateway.js                # Máy chủ cổng Vercel cục bộ để test full-stack local
+│   └── test_acceptance_1_8.py        # Kiểm thử tự động các tiêu chí nghiệm thu 1–8
 ├── streamlit_ui/                # Views/session cho app.py
 │   ├── heritage_data.py           # Đọc + kiểm tra data/heritage/metadata.json
 │   ├── session.py
 │   └── views.py
-├── web_ui/                      # Frontend tĩnh (HTML/CSS/JS thuần) cho bản trình diễn công khai
+├── web_ui/                      # Root Directory trên Vercel (HTML/CSS/JS tĩnh + Serverless Gateway /api/*)
 │   ├── index.html
+│   ├── vercel.json                # Cấu hình Vercel cho Root Directory = web_ui
+│   ├── api/                       # Cổng điều phối failover: generate.js, status.js, warmup.js, media.js...
 │   ├── components/                # layout/, sections/, overlays/ — nạp bằng component-loader.js
-│   ├── assets/                     # css/js/images/fonts
-│   └── DEPLOY.md                   # Hướng dẫn deploy Vercel
+│   ├── assets/                     # css/js/images/data (chứa demo_variants.json xuất từ variants.csv)
+│   └── DEPLOY.md                   # Tóm tắt cấu hình Vercel (chi tiết ở docs/DEPLOY.md)
 ├── data/
 │   ├── heritage/                  # Ảnh hiện vật + metadata.json (Heritage Dataset)
 │   ├── garment/                     # Ảnh áo dài mẫu + layouts.json (toạ độ vùng bố cục)
 │   ├── documents/                    # PDF tư liệu nghiên cứu (không commit nội dung, chỉ .gitkeep)
 │   └── prompt_terms.json             # Mô tả tiếng Anh ngắn cho từng hiện vật, dùng ở giai đoạn 1
 ├── docs/
+│   ├── DEPLOY.md                 # Tài liệu kiến trúc deploy có failover (Modal -> HF Space -> Demo)
 │   ├── mvp_spec.md               # Đặc tả kỹ thuật của pipeline
 │   ├── SETUP_AI_LOCAL.md           # Hướng dẫn cài môi trường AI local chi tiết
 │   └── evidence/                    # Ảnh minh hoạ kết quả pipeline
 ├── outputs/                     # Ảnh sinh ra + audit.jsonl (gitignored)
-├── requirements.txt
-└── vercel.json                  # Cấu hình deploy web_ui tĩnh lên Vercel
+└── requirements.txt             # Trỏ sang requirements-dev.txt
 ```
 
 ## 5. Cài đặt môi trường
@@ -165,7 +176,9 @@ Tạo file `.env` ở thư mục gốc (không commit) với các biến sau:
 
 | Biến | Bắt buộc cho | Ghi chú |
 |---|---|---|
-| `HF_HOME` | Tải model | Tuỳ chọn — không set thì dùng cache mặc định của `huggingface_hub` |
+| `HF_HOME` | Tải model | Tuỳ chọn — ưu tiên biến môi trường, không set thì dùng cache mặc định |
+| `DH_OUTPUT_DIR` | `api/main.py`, `streamlit_runner.py` | Tuỳ chọn — thư mục lưu ảnh biến thể và audit log (mặc định `outputs`) |
+| `DH_API_KEY` | `api/main.py` khi deploy | Tuỳ chọn — khóa bảo vệ `/generate*` và `/audit` qua header `X-API-Key` (bỏ qua khi chạy local không đặt) |
 | `SD15_MODEL_ID` | Pipeline sinh ảnh | Id repo Stable Diffusion 1.5 dùng chung cho mọi lần chạy |
 | `CONTROLNET_CANNY_ID` | Pipeline sinh ảnh | Id repo ControlNet Canny v1.1 |
 | `GEMINI_API_KEY` | Chỉ `scripts/07_describe_heritage.py` | Chạy offline một lần, không dùng ở runtime |
@@ -173,7 +186,7 @@ Tạo file `.env` ở thư mục gốc (không commit) với các biến sau:
 
 ## 6. Chạy dự án
 
-Hai cách chạy, tương ứng hai cấu hình trong `.vscode/launch.json`:
+Hai cách chạy local (tương ứng hai cấu hình trong `.vscode/launch.json`) và một kiến trúc triển khai có failover:
 
 **A. Streamlit — UI kiểm chứng pipeline (dành cho dev/nội bộ)**
 
@@ -181,16 +194,20 @@ Hai cách chạy, tương ứng hai cấu hình trong `.vscode/launch.json`:
 streamlit run app.py --server.headless=true --server.port=8501
 ```
 
-**B. Web UI tĩnh + FastAPI — bản trình diễn công khai**
+**B. Web UI tĩnh + FastAPI — bản trình diễn công khai (chạy local)**
 
 ```powershell
-# Terminal 1: API (job GPU chạy nền, audit log, media hiện vật/thiết kế)
+# Terminal 1: API (hàng đợi job GPU chạy nền, audit log, media hiện vật/thiết kế)
 python -m uvicorn api.main:app --host 127.0.0.1 --port 8000
 
-# Terminal 2: frontend tĩnh
+# Terminal 2: frontend tĩnh (trỏ trực tiếp vào FastAPI local qua tham số ?api=)
 python -m http.server 5500 --directory web_ui
 ```
 
-Sau đó mở `http://127.0.0.1:5500`. Trong VS Code, hai cấu hình debug **"Tái sinh: Web UI + API"** và **"Streamlit: Tái sinh Di sản Số"** trong `launch.json` tự khởi động đủ tiến trình cần thiết (kể cả task reset port trước khi chạy).
+Sau đó mở `http://127.0.0.1:5500/?api=http://127.0.0.1:8000` (hoặc chạy cổng điều phối `node scripts/dev_gateway.js` và mở `http://127.0.0.1:3000`).
 
-Deploy `web_ui` lên Vercel: xem [`web_ui/DEPLOY.md`](web_ui/DEPLOY.md) — `vercel.json` đã cấu hình rewrite `/` → `web_ui/index.html`; khi có domain API GPU production, trỏ `window.DH_API_BASE` trong `web_ui/assets/js/config.js` sang domain đó.
+**C. Triển khai Production có Failover (Vercel → Modal GPU → HF Space GPU → Demo Mode)**
+
+Xem tài liệu vận hành chi tiết tại [`docs/DEPLOY.md`](docs/DEPLOY.md):
+- Đặt **Root Directory = `web_ui`** trên Vercel để dùng cổng điều phối `web_ui/api/*`.
+- Tự động chuyển đổi dự phòng theo thứ tự **Modal GPU (T4)** → **Hugging Face Space Docker (T4)** → **Demo Mode** (sử dụng ảnh và số liệu thực nghiệm thật từ `evaluation/variants.csv` kèm nhãn *"Kết quả đã sinh sẵn — không phải sinh trực tiếp"*).

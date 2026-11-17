@@ -1,5 +1,5 @@
 import { setHeritageItems } from './core/state.js';
-import { fetchHeritageItems } from './services/heritage-api.js';
+import { fetchHeritageItems, warmupBackend } from './services/heritage-api.js';
 import { initDetailModal, renderHeritageCards } from './ui/catalog.js';
 import { initFooterLinks } from './ui/footer.js';
 import { initNavigation } from './ui/navigation.js';
@@ -11,6 +11,7 @@ let initialized = false;
 async function initializeStudio() {
     if (initialized) return;
     initialized = true;
+    warmupBackend();
     try {
         const items = await fetchHeritageItems();
         setHeritageItems(items);

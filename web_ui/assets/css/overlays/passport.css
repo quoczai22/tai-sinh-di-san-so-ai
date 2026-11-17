@@ -91,30 +91,103 @@
 }
 
 .passport-details-col {
-    padding: 28px 32px;
+    padding: 22px 28px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     background: #ffffff;
+    max-height: 80vh;
+}
+
+.passport-details-scroll {
+    overflow-y: auto;
+    padding-right: 6px;
+    margin-bottom: 14px;
+    max-height: 62vh;
+}
+
+.passport-mode-badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+}
+
+.passport-mode-badge.is-demo {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid rgba(217, 119, 6, 0.45);
+}
+
+.passport-mode-badge.is-backup {
+    background: #e0f2fe;
+    color: #075985;
+    border: 1px solid rgba(2, 132, 199, 0.4);
+}
+
+.passport-mode-badge.is-live {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid rgba(22, 163, 74, 0.4);
+}
+
+.passport-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 14px;
 }
 
 .passport-field-group {
-    margin-bottom: 14px;
-}
-
-.passport-field-label {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #78716c;
     margin-bottom: 4px;
 }
 
+.passport-field-full {
+    grid-column: 1 / -1;
+}
+
+.passport-field-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #78716c;
+    margin-bottom: 2px;
+}
+
 .passport-field-value {
-    font-size: 15px;
+    font-size: 13.5px;
     font-weight: 700;
     color: #1c1917;
+    word-break: break-word;
+}
+
+.passport-mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.passport-hash {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 11px;
+    color: #334155;
+    user-select: all;
+}
+
+.passport-prompt {
+    background: #fafaf9;
+    border: 1px solid #e7e5e4;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #44403c;
+    line-height: 1.45;
 }
 
 .passport-similarity-box {
