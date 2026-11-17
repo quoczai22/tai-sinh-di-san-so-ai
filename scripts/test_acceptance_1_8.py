@@ -299,7 +299,35 @@ def main() -> int:
         assert len(res_no_hf.get("variants", [])) == 4, res_no_hf
         print(f"[PASS #2c] Gateway không có biến HF -> Modal lỗi rơi THẲNG sang Demo trong {elapsed_no_hf:.2f}s (<1.0s).")
 
-        print("\n=== TẤT CẢ TIÊU CHÍ NGHIỆM THU 1–8 + #2b (HF) + #2c (không HF) ĐỀU ĐẠT (10/10 PASS) ===")
+        p_slow_no_hf = subprocess.Popen([sys.executable, "mock_backend.py"], cwd=str(ROOT), env={**env_8001, "DELAY": "120"})
+        procs.append(p_slow_no_hf)
+        assert wait_for_url("http://127.0.0.1:8001/heritage"), "Mock treo chưa sẵn sàng"
+        t_slow = time.monotonic()
+        c_slow, r_slow = http_json("http://127.0.0.1:3012/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"}, timeout=5.0)
+        elapsed_slow = time.monotonic() - t_slow
+        assert c_slow == 200 and r_slow.get("backend") == "demo", r_slow
+        assert 1.4 <= elapsed_slow < 3.0, f"Timeout Modal không đúng: {elapsed_slow:.2f}s"
+        print(f"[PASS #2d] Không HF, Modal treo: Demo sau {elapsed_slow:.2f}s.")
+        p_slow_no_hf.kill()
+        p_slow_no_hf.wait(timeout=5)
+
+        p_job = subprocess.Popen([sys.executable, "mock_backend.py"], cwd=str(ROOT), env={**env_8001, "DELAY": "3"})
+        procs.append(p_job)
+        assert wait_for_url("http://127.0.0.1:8001/heritage"), "Mock job chưa sẵn sàng"
+        c_job, r_job = http_json("http://127.0.0.1:3012/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        assert c_job == 202 and r_job.get("backend") == "modal", r_job
+        status_url = f"http://127.0.0.1:3012/api/status?job_id={r_job['job_id']}&backend=modal&heritage_id=BT_Hac_XP"
+        c_pending, r_pending = http_json(status_url)
+        assert c_pending == 200 and r_pending.get("status") in ("queued", "running"), r_pending
+        p_job.kill()
+        p_job.wait(timeout=5)
+        c_lost, r_lost = http_json(status_url)
+        assert c_lost == 200 and r_lost.get("backend") == "demo", r_lost
+        assert r_lost.get("status") == "completed" and len(r_lost.get("variants", [])) == 4, r_lost
+        assert r_lost.get("demo_label") == "Kết quả đã sinh sẵn — không phải sinh trực tiếp", r_lost
+        print("[PASS #2e] Không HF, Modal chết giữa job: Demo đủ 4 variants và nhãn.")
+
+        print("\n=== TẤT CẢ TIÊU CHÍ NGHIỆM THU 1–8 + #2b–#2e ĐỀU ĐẠT (12/12 PASS) ===")
         return 0
     finally:
         for p in procs:

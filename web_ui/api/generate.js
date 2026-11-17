@@ -209,7 +209,9 @@ module.exports = async function handler(req, res) {
         hour12: false,
     });
     const alertMsg = `⚠️ Modal lỗi (${modalFailureReason || 'không khả dụng'}) lúc ${vnTime} (giờ VN) — giám khảo đang thấy bản demo. Hiện vật: ${heritageId}`;
-    await notifyAlert(alertMsg).catch(() => {});
+    if (config.modalUrl) {
+        await notifyAlert(alertMsg).catch(() => {});
+    }
 
     return res.status(200).json(buildDemoResponse(heritageId, 'all_backends_unavailable', Date.now() - t0));
 };
