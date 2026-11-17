@@ -49,6 +49,8 @@ flowchart LR
 | `MODAL_KEY` | `<chuỗi_bí_mật>` | Khóa bí mật khớp với `DH_API_KEY` trên Modal |
 | `MODAL_TIMEOUT_MS` | `25000` | Thời gian chờ tối đa (ms) khi gọi Modal trước khi chuyển sang Demo. Đặt theo cold start đo thật |
 | `RATE_LIMIT_PER_HOUR` | `10` | Số lượt sinh trực tiếp tối đa cho mỗi IP trong 1 giờ |
+| `ALERT_DISCORD_WEBHOOK_URL` | `https://discord.com/api/webhooks/...` | (Khuyên dùng) Webhook Discord nhận cảnh báo tức thì khi Modal gặp lỗi/timeout |
+| `ALERT_COOLDOWN_MIN` | `30` | Thời gian giãn cách tối thiểu giữa 2 lần gửi cảnh báo Discord (phút, mặc định 30) |
 
 **Biến tuỳ chọn (Chỉ cần khi bật lại lớp dự phòng Hugging Face Space):**
 
@@ -145,17 +147,52 @@ modal deploy modal_app.py
 
 ---
 
-## 5. Cấu hình giám sát UptimeRobot (Email nhóm + Telegram nhóm)
+## 5. Giám sát Uptime & Cảnh báo tức thì
+
+Hệ thống kết hợp 2 kênh giám sát:
+1. **UptimeRobot**: Ping định kỳ kiểm tra sống/chết của domain và CPU gateway (gửi Email cho 2–3 thành viên).
+2. **Discord Webhook**: Gửi tin nhắn tức thì vào kênh chat của nhóm khi Modal gặp sự cố kỹ thuật và phải chuyển sang Demo mode.
+
+### 5.1. Cấu hình giám sát UptimeRobot (Email nhóm)
 
 1. Đăng nhập [UptimeRobot](https://uptimerobot.com/) → **Add New Monitor**:
    - **Monitor Type**: `HTTP(s)`
    - **Friendly Name**: `Tái Sinh Di Sản Số — Web & Gateway CPU Health`
    - **URL**: `https://<domain-vercel-cua-nhom>.vercel.app/health`
    - **Monitoring Interval**: `5 minutes`
-   > **Lưu ý**: Tuyệt đối chỉ ping `/health` trên domain Vercel (hoặc `/health` CPU của backend), **KHÔNG** ping `/health/gpu` hay `/generate` để tránh đánh thức GPU tốn credit.
+   > **Lưu ý**: Tuyệt đối chỉ ping `/health` trên domain Vercel (chỉ kiểm tra CPU/RAM gateway), **KHÔNG** ping `/health/gpu` hay `/generate` để tránh đánh thức GPU làm tiêu hao credit.
 2. Trong phần **Alert Contacts to Notify**:
-   - Tick chọn **Email nhóm** (các thành viên trong đội).
-   - Tick chọn **Telegram nhóm** (tạo qua tích hợp Telegram Bot của UptimeRobot và gắn vào group chat của đội).
+   - Chọn Email của 2–3 thành viên cốt cán trong đội thi (những người sẽ theo dõi hòm thư trong giai đoạn chấm thi 25–29/11).
+
+### 5.2. Cấu hình cảnh báo tức thì qua Discord Webhook
+
+Khi có giám khảo truy cập và Modal gặp sự cố (lỗi mạng, timeout, server sập), cổng Vercel sẽ tự động gửi 1 thông báo ngắn vào Discord kèm thời gian và tên hiện vật để nhóm nắm bắt ngay, trong khi giám khảo vẫn xem mượt mà bản Demo kết quả thật.
+
+#### Các bước tạo Webhook Discord:
+1. Trong server Discord của nhóm, vào **Kênh văn bản muốn nhận cảnh báo** (ví dụ `#canh-bao-deploy`).
+2. Bấm vào biểu tượng **Cài đặt kênh (bánh răng)** → chọn **Integrations** (Tích hợp) → **Webhooks**.
+3. Chọn **New Webhook** (Tạo Webhook mới):
+   - Đặt tên bot: `CanhBaoDiSanSo`
+   - Chọn đúng kênh chat của nhóm.
+4. Bấm **Copy Webhook URL** (Đường dẫn có dạng `https://discord.com/api/webhooks/134.../...`).
+5. Vào **Vercel Project Settings → Environment Variables**:
+   - Thêm biến `ALERT_DISCORD_WEBHOOK_URL` = `<URL webhook vừa copy>`.
+   - Thêm biến `ALERT_COOLDOWN_MIN` = `30` (giới hạn tối đa 1 tin/30 phút để chống spam).
+   - Bấm **Save** và **Redeploy** lại bản mới nhất.
+
+> [!NOTE]
+> - Cảnh báo được bọc `try/catch` với timeout ngắn (3 giây) và không throw lỗi, đảm bảo lỗi gửi webhook không bao giờ làm ảnh hưởng đến trải nghiệm của giám khảo.
+> - Tuyệt đối không gửi token, API key hoặc địa chỉ IP người dùng vào tin nhắn.
+> - Khi rơi về Demo do người dùng vượt rate limit (10 lượt/IP/giờ), hệ thống **KHÔNG** gửi cảnh báo vì đây là hành vi bảo vệ bình thường.
+
+### 5.3. Bảng "Nhận cảnh báo Discord thì làm gì?"
+
+| Nội dung cảnh báo nhận được | Nguyên nhân khả dĩ | Hành động xử lý ngay |
+|---|---|---|
+| `⚠️ Modal lỗi (timeout 25s) lúc ...` | Container Modal bị cold start lâu hoặc quá tải | 1. Mở dashboard Modal hoặc chạy `modal app list` kiểm tra trạng thái.<br>2. Nếu cold start thường xuyên chạm 25s: tăng `MODAL_TIMEOUT_MS` lên `35000` trên Vercel.<br>3. Giám khảo không thấy lỗi vì đã được hiển thị bản demo kết quả thật. |
+| `⚠️ Modal lỗi (lỗi kết nối) lúc ...` | Container Modal bị dừng, chưa deploy hoặc URL sai | 1. Chạy lại `modal deploy modal_app.py` trên máy local.<br>2. Kiểm tra lại biến `MODAL_URL` trên Vercel. |
+| `⚠️ Modal lỗi (HTTP 401) lúc ...` | Sai khóa xác thực giữa Vercel và Modal | Kiểm tra secret `DH_API_KEY` trong Modal secret (`tai-sinh-di-san-secret`) phải khớp 100% với biến `MODAL_KEY` trên Vercel. |
+| `⚠️ Modal lỗi (HTTP 500 / 502) lúc ...` | Lỗi bộ nhớ GPU hoặc crash trong container | 1. Xem log container: `modal app logs tai-sinh-di-san-so-api`.<br>2. Nếu chưa khắc phục kịp mà giám khảo đang chấm trực tiếp: chuyển sang phương án **Laptop nhóm + Cloudflare Tunnel** (Mục 4). |
 
 ---
 

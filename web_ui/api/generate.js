@@ -5,6 +5,7 @@ const {
     fetchWithTimeout,
     getDemoVariants,
     logGatewayAudit,
+    notifyAlert,
 } = require('./_shared');
 
 function buildDemoResponse(heritageId, reason, waitMs, extra = {}) {
@@ -22,6 +23,7 @@ function buildDemoResponse(heritageId, reason, waitMs, extra = {}) {
         job_id: `demo_${heritageId}_${Date.now()}`,
         heritage_id: heritageId,
         backend: 'demo',
+        reason,
         status: 'completed',
         progress: 100,
         queue_position: 0,
@@ -62,6 +64,7 @@ module.exports = async function handler(req, res) {
     }
 
     const config = getBackendConfig();
+    let modalFailureReason = null;
 
     // Bước 4: Thử gọi Modal GPU (backend chính)
     if (config.modalUrl) {
@@ -99,10 +102,15 @@ module.exports = async function handler(req, res) {
                     queue_position: data.queue_position ?? 0,
                     status_url: `/api/status?job_id=${encodeURIComponent(data.job_id)}&backend=modal&heritage_id=${encodeURIComponent(heritageId)}`,
                 });
+            } else {
+                modalFailureReason = `HTTP ${modalRes.status}`;
             }
-        } catch (_) {
-            // Modal lỗi hoặc quá thời gian chờ -> chuyển sang Bước 5 (HF Space)
+        } catch (err) {
+            const isTimeout = (err && (err.name === 'AbortError' || /timeout/i.test(err.message)));
+            modalFailureReason = isTimeout ? `timeout ${Math.round(config.modalTimeoutMs / 1000)}s` : 'lỗi kết nối';
         }
+    } else {
+        modalFailureReason = 'chưa cấu hình URL';
     }
 
     // Bước 5: Modal lỗi/timeout -> gọi HF Space dự phòng
@@ -193,6 +201,15 @@ module.exports = async function handler(req, res) {
         }
     }
 
-    // Bước 6: Cả hai backend đều lỗi -> trả Demo mode (ảnh + số thật từ variants.csv)
+    // Bước 6: Cả hai backend đều lỗi -> gửi cảnh báo Discord (nếu cấu hình) và trả Demo mode
+    const vnTime = new Date().toLocaleTimeString('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    });
+    const alertMsg = `⚠️ Modal lỗi (${modalFailureReason || 'không khả dụng'}) lúc ${vnTime} (giờ VN) — giám khảo đang thấy bản demo. Hiện vật: ${heritageId}`;
+    await notifyAlert(alertMsg).catch(() => {});
+
     return res.status(200).json(buildDemoResponse(heritageId, 'all_backends_unavailable', Date.now() - t0));
 };

@@ -116,6 +116,46 @@ function logGatewayAudit(entry) {
     }
 }
 
+let lastAlertTimestamp = 0;
+
+function _resetAlertCooldown() {
+    lastAlertTimestamp = 0;
+}
+
+/**
+ * Gửi cảnh báo sự cố tới Discord Webhook khi Modal gặp lỗi/timeout.
+ * - Cooldown chống spam: mặc định 30 phút (ALERT_COOLDOWN_MIN) lưu trong RAM instance.
+ * - Timeout 3s, bọc try/catch, không bao giờ làm hỏng request của người dùng.
+ * - Tuyệt đối không gửi token, key hay IP người dùng.
+ */
+async function notifyAlert(message) {
+    const webhookUrl = (process.env.ALERT_DISCORD_WEBHOOK_URL || '').trim();
+    if (!webhookUrl) return;
+
+    const cooldownMin = Math.max(1, parseInt(process.env.ALERT_COOLDOWN_MIN || '30', 10));
+    const cooldownMs = cooldownMin * 60 * 1000;
+    const now = Date.now();
+    if (now - lastAlertTimestamp < cooldownMs) {
+        return;
+    }
+    lastAlertTimestamp = now;
+
+    try {
+        await fetchWithTimeout(
+            webhookUrl,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: String(message || '') }),
+            },
+            3000
+        );
+    } catch (err) {
+        // Lỗi gửi cảnh báo KHÔNG được làm hỏng request của người dùng
+        console.warn('[ALERT] Không thể gửi cảnh báo Discord:', err.message || err);
+    }
+}
+
 module.exports = {
     checkRateLimit,
     getBackendConfig,
@@ -124,4 +164,6 @@ module.exports = {
     loadDemoData,
     getDemoVariants,
     logGatewayAudit,
+    notifyAlert,
+    _resetAlertCooldown,
 };
