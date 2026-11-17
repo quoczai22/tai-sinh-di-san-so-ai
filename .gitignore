@@ -68,3 +68,6 @@ docs/MVP_v6_1_Mind_Map_Prompt.docx
 
 # Gói upload Hugging Face Space (sinh bởi scripts/build_hf_space.py)
 dist/
+
+# Điều phối nhiều AI (file giao việc / báo cáo cục bộ)
+.ai/
