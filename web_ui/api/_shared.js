@@ -3,7 +3,7 @@ const path = require('path');
 
 /**
  * Bộ đếm Rate Limit theo IP (in-memory trên từng instance Vercel Function).
- * Giới hạn mặc định: RATE_LIMIT_PER_HOUR = 5 lượt / IP / giờ.
+ * Giới hạn mặc định: RATE_LIMIT_PER_HOUR = 10 lượt / IP / giờ.
  * Lưu ý: Vì Vercel Serverless có thể khởi tạo lại container khi scale hoặc sau thời gian rảnh,
  * bộ đếm in-memory áp dụng trong vòng đời warm instance — phù hợp quy mô cuộc thi.
  */
@@ -18,7 +18,7 @@ function getClientIp(req) {
 }
 
 function checkRateLimit(req) {
-    const limit = Math.max(1, parseInt(process.env.RATE_LIMIT_PER_HOUR || '5', 10));
+    const limit = Math.max(1, parseInt(process.env.RATE_LIMIT_PER_HOUR || '10', 10));
     const windowMs = 60 * 60 * 1000;
     const now = Date.now();
     const ip = getClientIp(req);

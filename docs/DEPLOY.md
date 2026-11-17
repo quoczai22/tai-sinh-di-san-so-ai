@@ -11,7 +11,7 @@ flowchart LR
     Judge["Giám khảo (HTTPS, mọi thiết bị)"] --> Vercel["Vercel (Root: web_ui)"]
     subgraph Vercel["Vercel (Miễn phí)"]
         Static["Web tĩnh web_ui\nGọi ngầm /api/warmup khi mở trang"]
-        Gateway["Cổng Serverless /api/*\nRate limit 5 lượt/IP/giờ · Giữ bí mật token"]
+        Gateway["Cổng Serverless /api/*\nRate limit 10 lượt/IP/giờ · Giữ bí mật token"]
         DemoData["Dữ liệu Demo thật\nassets/data/demo_variants.json"]
         Static --> Gateway
     end
@@ -27,7 +27,7 @@ flowchart LR
 ### Luồng xử lý một lần bấm "Tạo bộ 4 thiết kế"
 1. **Mở trang**: `web_ui/assets/js/app.js` gọi ngầm `GET /api/warmup` để đánh thức container Modal trong lúc giám khảo xem hiện vật.
 2. **Bấm tạo thiết kế**: Frontend gửi `POST /api/generate { "heritage_id": "..." }`.
-3. **Kiểm tra Rate Limit**: Cổng Vercel kiểm tra giới hạn theo IP (`RATE_LIMIT_PER_HOUR=5`). Nếu vượt ngưỡng, cổng trả ngay kết quả từ `demo_variants.json` kèm thông báo và nhãn **"Kết quả đã sinh sẵn — không phải sinh trực tiếp"**.
+3. **Kiểm tra Rate Limit**: Cổng Vercel kiểm tra giới hạn theo IP (`RATE_LIMIT_PER_HOUR=10`). Nếu vượt ngưỡng, cổng trả ngay kết quả từ `demo_variants.json` kèm thông báo và nhãn **"Kết quả đã sinh sẵn — không phải sinh trực tiếp"**.
 4. **Gọi Modal GPU (Backend ①)**: Gửi `POST ${MODAL_URL}/generate` kèm header `X-API-Key: ${MODAL_KEY}` với timeout `MODAL_TIMEOUT_MS` (mặc định `25000` ms). Nếu nhận `job_id`, trả ngay cho frontend kèm `backend: "modal"`.
 5. **Failover sang HF Space (Backend ②)**: Nếu Modal lỗi hoặc quá thời gian chờ, cổng kiểm tra `GET ${HF_SPACE_URL}/health` kèm `Authorization: Bearer ${HF_TOKEN}`.
    - Nếu Space đang ngủ (`503`), cổng kích hoạt đánh thức và trả `backend: "hf", warming: true` để frontend hiển thị **"Đang khởi động máy dự phòng (2–3 phút)…"** và poll qua `/api/status` (không giữ kết nối dài trong Vercel Function).
@@ -51,7 +51,7 @@ flowchart LR
 | `HF_API_KEY` | `<chuỗi_bí_mật>` (tuỳ chọn) | Khoá ứng dụng gửi trong `X-API-Key` tới Space, phải khớp `DH_API_KEY` của Space. Bỏ trống thì dùng `MODAL_KEY` |
 | `MODAL_TIMEOUT_MS` | `25000` | Thời gian chờ tối đa (ms) khi gọi Modal trước khi chuyển sang HF Space. Đặt theo cold start đo thật |
 | `HF_TIMEOUT_MS` | `6000` | Thời gian chờ mỗi lần gọi HF Space |
-| `RATE_LIMIT_PER_HOUR` | `5` | Số lượt sinh trực tiếp tối đa cho mỗi IP trong 1 giờ |
+| `RATE_LIMIT_PER_HOUR` | `10` | Số lượt sinh trực tiếp tối đa cho mỗi IP trong 1 giờ |
 
 ### 2.2. Trên Modal (Secret `tai-sinh-di-san-secret`)
 
