@@ -267,7 +267,39 @@ def main() -> int:
             assert len(v["sha256_design"]) == 64
         print("[PASS #3] Tắt cả 8001 & 8002 -> Trả về Demo mode, đúng nhãn và khớp 100% số liệu variants.csv.")
 
-        print("\n=== TẤT CẢ TIÊU CHÍ NGHIỆM THU 1–8 + #2b (HF ngủ -> thức) ĐỀU ĐẠT (9/9 PASS) ===")
+        # ------------------------------------------------------------------
+        # Tiêu chí #2c: Cổng chạy KHÔNG có biến HF (chỉ Modal) -> Modal sập rơi THẲNG sang demo
+        # ------------------------------------------------------------------
+        env_gw_no_hf = {
+            **os.environ,
+            "PORT": "3012",
+            "MODAL_URL": "http://127.0.0.1:8001",  # 8001 đã tắt
+            "MODAL_KEY": "secret_modal_key_test",
+            "MODAL_TIMEOUT_MS": "1500",
+            "RATE_LIMIT_PER_HOUR": "50",
+        }
+        for k in ("HF_SPACE_URL", "HF_TOKEN", "HF_API_KEY"):
+            env_gw_no_hf.pop(k, None)
+
+        pgw_no_hf = subprocess.Popen(["node", "scripts/dev_gateway.js"], cwd=str(ROOT), env=env_gw_no_hf)
+        procs.append(pgw_no_hf)
+        assert wait_for_url("http://127.0.0.1:3012/health"), "Gateway 3012 không khởi động được"
+
+        t_no_hf = time.time()
+        code_no_hf, res_no_hf = http_json(
+            "http://127.0.0.1:3012/api/generate",
+            method="POST",
+            body={"heritage_id": "BT_Hac_XP"},
+            timeout=5.0,
+        )
+        elapsed_no_hf = time.time() - t_no_hf
+        assert code_no_hf == 200, f"Mong đợi 200, nhận {code_no_hf}: {res_no_hf}"
+        assert res_no_hf.get("backend") == "demo", f"Mong đợi backend='demo', nhận: {res_no_hf}"
+        assert elapsed_no_hf < 1.0, f"Chuyển sang demo quá chậm ({elapsed_no_hf:.2f}s) — có thể đang gọi HF thừa"
+        assert len(res_no_hf.get("variants", [])) == 4, res_no_hf
+        print(f"[PASS #2c] Gateway không có biến HF -> Modal lỗi rơi THẲNG sang Demo trong {elapsed_no_hf:.2f}s (<1.0s).")
+
+        print("\n=== TẤT CẢ TIÊU CHÍ NGHIỆM THU 1–8 + #2b (HF) + #2c (không HF) ĐỀU ĐẠT (10/10 PASS) ===")
         return 0
     finally:
         for p in procs:

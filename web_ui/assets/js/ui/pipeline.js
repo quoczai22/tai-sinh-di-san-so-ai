@@ -77,7 +77,7 @@ export async function runVisualPipeline(item) {
             if (ui.status) {
                 ui.status.textContent =
                     currentBackend === 'demo'
-                        ? `Kết quả đã sinh sẵn — không phải sinh trực tiếp.${initial.rate_limited ? ' ' + initial.message : ''}`
+                        ? (initial.rate_limited ? initial.message : (initial.message || initial.label || 'GPU đang bận hoặc tạm ngừng — hiển thị kết quả đã sinh sẵn.'))
                         : 'Thiết kế đã sẵn sàng để bạn chiêm ngưỡng.';
             }
             if (ui.footer) ui.footer.style.display = 'flex';
@@ -138,7 +138,7 @@ export async function runVisualPipeline(item) {
         const gpuInfo = result.gpu || item.generatedVariants?.[0]?.gpu;
         if (ui.status) {
             if (item.generationBackend === 'demo') {
-                ui.status.textContent = 'Kết quả đã sinh sẵn — không phải sinh trực tiếp.';
+                ui.status.textContent = result.message || result.label || 'GPU đang bận hoặc tạm ngừng — hiển thị kết quả đã sinh sẵn.';
             } else if (item.generationBackend === 'hf') {
                 ui.status.textContent = `Đã tạo xong trên máy dự phòng${gpuInfo ? ` (${gpuInfo})` : ''}.`;
             } else {
@@ -167,7 +167,7 @@ export async function runVisualPipeline(item) {
                 card?.classList.add('done');
             });
             if (ui.status) {
-                ui.status.textContent = 'Kết quả đã sinh sẵn — không phải sinh trực tiếp.';
+                ui.status.textContent = 'GPU đang bận hoặc tạm ngừng — hiển thị kết quả đã sinh sẵn.';
             }
             if (ui.footer) ui.footer.style.display = 'flex';
             recordAudit({

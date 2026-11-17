@@ -48,7 +48,7 @@ module.exports = async function handler(req, res) {
             queue_position: 0,
             failover: true,
             demo_label: 'Kết quả đã sinh sẵn — không phải sinh trực tiếp',
-            label: 'Kết quả đã sinh sẵn — không phải sinh trực tiếp',
+            label: 'GPU đang bận hoặc tạm ngừng — hiển thị kết quả đã sinh sẵn',
             variants: getDemoVariants(resolvedHeritageId),
         });
     }
@@ -73,7 +73,7 @@ module.exports = async function handler(req, res) {
                 queue_position: 0,
                 failover: true,
                 demo_label: 'Kết quả đã sinh sẵn — không phải sinh trực tiếp',
-                label: 'Kết quả đã sinh sẵn — không phải sinh trực tiếp',
+                label: 'GPU đang bận hoặc tạm ngừng — hiển thị kết quả đã sinh sẵn',
                 variants: getDemoVariants(resolvedHeritageId),
             });
         }

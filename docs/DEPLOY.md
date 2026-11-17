@@ -1,6 +1,9 @@
 # Hướng dẫn Triển khai Có Failover — Tái Sinh Di Sản Số
 
-Tài liệu vận hành kiến trúc triển khai 3 lớp có khả năng tự động chuyển đổi dự phòng (**Modal GPU → Hugging Face Space GPU → Demo Mode kết quả thật**) cho vòng Chung kết Cuộc thi Sáng tạo trẻ 2026.
+Tài liệu vận hành kiến trúc triển khai 2 lớp có khả năng tự động chuyển đổi (**Modal GPU → Demo Mode kết quả thật**) cho vòng Chung kết Cuộc thi Sáng tạo trẻ 2026.
+
+> [!NOTE]
+> **Về lớp Hugging Face Space**: Hugging Face hiện yêu cầu gói PRO trả phí để tạo Docker Space chạy phần cứng GPU. Do đó, hệ thống chính thức triển khai theo kiến trúc 2 lớp tối ưu chi phí: **Modal GPU (chính) → Demo Mode (kết quả thật $0)**. Toàn bộ mã nguồn đóng gói (`scripts/build_hf_space.py`) và logic kết nối HF Space vẫn được bảo toàn nguyên vẹn trong repo và có thể kích hoạt lại bất kỳ lúc nào bằng cách cấu hình biến môi trường trên Vercel.
 
 ---
 
@@ -17,11 +20,10 @@ flowchart LR
     end
 
     Gateway -->|"① Ưu tiên 1 (X-API-Key)"| Modal["① Modal GPU (T4)\nScale-to-zero sau 15p · $30 credit/tháng"]
-    Gateway -->|"② Khi ① lỗi/timeout (Bearer HF_TOKEN)"| HFSpace["② HF Space Docker (T4)\nPrivate · Sleep 15p · ≤ $10"]
-    Gateway -->|"③ Khi cả ① & ② lỗi hoặc vượt rate limit"| DemoData
+    Gateway -->|"② Khi ① lỗi/timeout hoặc vượt rate limit"| DemoData
 
     Uptime["UptimeRobot (5–15 phút/lần)"] -->|"GET /health (CPU, không chạm GPU)"| Gateway
-    Uptime -->|"Báo lỗi"| Alert["Email nhóm & Telegram nhóm"]
+    Uptime -->|"Báo lỗi"| Alert["Email nhóm"]
 ```
 
 ### Luồng xử lý một lần bấm "Tạo bộ 4 thiết kế"
@@ -29,11 +31,8 @@ flowchart LR
 2. **Bấm tạo thiết kế**: Frontend gửi `POST /api/generate { "heritage_id": "..." }`.
 3. **Kiểm tra Rate Limit**: Cổng Vercel kiểm tra giới hạn theo IP (`RATE_LIMIT_PER_HOUR=10`). Nếu vượt ngưỡng, cổng trả ngay kết quả từ `demo_variants.json` kèm thông báo và nhãn **"Kết quả đã sinh sẵn — không phải sinh trực tiếp"**.
 4. **Gọi Modal GPU (Backend ①)**: Gửi `POST ${MODAL_URL}/generate` kèm header `X-API-Key: ${MODAL_KEY}` với timeout `MODAL_TIMEOUT_MS` (mặc định `25000` ms). Nếu nhận `job_id`, trả ngay cho frontend kèm `backend: "modal"`.
-5. **Failover sang HF Space (Backend ②)**: Nếu Modal lỗi hoặc quá thời gian chờ, cổng kiểm tra `GET ${HF_SPACE_URL}/health` kèm `Authorization: Bearer ${HF_TOKEN}`.
-   - Nếu Space đang ngủ (`503`), cổng kích hoạt đánh thức và trả `backend: "hf", warming: true` để frontend hiển thị **"Đang khởi động máy dự phòng (2–3 phút)…"** và poll qua `/api/status` (không giữ kết nối dài trong Vercel Function).
-   - Khi Space sẵn sàng, gửi `POST ${HF_SPACE_URL}/generate` và nhận `job_id`.
-6. **Failover sang Demo Mode (Backend ③)**: Nếu cả Modal và HF Space đều không khả dụng, cổng trả ngay `backend: "demo"` cùng 4 thiết kế thật đã xuất từ `evaluation/variants.csv`.
-7. **Polling & Proxy ảnh**: Frontend hỏi `GET /api/status?job_id=...&backend=...` mỗi `1.2` giây. Khi hoàn tất, mọi đường dẫn ảnh thiết kế được chuẩn hoá qua `/api/media?backend=...&file=...` để cổng Vercel gắn token ở phía server, tuyệt đối không lộ `MODAL_KEY` hay `HF_TOKEN` ra trình duyệt.
+5. **Failover sang Demo Mode (Backend ②)**: Nếu Modal lỗi hoặc quá thời gian chờ (hoặc khi cả 2 backend GPU không khả dụng), cổng chuyển thẳng sang `backend: "demo"` cùng 4 thiết kế thật đã xuất từ `evaluation/variants.csv`.
+6. **Polling & Proxy ảnh**: Frontend hỏi `GET /api/status?job_id=...&backend=...` mỗi `1.2` giây. Khi hoàn tất, mọi đường dẫn ảnh thiết kế được chuẩn hoá qua `/api/media?backend=...&file=...` để cổng Vercel gắn token ở phía server, tuyệt đối không lộ `MODAL_KEY` ra trình duyệt.
 
 ---
 
@@ -42,16 +41,23 @@ flowchart LR
 ### 2.1. Trên Vercel (Project Settings → Environment Variables)
 > **Quan trọng**: Trong **Project Settings → General → Root Directory**, bắt buộc đặt là **`web_ui`**.
 
+**Biến bắt buộc (Kiến trúc 2 lớp mặc định):**
+
 | Biến môi trường | Giá trị mẫu / Mặc định | Mô tả |
 |---|---|---|
 | `MODAL_URL` | `https://<workspace>--tai-sinh-di-san-so-api-fastapi-app.modal.run` | URL endpoint của Modal sau khi chạy `modal deploy` |
 | `MODAL_KEY` | `<chuỗi_bí_mật>` | Khóa bí mật khớp với `DH_API_KEY` trên Modal |
-| `HF_SPACE_URL` | `https://<user>-<space-name>.hf.space` | Direct URL của Hugging Face Docker Space dự phòng |
-| `HF_TOKEN` | `hf_...` | Read token của tài khoản Hugging Face, gửi trong `Authorization: Bearer` để vào Space riêng tư |
-| `HF_API_KEY` | `<chuỗi_bí_mật>` (tuỳ chọn) | Khoá ứng dụng gửi trong `X-API-Key` tới Space, phải khớp `DH_API_KEY` của Space. Bỏ trống thì dùng `MODAL_KEY` |
-| `MODAL_TIMEOUT_MS` | `25000` | Thời gian chờ tối đa (ms) khi gọi Modal trước khi chuyển sang HF Space. Đặt theo cold start đo thật |
-| `HF_TIMEOUT_MS` | `6000` | Thời gian chờ mỗi lần gọi HF Space |
+| `MODAL_TIMEOUT_MS` | `25000` | Thời gian chờ tối đa (ms) khi gọi Modal trước khi chuyển sang Demo. Đặt theo cold start đo thật |
 | `RATE_LIMIT_PER_HOUR` | `10` | Số lượt sinh trực tiếp tối đa cho mỗi IP trong 1 giờ |
+
+**Biến tuỳ chọn (Chỉ cần khi bật lại lớp dự phòng Hugging Face Space):**
+
+| Biến môi trường | Giá trị mẫu / Mặc định | Mô tả |
+|---|---|---|
+| `HF_SPACE_URL` | `https://<user>-<space-name>.hf.space` | Direct URL của Hugging Face Docker Space dự phòng |
+| `HF_TOKEN` | `hf_...` | Read token tài khoản Hugging Face, gửi trong `Authorization: Bearer` để vào Space riêng tư |
+| `HF_API_KEY` | `<chuỗi_bí_mật>` (tuỳ chọn) | Khoá ứng dụng gửi trong `X-API-Key` tới Space, khớp `DH_API_KEY` của Space |
+| `HF_TIMEOUT_MS` | `6000` | Thời gian chờ mỗi lần gọi HF Space |
 
 ### 2.2. Trên Modal (Secret `tai-sinh-di-san-secret`)
 
@@ -159,8 +165,8 @@ modal deploy modal_app.py
 
 | Hạng mục đo | Môi trường | Giá trị ghi nhận | Ghi chú |
 |---|---|---|---|
-| **Modal Cold Start** (từ 0 container → sẵn sàng) | Modal NVIDIA T4 | *(Cập nhật khi chạy mục 9)* | Image đã nạp sẵn SD1.5 + ControlNet + CLIP (đọc thẳng từ image) |
-| **Thời gian sinh 1 bộ 4 thiết kế** | Modal NVIDIA T4 | *(Cập nhật khi chạy mục 9)* | Gồm 4 biến thể SD1.5 ControlNet + chấm điểm 7 bố cục CLIP + img2img polish |
+| **Modal Cold Start** (từ 0 container → sẵn sàng) | Modal NVIDIA T4 | *(chưa đo)* | Image đã nạp sẵn SD1.5 + ControlNet + CLIP (đọc thẳng từ image) |
+| **Thời gian sinh 1 bộ 4 thiết kế** | Modal NVIDIA T4 | *(chưa đo)* | Gồm 4 biến thể SD1.5 ControlNet + chấm điểm 7 bố cục CLIP + img2img polish |
 | **Thời gian Scale-down về 0** | Modal NVIDIA T4 | `900s` (15 phút) | Cấu hình `scaledown_window=900` trong `modal_app.py` |
 | **HF Space tự thức khi nhận API request** | HF Space Docker T4 (Private) | *(Cập nhật khi chạy mục 10)* | Kiểm tra khi Space đang ở trạng thái `Sleeping` |
 | **Thời gian thức dậy của HF Space** | HF Space Docker T4 (Private) | *(Cập nhật khi chạy mục 10)* | Cổng Vercel trả `warming: true` và frontend poll `/api/status` mỗi 1.2s |

@@ -27,7 +27,7 @@ function buildDemoResponse(heritageId, reason, waitMs, extra = {}) {
         queue_position: 0,
         failover: true,
         demo_label: 'Kết quả đã sinh sẵn — không phải sinh trực tiếp',
-        label: extra.message || 'Kết quả đã sinh sẵn — không phải sinh trực tiếp',
+        label: extra.message || 'GPU đang bận hoặc tạm ngừng — hiển thị kết quả đã sinh sẵn',
         variants,
         ...extra,
     };
