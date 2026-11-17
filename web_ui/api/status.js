@@ -5,6 +5,7 @@ const {
     fetchWithTimeout,
     getDemoVariants,
     logGatewayAudit,
+    notifyAlert,
 } = require('./_shared');
 
 function rewriteVariantsMedia(variants, backend) {
@@ -169,6 +170,15 @@ module.exports = async function handler(req, res) {
         return res.status(503).json({ detail: `Backend ${backend} chưa được cấu hình.` });
     }
 
+    async function alertModalFailure(reason) {
+        if (backend !== 'modal' || !heritageId || jobId.startsWith('warming_')) return;
+        const vnTime = new Date().toLocaleTimeString('vi-VN', {
+            timeZone: 'Asia/Ho_Chi_Minh',
+            hour: '2-digit', minute: '2-digit', hour12: false,
+        });
+        await notifyAlert(`⚠️ Modal lỗi giữa chừng (${reason}) lúc ${vnTime} (giờ VN) — giám khảo đang thấy bản demo. Hiện vật: ${heritageId}`).catch(() => {});
+    }
+
     try {
         const upstream = await fetchWithTimeout(
             `${baseUrl}/generate/${encodeURIComponent(jobId)}`,
@@ -180,6 +190,7 @@ module.exports = async function handler(req, res) {
         );
         if (!upstream.ok) {
             if (heritageId) {
+                await alertModalFailure(`HTTP ${upstream.status}`);
                 return res.status(200).json({
                     job_id: jobId,
                     heritage_id: heritageId,
@@ -206,6 +217,8 @@ module.exports = async function handler(req, res) {
         });
     } catch (error) {
         if (heritageId) {
+            const isTimeout = error && (error.name === 'AbortError' || /timeout/i.test(error.message));
+            await alertModalFailure(isTimeout ? `timeout ${Math.round(timeoutMs / 1000)}s` : 'lỗi kết nối');
             return res.status(200).json({
                 job_id: jobId,
                 heritage_id: heritageId,

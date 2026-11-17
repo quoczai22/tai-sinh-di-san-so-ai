@@ -206,7 +206,47 @@ def main() -> int:
         assert r4.get("backend") == "demo"
         print("[PASS 4] Không cấu hình biến ALERT_DISCORD_WEBHOOK_URL: Gateway rơi về Demo mượt mà, không lỗi.")
 
-        print("\n=== TẤT CẢ 4 KỊCH BẢN CẢNH BÁO DISCORD ĐỀU ĐẠT CHUẨN (PASS) ===")
+        # Modal chết sau khi gateway đã nhận job: chỉ lượt poll thất bại gửi cảnh báo.
+        received_messages.clear()
+        env_modal = {**os.environ, "PORT": "8030", "DELAY": "3"}
+        for key in ("DH_API_KEY", "HF_TOKEN"):
+            env_modal.pop(key, None)
+        pmodal = subprocess.Popen([sys.executable, "mock_backend.py"], cwd=str(ROOT), env=env_modal)
+        procs.append(pmodal)
+        assert wait_for_url("http://127.0.0.1:8030/heritage")
+        env_job = {**env_gw, "PORT": "3030", "MODAL_URL": "http://127.0.0.1:8030"}
+        pgw_job = subprocess.Popen(["node", "scripts/dev_gateway.js"], cwd=str(ROOT), env=env_job)
+        procs.append(pgw_job)
+        assert wait_for_url("http://127.0.0.1:3030/health")
+        c_job, r_job = http_json("http://127.0.0.1:3030/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        assert c_job == 202 and r_job.get("backend") == "modal", r_job
+        status_url = f"http://127.0.0.1:3030/api/status?job_id={r_job['job_id']}&backend=modal&heritage_id=BT_Hac_XP"
+        c_pending, r_pending = http_json(status_url)
+        assert c_pending == 200 and r_pending.get("status") in ("queued", "running"), r_pending
+        pmodal.kill()
+        pmodal.wait(timeout=5)
+        c_lost, r_lost = http_json(status_url)
+        assert c_lost == 200 and r_lost.get("backend") == "demo" and r_lost.get("status") == "completed", r_lost
+        assert len(r_lost.get("variants", [])) == 4 and r_lost.get("demo_label"), r_lost
+        assert len(received_messages) == 1, received_messages
+        alert = received_messages[0].get("content", "")
+        assert "giữa chừng" in alert and "BT_Hac_XP" in alert, alert
+        print("[PASS 5] Modal chết giữa job: đúng 1 cảnh báo có mã hiện vật.")
+        pgw_job.terminate()
+        pgw_job.wait(timeout=5)
+        procs.remove(pgw_job)
+
+        received_messages.clear()
+        env_demo_only = {**env_gw, "PORT": "3031", "MODAL_URL": ""}
+        pgw_demo_only = subprocess.Popen(["node", "scripts/dev_gateway.js"], cwd=str(ROOT), env=env_demo_only)
+        procs.append(pgw_demo_only)
+        assert wait_for_url("http://127.0.0.1:3031/health")
+        c_only, r_only = http_json("http://127.0.0.1:3031/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        assert c_only == 200 and r_only.get("backend") == "demo", r_only
+        assert len(received_messages) == 0, received_messages
+        print("[PASS 6] MODAL_URL trống: Demo thuần, không cảnh báo.")
+
+        print("\n=== TẤT CẢ 6 KỊCH BẢN CẢNH BÁO DISCORD ĐỀU ĐẠT CHUẨN (PASS) ===")
         return 0
 
     finally:
