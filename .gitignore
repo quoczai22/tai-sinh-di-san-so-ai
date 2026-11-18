@@ -35,6 +35,11 @@ scripts/00_cleanup_c_drive.ps1
 data/documents/*
 !data/documents/.gitkeep
 
+# Dữ liệu thô LR3D-CULT2 và kho phần tử cắt từ đó (chưa xác minh giấy phép, không commit)
+data/LR3D-CULT2*
+data/lr3d_src/
+data/elements/
+
 # Unreviewed hand-offs, prototypes, and manual-test artefacts.
 clustering_deliverables/
 experiments/
