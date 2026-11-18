@@ -1,0 +1,128 @@
+{
+ "LR3D_33": {
+  "object_id": "ceramic_vases_33",
+  "texture_file": "ceramic_vases_33.png",
+  "valid_mask_method": "uv",
+  "uv_coverage": 0.5176,
+  "crop_box_xyxy": [
+   4000,
+   3556,
+   8185,
+   8151
+  ],
+  "scale": 0.4457,
+  "size_wh": [
+   1865,
+   2048
+  ],
+  "island_area_px": 13959763,
+  "ink_frac": 0.434,
+  "blue_frac": 0.644,
+  "islands_found": 15
+ },
+ "LR3D_61": {
+  "object_id": "ceramic_vases_61",
+  "texture_file": "ceramic_vases_61.png",
+  "valid_mask_method": "uv",
+  "uv_coverage": 0.7395,
+  "crop_box_xyxy": [
+   38,
+   2274,
+   3862,
+   4057
+  ],
+  "scale": 0.5356,
+  "size_wh": [
+   2048,
+   955
+  ],
+  "island_area_px": 5630723,
+  "ink_frac": 0.423,
+  "blue_frac": 0.444,
+  "islands_found": 6
+ },
+ "LR3D_50": {
+  "object_id": "ceramic_vases_50",
+  "texture_file": "ceramic_vases_50.png",
+  "valid_mask_method": "uv",
+  "uv_coverage": 0.6125,
+  "crop_box_xyxy": [
+   96,
+   2492,
+   4761,
+   8123
+  ],
+  "scale": 0.3637,
+  "size_wh": [
+   1697,
+   2048
+  ],
+  "island_area_px": 17614650,
+  "ink_frac": 0.584,
+  "blue_frac": 0.584,
+  "islands_found": 23
+ },
+ "LR3D_38": {
+  "object_id": "ceramic_vases_38",
+  "texture_file": "ceramic_vases_38.png",
+  "valid_mask_method": "uv",
+  "uv_coverage": 0.6342,
+  "crop_box_xyxy": [
+   6,
+   6,
+   2107,
+   3253
+  ],
+  "scale": 0.6307,
+  "size_wh": [
+   1325,
+   2048
+  ],
+  "island_area_px": 4977558,
+  "ink_frac": 0.187,
+  "blue_frac": 0.443,
+  "islands_found": 10
+ },
+ "LR3D_97": {
+  "object_id": "ceramic_vases_97",
+  "texture_file": "ceramic_vases_97.png",
+  "valid_mask_method": "uv",
+  "uv_coverage": 0.4611,
+  "crop_box_xyxy": [
+   3108,
+   48,
+   4074,
+   2252
+  ],
+  "scale": 0.9292,
+  "size_wh": [
+   898,
+   2048
+  ],
+  "island_area_px": 1558360,
+  "ink_frac": 0.287,
+  "blue_frac": 0.192,
+  "islands_found": 65
+ },
+ "LR3D_124": {
+  "object_id": "ceramic_vases_124",
+  "texture_file": "ceramic_vases_124.jpeg",
+  "valid_mask_method": "uv",
+  "uv_coverage": 0.7383,
+  "crop_box_xyxy": [
+   1182,
+   314,
+   2276,
+   2806
+  ],
+  "scale": 0.8218,
+  "size_wh": [
+   899,
+   2048
+  ],
+  "island_area_px": 2378442,
+  "ink_frac": 0.543,
+  "blue_frac": 0.625,
+  "islands_found": 18
+ }
+}

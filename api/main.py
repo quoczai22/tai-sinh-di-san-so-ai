@@ -56,7 +56,7 @@ def ui_items() -> list[dict]:
         result.append({
             "id": item["heritage_id"],
             "name": item["name"],
-            "dynasty": "Di sản Bát Tràng",
+            "dynasty": "Gốm men lam · LR3D-CULT2",  # nhãn trung tính: chưa xác minh được vật nào là Bát Tràng
             "description": item.get("team_description", ""),
             "conditioningMode": item["conditioning_mode"],
             "image": f"/media/heritage/{item['heritage_id']}",
