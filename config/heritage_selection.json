@@ -1,0 +1,41 @@
+{
+  "version": "HS-2.0",
+  "updated": "2026-11-18",
+  "purpose": "Tiêu chí tuyển ảnh hiện vật vào Heritage Library. Cổng G1 (tiếp nhận) chạy các tiêu chí này tự động; kết quả ghi vào metadata và Design Passport.",
+  "criteria": {
+    "C1_resolution": {
+      "label": "Độ phân giải gốc",
+      "rule": "Cạnh ngắn của ảnh gốc ≥ 512 px và cạnh dài của vùng hiện vật (sau khi cắt nền) ≥ 512 px, để bước letterbox 512×512 không phải phóng to ảnh.",
+      "min_short_side": 512,
+      "min_object_long_side": 512,
+      "warn_object_long_side": 768,
+      "why": "512 px là độ phân giải gốc của SD1.5. Ảnh nhỏ hơn bị nội suy khi letterbox: Canny bắt cạnh giả từ răng cưa và mờ, ControlNet bám theo nhiễu chứ không theo nét vẽ."
+    },
+    "C2_ornament_density": {
+      "label": "Mật độ nét hoa văn",
+      "rule": "Số pixel cạnh hoa văn (Canny 100/200, đã bỏ nền và bóc đường bao 14 px) ≥ 60% mốc 20.092 px, tức ≥ 12.055 px.",
+      "baseline_heritage_id": "BT_Hac_XP",
+      "baseline_edge_px": 20092,
+      "ratio": 0.6,
+      "why": "Giữ nguyên tiêu chí mục 4.2 của đặc tả MVP. Mốc 20.092 px là ảnh đã kiểm ở mục 4.1."
+    },
+    "C3_rights": {
+      "label": "Nguồn và quyền sử dụng",
+      "rule": "Phải có URL nguồn, đơn vị lưu giữ hoặc đăng ảnh, và tình trạng quyền. Chỉ ảnh thuộc phạm vi công cộng, giấy phép mở, đã được cấp phép hoặc do nhóm tự chụp mới được xuất bản công khai.",
+      "publishable_statuses": [
+        "public_domain",
+        "open_license",
+        "permission_granted",
+        "own_work"
+      ],
+      "blocked_statuses": [
+        "permission_denied"
+      ]
+    },
+    "C4_heritage_authenticity": {
+      "label": "Tính di sản của hiện vật",
+      "rule": "Ưu tiên hiện vật có đơn vị lưu giữ là bảo tàng/thiết chế văn hoá và niên đại do đơn vị đó công bố. Sản phẩm thương mại đương đại chỉ được dùng khi có giấy phép của cơ sở sản xuất.",
+      "level": "advisory"
+    }
+  }
+}

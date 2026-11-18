@@ -1,0 +1,44 @@
+{
+  "version": "QG-1.0",
+  "status": "provisional",
+  "updated": "2026-11-18",
+  "principle": "AI/hệ thống đo KỸ THUẬT và chỉ quyết định 'đủ điều kiện chuyển chuyên gia' hay 'phải sửa/sinh lại'. Không chỉ số nào tự phê duyệt thiết kế. Văn hoá và thẩm mỹ do chuyên gia quyết định.",
+  "calibration_note": "Ngưỡng tạm thời, đặt theo cách diễn giải của từng phép đo và quan sát trên 24 thiết kế ngày 06/09/2026. Phải hiệu chỉnh lại sau khi có ≥ 30 phiếu chuyên gia (chọn ngưỡng có độ đồng thuận cao nhất với quyết định chuyên gia — xem docs/finals/05_QUALITY_ASSURANCE.md).",
+  "gates": {
+    "G2_pattern": {
+      "label": "Cổng chất lượng hoa văn (sau giai đoạn 1)",
+      "metrics": {
+        "vessel_leakage": {"label": "Rò dáng vật chứa (VLS)", "direction": "lower_is_better", "warn": 0.20, "fail": 0.40,
+                            "why": "VLS ≥ 0,40 ứng với hoa văn là ảnh nguyên chiếc bình trên nền trơn."},
+        "seam_ratio": {"label": "Đường nối khi lát", "direction": "lower_is_better", "warn": 1.5, "fail": 2.0,
+                        "why": "Mép nối chênh gấp đôi hai cột kề nhau bên trong thì mắt thấy đường kẻ khi lát."}
+      },
+      "on_fail": {"route_to": "stage1_regenerate", "action": "Sinh lại hoa văn: đổi seed hoặc giảm 1 mức trọng số ControlNet (giữ nguyên prompt và bảng màu)."}
+    },
+    "G3_final": {
+      "label": "Cổng chất lượng thiết kế cuối (sau giai đoạn 2)",
+      "metrics": {
+        "pattern_preservation": {"label": "Giữ họa tiết (PPS)", "direction": "higher_is_better", "warn": 0.60, "fail": 0.40,
+                                  "why": "PPS là hệ số tương quan r. r < 0,4 nghĩa là dưới 16% phương sai nét vẽ còn lại sau img2img — họa tiết đã bị vẽ lại."},
+        "garment_shape_iou": {"label": "Giữ dáng áo (GSC)", "direction": "higher_is_better", "warn": 0.95, "fail": 0.92,
+                               "why": "IoU dáng áo trước/sau img2img. Dưới 0,92 tương đương lệch ≥ 8% diện tích áo."},
+        "sharpness_ratio": {"label": "Độ nét so với bản ghép", "direction": "higher_is_better", "warn": 0.45, "fail": 0.25,
+                             "why": "img2img làm mềm vải là chủ ý, nhưng dưới 1/4 độ nét thì họa tiết nhoè."},
+        "palette_shift_de": {"label": "Lệch bảng màu họa tiết (ΔE)", "direction": "lower_is_better", "warn": 10.0, "fail": 20.0,
+                              "why": "ΔE76 giữa màu trung bình vùng họa tiết. ΔE ≈ 10 là khác màu thấy rõ khi đặt cạnh nhau."}
+      },
+      "routing": {
+        "pattern_preservation": {"route_to": "stage2_repair", "action": "Khoá họa tiết (pattern-lock) hoặc giảm strength img2img 0,40 → 0,25; nếu vẫn không đạt, dùng bản ghép tất định."},
+        "garment_shape_iou": {"route_to": "stage2_repair", "action": "Giảm strength img2img hoặc dùng bản ghép tất định (dáng áo đúng tuyệt đối)."},
+        "sharpness_ratio": {"route_to": "stage2_repair", "action": "Giảm strength img2img hoặc tăng số bước."},
+        "palette_shift_de": {"route_to": "stage2_repair", "action": "Khoá họa tiết (giữ sắc độ bản ghép)."}
+      }
+    }
+  },
+  "decision": {
+    "PASS": "Đủ điều kiện chuyển chuyên gia thẩm định.",
+    "WARN": "QC Officer xem xét trước khi chuyển chuyên gia (có thể chuyển kèm ghi chú).",
+    "FAIL": "Không chuyển chuyên gia. Hệ thống đề xuất bước quay lại; tối đa 3 lần sinh lại/sửa cho một thiết kế, quá 3 lần thì chuyển Nhà thiết kế quyết định."
+  },
+  "max_retries": 3
+}

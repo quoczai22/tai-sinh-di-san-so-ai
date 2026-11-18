@@ -1,0 +1,122 @@
+{
+  "experiment_id": "EXP-C",
+  "generated_at": "2026-11-18T05:14:39+00:00",
+  "automatic": {
+    "pattern_preservation_vs_full": {
+      "full": {
+        "n": 6,
+        "mean": 1.0,
+        "sd": 0.0,
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "min": 1.0,
+        "max": 1.0,
+        "cv": 0.0
+      },
+      "no_displacement": {
+        "n": 6,
+        "mean": 0.8507,
+        "sd": 0.0406,
+        "ci95": [
+          0.808,
+          0.8933
+        ],
+        "min": 0.774,
+        "max": 0.8849,
+        "cv": 0.0478
+      },
+      "no_shading": {
+        "n": 6,
+        "mean": 0.9645,
+        "sd": 0.0159,
+        "ci95": [
+          0.9478,
+          0.9812
+        ],
+        "min": 0.9445,
+        "max": 0.9854,
+        "cv": 0.0165
+      },
+      "no_grade": {
+        "n": 6,
+        "mean": 0.9584,
+        "sd": 0.0389,
+        "ci95": [
+          0.9176,
+          0.9992
+        ],
+        "min": 0.9095,
+        "max": 0.994,
+        "cv": 0.0406
+      }
+    }
+  },
+  "human": {
+    "looks_like_printed_fabric": {
+      "full": {
+        "n": 0
+      },
+      "no_displacement": {
+        "n": 0
+      },
+      "no_shading": {
+        "n": 0
+      },
+      "no_grade": {
+        "n": 0
+      }
+    },
+    "aesthetic": {
+      "full": {
+        "n": 0
+      },
+      "no_displacement": {
+        "n": 0
+      },
+      "no_shading": {
+        "n": 0
+      },
+      "no_grade": {
+        "n": 0
+      }
+    }
+  },
+  "agreement": {
+    "looks_like_printed_fabric": null,
+    "aesthetic": null
+  },
+  "automatic_tests": {
+    "pattern_preservation_vs_full": {
+      "control": "full",
+      "vs_control": {
+        "no_displacement": {
+          "n_pairs": 6,
+          "median_diff": -0.14,
+          "wilcoxon_p": 0.0312
+        },
+        "no_shading": {
+          "n_pairs": 6,
+          "median_diff": -0.0351,
+          "wilcoxon_p": 0.0312
+        },
+        "no_grade": {
+          "n_pairs": 6,
+          "median_diff": -0.0262,
+          "wilcoxon_p": 0.0312
+        }
+      },
+      "friedman": {
+        "n_blocks": 6,
+        "statistic": 16.2,
+        "p": 0.001
+      }
+    }
+  },
+  "raters": [
+    "CG01",
+    "CG02",
+    "CG03"
+  ]
+}

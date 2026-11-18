@@ -37,7 +37,7 @@ data/documents/*
 
 # Unreviewed hand-offs, prototypes, and manual-test artefacts.
 clustering_deliverables/
-experiments/
+/experiments/
 prototypes/
 scratch/
 manual-test-output/
@@ -65,3 +65,8 @@ reports/
 docs/1509contextantigravity.md
 docs/MVP_v6_1_Bao_cao_giai_thich.md
 docs/MVP_v6_1_Mind_Map_Prompt.docx
+
+# Bản chung kết: tệp sinh lại được hoặc tạm
+outputs/experiments/*/blind/images/
+outputs/edits/_pytest_*/
+data/heritage/sources/originals/

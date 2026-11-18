@@ -1,6 +1,6 @@
 # Setup môi trường AI local — SD1.5 + ControlNet
 
-> Timeline Ngày 2 · Member 1 (AI/Computer Vision)
+> Cần cho các lệnh sinh ảnh (Studio, thí nghiệm EXP-A/EXP-B). Kiểm thử, API và giao diện trình diễn chạy được không cần GPU.
 
 ## Yêu cầu tối thiểu
 

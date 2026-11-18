@@ -1,0 +1,43 @@
+{
+  "id": "EXP-C",
+  "title": "Ablation các bước ghép tất định (displacement, shading, color grade)",
+  "question": "Mỗi bước ghép tất định đóng góp gì vào cảm giác 'họa tiết nằm trên vải thật'?",
+  "why": "Hồ sơ bản 09/2026 ghi đóng góp của displacement/shading/grade 'mới đánh giá định tính, chưa có ablation có số'.",
+  "design": "single_factor",
+  "independent_variable": {
+    "name": "composite_mode",
+    "levels": [
+      "full",
+      "no_displacement",
+      "no_shading",
+      "no_grade"
+    ]
+  },
+  "replicates": null,
+  "fixed": {
+    "pattern_source": "legacy run 2026-09-06, biến thể V2 (trọng số 0,65, bảng màu tự do, seed 42)",
+    "layout": "front_panel",
+    "polish_strength": 0.0,
+    "stage2_finish": "none"
+  },
+  "units": {
+    "heritage": "legacy_all"
+  },
+  "requires_gpu": false,
+  "metrics": {
+    "automatic": [
+      "pattern_preservation_vs_full"
+    ],
+    "human": [
+      "looks_like_printed_fabric",
+      "aesthetic"
+    ]
+  },
+  "blind_review": {
+    "enabled": true,
+    "min_raters": 3,
+    "shown_per_item": 1
+  },
+  "analysis": "Thứ hạng trung bình của 4 mức trên từng hiện vật (Friedman) và trung bình điểm; tất định nên không cần lặp seed.",
+  "status": "planned"
+}
