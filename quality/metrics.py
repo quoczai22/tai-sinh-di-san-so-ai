@@ -196,6 +196,21 @@ def vessel_leakage(pattern: np.ndarray, reference: np.ndarray, border: int = 24)
             "silhouette_iou_vs_artifact": round(iou, 4)}
 
 
+def outside_drift(raw: np.ndarray, final: np.ndarray, garment_mask: np.ndarray) -> dict:
+    """Trôi ngoài vùng áo (M2): sai khác tuyệt đối giữa bản ghép thô và thiết kế cuối ở
+    NGOÀI mặt nạ áo, thang 0 đến 255 (trung bình trên mọi pixel và kênh màu).
+
+    Polish có mặt nạ giữ nguyên từng pixel ngoài áo nên kỳ vọng đúng 0. Polish toàn ảnh
+    vẽ lại cả nền, tay, mặt nên cho giá trị lớn. Chỉ đo và ghi vào chi tiết, chưa dùng làm
+    ngưỡng loại: ngưỡng cần hiệu chỉnh sau.
+    """
+    outside = garment_mask == 0
+    if not outside.any():
+        return {"outside_drift": float("nan"), "outside_drift_max": float("nan")}
+    d = np.abs(raw.astype(np.int16) - final.astype(np.int16))[outside]
+    return {"outside_drift": round(float(d.mean()), 3), "outside_drift_max": int(d.max())}
+
+
 def seam_ratio(pattern: np.ndarray) -> dict:
     """Độ lộ đường nối khi lát tile: chênh lệch mép trái↔phải (trên↔dưới) chia cho
     chênh lệch trung bình giữa hai cột (hàng) kề nhau bên trong. ≈1 là liền mạch."""
