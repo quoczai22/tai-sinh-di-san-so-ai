@@ -137,8 +137,12 @@ def generate_design_set(
                 used_layouts.add(chosen["layout"])
                 raw_path = run_dir / f"V{index}_aodai_raw.png"
                 chosen["image"].save(raw_path)
-                strength = float(variant.get("polish_strength", POLISH_STRENGTH))
-                design = garment.polish(chosen["image"], strength=strength, seed=seed) if strength > 0 else chosen["image"]
+                # polish_mask=True: chỉ polish vùng áo, ngoài áo giữ nguyên từng pixel (mặc định tắt, giữ hành vi cũ)
+                masked = bool(variant.get("polish_mask", False))
+                strength = float(variant.get(
+                    "polish_strength", garment.POLISH_MASKED_STRENGTH if masked else POLISH_STRENGTH))
+                polish_fn = garment.polish_masked if masked else garment.polish
+                design = polish_fn(chosen["image"], strength=strength, seed=seed) if strength > 0 else chosen["image"]
                 design_path = run_dir / f"V{index}_aodai.png"
                 design.save(design_path)
                 similarity = scorer.similarity(prepared["reference"], design_pattern)
@@ -150,7 +154,7 @@ def generate_design_set(
                     "layout": chosen["layout"], "layout_label": chosen["label"], "layout_scale": chosen["scale"],
                     "layout_score": chosen["score"], "layout_selected_by": selected_by,
                     "layout_ranking": ";".join(f"{x['layout']}:{x['score']}" for x in ranked),
-                    "polish_strength": strength,
+                    "polish_strength": strength, "polish_mask": masked,
                     "positive_prompt": result["positive_prompt"], "negative_prompt": result["negative_prompt"],
                     "steps": versions["steps"], "guidance": versions["guidance"],
                     "sd_model_id": versions["sd_model_id"], "controlnet_id": versions["controlnet_id"],

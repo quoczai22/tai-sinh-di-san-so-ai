@@ -292,6 +292,49 @@ def polish(composite: Image.Image, strength: float = 0.40, seed: int = 42,
                 generator=torch.Generator("cuda").manual_seed(seed)).images[0]
 
 
+POLISH_STRENGTH = 0.40          # polish toàn ảnh (cách cũ, giữ để đối chiếu)
+POLISH_MASKED_STRENGTH = 0.30   # polish có mặt nạ: thấp hơn vì chỉ cần hòa họa tiết vào vải
+
+
+def blend_with_mask(polished: Image.Image, composite: Image.Image, mask: np.ndarray,
+                    feather_px: float = 4.0) -> Image.Image:
+    """Ghép ảnh đã polish vào ảnh ghép thô, chỉ trong vùng mặt nạ.
+
+        ảnh cuối = polish × mặt nạ mềm + ảnh ghép thô × (1 − mặt nạ mềm)
+
+    Mặt nạ mềm = mặt nạ làm mờ rồi nhân lại với chính mặt nạ, nên làm mềm chỉ
+    diễn ra BÊN TRONG vùng áo. Ngoài vùng áo mặt nạ mềm đúng bằng 0, nghĩa là
+    từng pixel ngoài áo trùng ảnh ghép thô tuyệt đối. Bước này bắt buộc vì bộ mã hóa
+    ảnh (VAE) của Stable Diffusion làm đổi nhẹ cả vùng nằm ngoài mặt nạ.
+    """
+    comp = np.asarray(composite.convert("RGB"), np.float32)
+    pol = polished.convert("RGB")
+    if pol.size != composite.size:
+        pol = pol.resize(composite.size, Image.LANCZOS)
+    pol = np.asarray(pol, np.float32)
+    hard = (mask > 0).astype(np.float32)
+    soft = (_feather(hard, feather_px) * hard)[:, :, None]
+    out = pol * soft + comp * (1.0 - soft)
+    return Image.fromarray(np.clip(np.rint(out), 0, 255).astype(np.uint8))
+
+
+def polish_masked(composite: Image.Image, strength: float = POLISH_MASKED_STRENGTH,
+                  seed: int = 42, steps: int = 30, mask: np.ndarray | None = None,
+                  feather_px: float = 4.0) -> Image.Image:
+    """Polish chỉ tác động vùng áo; nền, mặt, tay giữ nguyên từng pixel.
+
+    Chạy `polish` (img2img) ở độ nhiễu thấp rồi ghép lại bằng `blend_with_mask`.
+    `mask` mặc định là vùng áo tính trên ẢNH ÁO TRẮNG gốc (TEMPLATE): không tính
+    trên ảnh đã dán hoa văn, vì hoa văn có màu làm sai phép tách theo độ bão hoà.
+    """
+    if mask is None:
+        mask = garment_mask(Image.open(TEMPLATE).convert("RGB"))
+    if mask.shape[:2] != (composite.height, composite.width):
+        mask = cv2.resize(mask.astype(np.uint8), composite.size, interpolation=cv2.INTER_NEAREST)
+    polished = polish(composite, strength=strength, seed=seed, steps=steps)
+    return blend_with_mask(polished, composite, mask, feather_px)
+
+
 def make_template(seed: int = 43) -> Path:
     """Sinh ảnh áo dài trắng trơn MỘT LẦN rồi dùng lại mãi.
 
