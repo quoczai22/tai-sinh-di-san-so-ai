@@ -1,0 +1,434 @@
+# Hướng cải tiến hệ thống Tái Sinh Di Sản Số, Phiên bản 2 (bản chỉnh ngày 18/11/2026)
+
+- **Ngày:** 18/11/2026. Hạn nộp minh chứng cải tiến: hết ngày 25/11/2026.
+- **Mục tiêu:** (1) giữ đúng hoa văn gốm, không chỉnh tay; (2) ảnh áo dài chân thực; (3) đủ minh chứng cho ba yêu cầu của ban tổ chức; (4) có đường dẫn để ban tổ chức thử.
+- **Phạm vi:** giữ kiến trúc hai giai đoạn hiện tại. Bổ sung một đường trích xuất tất định (không qua diffusion) cho mức 1, nền áo độ phân giải cao, polish có khóa vùng, bộ đánh giá có tiêu chí loại, và hồ sơ nguồn.
+
+## 0. Cần bạn quyết (ảnh hưởng đến kế hoạch)
+
+| # | Câu hỏi | Nếu có | Nếu không |
+|---|---|---|---|
+| 1 | Nhóm có ảnh áo dài trơn thật (tự chụp, có đồng ý người mẫu) trong 1 đến 2 ngày không? | Dùng làm nền chính (mục 6) | Dùng nền AI 1024px, ghi rõ giới hạn chân thực |
+| 2 | Ngày chung kết thật là ngày nào? File cũ từng ghi 20 đến 22/11, chưa xác nhận | Nếu sớm hơn 25/11, nén lịch ở mục 10 | Giữ lịch 18 đến 25/11 |
+| 3 | Có người am hiểu di sản hoặc thiết kế ngoài nhóm không? | Gửi phiếu thẩm định (mục 8.4) | Ghi rõ "chưa có chuyên gia", không tuyên bố đã thẩm định |
+| 4 | Môi trường Python: CLAUDE.md quy định `uv` và `pyproject.toml`, repo hiện dùng `requirements.txt` và `scripts/01_setup_env.ps1` | Làm theo CLAUDE.md, chuyển sang uv | Giữ hiện trạng và ghi lệch quy ước |
+| 5 | Ngưỡng loại (mục 8.2) | Chốt sau khi đo thực tế trên 6 hiện vật | Dùng ngưỡng đề xuất |
+| 6 | Ai liên hệ nhóm tác giả LR3D-CULT2 (FPT University, Hà Nội) và nhóm VietFashion để hỏi xuất xứ, giấy phép, phạm vi dùng? | Có phản hồi bằng văn bản: cập nhật mục 2 và dùng được rộng hơn | Không có: giữ trạng thái "chưa xác minh", chỉ dùng nội bộ |
+
+## 1. Kết luận thiết kế
+
+Không thay toàn bộ hệ thống bằng một model lớn hơn. Ba ưu tiên, theo thứ tự:
+
+1. **Trích xuất và khóa họa tiết.** Mức 1 phải giữ nguyên hoa văn gốc bằng phương pháp tất định (cùng đầu vào cho cùng đầu ra, không qua diffusion). Các mức 2 đến 4 mới dùng ControlNet để sáng tạo.
+2. **Nền áo độ phân giải cao.** Ảnh áo hiện tại do Stable Diffusion sinh ở 512×512, thân áo rộng khoảng 90 px, nên mọi họa tiết đều bị thu nhỏ 4 đến 5 lần. Đây là điểm nghẽn của độ chân thực.
+3. **Minh chứng đủ cho ba yêu cầu:** tiêu chí loại và thử lại có ngưỡng, so sánh có kiểm soát nhiều seed, hồ sơ nguồn và quyền sử dụng của 6 hiện vật.
+
+Fine-tune LoRA chuyển xuống thử nghiệm tùy chọn (mục 4.4). Lý do nằm ở số liệu quét dữ liệu ở mục 2.
+
+```text
+Ảnh hiện vật gốm (6 hiện vật, có nguồn và giấy phép ghi trong hồ sơ)
+    ↓
+Kiểm tra ảnh nguồn tự động (độ phân giải, có nền trong suốt hay không)
+    ↓
+Tách silhouette (viền ngoài của bình) bằng alpha hoặc Grounded SAM
+    ↓
+Trải phẳng mặt cong của bình (trải trụ)
+    ↓
+Cắt phần tử họa tiết bằng SAM thành ảnh RGBA, kiểm tra tự động
+    ↓
+Kho phần tử (kèm nguồn, giấy phép, tham số)
+    ↓
+ ┌────────────────────────────┬─────────────────────────────────────┐
+ │ Đường A (mức 1)            │ Đường B (mức 2 đến 4)               │
+ │ Dùng nguyên phần tử        │ ControlNet Canny sinh biến thể      │
+ └────────────────────────────┴─────────────────────────────────────┘
+    ↓
+Ghép lên nền áo độ phân giải cao theo ánh sáng và nếp vải
+    ↓
+Polish có mask, dán lại pixel gốc ở vùng khóa
+    ↓
+Đo tự động, thử lại hoặc loại theo tiêu chí
+    ↓
+Chấm mù nội bộ + phiếu thẩm định chuyên gia
+    ↓
+Design Passport, nhãn "có hỗ trợ AI", nhật ký chỉnh sửa
+```
+
+## 2. Dữ liệu và nguồn
+
+### 2.1. Sáu hiện vật đang dùng, nguồn thật và hiện trạng giấy phép
+
+**Cập nhật 18/11/2026: 6 hiện vật dưới đây đã được thay trong dữ liệu chạy bằng 6 mảng texture phẳng từ LR3D-CULT2** (vật #33, #61, #50, #38, #97, #124, mã `LR3D_<số>` trong `data/heritage/`). Ảnh được cắt tự động bằng `scripts/10_make_heritage_from_lr3d.py`, khung cắt ghi ở `data/heritage/lr3d_crops.json`. Nhãn hiển thị là "gốm men lam, nguồn LR3D-CULT2, xuất xứ chưa xác minh", không ghi Bát Tràng. Sáu ảnh cũ vẫn còn trong thư mục (chưa xóa), bản dữ liệu cũ nằm trong lịch sử git. Phần bảng và hai vấn đề dưới đây mô tả sáu hiện vật cũ, giữ lại để đối chiếu. Chất lượng ảnh biến thể sinh từ hiện vật mới giống hệ thống cũ: họa tiết được diễn giải lại, chưa giữ nguyên (mức 1 chưa dùng phần tử cắt tất định).
+
+Thông tin lấy từ `data/metadata.json` (file có đường dẫn nguồn). Cả 6 ảnh có `license: unverified` và ghi chú "chỉ dùng nội bộ MVP".
+
+| Mã hiện vật | Tên trong metadata | Nguồn (trang bán hàng) | Kích thước ảnh |
+|---|---|---|---|
+| `BT_Hac_XP` | Bình gốm dáng Tỏi hút lộc | fullhome-decor.com | 1746 px |
+| `HSBT_XP-300x300` | Bình gốm hoa sen mực đen | fullhome-decor.com | 300 px |
+| `BHV_UU_XP1-600x600` | Bình gốm chim công phong thủy | fullhome-decor.com | 600 px |
+| `MB_2C_XP_31` | Bình gốm thuyền buồm | fullhome-decor.com | 1191 px |
+| `BT010_2` | Bình gốm cúc vạn thọ | battrangceramica.com.vn | 324×617 px |
+| `binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-...` | Bình hoa sứ trắng sen dát vàng 24k | xuonggomsuviet.vn | 1024 px |
+
+URL đầy đủ nằm trong `data/metadata.json`.
+
+**Hai vấn đề cần sửa trước khi nộp, vì ảnh hưởng trực tiếp đến yêu cầu 3:**
+
+1. **Nhãn trong `data/heritage/items.json` mâu thuẫn với nguồn thật.** File này ghi nguồn như "Bảo tàng Lịch sử Quốc gia", niên hiệu Chính Hòa, Vĩnh Thịnh, Cảnh Hưng, thế kỷ XVIII. Trong khi `data/metadata.json` cho thấy ảnh lấy từ trang bán hàng gốm trang trí. Tên cũng lệch (ví dụ `BT_Hac_XP` là "hoa lam công và sen" ở một file, "Tỏi hút lộc" ở file kia). Việc cần làm: lấy `data/metadata.json` làm căn cứ, bỏ hoặc sửa niên hiệu và nguồn bảo tàng nếu không có trích dẫn kiểm chứng được, tạm gắn nhãn "ảnh sản phẩm gốm Bát Tràng từ trang bán hàng".
+2. **Giấy phép chưa xác minh.** Việc cần làm: liên hệ cửa hàng xin phép bằng văn bản, hoặc thay bằng ảnh nhóm tự chụp, hoặc ảnh có giấy phép mở (mục 2.3). Trong lúc chưa xong, ghi rõ trạng thái trong Passport và không dùng ảnh trong tài liệu công khai.
+3. Mô tả `team_description` có nhiều đoạn giống văn bán hàng (ví dụ "thu hút tài lộc, mang lại vượng khí"). Cần kiểm tra có chép từ trang gốc không, và viết lại hoặc trích dẫn đúng.
+4. Hai file `data/metadata.json` và `data/heritage/metadata.json` trùng cấu trúc, file thứ hai có `image_source_url: null`. Cần chọn một file làm nguồn duy nhất.
+
+### 2.2. LR3D-CULT2: hạ xuống nguồn tham khảo bổ sung
+
+- **Tên:** LR3D-CULT2, Vietnamese Ceramic Cultural Artifacts (mesh 3D và ảnh render đa góc).
+- **Trang:** <https://data.mendeley.com/datasets/jr23fnrvx2/1>, DOI `10.17632/jr23fnrvx2.1`, giấy phép công bố theo trang dataset: CC BY 4.0.
+- **Dung lượng:** file `data/LR3D-CULT2 ... .zip` khoảng 7,7 GB, bên trong là 8 zip lồng nhau (6 zip bình gốm, 2 zip `metal_cups_` cùng dung lượng 72042717 byte, nhiều khả năng trùng và không phải gốm).
+
+**Kết quả quét ngày 18/11/2026 trên cả 6 zip bình gốm (120 vật thể). Phân loại bằng mắt trên bảng ảnh thu nhỏ 256 px. Không dùng chỉ số màu vì chỉ số đó không đáng tin:**
+
+| Điều kiện | Kết quả |
+|---|---|
+| Ảnh render | 512×512, hơi mờ, bình chỉ chiếm khoảng 180×320 px, 180 ảnh mỗi vật. Không đủ nét để huấn luyện |
+| Texture gốc của mô hình 3D | 1024 đến 8192 px, đã trải phẳng sẵn. Dùng tốt để cắt phần tử ở vùng có hoa văn thật |
+| Lam trắng, mảng sạch và lớn | Khoảng 12 đến 15 vật: #15 (dải chim và cây, 7319×3258), #50, #59, #61 (rồng), #124, #37, #38, #47, #78, #119, #118, #33, #83 (bình dẹt rồng lam), #97 (4 mặt trải phẳng) |
+| Lam trắng nhưng bị cắt vụn hoặc lỗi quét | Khoảng 20 vật: #19, #32, #34, #44, #45, #46, #53, #55, #79, #110, #111, #114, #115, #116, #74, #89, #92, #94, #100 |
+| Không phải lam trắng | Khoảng 85 vật: men nâu, men ngọc, đất nung, mảnh xám, hoa phấn nhiều màu |
+| Lỗi thường gặp | Vùng nội suy sinh vệt tỏa tròn (#31 đến #36) hoặc ô vuông (#51, #52, #58). Mảnh gốm khảo cổ có vết bẩn và lỗ trống. #40 không tìm thấy texture, #48 trông như bản đồ pháp tuyến, không phải ảnh màu |
+| Không hợp chủ đề | Có chữ Latin (#1), nhãn thương mại (#54), kiểu cung đình vàng (#66), họa tiết trông như in hiện đại (#57), rồng lam kiểu gần gốm Trung Hoa (#61, #83, #118). Cần chuyên gia xác nhận |
+| Nguồn gốc | Metadata chỉ có tên (`binh_gom_NN`), tâm vật thể, vị trí camera. Không có giấy phép hay xuất xứ từng vật. Trang dataset ghi chung cho cả bộ: một phần "digitized from photogrammetric scans collected in the Bát Tràng and Thanh Hà pottery villages", một phần "3D models sourced from Sketchfab under academic-use licenses", không chỉ ra vật nào thuộc nguồn nào |
+
+**Đính chính:** tiền tố `sketchfab_collection_1` (khoảng #1 đến #53), `_2` (#54 đến #78), `_3` (#79 đến #124) trong tên ảnh render chưa rõ nghĩa. Có thể chỉ là tên cảnh render của tác giả. Không dùng tiền tố này làm bằng chứng nguồn gốc. Bản trước của tài liệu này đã suy diễn sai điều đó.
+
+**Hệ quả:**
+
+- Có khoảng 12 đến 15 vật lam trắng sạch với texture 4096 đến 8192 px. Mỗi vật cho được nhiều crop, nên kho phần tử và nhánh LoRA thử nghiệm (mục 4.4) đáng thử, nhưng chưa chắc có lợi.
+- Không xác định được vật nào là Bát Tràng. Không được tuyên bố "hiện vật Bát Tràng" khi dùng dataset này.
+- Giấy phép từng vật chưa rõ và có thể mâu thuẫn với CC BY 4.0 ghi chung trên trang. Chỉ dùng cho thử nghiệm nội bộ, chưa đưa vào sản phẩm công khai.
+- Việc cần làm: hỏi nhóm tác giả bằng văn bản về ánh xạ vật và nguồn gốc, giấy phép từng vật. Chưa có ai liên hệ (câu hỏi 6 ở mục 0).
+- Giới hạn của đánh giá này: nhìn bằng mắt trên ảnh thu nhỏ, chưa kiểm tra từng vật ở độ phân giải đầy đủ. Kết quả đo nằm ngoài repo (file CSV và bảng ảnh trong thư mục tạm của phiên làm việc).
+
+### 2.3. Nguồn mở bổ sung (tùy chọn)
+
+Có thể dùng các ảnh Wikimedia Commons có giấy phép ghi riêng trên từng trang, kiểm tra lại trước khi dùng:
+
+- [Vietnam 17th C, Bat Trang jar, ghi CC0](https://commons.wikimedia.org/wiki/File:Vietnam_17th_C_-_Bat_Trang_jar_NUS_Museum.jpg)
+- [Bát Tràng DSC 0096, ghi CC BY-SA 4.0](https://commons.wikimedia.org/wiki/File:B%C3%A1t_Tr%C3%A0ng_DSC_0096.JPG)
+
+Mỗi nguồn ghi riêng giấy phép trong metadata. Không trộn giấy phép khi chưa xác định điều kiện chia sẻ ảnh dẫn xuất.
+
+### 2.4. VietFashion (chưa xác minh, chưa dùng)
+
+VietFashion là dataset áo dài và thời trang Việt Nam, trang dự án <https://hng0303.github.io/VietFashion>.
+
+- Trang chính thức không nêu giấy phép cho dataset, paper hay mã. Chỉ ghi dataset "publicly available". Giấy phép CC BY-NC-ND 4.0 gặp ở bài báo chưa chắc áp dụng cho dataset.
+- Nội dung: tập trung vào áo dài. Có 650 bản phác thảo do người vẽ, hơn 21.000 ảnh do SANA-ControlNet sinh theo phác thảo, câu mô tả trung bình 42 từ trích từ tạp chí thời trang, 11 nhóm thuộc tính. Các thuộc tính chia ba nhóm: cấu trúc (dáng thân áo, cổ, tay), chi tiết (vải, họa tiết hoa, eo) và bối cảnh (nền, ánh sáng). Đây không phải ảnh áo dài thật.
+- Chưa biết (trang và bài báo không nêu): tỉ lệ ảnh đúng dáng áo dài, độ phân giải ảnh, ảnh có người mặc hay chỉ có áo, và có kiểm tra chất lượng ảnh sinh hay không. Kiểm chứng ở mục 6.3.
+- Nếu đúng là CC BY-NC-ND: dùng phi thương mại cho nghiên cứu hoặc thi đấu có thể được. Điều khoản ND (không phái sinh) khiến việc phát hành hoặc deploy mô hình, ảnh sinh từ dữ liệu này là vùng xám.
+- Rủi ro khác: bản quyền của ảnh do AI sinh, câu chữ trích từ tạp chí, và nguy cơ mô hình học thêm nét "ảnh AI".
+- Việc cần làm: hỏi nhóm tác giả bằng văn bản về phạm vi dùng (câu hỏi 6 ở mục 0). Trong lúc chờ, không dùng để huấn luyện bản công khai.
+
+## 3. Giai đoạn 1: trích xuất họa tiết (đường A)
+
+Mục tiêu: lấy đúng phần tử họa tiết từ ảnh gốm, giữ nguyên từng pixel, không qua diffusion, không chỉnh tay.
+
+### 3.1. Các bước
+
+1. **Kiểm tra ảnh nguồn:** độ phân giải, có kênh trong suốt (alpha) không, bình có bị che khuất không. Ghi kết quả vào hồ sơ.
+2. **Tách silhouette** (viền ngoài của bình): dùng alpha nếu có. Nếu không, dùng Grounded SAM. Grounding DINO là mô hình phát hiện vật theo mô tả chữ (ví dụ "ceramic vase"), cho ra khung chữ nhật. SAM (Segment Anything) nhận khung đó và cho ra mask chính xác theo viền.
+3. **Trải trụ:** bình gần giống hình trụ, nên ảnh chụp bị co ở hai mép. Từ silhouette tính bán kính từng hàng ảnh, góc theta = arcsin((x trừ tâm) chia bán kính), rồi lấy mẫu lại thành ảnh phẳng. Dùng tỉ lệ ngang theo từng hàng, chỉ giữ dải có bán kính từ 60% bán kính lớn nhất trở lên và góc nhìn không quá 65 độ. Lần thử trước dùng ngưỡng 85% đã cắt mất thân thuyền, cần dùng 60%.
+4. **Cắt phần tử:** SAM tự phân đoạn, hoặc Grounded SAM theo từ khóa (con thuyền, chim công, hoa sen, hoa cúc). Mỗi phần tử lưu thành ảnh RGBA (màu cộng kênh trong suốt).
+5. **Kiểm tra tự động** (không cần người): diện tích tối thiểu, mask liền một khối, độ phân giải tối thiểu của phần tử, mức co giãn khi trải phẳng được ghi lại, không có pixel nằm ngoài silhouette. Phần tử không đạt thì loại và ghi lý do vào nhật ký.
+6. **Lưu kho phần tử** (đề xuất đặt ở `data/elements/`, không commit vì là ảnh thô). Mỗi phần tử kèm: mã hiện vật nguồn, giấy phép, tham số trải trụ, mã phiên bản thuật toán.
+
+### 3.2. Kết quả thử trước đây và giới hạn
+
+Phương pháp này đã thử, mã không còn trong nhánh hiện tại (cần dựng lại bản tối thiểu). Kết quả:
+
+- Tốt: thuyền, hoa sen đen, hoa cúc.
+- Con công: mask còn lẫn hoa xung quanh.
+- Sen dát vàng: trắng trên trắng, khó tách.
+- Bình hồ lô, bình cầu: trải phẳng sai ở vai và đáy.
+- `BT_Hac_XP` chưa đủ kết quả để kết luận, cần chạy lại.
+- Ba ảnh nguồn dưới 1024 px (300, 324, 600) sẽ mờ khi phóng to. Không được tuyên bố độ nét cao cho các ảnh này.
+
+### 3.3. Cam kết đo được
+
+Với mức 1, vùng họa tiết trên ảnh cuối phải trùng pixel với phần tử trích xuất (sai khác bằng 0) sau bước dán lại ở mục 7.
+
+### 3.4. Cách tận dụng LR3D-CULT2 (thử nghiệm nội bộ)
+
+Dataset có mô hình 3D (`.obj`), texture trải phẳng, 180 ảnh render và vị trí camera mỗi vật. Có bảy hướng dùng, xếp theo thứ tự nên làm:
+
+| # | Hướng | Cách làm | Giúp được | Công sức | Rủi ro |
+|---|---|---|---|---|---|
+| 1 | Kho phần tử từ texture | Tách vùng có hoa văn khỏi nền đen, cắt phần tử bằng SAM, lọc tự động, chỉ lấy vùng không bị nội suy | Phần tử đa dạng, độ nét cao cho mức 2 đến 4 | Thấp | Giấy phép từng vật |
+| 2 | Kiểm tra sao chép (độ độc đáo) | Nhúng vector đặc trưng (CLIP hoặc DreamSim) cho mọi crop. Với mỗi họa tiết sinh ra, tìm crop gần nhất và báo khoảng cách | Chứng minh mức 3 đến 4 không chép nguyên mẫu, hỗ trợ yêu cầu 3 | Thấp | Chỉ đo, không phát hành dữ liệu |
+| 3 | Thước đo chuẩn cho việc giữ họa tiết | Texture thật làm đáp án. Render bình từ góc đã biết, chạy trích xuất, so với texture bằng SSIM hoặc DreamSim | Số liệu định lượng cho yêu cầu 1. Nếu làm, thêm vào mục 8.1 | Trung bình | Phải ánh xạ UV đúng, chưa kiểm tra khả thi |
+| 4 | Tìm phần tử theo từ khóa | Dán nhãn crop bằng CLIP zero-shot (hoa sen, rồng, mây). Người dùng chọn từ khóa, hệ thống lấy phần tử, lấy Canny, rồi sinh biến thể | Đa dạng không cần huấn luyện | Trung bình | Nhãn tự động có thể sai |
+| 5 | Lát liền mạch từ mảng thật | Dùng mảng lớn như #15, #124 làm nguồn lát thay vì sinh bằng SD. Ghép bằng quilting (ghép mảnh theo đường cắt tối ưu) | Họa tiết nét hơn, giảm seam | Trung bình | Số mảng đủ lớn không nhiều |
+| 6 | Xem hiện vật 3D trên giao diện | Hiển thị `.obj` và texture bằng three.js cạnh Passport | Minh bạch nguồn: người xem thấy hiện vật gốc và phần cắt | Trung bình | File nặng, giấy phép vật được hiển thị |
+| 7 | LoRA | Mục 4.4 | Phong cách men lam nhất quán | Cao | Giấy phép, dữ liệu |
+
+Hướng 1 là nền cho hướng 2, 4, 5. Hướng 2 và 3 chỉ đo và đối chiếu nội bộ nên rủi ro giấy phép thấp hơn. Hướng 1, 4, 5, 6 đưa dữ liệu vào sản phẩm nên cần lập bảng giấy phép từng vật trước.
+
+Điều kiện chung: ghi rõ nguồn dataset (mục 12), không tuyên bố Bát Tràng, không commit ảnh thô (để trong `data/`, theo CLAUDE.md), không dùng ở bản công khai nếu giấy phép chưa rõ.
+
+## 4. Giai đoạn 1: sinh họa tiết mới (đường B, mức 2 đến 4)
+
+### 4.1. Giữ cơ chế hiện tại
+
+ControlNet là mạng phụ nhận điều kiện hình ảnh để điều khiển Stable Diffusion. Hệ thống hiện dùng điều kiện Canny (ảnh đường nét) với bốn mức trọng số cố định: 0,85, 0,65, 0,45, 0,25 cho các mức sáng tạo. Giữ nguyên bốn mức này để so sánh có kiểm soát.
+
+Thay đổi duy nhất: ảnh Canny lấy từ **phần tử trong kho** (mục 3), không lấy từ cả ảnh bình, nên diffusion không còn thấy hình cái bình.
+
+### 4.2. Tileable pattern (lát liền mạch)
+
+Giữ circular padding (tính toán vòng ở biên để hai mép ảnh nối liền) cho UNet và VAE, không áp dụng cho ControlNet. Quy tắc này lấy từ kết quả hiện tại của dự án, cần giữ nguyên.
+
+### 4.3. Lưu ý về độ chính xác
+
+Ở các mức 2 đến 4 hệ thống chủ động biến đổi họa tiết, nên không đo "giữ nguyên pixel". Thay vào đó đo độ gần với phần tử gốc bằng DreamSim và độ lệch màu (mục 8).
+
+### 4.4. Thử nghiệm tùy chọn: LoRA, IP-Adapter, semantic map
+
+LoRA (Low-Rank Adaptation) là cách huấn luyện thêm một lớp nhỏ lên mô hình có sẵn để học một phong cách, nhẹ hơn huấn luyện toàn mô hình. IP-Adapter là mô-đun cho mô hình nhận thêm ảnh tham chiếu. Semantic map là bản đồ phân vùng theo loại họa tiết.
+
+Không đưa vào luồng chính vì:
+
+- LoRA học phong cách chung, không đảm bảo giữ đúng một họa tiết cụ thể, trong khi ưu tiên của dự án là giữ đúng.
+- Dữ liệu LR3D-CULT2 có khoảng 12 đến 15 vật lam trắng sạch nhưng chưa rõ xuất xứ và giấy phép từng vật (mục 2.2).
+- IP-Adapter thường mất chi tiết nhỏ.
+- Mỗi thành phần thêm vào cần ablation đầy đủ (so sánh từng thành phần một), tốn thời gian chạy.
+
+**Điều kiện bật lại:** có kho phần tử sạch với giấy phép rõ, còn thời gian sau khi xong các việc bắt buộc, và kết quả thắng rõ trong chấm mù ở mức 2 đến 3. Cách kiểm chứng gọn: cắt tự động khoảng 100 đến 200 phần tử, huấn luyện LoRA rank 8 khoảng 1 đến 2 giờ trên RTX 4060, rồi chạy cùng 5 seed có và không LoRA.
+
+## 5. Tileable nâng cao (chuyển sang hướng phát triển)
+
+Noise rolling (dịch vòng nhiễu để các mép nối liền ngay khi sinh), boundary inpainting (vẽ lại vùng đường nối) và Tiled Diffusion (ghép ô khi sinh ảnh lớn): chưa có bằng chứng seam là điểm nghẽn chính so với độ chân thực. Chỉ làm khi đo seam (mục 8.2) cho thấy vượt ngưỡng.
+
+## 6. Giai đoạn 2: đưa họa tiết lên áo dài
+
+### 6.1. Nền áo
+
+- **Hướng chính nếu có ảnh thật** (câu hỏi 1 ở mục 0): ảnh áo dài trơn nhóm tự chụp, độ phân giải cao (thân áo rộng hàng trăm pixel), có đồng ý người mẫu, giấy phép sạch. Ghi nguồn vào Passport.
+- **Dự phòng:** ảnh áo AI 1024 px sinh bằng hàm `make_template` trong `generation/garment.py`. Đã sinh được trong khoảng 23 giây, VRAM đỉnh 7,1 GB, nhưng **chưa kiểm tra chất lượng bằng mắt**. Cần xem trước khi dựa vào.
+
+### 6.2. Ghép theo vật lý, tất định
+
+1. Tách vùng áo bằng SAM, lưu mask một lần.
+2. Ước lượng độ sâu hoặc nếp vải để uốn họa tiết theo thân áo (mô hình ước lượng độ sâu sẽ chọn sau khi thử).
+3. Nhân đổ bóng lấy từ độ sáng của vải, giữ lại phần phản chiếu của lụa.
+4. Khớp cân bằng trắng và độ nét với ảnh nền.
+
+Việc UV mapping đầy đủ và material map kiểu ControlMat chuyển sang hướng phát triển. ControlMat dùng để chụp vật liệu, không phù hợp để ghép họa tiết, và bản "nhẹ" chưa được định nghĩa rõ.
+
+### 6.3. Thử nghiệm tùy chọn: LoRA dáng áo dài từ VietFashion
+
+Mục tiêu: sinh áo dài trơn đúng dáng mà không cần áo mẫu có sẵn, thay cho ảnh nền sinh bằng `make_template` (mục 6.1). Chỉ làm khi xin được quyền dùng dataset (câu hỏi 6 ở mục 0) và còn thời gian sau các việc bắt buộc.
+
+Vì sao có thể giúp: Stable Diffusion 1.5 gốc hay sinh sai áo dài (lẫn váy, đầm), vì ảnh áo dài ít trong dữ liệu học của nó. LoRA là cách huấn luyện thêm một lớp nhỏ để mô hình học một khái niệm mới. Dataset cho ảnh áo dài kèm câu mô tả có thuộc tính dáng áo, nên dạy được chữ "áo dài" gắn với hình đúng. Cặp phác thảo và ảnh cũng thể hiện dáng, vì ảnh được sinh bám theo phác thảo.
+
+Các bước:
+
+1. **Kiểm chứng mẫu (khoảng nửa ngày):** tải khoảng 100 ảnh, xem bằng mắt: tỉ lệ đúng dáng áo dài, độ phân giải, có người mặc không, có áo trơn không. Chỉ huấn luyện nếu từ 70% ảnh đúng dáng trở lên. Ngưỡng này là đề xuất, chưa có cơ sở thực nghiệm.
+2. **Lọc tự động:** giữ ảnh áo dài toàn thân, loại ảnh lỗi bằng điểm CLIP với câu mô tả áo dài, kiểm tra một mẫu bằng mắt, ghi số ảnh bị loại và lý do vào nhật ký.
+3. **Giữ nguyên câu mô tả, gồm cả họa tiết và nền:** mô hình sẽ gắn họa tiết và nền với chữ đó, không gắn với "áo dài". Lúc sinh, viết "áo dài trơn, không họa tiết" để ra thân áo sạch cho bước ghép họa tiết gốm.
+4. **Huấn luyện LoRA:** SD 1.5, 512 px, rank 8, khoảng 1 đến 2 giờ trên RTX 4060. Thường vừa 8 GB khi bật gradient checkpointing và fp16, chưa thử trên máy của nhóm.
+5. **Dùng lúc sinh:** thay ảnh nền AI. Muốn ép dáng theo ý, kết hợp ControlNet scribble (bản có sẵn, không cần huấn luyện) với nét phác của nhóm.
+6. **So sánh có kiểm soát:** thêm thí nghiệm E6 ở mục 8.3. Nền áo có và không LoRA, 5 seed, đo M1 (giữ dáng áo) và chấm mù. Giữ LoRA nếu thắng rõ ở cả hai, nếu không thì bỏ.
+
+Giới hạn:
+
+- Ảnh gốc do AI sinh nên lỗi của SANA (tay, vải, tà áo) có thể lọt vào dữ liệu học. Bước lọc là bắt buộc.
+- LoRA tăng xác suất đúng dáng, không bảo đảm mỗi lần sinh đều đúng. Vẫn dùng M1 và quy tắc thử lại ở mục 8.
+- Không giúp phần họa tiết gốm. Dữ liệu chỉ dạy dáng áo.
+- Không huấn luyện ControlNet phác thảo riêng, quá nặng với 8 GB VRAM trong thời hạn này.
+- Ghi nguồn dataset và phiên bản LoRA vào Passport (trường `base_garment_source`). Không phát hành trọng số LoRA khi chưa có quyền.
+
+## 7. Polish có mask và khóa vùng
+
+Hiện tại `polish()` trong `generation/garment.py` chạy img2img (sinh ảnh từ ảnh có sẵn, thêm nhiễu rồi khử nhiễu) trên toàn ảnh với strength 0,40, không có mask.
+
+Phiên bản mới:
+
+1. Chạy img2img với strength vừa phải để hòa vải và ánh sáng.
+2. **Dán lại pixel gốc** ở vùng khóa (họa tiết mức 1) và ở vùng ngoài áo. Đây là bước đảm bảo "sai khác bằng 0", không phụ thuộc strength.
+
+Vì sao không chỉ giảm strength: strength thấp (ví dụ 0,15 đến 0,25) vẫn làm diffusion sửa chi tiết nhỏ, nên không đảm bảo giữ nguyên.
+
+Differential Diffusion (cho mỗi pixel một cường độ riêng bằng bản đồ strength) là hướng nâng cấp. Paper gốc chạy trên Stable Diffusion 2.1. Bản cho SD 1.5 chưa xác minh, cần thử riêng. Cách đơn giản và đủ dùng trước mắt: img2img rồi dán lại.
+
+Chuyển sang hướng phát triển: RePaint (inpainting có lấy mẫu lại) và virtual try-on kiểu Texture-Preserving Diffusion (TPD). TPD huấn luyện trên dữ liệu thử đồ người (VITON-HD), khác miền ảnh gốm và có hạn chế giấy phép phi thương mại.
+
+## 8. Lớp đánh giá
+
+Không dùng điểm CLIP làm kết luận duy nhất về đẹp hay đúng văn hóa.
+
+### 8.1. Chỉ số tự động (xác định rõ cách đo)
+
+| Mã | Tên | Cách đo | Ngưỡng đề xuất |
+|---|---|---|---|
+| M1 | Giữ dáng áo | IoU (tỉ lệ phần giao trên phần hợp) giữa mask áo trước và sau polish | 0,95 trở lên |
+| M2 | Tràn ngoài áo | Tỉ lệ pixel ngoài mask áo bị đổi giá trị | 0,5% trở xuống |
+| M3 | Giữ họa tiết (mức 1) | Sai khác trung bình trong vùng khóa giữa ảnh cuối và phần tử đã trích xuất | Bằng 0 |
+| M4 | Gần gốm (mức 2 đến 4) | DreamSim (khoảng cách cảm thụ giữa hai ảnh, thấp là giống) giữa vùng họa tiết và phần tử gốc; bổ sung số điểm khớp SIFT (điểm đặc trưng cục bộ) | Đặt sau khi đo phân bố trên 6 hiện vật |
+| M5 | Liền mạch (seam) | Tỉ lệ độ lệch màu và độ sáng ở đường nối so với trong ô, 1,0 là liền hoàn toàn | 1,3 trở xuống |
+| M6 | Lệch màu | Khoảng cách màu LAB (ΔE) giữa bảng màu phần tử và ảnh cuối | Đặt sau khi đo |
+| M7 | Giữ cấu trúc áo (DINO) | DINO-ViT là mô hình thị giác học không cần nhãn, cho vector đặc trưng theo từng mảnh ảnh. Lấy vector khóa (key) của một lớp attention (bài báo dùng lớp thứ l, lớp cụ thể chọn sau khi thử) ở từng mảnh, tính khoảng cách giữa ảnh áo nền và ảnh áo hoàn chỉnh trên vùng ngoài họa tiết. Thấp là cấu trúc giữ tốt. Phương án thay: chạy Mask R-CNN (mô hình phát hiện vật) lấy mặt nạ áo rồi tính recall và precision so với áo nền | Đặt sau khi đo |
+
+Tất cả ngưỡng là đề xuất ban đầu, được hiệu chỉnh sau khi đo thực tế rồi ghi giá trị cuối vào file cấu hình. Chỉ số M3 chỉ áp dụng ở mức 1. M7 chỉ dùng để đo, không dùng để dẫn hướng khi sinh ảnh (dẫn hướng bằng DINO tốn thời gian và chưa kiểm chứng với Stable Diffusion 1.5). Ý tưởng M7 lấy từ bài DiffFashion (mục 15), bổ sung cho M1 vì M1 chỉ so đường viền ngoài, còn M7 so cả cấu trúc bên trong thân áo.
+
+### 8.2. Tiêu chí loại và thử lại
+
+- Vi phạm M1, M2 hoặc M3: thử lại với seed kế tiếp, tối đa 3 lần.
+- Sau 3 lần vẫn hỏng: loại, lưu ảnh kèm lý do vào thư mục riêng (đề xuất `outputs/rejected/`) để làm ví dụ "bị loại" cho minh chứng.
+- Mẫu sửa được (ví dụ chỉnh tham số mask rồi đạt): lưu cả bản trước và sau, ghi vào nhật ký.
+- Toàn bộ nhật ký lưu cùng Design Passport.
+
+### 8.3. So sánh có kiểm soát nhiều seed
+
+Giữ cố định prompt, bảng màu, bố cục, điều kiện đầu vào, và **chỉ đổi một thành phần mỗi thí nghiệm**. Chạy 5 seed (42 đến 46) trên 6 hiện vật. Lưu ý chỉ 3 hiện vật có ảnh từ 1024 px trở lên (`BT_Hac_XP`, `MB_2C_XP_31`, ảnh sen dát vàng), nên đánh giá độ nét chỉ chắc chắn ở 3 hiện vật này.
+
+| Thí nghiệm | Thành phần thay đổi | Các cấu hình |
+|---|---|---|
+| E1 | Cách giữ họa tiết ở mức 1 | ControlNet hiện tại, so với trích xuất tất định |
+| E2 | Bước polish | Không polish, polish toàn ảnh 0,40 (hiện tại), polish có mask và dán lại |
+| E3 | Nền áo | Nền AI 512 hiện tại, so với nền độ phân giải cao |
+| E4 | Trọng số ControlNet | Bốn mức 0,85, 0,65, 0,45, 0,25 |
+| E5 (tùy chọn) | LoRA | Có và không (mục 4.4) |
+| E6 (tùy chọn) | LoRA dáng áo dài | Nền áo có và không LoRA huấn luyện từ VietFashion (mục 6.3) |
+
+Sản phẩm: file CSV cấu hình mỗi lần chạy (cấu hình, seed, mã băm ảnh), bảng điểm người chấm, và thống kê gồm trung bình, độ lệch chuẩn, nhỏ nhất và lớn nhất.
+
+### 8.4. Chấm mù và thẩm định
+
+**Chấm mù nội bộ:** ít nhất 3 người, xáo thứ tự ảnh, ẩn tên cấu hình. Thang 1 đến 5 cho sáu tiêu chí: giữ đúng motif, giữ màu, đúng dáng áo dài, hòa vào nếp vải, thẩm mỹ, phù hợp văn hóa. Tính độ đồng thuận giữa người chấm bằng hệ số Krippendorff alpha (số đo mức nhất quán giữa nhiều người chấm). Ghi lý do loại.
+
+Đối chiếu với bài DiffFashion: họ khảo sát 30 người, thang 0 đến 100, ba mặt là độ chân thực, giữ cấu trúc và giống vẻ ngoài. Sáu tiêu chí ở trên đã phủ ba mặt này: chân thực gồm "hòa vào nếp vải" và "thẩm mỹ", cấu trúc là "đúng dáng áo dài", vẻ ngoài gồm "giữ đúng motif" và "giữ màu". Không đổi thang. Khi báo cáo, nêu rõ số người chấm và số mẫu, vì bài đó cũng chỉ dùng 30 cặp ảnh nên kết luận thống kê yếu.
+
+**Phiếu thẩm định của người ngoài nhóm:** mỗi mẫu gồm ảnh đầu vào, ảnh phần tử, ảnh áo cuối, thang điểm cùng sáu tiêu chí, một ô "chấp nhận, cần sửa, loại" và ô lý do. Cần ít nhất một người am hiểu di sản và một người am hiểu thiết kế nếu có (câu hỏi 3 ở mục 0). Nếu không có, ghi rõ trong tài liệu nộp rằng chưa có thẩm định chuyên gia và phiếu do nhóm điền, không trình bày như đã được chuyên gia xác nhận.
+
+## 9. Design Passport, nhãn AI và nhật ký
+
+Bổ sung các trường:
+
+```text
+source_artifact_id         mã hiện vật nguồn (6 hiện vật hoặc nguồn bổ sung)
+source_url                 địa chỉ ảnh gốc
+source_license             giấy phép, hoặc "unverified"
+source_license_evidence    bằng chứng (thư xin phép, trang giấy phép)
+element_id, element_version  phần tử trong kho
+preprocessing_version      phiên bản trải trụ và cắt phần tử
+segmentation_method        alpha hoặc Grounded SAM
+base_garment_source        ảnh thật nhóm tự chụp hoặc ảnh AI, kèm phiên bản
+conditioning_level         mức 1 đến 4
+controlnet_scale           trọng số ControlNet (mức 2 đến 4)
+polish_method              img2img + dán lại
+lock_region_version        phiên bản mask khóa
+metric_version             phiên bản bộ chỉ số
+ai_assisted_label          nhãn "nội dung có hỗ trợ AI"
+```
+
+Passport phải ghi rõ:
+
+- Bước nào do AI sinh (ControlNet, polish), bước nào là ghép tất định (trích xuất, ghép, dán lại).
+- Mọi bước chỉnh sửa do con người, kèm người làm, thời điểm, lý do (nhật ký chỉnh sửa). Nếu không có chỉnh tay thì ghi "không có".
+- Ảnh đầu ra hiển thị cho người dùng phải có nhãn "có hỗ trợ AI".
+- Với ảnh gốm: giấy phép của từng hiện vật và trạng thái xác minh.
+- Với LR3D-CULT2 nếu dùng: ghi attribution (mục 12).
+
+## 10. Lịch triển khai 18 đến 25/11
+
+Vai trò gợi ý, nhóm tự gán người: **AI** (mô hình và pipeline), **DEV** (API, giao diện, deploy), **BA** (dữ liệu, tài liệu, đánh giá).
+
+| Ngày | AI | DEV | BA |
+|---|---|---|---|
+| 18/11 | Dựng lại trích xuất tối thiểu, thử trên hiện vật thuyền, xem bằng mắt | Dựng khung deploy (mục 11) | Chốt các câu hỏi mục 0, sửa mâu thuẫn `items.json` và `metadata.json` |
+| 19/11 | Trích xuất 6 hiện vật, kiểm tra tự động | Chuẩn bị hoặc chụp ảnh nền áo | Gửi xin phép nguồn ảnh, soạn bảng nguồn và giấy phép, gửi email hỏi nhóm tác giả LR3D-CULT2 và VietFashion |
+| 20/11 | Ghép lên nền, polish có mask và dán lại | Hiển thị Passport và nhãn AI | Soạn phiếu thẩm định và phiếu chấm mù |
+| 21/11 | Viết chỉ số M1 đến M6, quy tắc thử lại, kiểm thử bằng pytest | Nối quy tắc loại vào API | Tìm người thẩm định |
+| 22/11 | Chạy 5 seed trên 6 hiện vật theo E1 đến E4 | Triển khai bản đầu của đường dẫn thử | Chuẩn bị bảng ghi kết quả |
+| 23/11 | Lưu ví dụ bị loại và sửa | Kiểm thử tải | Gửi phiếu, tổ chức chấm mù |
+| 24/11 | Sửa lỗi theo kết quả | Đóng băng bản nộp | Thống kê, tổng hợp bộ minh chứng |
+| 25/11 | Dự phòng | Kiểm tra đường dẫn hoạt động | Nộp |
+
+**Điểm quyết định cuối ngày 20/11:** nếu trích xuất mức 1 đạt kiểm tra bằng mắt trên thuyền và ít nhất 3 trong 6 hiện vật, giữ đường A. Nếu không, dùng ControlNet hiện tại cho mức 1, nhưng vẫn áp dụng dán lại ở vùng ngoài áo và ghi rõ giới hạn trong báo cáo.
+
+**Quy trình theo CLAUDE.md:** sau mỗi module lớn, chạy pytest, một subagent chỉ đọc kiểm tra logic, một subagent khác tính trước kết quả mong đợi chỉ từ đặc tả và dữ liệu đầu vào rồi so với kết quả chạy thật, và tự rà soát lại trước khi báo xong. Ngoài ra bắt buộc xem ảnh bằng mắt cho từng hiện vật, vì kiểm thử theo đặc tả không bắt được lỗi hình ảnh.
+
+## 11. Triển khai đường dẫn cho ban tổ chức thử
+
+Mục tiêu: ban tổ chức bấm vào đường dẫn và tạo được áo dài, không cần cài đặt.
+
+- **Lớp giao diện:** `web_ui` là trang tĩnh, đặt trên dịch vụ lưu trang tĩnh (ví dụ Vercel).
+- **Lớp sinh ảnh:** API trong `api/main.py` chạy trên máy có GPU của nhóm, mở ra ngoài bằng một tunnel (đường hầm HTTPS, ví dụ Cloudflare Tunnel).
+- **Hạn chế:** khi máy tắt hoặc mất mạng thì không sinh ảnh được. Vì vậy cần thêm chế độ xem lại mẫu đã sinh sẵn (thư viện ảnh tĩnh cùng Passport) để ban tổ chức vẫn xem được kết quả.
+- Việc cần xác nhận bằng cách chạy thử: giới hạn thời gian của tunnel, một người dùng một lúc do GPU 8 GB, và ghi chú rõ thời gian chờ mỗi ảnh.
+
+## 12. Attribution
+
+LR3D-CULT2, nếu có dùng cho thử nghiệm:
+
+```text
+Nguyen, Le Huu Bao; Nguyen, Van Nhat Nam; Nguyen, The Trong Nha; BUI, Cao Vu.
+"LR3D-CULT2: Vietnamese Ceramic Cultural Artifacts." Mendeley Data, Version 1.
+DOI: 10.17632/jr23fnrvx2.1. Giấy phép công bố trên trang dataset: CC BY 4.0.
+Một phần dữ liệu có nguồn Sketchfab theo giấy phép học thuật. Chưa kiểm tra giấy phép từng vật.
+```
+
+Chỉ ghi "đã lọc, cắt, dùng để huấn luyện" khi thực sự đã làm. Hiện tại dataset chỉ được quét để đánh giá, chưa dùng để huấn luyện.
+
+## 13. Những điều không làm lúc này
+
+- Không đưa LoRA huấn luyện từ LR3D-CULT2, hoặc phần tử cắt từ dataset này, vào bản công khai khi chưa có giấy phép và xuất xứ từng vật.
+- Không dùng VietFashion để huấn luyện bản công khai khi chưa hỏi nhóm tác giả.
+- Không tuyên bố hiện vật là Bát Tràng, hay gắn nhãn bảo tàng và niên hiệu, khi chưa có nguồn kiểm chứng.
+- Không polish toàn ảnh với strength cao.
+- Không dùng điểm CLIP làm kết luận duy nhất về đúng văn hóa.
+- Không bật đồng thời nhiều điều kiện mà chưa có ablation.
+- Không dùng người thật làm mẫu khi chưa có đồng ý.
+- Không trình bày phiếu do nhóm điền như thẩm định chuyên gia.
+
+## 14. Hướng phát triển (chưa làm trong đợt này)
+
+LoRA và IP-Adapter (mục 4.4), semantic motif map, noise rolling và boundary inpainting, Tiled Diffusion, UV mapping đầy đủ, material map kiểu ControlMat, adapter kiểu DANet với bộ phân loại họa tiết, RePaint, virtual try-on đầy đủ (TPD).
+
+Đã xem xét và không dùng làm hướng chính: DiffFashion (chuyển vẻ ngoài từ ảnh tham chiếu lên quần áo bằng mô hình khuếch tán). Lý do: nó cố ý diễn giải lại họa tiết theo ngữ nghĩa (điểm giống vẻ ngoài chỉ 52,9 trên 100 trong khảo sát của chính họ), trái với mục tiêu giữ nguyên họa tiết. Ngoài ra dùng mô hình ImageNet ảnh nhỏ, 2 phút mỗi ảnh trên RTX 3090, chỉ thử trên 30 cặp ảnh túi xách và sinh vật biển.
+
+## 15. Nguồn paper tham khảo
+
+Các paper nằm trong thư mục `docs/paper tham khảo/`. Kỹ thuật chính dùng trong bản này:
+
+- `Grounded SAM Assembling Open-World Models for Diverse Visual Tasks.pdf`: phát hiện và phân đoạn theo từ khóa (mục 3).
+- `Unwrapping Low-rank Textures on Generalized Cylindrical Surfaces.pdf`: trải phẳng bề mặt cong (mục 3).
+- `Differential Diffusion Giving Each Pixel Its Strength.pdf`: cường độ theo từng pixel (mục 7, hướng nâng cấp).
+- `An Intelligent Generation Method for Kizil Rhombic Mural Patterns ... .pdf`: làm sạch dữ liệu, chỉnh phối cảnh, bám cấu trúc.
+- `WISE World Knowledge-Informed Semantic Evaluation for Text-to-Image.pdf` và `Toward Verifiable and Reproducible Human Evaluation for Text-to-Image Generationpdf.pdf`: đánh giá và chấm người có kiểm soát (mục 8).
+- `Multimodal Conditioning of Fine-Tuned Stable Diffusion XL for.pdf`, `Paper_109-Generating_New_Ulos_Motif_with_Generative_AI_Method.pdf`, `The Inheritance and Innovation of Blue Calico Culture Driven by AIGC.pdf`: mô hình hóa họa tiết văn hóa, nhắc rằng chồng nhiều điều kiện có thể làm kém đi.
+- `Cao_Image_Reference-Guided_Fashion_Design_With_Structure-Aware_Transfer_by_Diffusion_Models_CVPRW_2023_paper.pdf` (DiffFashion): ý tưởng đo giữ cấu trúc bằng DINO-ViT (chỉ số M7) và thiết kế khảo sát ba mặt (mục 8). Không dùng làm phương pháp sinh, xem mục 14.
+- Hướng phát triển: `Structured Pattern Expansion with Diffusion Models.pdf`, `Content-aware Tile Generation using Exterior Boundary Inpainting.pdf`, `Tiled Diffusion.pdf`, `RePaint Inpainting using Denoising Diffusion Probabilistic Models.pdf`, `ControlMat A Controlled Generative Approach to Material Capture.pdf`, `Texture-Preserving Diffusion Models for High-Fidelity Virtual Try-On.pdf`, `Advancing Traditional Dunhuang Regional Pattern Design with Diffusion Adapter Networks and Cross-Entropy.pdf`.
+
+## 16. Thay đổi so với bản v2 ngày 18/11 buổi đầu
+
+| Mục | Thay đổi |
+|---|---|
+| Mục tiêu và kết luận | Từ "LoRA, polish, 5 seed" sang "trích xuất tất định, nền áo cao phân giải, minh chứng ba yêu cầu" |
+| LR3D-CULT2 | Từ dataset chính huấn luyện LoRA xuống nguồn tham khảo, kèm kết quả quét 120 vật thể và đính chính về tiền tố `sketchfab_collection` |
+| VietFashion | Mới: mục 2.4, ghi nhận giấy phép chưa xác minh trên trang chính thức |
+| LoRA dáng áo dài từ VietFashion | Mới: mục 6.3, thử nghiệm tùy chọn, kèm bước kiểm chứng mẫu và thí nghiệm E6 |
+| DiffFashion (CVPRW 2023) | Mới: chỉ số M7 ở mục 8.1, ghi chú đối chiếu khảo sát ở mục 8.4, ghi nhận "không dùng làm hướng chính" ở mục 14, thêm vào mục 15 |
+| Cách dùng LR3D-CULT2 | Mới: mục 3.4, bảy hướng tận dụng dữ liệu |
+| Bộ dữ liệu `bat_trang_patterns/` cho LoRA | Bỏ, thay bằng kho phần tử |
+| Segmentation | Bỏ "kiểm tra thủ công", thay bằng kiểm tra tự động và nhật ký |
+| Phối cảnh | Thay bằng trải trụ từ silhouette |
+| Giai đoạn 1 | Tách hai đường: mức 1 tất định, mức 2 đến 4 ControlNet |
+| LoRA | Xuống thử nghiệm tùy chọn với điều kiện bật lại |
+| Noise rolling, boundary inpainting, UV, ControlMat | Xuống hướng phát triển |
+| Polish | Thêm dán lại pixel gốc ở vùng khóa |
+| Đánh giá | Định nghĩa chỉ số và ngưỡng, thêm tiêu chí loại, phiếu thẩm định, ví dụ bị loại |
+| Nguồn 6 hiện vật | Mới: bảng nguồn và các mâu thuẫn cần sửa |
+| Passport | Thêm nhãn AI, nhật ký chỉnh sửa, giấy phép từng nguồn |
+| Lịch và deploy | Mới: lịch 18 đến 25/11 và phương án đường dẫn thử |
+| Định dạng | Bỏ gạch dài, thêm giải thích thuật ngữ ở lần nhắc đầu |
