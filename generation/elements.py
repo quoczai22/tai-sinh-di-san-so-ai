@@ -51,6 +51,17 @@ class Config:
     hu_dist_any: float = 0.08     # hình bất đối xứng gần như y hệt thì coi là trùng, bất kể cỡ
     speck_frac: float = 0.03      # mảnh rời nhỏ hơn 3% diện tích mặt nạ bị bỏ
     min_blue_frac: float = 0.0    # tỉ lệ pixel thiên xanh lam tối thiểu (0 là không lọc theo màu)
+    # --- lọc sau khi xuất (mục 5): mảnh mỏng và bản gần trùng ---
+    min_inradius_px: float = 12.0  # bán kính nội tiếp lớn nhất dưới mức này (pixel của phần tử) luôn bị loại
+    sliver_radius_px: float = 25.0  # mảnh vừa nhỏ hơn bán kính này
+    sliver_ratio: float = 0.19    # vừa có tỉ lệ (bán kính nội tiếp chia căn bậc hai diện tích) thấp hơn thì coi là sợi chỉ.
+    # Hai ngưỡng sliver chọn bằng mắt trên vật #97 và #61 (hình tròn đạt khoảng 0,56, sợi chỉ khoảng 0,11 đến 0,18)
+    dup_iou: float = 0.7          # sau khi chuẩn hóa và xoay, mặt nạ chồng khít từ mức này
+    dup_color: float = 0.15       # màu lệch trung bình (thang 0 đến 1) không quá mức này
+    dup_ncc: float = 0.3          # và tương quan độ sáng bên trong (-1 đến 1) từ mức này thì coi là trùng.
+    # Điều kiện cuối để hai họa tiết tròn khác nhau (cúc và mẫu đơn) không bị gộp chỉ vì cùng hình dạng và cùng màu
+    thumb_size: int = 48          # kích thước ảnh thu nhỏ chuẩn hóa để so trùng
+    rot_step: int = 15            # bước góc xoay khi so trùng (độ)
 
 
 @dataclass
@@ -453,6 +464,108 @@ def update_index(path: Path, records: list[dict], object_ids: list[str]) -> list
     merged.sort(key=lambda r: r["element_id"])
     path.write_text(json.dumps(merged, ensure_ascii=False, indent=1), encoding="utf-8")
     return merged
+
+
+# ---------- 5. Lọc sau khi xuất: mảnh mỏng và bản gần trùng ----------
+# Làm trên ảnh RGBA đã xuất nên chạy lại được mà không cần SAM.
+
+def read_rgba(path: Path) -> np.ndarray:
+    """Đọc PNG RGBA (qua byte để chạy được với đường dẫn có dấu trên Windows)."""
+    bgra = cv2.imdecode(np.fromfile(str(path), dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    if bgra is None or bgra.ndim != 3 or bgra.shape[2] != 4:
+        raise ValueError(f"không đọc được ảnh RGBA: {path}")
+    return cv2.cvtColor(bgra, cv2.COLOR_BGRA2RGBA)
+
+
+def thickness(alpha: np.ndarray) -> tuple[float, float]:
+    """(bán kính nội tiếp lớn nhất theo pixel, tỉ lệ bán kính nội tiếp trên căn bậc hai diện tích).
+
+    Mảnh mỏng như sợi chỉ có bán kính nội tiếp nhỏ so với diện tích. Hình tròn đạt khoảng 0,56.
+    """
+    m = np.pad((alpha > 127).astype(np.uint8), 1)
+    area = float(m.sum())
+    if area == 0:
+        return 0.0, 0.0
+    r = float(cv2.distanceTransform(m, cv2.DIST_L2, 5).max())
+    return r, r / float(np.sqrt(area))
+
+
+def _canonical(rgba: np.ndarray, size: int) -> tuple[np.ndarray, np.ndarray]:
+    """Ảnh thu nhỏ chuẩn hóa: vòng tròn bao phần tử vừa trong khung size×size nên xoay không bị cắt.
+
+    Trả về (màu float32 size×size×3, mặt nạ float32 size×size).
+    """
+    h, w = rgba.shape[:2]
+    k = 0.9 * size / float(np.hypot(h, w))
+    nw, nh = max(1, round(w * k)), max(1, round(h * k))
+    rgb = cv2.resize(rgba[..., :3], (nw, nh), interpolation=cv2.INTER_AREA).astype(np.float32)
+    m = cv2.resize((rgba[..., 3] > 127).astype(np.float32), (nw, nh), interpolation=cv2.INTER_AREA)
+    canvas_rgb = np.zeros((size, size, 3), np.float32)
+    canvas_m = np.zeros((size, size), np.float32)
+    y0, x0 = (size - nh) // 2, (size - nw) // 2
+    canvas_rgb[y0:y0 + nh, x0:x0 + nw] = rgb
+    canvas_m[y0:y0 + nh, x0:x0 + nw] = m
+    return canvas_rgb, canvas_m
+
+
+def _rotations(rgb: np.ndarray, m: np.ndarray, step: int) -> list[tuple[np.ndarray, np.ndarray]]:
+    """Các bản xoay của ảnh chuẩn hóa quanh tâm khung, mỗi bản là (màu, mặt nạ bool)."""
+    size = rgb.shape[0]
+    c = size / 2
+    out = []
+    for ang in range(0, 360, step):
+        R = cv2.getRotationMatrix2D((c, c), ang, 1.0)
+        out.append((cv2.warpAffine(rgb, R, (size, size)), cv2.warpAffine(m, R, (size, size)) > 0.5))
+    return out
+
+
+def is_near_duplicate(a: tuple[np.ndarray, np.ndarray], b_rots: list, cfg: Config) -> bool:
+    """a là (màu, mặt nạ) chuẩn hóa. Trùng nếu có một góc xoay của b làm mặt nạ chồng khít và màu gần nhau."""
+    ra, ma = a[0], a[1] > 0.5
+    for rb, mb in b_rots:
+        inter = ma & mb
+        n = int(inter.sum())
+        if n < 30:
+            continue
+        if n / int((ma | mb).sum()) < cfg.dup_iou:
+            continue
+        if float(np.abs(ra[inter] - rb[inter]).mean()) / 255.0 > cfg.dup_color:
+            continue
+        ga, gb = ra[inter].mean(axis=1), rb[inter].mean(axis=1)
+        if ga.std() < 1e-3 or gb.std() < 1e-3:
+            return True  # một bên phẳng hoàn toàn thì không đo được tương quan, mặt nạ và màu đã khớp
+        if float(np.corrcoef(ga, gb)[0, 1]) >= cfg.dup_ncc:
+            return True
+    return False
+
+
+def postfilter(records: list[dict], cfg: Config = Config()) -> tuple[list[dict], list[tuple[dict, str]]]:
+    """Lọc các bản ghi đã xuất. Trả về (bản ghi giữ lại, danh sách (bản ghi bị bỏ, lý do)).
+
+    Hàm không xóa file. Phần tử lớn được xét trước nên bản đầy đủ thắng bản nhỏ trùng với nó.
+    """
+    order = sorted(records, key=lambda r: r["size_wh"][0] * r["size_wh"][1], reverse=True)
+    kept: list[dict] = []
+    kept_rots: list[list] = []
+    dropped: list[tuple[dict, str]] = []
+    for rec in order:
+        try:
+            rgba = read_rgba(Path(rec["file"]))
+        except (OSError, ValueError):
+            dropped.append((rec, "lỗi file"))  # file thiếu hoặc hỏng: bỏ bản ghi, không làm sập cả lượt lọc
+            continue
+        radius, ratio = thickness(rgba[..., 3])
+        if radius < cfg.min_inradius_px or (radius < cfg.sliver_radius_px and ratio < cfg.sliver_ratio):
+            dropped.append((rec, "mỏng"))
+            continue
+        canon = _canonical(rgba, cfg.thumb_size)
+        if any(is_near_duplicate(canon, rots, cfg) for rots in kept_rots):
+            dropped.append((rec, "trùng"))
+            continue
+        kept.append({**rec, "inradius_px": round(radius, 1), "thick_ratio": round(ratio, 3)})
+        kept_rots.append(_rotations(canon[0], canon[1], cfg.rot_step))
+    kept.sort(key=lambda r: r["element_id"])
+    return kept, dropped
 
 
 # ---------- Bộ phân đoạn SAM (cần GPU/mô hình, không dùng trong test) ----------

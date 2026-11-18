@@ -11,6 +11,7 @@ Chạy (sau khi chạy scripts/08_extract_lr3d.py):
                                  Chạy một phần (--ids) chỉ thay bản ghi của các vật đó, vật khác giữ nguyên.
 """
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -19,7 +20,7 @@ import cv2
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from generation.elements import Config, SamSegmenter, build_object, read_rgb, update_index  # noqa: E402
+from generation.elements import Config, SamSegmenter, build_object, postfilter, update_index  # noqa: E402
 
 IMAGE_EXT = (".png", ".jpg", ".jpeg")
 
@@ -64,6 +65,19 @@ def make_sheet(records: list[dict], path: Path, cell: int = 180, cols: int = 8, 
     path.write_bytes(buf.tobytes())
 
 
+def apply_postfilter(recs: list[dict], cfg: Config) -> tuple[list[dict], list[str]]:
+    """Bỏ mảnh mỏng và bản gần trùng. Trả về (bản ghi giữ lại, danh sách file PNG cần xóa).
+
+    Việc xóa file làm sau khi ghi index (trong main) để tiến trình chết giữa chừng không để lại index trỏ tới file đã xóa.
+    """
+    kept, dropped = postfilter(recs, cfg)
+    why: dict[str, int] = {}
+    for _, w in dropped:
+        why[w] = why.get(w, 0) + 1
+    print(f"  lọc sau khi xuất: giữ {len(kept)}, bỏ {why or 0}", flush=True)
+    return kept, [rec["file"] for rec, _ in dropped]
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--src", default="data/lr3d_src")
@@ -71,25 +85,43 @@ def main() -> None:
     ap.add_argument("--ids", type=int, nargs="*", help="chỉ xử lý các số vật thể này")
     ap.add_argument("--min-blue", type=float, default=0.15,
                     help="tỉ lệ pixel thiên xanh lam tối thiểu của phần tử (kho lam trắng). Đặt 0 để không lọc màu")
+    ap.add_argument("--refilter", action="store_true",
+                    help="không chạy SAM, chỉ lọc lại các phần tử đã xuất của --ids (đọc từ index.json)")
     a = ap.parse_args()
     cfg = Config(min_blue_frac=a.min_blue)
 
-    folders = [f for f in Path(a.src).glob("ceramic_vases_*") if re.fullmatch(r"ceramic_vases_\d+", f.name)]
-    folders.sort(key=lambda p: int(p.name.rsplit("_", 1)[1]))
-    if a.ids:
-        folders = [f for f in folders if int(f.name.rsplit("_", 1)[1]) in a.ids]
-    if not folders:
-        sys.exit(f"không tìm thấy vật thể nào trong {a.src} (ids: {a.ids})")
-
-    segment = SamSegmenter()
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
+    index = out / "index.json"
+    if a.refilter:
+        # chế độ lọc lại lấy danh sách vật từ index.json, không cần thư mục nguồn
+        old = json.loads(index.read_text(encoding="utf-8")) if index.exists() else []
+        names = sorted({r["object_id"] for r in old}, key=lambda n: int(n.rsplit("_", 1)[1]))
+        if a.ids:
+            names = [n for n in names if int(n.rsplit("_", 1)[1]) in a.ids]
+        if not names:
+            sys.exit("index.json không có vật nào cần lọc lại")
+        folders = [Path(a.src) / n for n in names]
+    else:
+        folders = [f for f in Path(a.src).glob("ceramic_vases_*") if re.fullmatch(r"ceramic_vases_\d+", f.name)]
+        folders.sort(key=lambda p: int(p.name.rsplit("_", 1)[1]))
+        if a.ids:
+            folders = [f for f in folders if int(f.name.rsplit("_", 1)[1]) in a.ids]
+        if not folders:
+            sys.exit(f"không tìm thấy vật thể nào trong {a.src} (ids: {a.ids})")
+
+    segment = None if a.refilter else SamSegmenter()
     for f in folders:
-        tex = find_texture(f)
-        obj = next(iter(sorted(p for p in f.iterdir() if p.suffix.lower() == ".obj")), None)
-        recs = build_object(tex, obj, f.name, out, segment, cfg)
+        if a.refilter:
+            recs, to_delete = apply_postfilter([r for r in old if r["object_id"] == f.name], cfg)
+        else:
+            tex = find_texture(f)
+            obj = next(iter(sorted(p for p in f.iterdir() if p.suffix.lower() == ".obj")), None)
+            recs, to_delete = apply_postfilter(build_object(tex, obj, f.name, out, segment, cfg), cfg)
         make_sheet(recs, out / f.name / "_sheet.png")
-        merged = update_index(out / "index.json", recs, [f.name])  # ghi ngay sau mỗi vật để lỗi giữa chừng không mất kết quả
+        merged = update_index(index, recs, [f.name])  # ghi ngay sau mỗi vật để lỗi giữa chừng không mất kết quả
+        for p in to_delete:
+            Path(p).unlink(missing_ok=True)  # chỉ xóa file bị loại sau khi index đã ghi xong
         m = recs[0]["valid_mask_method"] if recs else "-"
         print(f"{f.name}: {len(recs)} phần tử (mặt nạ hợp lệ: {m}), index có {len(merged)} bản ghi", flush=True)
 

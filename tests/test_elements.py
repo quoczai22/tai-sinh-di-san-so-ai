@@ -264,3 +264,72 @@ def test_to_rgba_he_so_khong_vuong(tmp_path):
     out, box = el.to_rgba(rgb, r, (0.25, 0.25), el.Config(pad=0, erode_px=0))
     assert box == (400, 800, 1200, 2000)
     assert (out[..., 3] == 255).all() or (out[..., 3] > 0).mean() > 0.99
+
+
+# ---------- Lọc sau khi xuất: mảnh mỏng và bản gần trùng ----------
+
+def _rgba_hinh(poly, scale=3.0, xoay=0):
+    m = mat_na(poly)
+    n = int(100 * scale)
+    m = cv2.resize(m.astype(np.uint8), (n, n), interpolation=cv2.INTER_NEAREST).astype(bool)
+    yy, xx = np.mgrid[0:n, 0:n]
+    mau = np.where(((xx // 8) % 2 == 0)[..., None], np.array([20, 50, 150]), np.array([120, 150, 220])).astype(np.uint8)
+    rgba = np.dstack([mau, m.astype(np.uint8) * 255])
+    ys, xs = np.where(m)
+    return np.ascontiguousarray(np.rot90(rgba[ys.min():ys.max() + 1, xs.min():xs.max() + 1], xoay // 90))
+
+
+def _bang_ghi(tmp_path, items):
+    """items: danh sách (element_id, rgba). Ghi PNG và trả về danh sách bản ghi giống index.json."""
+    recs = []
+    for eid, rgba in items:
+        f = tmp_path / f"{eid}.png"
+        el.write_rgba_png(f, rgba)
+        recs.append({"element_id": eid, "file": str(f), "size_wh": [rgba.shape[1], rgba.shape[0]]})
+    return recs
+
+
+def test_postfilter_loai_soi_chi(tmp_path):
+    soi = np.zeros((220, 14, 4), np.uint8)
+    soi[..., :3] = (20, 50, 150)
+    soi[..., 3] = 255                                   # dải 14 pixel rộng, 220 pixel dài
+    recs = _bang_ghi(tmp_path, [("hinh", _rgba_hinh(HINH_L)), ("soi", soi)])
+    kept, dropped = el.postfilter(recs)
+    assert [r["element_id"] for r in kept] == ["hinh"]
+    assert [(r["element_id"], why) for r, why in dropped] == [("soi", "mỏng")]
+
+
+def test_postfilter_gop_ban_xoay_va_giu_hinh_khac(tmp_path):
+    recs = _bang_ghi(tmp_path, [("a", _rgba_hinh(HINH_L)), ("a_xoay", _rgba_hinh(HINH_L, xoay=90)),
+                                ("sao", _rgba_hinh(HINH_SAO))])
+    kept, dropped = el.postfilter(recs)
+    assert sorted(r["element_id"] for r in kept) == ["a", "sao"] or sorted(r["element_id"] for r in kept) == ["a_xoay", "sao"]
+    assert len(dropped) == 1 and dropped[0][1] == "trùng"
+
+
+def _dia(kieu, n=200):
+    yy, xx = np.mgrid[0:n, 0:n]
+    r = np.hypot(yy - n / 2, xx - n / 2)
+    if kieu == "vong":
+        sang = ((r // 12) % 2 == 0)
+    else:                                               # kiểu tia
+        sang = ((np.arctan2(yy - n / 2, xx - n / 2) * 6 / np.pi).astype(int) % 2 == 0)
+    mau = np.where(sang[..., None], np.array([20, 50, 150]), np.array([120, 150, 220])).astype(np.uint8)
+    return np.dstack([mau, ((r < n / 2 - 2) * 255).astype(np.uint8)])
+
+
+def test_postfilter_khong_gop_hai_dia_tron_khac_ben_trong(tmp_path):
+    # cùng hình tròn, cùng tông màu, nhưng bên trong khác (vòng tròn đồng tâm so với tia): phải giữ cả hai
+    recs = _bang_ghi(tmp_path, [("vong", _dia("vong")), ("tia", _dia("tia")), ("vong_2", _dia("vong"))])
+    kept, dropped = el.postfilter(recs)
+    ids = sorted(r["element_id"] for r in kept)
+    assert "tia" in ids and len(ids) == 2               # chỉ một trong hai đĩa vòng bị coi là trùng
+    assert [why for _, why in dropped] == ["trùng"]
+
+
+def test_postfilter_khong_sap_khi_mat_file(tmp_path):
+    recs = _bang_ghi(tmp_path, [("a", _rgba_hinh(HINH_L)), ("b", _rgba_hinh(HINH_SAO))])
+    (tmp_path / "b.png").unlink()                       # bản ghi trỏ tới file đã mất
+    kept, dropped = el.postfilter(recs)
+    assert [r["element_id"] for r in kept] == ["a"]
+    assert [(r["element_id"], why) for r, why in dropped] == [("b", "lỗi file")]

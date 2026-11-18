@@ -28,14 +28,17 @@ CANNY_LOW = 100
 CANNY_HIGH = 200
 
 
-def load_reference(heritage_id: str) -> tuple[Image.Image, np.ndarray | None]:
+def load_reference(heritage_id: str, image_path: Path | None = None) -> tuple[Image.Image, np.ndarray | None]:
     """Trả về (ảnh RGB, mask alpha nếu có).
 
     Nhiều ảnh gốm tải về là PNG đã tách nền sẵn. Kênh alpha là mask món đồ
     CHÍNH XÁC — tốt hơn hẳn dò ngưỡng sáng, vốn hỏng khi nền tối hoặc khi món đồ
     có phần trắng sát nền. Có alpha thì dùng alpha.
+
+    image_path: nếu có thì đọc ảnh này (ví dụ một phần tử trong kho), bỏ qua tìm theo heritage_id.
     """
-    for f in sorted(HERITAGE_DIR.glob(f"{heritage_id}.*")):
+    candidates = [Path(image_path)] if image_path else sorted(HERITAGE_DIR.glob(f"{heritage_id}.*"))
+    for f in candidates:
         if f.suffix.lower() not in (".jpg", ".jpeg", ".png", ".webp"):
             continue
         im = Image.open(f)
@@ -51,8 +54,8 @@ def load_reference(heritage_id: str) -> tuple[Image.Image, np.ndarray | None]:
     raise FileNotFoundError(f"Khong thay anh cho {heritage_id} trong {HERITAGE_DIR}")
 
 
-def letterbox(img: Image.Image, size: int = RESOLUTION) -> Image.Image:
-    """Co giữ nguyên tỷ lệ rồi chèn viền trắng cho vuông.
+def letterbox(img: Image.Image, size: int = RESOLUTION, fill: tuple = (255, 255, 255)) -> Image.Image:
+    """Co giữ nguyên tỷ lệ rồi chèn viền (mặc định trắng, hoặc màu fill) cho vuông.
 
     KHÔNG kéo giãn: tỷ lệ ảnh trong data/heritage/ chênh từ 0,42 (BT002) tới
     1,33 (BT005); kéo giãn sẽ biến dạng chính hoạ tiết đang cần bảo tồn —
@@ -61,7 +64,7 @@ def letterbox(img: Image.Image, size: int = RESOLUTION) -> Image.Image:
     w, h = img.size
     s = size / max(w, h)
     small = img.resize((max(1, int(w * s)), max(1, int(h * s))), Image.LANCZOS)
-    canvas = Image.new("RGB", (size, size), (255, 255, 255))
+    canvas = Image.new("RGB", (size, size), fill)
     canvas.paste(small, ((size - small.size[0]) // 2, (size - small.size[1]) // 2))
     return canvas
 
@@ -110,8 +113,19 @@ def estimate_background(img: Image.Image, border: int = 6) -> np.ndarray:
     return np.median(edge, axis=0)
 
 
+def _fill_holes(m: np.ndarray) -> np.ndarray:
+    """Lấp các lỗ của mặt nạ 0/1: vùng nền không chạm mép khung thì thuộc về vật."""
+    n, lab = cv2.connectedComponents((m == 0).astype(np.uint8), connectivity=4)
+    border = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]])).tolist())
+    out = m.copy()
+    for i in range(1, n):
+        if i not in border:
+            out[lab == i] = 1
+    return out
+
+
 def object_mask(img: Image.Image, thr: int = 245, erode_px: int = 0,
-                alpha: np.ndarray | None = None, tol: int = 26) -> np.ndarray:
+                alpha: np.ndarray | None = None, tol: int | None = None) -> np.ndarray:
     """Mask vùng món đồ.
 
     Ưu tiên alpha. Không có alpha thì so với MÀU NỀN suy từ viền ảnh — không
@@ -124,6 +138,10 @@ def object_mask(img: Image.Image, thr: int = 245, erode_px: int = 0,
     else:
         a = np.array(img.convert("RGB")).astype(np.int16)
         bg = estimate_background(img)
+        if tol is None:
+            # Nền trắng (ảnh chụp studio) có bóng đổ và nhiễu nén nên cần ngưỡng rộng (26). Nền xám đều
+            # (ảnh render) ít nhiễu, men sáng của bình chỉ lệch nền khoảng 15 đến 30: ngưỡng 26 làm thủng mặt nạ.
+            tol = 26 if float(bg.mean()) >= 240 else 10
         dist = np.abs(a - bg).max(axis=2)
         m = (dist > tol).astype(np.uint8)
         # Nền quá gần màu món đồ → mask phủ gần hết khung, không đáng tin.
@@ -131,6 +149,8 @@ def object_mask(img: Image.Image, thr: int = 245, erode_px: int = 0,
         if m.mean() > 0.92:
             m = (np.array(img.convert("L")) < thr).astype(np.uint8)
     m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((7, 7), np.uint8))
+    if alpha is None:
+        m = _fill_holes(m)  # men sáng gần màu nền làm mặt nạ thủng ở giữa vật; lấp lại phần không nối với mép khung
     if erode_px:
         m = cv2.erode(m, np.ones((erode_px, erode_px), np.uint8))
     return m
@@ -155,13 +175,14 @@ def to_canny_ornament(img: Image.Image, erode_px: int = 14,
 
 
 def prepare(heritage_id: str, ornament_only: bool = True,
-            trim: bool = True) -> dict:
+            trim: bool = True, image_path: Path | None = None) -> dict:
     """Chuẩn bị ảnh điều kiện cho giai đoạn 1.
 
     ornament_only=True  → bỏ đường bao, chỉ giữ hoa văn (mặc định cho v6)
     ornament_only=False → Canny đầy đủ, giữ cả dáng món đồ
+    image_path          → dùng ảnh này (phần tử trong kho) thay cho ảnh hiện vật
     """
-    src, alpha = load_reference(heritage_id)
+    src, alpha = load_reference(heritage_id, image_path)
     box = (0, 0, *src.size)
     if trim:
         # Cắt theo alpha nếu có — chính xác hơn dò ngưỡng
@@ -175,7 +196,11 @@ def prepare(heritage_id: str, ornament_only: bool = True,
                 alpha = alpha[box[1]:box[3], box[0]:box[2]]
         else:
             src, box = trim_background(src)
-    ref = letterbox(src)
+    # Không có alpha thì object_mask(ref) ước màu nền từ viền của ảnh đã letterbox. Nếu nền không phải
+    # trắng (ví dụ ảnh render nền xám) mà viền chèn lại trắng, màu nền ước ra là trắng và cả nền xám bị
+    # tính là "vật": đường bao không bị loại, bảng màu kéo về xám. Nên chèn viền bằng đúng màu nền của ảnh.
+    fill = (255, 255, 255) if alpha is not None else tuple(int(v) for v in estimate_background(src))
+    ref = letterbox(src, fill=fill)
     a_lb = None
     if alpha is not None:
         # Đưa alpha qua đúng phép letterbox để khớp `ref` từng pixel. Viền chèn

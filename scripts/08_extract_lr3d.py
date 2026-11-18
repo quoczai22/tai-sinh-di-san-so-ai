@@ -8,6 +8,7 @@ Chạy:
 Dữ liệu thô, đã khai báo trong .gitignore, không commit.
 """
 import argparse
+import json
 import re
 import shutil
 import zipfile
@@ -18,6 +19,7 @@ from pathlib import Path
 SELECTED = [15, 33, 37, 38, 47, 50, 59, 61, 78, 83, 97, 118, 119, 124]
 
 IMAGE_EXT = (".png", ".jpg", ".jpeg")
+RENDER_CAM, RENDER_FRAME = "1", 1  # ảnh render dùng làm "ảnh hiện vật": camera 1, khung 1 (góc nhìn gần chính diện)
 
 
 def nested_zip_of(n: int) -> str:
@@ -78,7 +80,15 @@ def _extract(outer: Path, dest: Path, tmp: Path, by_zip: dict[str, list[int]]) -
                         # ghi bằng tên file do mình tạo từ tên gốc, không dùng đường dẫn trong zip
                         with zi.open(member) as s, open(out / Path(member).name, "wb") as d:
                             shutil.copyfileobj(s, d, 1 << 20)
-                    print(f"#{n}: texture={Path(tex).name} obj={Path(obj).name if obj else None}")
+                    # ảnh render cả bình: camera 1, khung 1. Góc cố định, không chọn tay; tên file ra do mình đặt
+                    pat = re.compile(rf"^{re.escape(folder)}/images/[^/]+_CAM{RENDER_CAM}_1\.{RENDER_FRAME:04d}\.png$")
+                    render = next((x for x in names if pat.match(x)), None)
+                    if render:
+                        with zi.open(render) as s, open(out / "render.png", "wb") as d:
+                            shutil.copyfileobj(s, d, 1 << 20)
+                        (out / "render_source.json").write_text(
+                            json.dumps({"member": render, "camera": RENDER_CAM, "frame": RENDER_FRAME}), encoding="utf-8")
+                    print(f"#{n}: texture={Path(tex).name} obj={Path(obj).name if obj else None} render={bool(render)}")
             inner_path.unlink()
 
 

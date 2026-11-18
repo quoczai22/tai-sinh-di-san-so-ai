@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
-from generation import controlnet as cn, garment, layout_select, palette, pattern
+from generation import controlnet as cn, element_library, garment, layout_select, palette, pattern
 from generation.stable_diffusion import Generator
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -15,14 +15,35 @@ def generate_design_set(
     heritage_id: str,
     on_progress: Callable[[int, str], None] | None = None,
     output_dir: Path | None = None,
+    source: str = "render",
 ) -> list[dict]:
+    """Sinh bốn thiết kế cho một hiện vật.
+
+    source chọn ảnh nạp cho ControlNet (thiếu thì tự quay về bậc thấp hơn: elements, panel, rồi ảnh hiện vật):
+    - "render" (mặc định): ảnh hiện vật trong data/heritage/ (với LR3D là ảnh render cả bình), đúng luồng hồ sơ gốc.
+    - "panel": mảng texture phẳng trong data/heritage/panels/.
+    - "elements": mỗi biến thể một phần tử trong kho data/elements/.
+    """
     def report(progress: int, label: str) -> None:
         if on_progress:
             on_progress(progress, label)
 
     report(5, "Đang chuẩn bị hoa văn từ hiện vật...")
-    prepared = cn.prepare(heritage_id, ornament_only=True, trim=True)
-    source_colors = palette.dominant_colors(prepared["reference"], prepared["reference_mask"])
+    cache: dict[str, dict] = {}
+
+    def prep(path: Path | None) -> dict:
+        key = str(path)
+        if key not in cache:
+            cache[key] = cn.prepare(heritage_id, ornament_only=True, trim=True, image_path=path)
+        return cache[key]
+
+    inputs = element_library.variant_inputs(heritage_id, source, root=ROOT)
+    try:
+        prepared_list = [prep(p) for _, p in inputs]
+    except (OSError, ValueError):
+        inputs = [("hien_vat", None)] * 4  # file hỏng: quay về ảnh hiện vật mặc định thay vì làm sập lượt sinh
+        prepared_list = [prep(None)] * 4
+    source_ids = [label for label, _ in inputs]
     output_dir = output_dir or OUT_DIR
     output_dir = output_dir if output_dir.is_absolute() else ROOT / output_dir
     try:
@@ -45,6 +66,8 @@ def generate_design_set(
             {"level": 4, "palette": "free"},
         ), start=1):
             report(10 + (index - 1) * 20, f"Đang tạo thiết kế {index}/4...")
+            prepared = prepared_list[index - 1]
+            source_colors = palette.dominant_colors(prepared["reference"], prepared["reference_mask"])
             result = pattern.generate(generator, heritage_id, variant["level"], SEED, prepared=prepared)
             design_pattern = result["image"]
             if variant["palette"] == "original":
@@ -61,6 +84,7 @@ def generate_design_set(
             similarity = scorer.similarity(prepared["reference"], design_pattern)
             results.append({
                 "variant_index": index,
+                "source_element": source_ids[index - 1],  # nguồn ảnh nét: mã phần tử, "panel" hoặc "hien_vat"
                 "layout_label": chosen["label"],
                 "similarity_pattern_vs_ceramic": round(similarity, 4),
                 "source_palette": ";".join(
