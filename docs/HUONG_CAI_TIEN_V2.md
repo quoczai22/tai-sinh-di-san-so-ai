@@ -1,8 +1,9 @@
-# Hướng cải tiến hệ thống Tái Sinh Di Sản Số, Phiên bản 2 (bản chỉnh ngày 18/11/2026)
+# Hướng cải tiến hệ thống Tái Sinh Di Sản Số, Phiên bản 2 (bản chỉnh ngày 19/11/2026)
 
-- **Ngày:** 18/11/2026. Hạn nộp minh chứng cải tiến: hết ngày 25/11/2026.
-- **Mục tiêu:** (1) giữ đúng hoa văn gốm, không chỉnh tay; (2) ảnh áo dài chân thực; (3) đủ minh chứng cho ba yêu cầu của ban tổ chức; (4) có đường dẫn để ban tổ chức thử.
-- **Phạm vi:** giữ kiến trúc hai giai đoạn hiện tại. Bổ sung một đường trích xuất tất định (không qua diffusion) cho mức 1, nền áo độ phân giải cao, polish có khóa vùng, bộ đánh giá có tiêu chí loại, và hồ sơ nguồn.
+- **Ngày:** 19/11/2026. Hạn nộp minh chứng cải tiến: hết ngày 25/11/2026.
+- **Mục tiêu:** (1) họa tiết gốm còn nhận ra được sau khi vẽ lại, không chỉnh tay; (2) ảnh áo dài chân thực; (3) đủ minh chứng cho ba yêu cầu của ban tổ chức; (4) có đường dẫn để ban tổ chức thử.
+- **Phạm vi:** giữ kiến trúc hai giai đoạn hiện tại và cách **vẽ lại họa tiết bằng diffusion ở mọi mức** (vẽ lại mới đẹp và có sáng tạo). Cải thiện đầu vào (ảnh nét lấy từ phần tử họa tiết), nền áo độ phân giải cao, polish nhẹ có mặt nạ, bộ đánh giá đo độ trung thành nhận ra được kèm tiêu chí loại, và hồ sơ nguồn. Dán nguyên phần tử lên áo chỉ còn là mốc đối chiếu tùy chọn.
+- **Đổi hướng ngày 19/11:** bản trước đặt mức 1 là "giữ nguyên từng pixel bằng phương pháp tất định". Nhóm quyết định bỏ yêu cầu đó vì các paper tham khảo đều biến đổi họa tiết thay vì dán nguyên, và dán nguyên không đẹp, không sáng tạo. Yêu cầu của ban tổ chức là kiểm tra độ giữ họa tiết, được hiểu là độ trung thành nhận ra được (đo bằng DreamSim và SIFT), không phải trùng pixel.
 
 ## 0. Cần bạn quyết (ảnh hưởng đến kế hoạch)
 
@@ -14,12 +15,13 @@
 | 4 | Môi trường Python: CLAUDE.md quy định `uv` và `pyproject.toml`, repo hiện dùng `requirements.txt` và `scripts/01_setup_env.ps1` | Làm theo CLAUDE.md, chuyển sang uv | Giữ hiện trạng và ghi lệch quy ước |
 | 5 | Ngưỡng loại (mục 8.2) | Chốt sau khi đo thực tế trên 6 hiện vật | Dùng ngưỡng đề xuất |
 | 6 | Ai liên hệ nhóm tác giả LR3D-CULT2 (FPT University, Hà Nội) và nhóm VietFashion để hỏi xuất xứ, giấy phép, phạm vi dùng? | Có phản hồi bằng văn bản: cập nhật mục 2 và dùng được rộng hơn | Không có: giữ trạng thái "chưa xác minh", chỉ dùng nội bộ |
+| 7 | Thay 6 hiện vật gốc bằng 6 mảng LR3D (phương án B) | **Đã chọn ngày 19/11/2026.** Ghi rõ thay đổi trong hồ sơ nộp (danh mục nguồn); nên hỏi ban tổ chức xem họ chấp nhận không nếu liên hệ được | Nếu ban tổ chức không chấp nhận: quay về bộ gốc làm bộ chính (phương án A), giữ 6 mảng LR3D làm bộ mở rộng. Bản thay nằm ở commit `3a849df`, dễ hoàn lại |
 
 ## 1. Kết luận thiết kế
 
 Không thay toàn bộ hệ thống bằng một model lớn hơn. Ba ưu tiên, theo thứ tự:
 
-1. **Trích xuất và khóa họa tiết.** Mức 1 phải giữ nguyên hoa văn gốc bằng phương pháp tất định (cùng đầu vào cho cùng đầu ra, không qua diffusion). Các mức 2 đến 4 mới dùng ControlNet để sáng tạo.
+1. **Vẽ lại có kiểm soát, họa tiết còn nhận ra được.** Mọi mức vẫn dùng ControlNet vẽ lại họa tiết. Mức 1 là mức trung thành: họa tiết chính phải còn nhận ra là hoa văn gốc, đo bằng DreamSim và SIFT (M4). Sửa các nguyên nhân gây hỏng hiện tại: ảnh nét lấy từ phần tử thay vì cả hiện vật thu về 512 px, nền áo cao phân giải, polish nhẹ hơn. Thiết kế mức 1 của vật #61 hiện làm mất hẳn con rồng, đó là lỗi phải sửa dù theo tiêu chuẩn lỏng. Dán nguyên phần tử chỉ làm mốc đối chiếu tùy chọn (mục 3.3).
 2. **Nền áo độ phân giải cao.** Ảnh áo hiện tại do Stable Diffusion sinh ở 512×512, thân áo rộng khoảng 90 px, nên mọi họa tiết đều bị thu nhỏ 4 đến 5 lần. Đây là điểm nghẽn của độ chân thực.
 3. **Minh chứng đủ cho ba yêu cầu:** tiêu chí loại và thử lại có ngưỡng, so sánh có kiểm soát nhiều seed, hồ sơ nguồn và quyền sử dụng của 6 hiện vật.
 
@@ -28,24 +30,21 @@ Fine-tune LoRA chuyển xuống thử nghiệm tùy chọn (mục 4.4). Lý do n
 ```text
 Ảnh hiện vật gốm (6 hiện vật, có nguồn và giấy phép ghi trong hồ sơ)
     ↓
-Kiểm tra ảnh nguồn tự động (độ phân giải, có nền trong suốt hay không)
+Cắt mảng texture phẳng từ mô hình 3D (đảo UV có nhiều nét mực lam nhất)
     ↓
-Tách silhouette (viền ngoài của bình) bằng alpha hoặc Grounded SAM
-    ↓
-Trải phẳng mặt cong của bình (trải trụ)
-    ↓
-Cắt phần tử họa tiết bằng SAM thành ảnh RGBA, kiểm tra tự động
+Cắt phần tử họa tiết bằng SAM thành ảnh RGBA, kiểm tra tự động (đã có module)
     ↓
 Kho phần tử (kèm nguồn, giấy phép, tham số)
     ↓
- ┌────────────────────────────┬─────────────────────────────────────┐
- │ Đường A (mức 1)            │ Đường B (mức 2 đến 4)               │
- │ Dùng nguyên phần tử        │ ControlNet Canny sinh biến thể      │
- └────────────────────────────┴─────────────────────────────────────┘
+ ┌──────────────────────────────────────────────────────────────┐
+ │ Mọi mức 1 đến 4: ControlNet Canny vẽ lại họa tiết từ phần tử   │
+ │ (mức 1 bám sát nhất, mức 4 tự do nhất)                         │
+ │ Mốc đối chiếu tùy chọn: dán nguyên phần tử, không qua diffusion │
+ └──────────────────────────────────────────────────────────────┘
     ↓
 Ghép lên nền áo độ phân giải cao theo ánh sáng và nếp vải
     ↓
-Polish có mask, dán lại pixel gốc ở vùng khóa
+Polish nhẹ có mặt nạ, dán lại pixel gốc ngoài vùng áo
     ↓
 Đo tự động, thử lại hoặc loại theo tiêu chí
     ↓
@@ -58,7 +57,7 @@ Design Passport, nhãn "có hỗ trợ AI", nhật ký chỉnh sửa
 
 ### 2.1. Sáu hiện vật đang dùng, nguồn thật và hiện trạng giấy phép
 
-**Cập nhật 18/11/2026: 6 hiện vật dưới đây đã được thay trong dữ liệu chạy bằng 6 mảng texture phẳng từ LR3D-CULT2** (vật #33, #61, #50, #38, #97, #124, mã `LR3D_<số>` trong `data/heritage/`). Ảnh được cắt tự động bằng `scripts/10_make_heritage_from_lr3d.py`, khung cắt ghi ở `data/heritage/lr3d_crops.json`. Nhãn hiển thị là "gốm men lam, nguồn LR3D-CULT2, xuất xứ chưa xác minh", không ghi Bát Tràng. Sáu ảnh cũ vẫn còn trong thư mục (chưa xóa), bản dữ liệu cũ nằm trong lịch sử git. Phần bảng và hai vấn đề dưới đây mô tả sáu hiện vật cũ, giữ lại để đối chiếu. Chất lượng ảnh biến thể sinh từ hiện vật mới giống hệ thống cũ: họa tiết được diễn giải lại, chưa giữ nguyên (mức 1 chưa dùng phần tử cắt tất định).
+**Cập nhật 18/11/2026: 6 hiện vật dưới đây đã được thay trong dữ liệu chạy bằng 6 vật thể từ LR3D-CULT2** (ảnh hiện vật mặc định là ảnh render cả bình, mảng texture phẳng là nhánh so sánh, xem mục 4.1) (vật #33, #61, #50, #38, #97, #124, mã `LR3D_<số>` trong `data/heritage/`). Ảnh được cắt tự động bằng `scripts/10_make_heritage_from_lr3d.py`, khung cắt ghi ở `data/heritage/lr3d_crops.json`. Nhãn hiển thị là "Gốm men lam · LR3D-CULT2 (Bát Tràng, Thanh Hà)", lặp lại mô tả của bộ dữ liệu và không khẳng định từng vật là Bát Tràng. Nhóm đã chọn phương án B (giữ bản thay) ngày 19/11/2026. Danh mục nguồn, giấy phép, cách ghi công và lịch sử các bước do người làm nằm ở `docs/DANH_MUC_NGUON_HIEN_VAT.md`. Sáu ảnh cũ vẫn còn trong thư mục (chưa xóa), bản dữ liệu cũ nằm trong lịch sử git. Phần bảng và hai vấn đề dưới đây mô tả sáu hiện vật cũ, giữ lại để đối chiếu. Chất lượng ảnh biến thể sinh từ hiện vật mới giống hệ thống cũ: họa tiết được diễn giải lại, chưa giữ được rõ (ví dụ con rồng của vật #61 mất ở mức 1). Việc cần làm là cải thiện đầu vào cho vẽ lại (mục 4.1), không phải dán nguyên.
 
 Thông tin lấy từ `data/metadata.json` (file có đường dẫn nguồn). Cả 6 ảnh có `license: unverified` và ghi chú "chỉ dùng nội bộ MVP".
 
@@ -104,7 +103,7 @@ URL đầy đủ nằm trong `data/metadata.json`.
 **Hệ quả:**
 
 - Có khoảng 12 đến 15 vật lam trắng sạch với texture 4096 đến 8192 px. Mỗi vật cho được nhiều crop, nên kho phần tử và nhánh LoRA thử nghiệm (mục 4.4) đáng thử, nhưng chưa chắc có lợi.
-- Không xác định được vật nào là Bát Tràng. Không được tuyên bố "hiện vật Bát Tràng" khi dùng dataset này.
+- Không xác định được vật nào là Bát Tràng. Không khẳng định từng vật là Bát Tràng; chỉ dùng câu chuẩn ở `docs/DANH_MUC_NGUON_HIEN_VAT.md` mục 4 (nhắc Bát Tràng và Thanh Hà theo mô tả của bộ dữ liệu).
 - Giấy phép từng vật chưa rõ và có thể mâu thuẫn với CC BY 4.0 ghi chung trên trang. Chỉ dùng cho thử nghiệm nội bộ, chưa đưa vào sản phẩm công khai.
 - Việc cần làm: hỏi nhóm tác giả bằng văn bản về ánh xạ vật và nguồn gốc, giấy phép từng vật. Chưa có ai liên hệ (câu hỏi 6 ở mục 0).
 - Giới hạn của đánh giá này: nhìn bằng mắt trên ảnh thu nhỏ, chưa kiểm tra từng vật ở độ phân giải đầy đủ. Kết quả đo nằm ngoài repo (file CSV và bảng ảnh trong thư mục tạm của phiên làm việc).
@@ -129,11 +128,13 @@ VietFashion là dataset áo dài và thời trang Việt Nam, trang dự án <ht
 - Rủi ro khác: bản quyền của ảnh do AI sinh, câu chữ trích từ tạp chí, và nguy cơ mô hình học thêm nét "ảnh AI".
 - Việc cần làm: hỏi nhóm tác giả bằng văn bản về phạm vi dùng (câu hỏi 6 ở mục 0). Trong lúc chờ, không dùng để huấn luyện bản công khai.
 
-## 3. Giai đoạn 1: trích xuất họa tiết (đường A)
+## 3. Giai đoạn 1: kho phần tử họa tiết (đầu vào cho vẽ lại và mốc đối chiếu)
 
-Mục tiêu: lấy đúng phần tử họa tiết từ ảnh gốm, giữ nguyên từng pixel, không qua diffusion, không chỉnh tay.
+Mục tiêu: lấy các phần tử họa tiết nét từ ảnh gốm, giữ nguyên pixel khi cắt, không chỉnh tay. Phần tử dùng để (a) lấy ảnh nét đầu vào cho ControlNet ở mọi mức, (b) làm mốc đối chiếu tùy chọn (mục 3.3).
 
 ### 3.1. Các bước
+
+Với mảng texture phẳng của LR3D-CULT2, bước 2 và 3 (silhouette, trải trụ) không cần, vì texture đã phẳng và mô hình 3D cho sẵn vùng hợp lệ (UV). Hai bước đó chỉ cần nếu quay lại dùng ảnh chụp bình cong. Phần đã có: `generation/elements.py`, `scripts/08_extract_lr3d.py`, `09_build_elements.py`, `10_make_heritage_from_lr3d.py`.
 
 1. **Kiểm tra ảnh nguồn:** độ phân giải, có kênh trong suốt (alpha) không, bình có bị che khuất không. Ghi kết quả vào hồ sơ.
 2. **Tách silhouette** (viền ngoài của bình): dùng alpha nếu có. Nếu không, dùng Grounded SAM. Grounding DINO là mô hình phát hiện vật theo mô tả chữ (ví dụ "ceramic vase"), cho ra khung chữ nhật. SAM (Segment Anything) nhận khung đó và cho ra mask chính xác theo viền.
@@ -142,9 +143,9 @@ Mục tiêu: lấy đúng phần tử họa tiết từ ảnh gốm, giữ nguy�
 5. **Kiểm tra tự động** (không cần người): diện tích tối thiểu, mask liền một khối, độ phân giải tối thiểu của phần tử, mức co giãn khi trải phẳng được ghi lại, không có pixel nằm ngoài silhouette. Phần tử không đạt thì loại và ghi lý do vào nhật ký.
 6. **Lưu kho phần tử** (đề xuất đặt ở `data/elements/`, không commit vì là ảnh thô). Mỗi phần tử kèm: mã hiện vật nguồn, giấy phép, tham số trải trụ, mã phiên bản thuật toán.
 
-### 3.2. Kết quả thử trước đây và giới hạn
+### 3.2. Kết quả thử trên ảnh chụp bình cũ (không còn dùng)
 
-Phương pháp này đã thử, mã không còn trong nhánh hiện tại (cần dựng lại bản tối thiểu). Kết quả:
+Thử trước đây trên 6 ảnh chụp bình cũ, nay đã được thay bằng 6 mảng LR3D (mục 2.1). Mã không còn trong nhánh. Kết quả, giữ để tham khảo:
 
 - Tốt: thuyền, hoa sen đen, hoa cúc.
 - Con công: mask còn lẫn hoa xung quanh.
@@ -153,9 +154,9 @@ Phương pháp này đã thử, mã không còn trong nhánh hiện tại (cần
 - `BT_Hac_XP` chưa đủ kết quả để kết luận, cần chạy lại.
 - Ba ảnh nguồn dưới 1024 px (300, 324, 600) sẽ mờ khi phóng to. Không được tuyên bố độ nét cao cho các ảnh này.
 
-### 3.3. Cam kết đo được
+### 3.3. Mốc đối chiếu tùy chọn: dán nguyên phần tử
 
-Với mức 1, vùng họa tiết trên ảnh cuối phải trùng pixel với phần tử trích xuất (sai khác bằng 0) sau bước dán lại ở mục 7.
+Dán nguyên phần tử lên áo (không qua Stable Diffusion) chỉ làm khi còn thời gian. Mục đích là làm mốc để đo: so họa tiết vẽ lại với bản dán nguyên bằng M4, để chứng minh bằng số rằng vẽ lại vẫn giữ họa tiết. Đây không phải sản phẩm chính. Nếu làm, vùng họa tiết của bản này phải trùng pixel với phần tử (sai khác bằng 0, chỉ số M3).
 
 ### 3.4. Cách tận dụng LR3D-CULT2 (thử nghiệm nội bộ)
 
@@ -173,15 +174,25 @@ Dataset có mô hình 3D (`.obj`), texture trải phẳng, 180 ảnh render và 
 
 Hướng 1 là nền cho hướng 2, 4, 5. Hướng 2 và 3 chỉ đo và đối chiếu nội bộ nên rủi ro giấy phép thấp hơn. Hướng 1, 4, 5, 6 đưa dữ liệu vào sản phẩm nên cần lập bảng giấy phép từng vật trước.
 
-Điều kiện chung: ghi rõ nguồn dataset (mục 12), không tuyên bố Bát Tràng, không commit ảnh thô (để trong `data/`, theo CLAUDE.md), không dùng ở bản công khai nếu giấy phép chưa rõ.
+Điều kiện chung: ghi rõ nguồn dataset (mục 12), không khẳng định từng vật là Bát Tràng (dùng câu chuẩn ở danh mục nguồn), không commit ảnh thô (để trong `data/`, theo CLAUDE.md), không dùng ở bản công khai nếu giấy phép chưa rõ.
 
-## 4. Giai đoạn 1: sinh họa tiết mới (đường B, mức 2 đến 4)
+## 4. Giai đoạn 1: vẽ lại họa tiết bằng ControlNet (mọi mức)
 
 ### 4.1. Giữ cơ chế hiện tại
 
+**Nguồn ảnh nét (cập nhật 19/11/2026).** Tham số `source` của `generate_design_set` chọn ảnh nạp cho ControlNet, thiếu thì tự quay về bậc thấp hơn:
+
+- `render` (mặc định): ảnh hiện vật trong `data/heritage/`. Với sáu vật LR3D đây là ảnh render cả bình, đúng luồng hồ sơ gốc (đầu vào là ảnh bình).
+- `panel`: mảng texture phẳng trong `data/heritage/panels/`.
+- `elements`: mỗi biến thể một phần tử trong kho `data/elements/`.
+
+Ba nguồn này là ba nhánh của thí nghiệm E1 (mục 8.3). Kết quả xem bằng mắt trên sáu vật: chất lượng cùng nhóm, ảnh render đôi khi để lọt cấu trúc dải của bình vào họa tiết (rõ ở mức 1), mảng phẳng thì không. Chưa có số đo M4, chưa kết luận nguồn nào tốt hơn.
+
+**Lỗi đã sửa khi dùng ảnh render (rà soát 19/11).** Ảnh nền xám đi qua `prepare` bị hai lỗi từ trước: (1) viền `letterbox` luôn trắng nên màu nền ước từ viền sai, cả nền xám bị tính là vật, đường bao bình không bị loại và bảng màu lệch về xám; (2) men trắng của bình lệch màu nền chỉ khoảng 20, mặt nạ bị thủng, mất họa tiết ở giữa thân. Đã sửa: viền chèn theo màu nền, lấp lỗ mặt nạ không nối với mép khung, ngưỡng tách nền thích ứng (26 cho nền trắng, 10 cho nền xám). Có 9 kiểm thử mới, đã kiểm bằng cách giả lập hành vi cũ thì các kiểm thử thất bại. Thí nghiệm "render so với mảng" làm trước bản sửa này không còn dùng được.
+
 ControlNet là mạng phụ nhận điều kiện hình ảnh để điều khiển Stable Diffusion. Hệ thống hiện dùng điều kiện Canny (ảnh đường nét) với bốn mức trọng số cố định: 0,85, 0,65, 0,45, 0,25 cho các mức sáng tạo. Giữ nguyên bốn mức này để so sánh có kiểm soát.
 
-Thay đổi duy nhất: ảnh Canny lấy từ **phần tử trong kho** (mục 3), không lấy từ cả ảnh bình, nên diffusion không còn thấy hình cái bình.
+Áp dụng cho cả bốn mức, kể cả mức 1 (trọng số 0,85, giữ bảng màu gốc, vẫn vẽ lại nhưng bám sát nhất). Thay đổi chính: ảnh Canny lấy từ **phần tử trong kho** (mục 3), không lấy từ cả hiện vật. Lý do: hệ thống hiện thu cả hiện vật về 512 px (`letterbox` trong `generation/controlnet.py`), nên họa tiết nhỏ có thể mất nét, ví dụ con rồng của vật #61 biến thành sọc (nguyên nhân này là nghi ngờ, kiểm chứng bằng thí nghiệm E1 ở mục 8.3). Phần tử cắt ra có thể đưa vào ở độ phân giải cao hơn nhiều so với một họa tiết nhỏ nằm trong cả hiện vật. Chỉnh `prepare` để nhận phần tử là việc cần làm, chưa có.
 
 ### 4.2. Tileable pattern (lát liền mạch)
 
@@ -189,7 +200,7 @@ Giữ circular padding (tính toán vòng ở biên để hai mép ảnh nối l
 
 ### 4.3. Lưu ý về độ chính xác
 
-Ở các mức 2 đến 4 hệ thống chủ động biến đổi họa tiết, nên không đo "giữ nguyên pixel". Thay vào đó đo độ gần với phần tử gốc bằng DreamSim và độ lệch màu (mục 8).
+Mọi mức đều vẽ lại họa tiết, nên không đo "giữ nguyên pixel". Mức 1 đo độ trung thành: họa tiết chính phải còn nhận ra, bằng DreamSim và SIFT (M4) với ngưỡng chặt hơn mức 2 đến 4, cùng độ lệch màu (M6). Các mức sau cho phép lệch nhiều hơn, miễn là còn thuộc họ họa tiết gốc.
 
 ### 4.4. Thử nghiệm tùy chọn: LoRA, IP-Adapter, semantic map
 
@@ -247,16 +258,18 @@ Giới hạn:
 - Không huấn luyện ControlNet phác thảo riêng, quá nặng với 8 GB VRAM trong thời hạn này.
 - Ghi nguồn dataset và phiên bản LoRA vào Passport (trường `base_garment_source`). Không phát hành trọng số LoRA khi chưa có quyền.
 
-## 7. Polish có mask và khóa vùng
+## 7. Polish nhẹ có mặt nạ
 
 Hiện tại `polish()` trong `generation/garment.py` chạy img2img (sinh ảnh từ ảnh có sẵn, thêm nhiễu rồi khử nhiễu) trên toàn ảnh với strength 0,40, không có mask.
 
 Phiên bản mới:
 
-1. Chạy img2img với strength vừa phải để hòa vải và ánh sáng.
-2. **Dán lại pixel gốc** ở vùng khóa (họa tiết mức 1) và ở vùng ngoài áo. Đây là bước đảm bảo "sai khác bằng 0", không phụ thuộc strength.
+1. Chạy img2img với strength thấp hơn 0,40 (thử khoảng 0,25 đến 0,35, chọn bằng M4) để hòa vải và ánh sáng mà ít vẽ lại họa tiết lần thứ hai.
+2. **Dán lại pixel gốc ở vùng ngoài áo** (mặt nạ áo, M2): polish không được đổi nền, tóc, tay.
 
-Vì sao không chỉ giảm strength: strength thấp (ví dụ 0,15 đến 0,25) vẫn làm diffusion sửa chi tiết nhỏ, nên không đảm bảo giữ nguyên.
+Họa tiết trên áo vẫn được phép biến đổi nhẹ vì mọi mức đều vẽ lại. Không dán lại pixel họa tiết, trừ bản mốc đối chiếu ở mục 3.3.
+
+Vì sao giảm strength và dùng mặt nạ: polish toàn ảnh ở 0,40 vẽ lại họa tiết một lần nữa, là một nguyên nhân nghi ngờ làm mất chi tiết. Kiểm chứng bằng thí nghiệm E2 ở mục 8.3.
 
 Differential Diffusion (cho mỗi pixel một cường độ riêng bằng bản đồ strength) là hướng nâng cấp. Paper gốc chạy trên Stable Diffusion 2.1. Bản cho SD 1.5 chưa xác minh, cần thử riêng. Cách đơn giản và đủ dùng trước mắt: img2img rồi dán lại.
 
@@ -272,29 +285,29 @@ Không dùng điểm CLIP làm kết luận duy nhất về đẹp hay đúng v�
 |---|---|---|---|
 | M1 | Giữ dáng áo | IoU (tỉ lệ phần giao trên phần hợp) giữa mask áo trước và sau polish | 0,95 trở lên |
 | M2 | Tràn ngoài áo | Tỉ lệ pixel ngoài mask áo bị đổi giá trị | 0,5% trở xuống |
-| M3 | Giữ họa tiết (mức 1) | Sai khác trung bình trong vùng khóa giữa ảnh cuối và phần tử đã trích xuất | Bằng 0 |
-| M4 | Gần gốm (mức 2 đến 4) | DreamSim (khoảng cách cảm thụ giữa hai ảnh, thấp là giống) giữa vùng họa tiết và phần tử gốc; bổ sung số điểm khớp SIFT (điểm đặc trưng cục bộ) | Đặt sau khi đo phân bố trên 6 hiện vật |
+| M3 | Giữ nguyên pixel (chỉ cho bản dán nguyên ở mục 3.3, nếu làm) | Sai khác trung bình trong vùng họa tiết giữa ảnh cuối và phần tử đã cắt | Bằng 0 |
+| M4 | Độ trung thành họa tiết (mọi mức, chỉ số chính cho "độ giữ họa tiết") | DreamSim (khoảng cách cảm thụ giữa hai ảnh, thấp là giống) giữa vùng họa tiết của ảnh cuối và phần tử gốc; bổ sung số điểm khớp SIFT (điểm đặc trưng cục bộ) | Đặt sau khi đo phân bố trên 6 mảng LR3D; mức 1 đặt chặt hơn mức 2 đến 4 |
 | M5 | Liền mạch (seam) | Tỉ lệ độ lệch màu và độ sáng ở đường nối so với trong ô, 1,0 là liền hoàn toàn | 1,3 trở xuống |
 | M6 | Lệch màu | Khoảng cách màu LAB (ΔE) giữa bảng màu phần tử và ảnh cuối | Đặt sau khi đo |
 | M7 | Giữ cấu trúc áo (DINO) | DINO-ViT là mô hình thị giác học không cần nhãn, cho vector đặc trưng theo từng mảnh ảnh. Lấy vector khóa (key) của một lớp attention (bài báo dùng lớp thứ l, lớp cụ thể chọn sau khi thử) ở từng mảnh, tính khoảng cách giữa ảnh áo nền và ảnh áo hoàn chỉnh trên vùng ngoài họa tiết. Thấp là cấu trúc giữ tốt. Phương án thay: chạy Mask R-CNN (mô hình phát hiện vật) lấy mặt nạ áo rồi tính recall và precision so với áo nền | Đặt sau khi đo |
 
-Tất cả ngưỡng là đề xuất ban đầu, được hiệu chỉnh sau khi đo thực tế rồi ghi giá trị cuối vào file cấu hình. Chỉ số M3 chỉ áp dụng ở mức 1. M7 chỉ dùng để đo, không dùng để dẫn hướng khi sinh ảnh (dẫn hướng bằng DINO tốn thời gian và chưa kiểm chứng với Stable Diffusion 1.5). Ý tưởng M7 lấy từ bài DiffFashion (mục 15), bổ sung cho M1 vì M1 chỉ so đường viền ngoài, còn M7 so cả cấu trúc bên trong thân áo.
+Tất cả ngưỡng là đề xuất ban đầu, được hiệu chỉnh sau khi đo thực tế rồi ghi giá trị cuối vào file cấu hình. M3 chỉ áp dụng cho bản dán nguyên (nếu làm). M7 chỉ dùng để đo, không dùng để dẫn hướng khi sinh ảnh (dẫn hướng bằng DINO tốn thời gian và chưa kiểm chứng với Stable Diffusion 1.5). Ý tưởng M7 lấy từ bài DiffFashion (mục 15), bổ sung cho M1 vì M1 chỉ so đường viền ngoài, còn M7 so cả cấu trúc bên trong thân áo.
 
 ### 8.2. Tiêu chí loại và thử lại
 
-- Vi phạm M1, M2 hoặc M3: thử lại với seed kế tiếp, tối đa 3 lần.
+- Vi phạm M1, M2 hoặc M4 (họa tiết không còn nhận ra, vượt ngưỡng của mức tương ứng): thử lại với seed kế tiếp, tối đa 3 lần.
 - Sau 3 lần vẫn hỏng: loại, lưu ảnh kèm lý do vào thư mục riêng (đề xuất `outputs/rejected/`) để làm ví dụ "bị loại" cho minh chứng.
 - Mẫu sửa được (ví dụ chỉnh tham số mask rồi đạt): lưu cả bản trước và sau, ghi vào nhật ký.
 - Toàn bộ nhật ký lưu cùng Design Passport.
 
 ### 8.3. So sánh có kiểm soát nhiều seed
 
-Giữ cố định prompt, bảng màu, bố cục, điều kiện đầu vào, và **chỉ đổi một thành phần mỗi thí nghiệm**. Chạy 5 seed (42 đến 46) trên 6 hiện vật. Lưu ý chỉ 3 hiện vật có ảnh từ 1024 px trở lên (`BT_Hac_XP`, `MB_2C_XP_31`, ảnh sen dát vàng), nên đánh giá độ nét chỉ chắc chắn ở 3 hiện vật này.
+Giữ cố định prompt, bảng màu, bố cục, điều kiện đầu vào, và **chỉ đổi một thành phần mỗi thí nghiệm**. Chạy 5 seed (42 đến 46) trên 6 mảng LR3D (`LR3D_33`, `LR3D_61`, `LR3D_50`, `LR3D_38`, `LR3D_97`, `LR3D_124`). Cả 6 mảng có cạnh dài 2048 px (cắt từ texture 4096 đến 8192 px). `LR3D_97` có nét lam thưa nên ít chi tiết nhất, `LR3D_38` còn dính một đĩa nhãn kiểm kê ở đáy.
 
 | Thí nghiệm | Thành phần thay đổi | Các cấu hình |
 |---|---|---|
-| E1 | Cách giữ họa tiết ở mức 1 | ControlNet hiện tại, so với trích xuất tất định |
-| E2 | Bước polish | Không polish, polish toàn ảnh 0,40 (hiện tại), polish có mask và dán lại |
+| E1 | Nguồn ảnh nét cho ControlNet | Ba nhánh: ảnh render cả bình (mặc định, `source="render"`), mảng phẳng (`panel`), phần tử cắt (`elements`). Cùng prompt, seed, mức, chỉ khác ảnh nạp. Lưu ý: nhánh phần tử dùng mỗi biến thể một phần tử khác nhau nên chưa đối chứng chặt, cần thêm chế độ cố định một phần tử. Thêm mốc dán nguyên nếu làm mục 3.3 |
+| E2 | Bước polish | Không polish, polish toàn ảnh 0,40 (hiện tại), polish nhẹ 0,25 đến 0,35 có mặt nạ áo |
 | E3 | Nền áo | Nền AI 512 hiện tại, so với nền độ phân giải cao |
 | E4 | Trọng số ControlNet | Bốn mức 0,85, 0,65, 0,45, 0,25 |
 | E5 (tùy chọn) | LoRA | Có và không (mục 4.4) |
@@ -345,16 +358,16 @@ Vai trò gợi ý, nhóm tự gán người: **AI** (mô hình và pipeline), **
 
 | Ngày | AI | DEV | BA |
 |---|---|---|---|
-| 18/11 | Dựng lại trích xuất tối thiểu, thử trên hiện vật thuyền, xem bằng mắt | Dựng khung deploy (mục 11) | Chốt các câu hỏi mục 0, sửa mâu thuẫn `items.json` và `metadata.json` |
-| 19/11 | Trích xuất 6 hiện vật, kiểm tra tự động | Chuẩn bị hoặc chụp ảnh nền áo | Gửi xin phép nguồn ảnh, soạn bảng nguồn và giấy phép, gửi email hỏi nhóm tác giả LR3D-CULT2 và VietFashion |
-| 20/11 | Ghép lên nền, polish có mask và dán lại | Hiển thị Passport và nhãn AI | Soạn phiếu thẩm định và phiếu chấm mù |
-| 21/11 | Viết chỉ số M1 đến M6, quy tắc thử lại, kiểm thử bằng pytest | Nối quy tắc loại vào API | Tìm người thẩm định |
+| 18/11 (đã làm) | Module cắt phần tử từ texture phẳng, thay 6 hiện vật bằng 6 mảng LR3D, sinh 24 thiết kế | Dựng khung deploy (mục 11) | Chốt các câu hỏi mục 0, sửa mâu thuẫn `items.json` và `metadata.json` |
+| 19/11 | Cho `controlnet.prepare` nhận phần tử cắt, chạy thử E1 trên `LR3D_61`, xem bằng mắt | Chuẩn bị hoặc chụp ảnh nền áo | Gửi xin phép nguồn ảnh, soạn bảng nguồn và giấy phép, gửi email hỏi nhóm tác giả LR3D-CULT2 và VietFashion |
+| 20/11 | Nền áo cao phân giải, polish nhẹ có mặt nạ, thử E2 và E3 trên một mảng | Hiển thị Passport và nhãn AI | Soạn phiếu thẩm định và phiếu chấm mù |
+| 21/11 | Viết chỉ số M1, M2, M4, M6, M7, quy tắc thử lại, kiểm thử bằng pytest | Nối quy tắc loại vào API | Tìm người thẩm định |
 | 22/11 | Chạy 5 seed trên 6 hiện vật theo E1 đến E4 | Triển khai bản đầu của đường dẫn thử | Chuẩn bị bảng ghi kết quả |
 | 23/11 | Lưu ví dụ bị loại và sửa | Kiểm thử tải | Gửi phiếu, tổ chức chấm mù |
 | 24/11 | Sửa lỗi theo kết quả | Đóng băng bản nộp | Thống kê, tổng hợp bộ minh chứng |
 | 25/11 | Dự phòng | Kiểm tra đường dẫn hoạt động | Nộp |
 
-**Điểm quyết định cuối ngày 20/11:** nếu trích xuất mức 1 đạt kiểm tra bằng mắt trên thuyền và ít nhất 3 trong 6 hiện vật, giữ đường A. Nếu không, dùng ControlNet hiện tại cho mức 1, nhưng vẫn áp dụng dán lại ở vùng ngoài áo và ghi rõ giới hạn trong báo cáo.
+**Điểm quyết định cuối ngày 20/11:** nếu ảnh nét từ phần tử làm họa tiết mức 1 nhận ra rõ hơn bản hiện tại trên ít nhất 3 trong 6 mảng (xem bằng mắt và đo M4), giữ hướng này cho cả tuần. Nếu không, làm thêm bản dán nguyên (mục 3.3) để biết lỗi nằm ở bước vẽ lại hay ở nguồn ảnh, rồi chỉnh tiếp, và ghi rõ giới hạn trong báo cáo.
 
 **Quy trình theo CLAUDE.md:** sau mỗi module lớn, chạy pytest, một subagent chỉ đọc kiểm tra logic, một subagent khác tính trước kết quả mong đợi chỉ từ đặc tả và dữ liệu đầu vào rồi so với kết quả chạy thật, và tự rà soát lại trước khi báo xong. Ngoài ra bắt buộc xem ảnh bằng mắt cho từng hiện vật, vì kiểm thử theo đặc tả không bắt được lỗi hình ảnh.
 
@@ -384,7 +397,7 @@ Chỉ ghi "đã lọc, cắt, dùng để huấn luyện" khi thực sự đã l
 
 - Không đưa LoRA huấn luyện từ LR3D-CULT2, hoặc phần tử cắt từ dataset này, vào bản công khai khi chưa có giấy phép và xuất xứ từng vật.
 - Không dùng VietFashion để huấn luyện bản công khai khi chưa hỏi nhóm tác giả.
-- Không tuyên bố hiện vật là Bát Tràng, hay gắn nhãn bảo tàng và niên hiệu, khi chưa có nguồn kiểm chứng.
+- Không khẳng định từng vật là Bát Tràng, không gắn nhãn bảo tàng và niên hiệu, khi chưa có nguồn kiểm chứng. Câu được phép dùng nằm ở `docs/DANH_MUC_NGUON_HIEN_VAT.md` mục 4.
 - Không polish toàn ảnh với strength cao.
 - Không dùng điểm CLIP làm kết luận duy nhất về đúng văn hóa.
 - Không bật đồng thời nhiều điều kiện mà chưa có ablation.
@@ -415,6 +428,8 @@ Các paper nằm trong thư mục `docs/paper tham khảo/`. Kỹ thuật chính
 | Mục | Thay đổi |
 |---|---|
 | Mục tiêu và kết luận | Từ "LoRA, polish, 5 seed" sang "trích xuất tất định, nền áo cao phân giải, minh chứng ba yêu cầu" |
+| Đầu vào mặc định (quyết định 19/11) | Ảnh hiện vật mặc định là ảnh render cả bình (đúng luồng hồ sơ gốc), mảng phẳng và phần tử là nhánh so sánh E1. Sửa lỗi nền xám trong `controlnet.prepare`. Mục 2.1, 4.1, 8.3 |
+| Hướng mức 1 (quyết định 19/11) | Bỏ "mức 1 giữ nguyên pixel bằng phương pháp tất định" làm đường chính. Mọi mức vẽ lại bằng ControlNet, mức 1 là mức trung thành đo bằng M4. Dán nguyên phần tử thành mốc đối chiếu tùy chọn (mục 3.3). Sửa mục 1, 3, 4, 7, 8.1 đến 8.3 và lịch ở mục 10 |
 | LR3D-CULT2 | Từ dataset chính huấn luyện LoRA xuống nguồn tham khảo, kèm kết quả quét 120 vật thể và đính chính về tiền tố `sketchfab_collection` |
 | VietFashion | Mới: mục 2.4, ghi nhận giấy phép chưa xác minh trên trang chính thức |
 | LoRA dáng áo dài từ VietFashion | Mới: mục 6.3, thử nghiệm tùy chọn, kèm bước kiểm chứng mẫu và thí nghiệm E6 |
@@ -423,7 +438,7 @@ Các paper nằm trong thư mục `docs/paper tham khảo/`. Kỹ thuật chính
 | Bộ dữ liệu `bat_trang_patterns/` cho LoRA | Bỏ, thay bằng kho phần tử |
 | Segmentation | Bỏ "kiểm tra thủ công", thay bằng kiểm tra tự động và nhật ký |
 | Phối cảnh | Thay bằng trải trụ từ silhouette |
-| Giai đoạn 1 | Tách hai đường: mức 1 tất định, mức 2 đến 4 ControlNet |
+| Giai đoạn 1 | Bản 18/11 tách hai đường (mức 1 tất định, mức 2 đến 4 ControlNet). Bản 19/11 bỏ cách tách này: mọi mức dùng ControlNet |
 | LoRA | Xuống thử nghiệm tùy chọn với điều kiện bật lại |
 | Noise rolling, boundary inpainting, UV, ControlMat | Xuống hướng phát triển |
 | Polish | Thêm dán lại pixel gốc ở vùng khóa |
