@@ -39,7 +39,14 @@ from generation import controlnet as cn, garment, pattern      # noqa: E402
 
 OUT_DIR = ROOT / "outputs" / "sweep"
 CSV_FILE = ROOT / "evaluation" / "intensity_sweep.csv"
-DEFAULT_ITEMS = ["BT001", "BT008", "BT010"]
+# Bản cũ mặc định "BT001","BT008","BT010" — ba mã không còn tồn tại. Nay lấy từ
+# Heritage Registry (chỉ hiện vật active).
+def _default_items() -> list[str]:
+    from streamlit_ui.heritage_data import load_heritage_metadata  # noqa: PLC0415
+    return [it["heritage_id"] for it in load_heritage_metadata(ROOT)]
+
+
+DEFAULT_ITEMS: list[str] = []
 SEED = 42
 
 # Khâu duy nhất trong v6 cần LLM. Chưa có API nên để trống — ghi vào CSV để
@@ -88,10 +95,10 @@ def sha256(path: Path) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--items", default=",".join(DEFAULT_ITEMS))
+    ap.add_argument("--items", default="")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
-    ids = [x.strip() for x in args.items.split(",") if x.strip()]
+    ids = [x.strip() for x in args.items.split(",") if x.strip()] or _default_items()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # Dựng prompt TRƯỚC khi nạp model — lỗi ngân sách token phải nổ ra ngay.

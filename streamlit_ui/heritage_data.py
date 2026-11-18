@@ -14,8 +14,13 @@ REQUIRED_FIELDS = {
 }
 
 
-def load_heritage_metadata(project_root: Path) -> list[dict]:
-    """Đọc và kiểm tra dữ liệu hiện vật do nhóm cung cấp."""
+def load_heritage_metadata(project_root: Path, include_retired: bool = False) -> list[dict]:
+    """Đọc và kiểm tra dữ liệu hiện vật do nhóm cung cấp.
+
+    Schema 2.x thêm trường `status`. Mặc định chỉ trả hiện vật `active`: hiện vật
+    `retired` (ví dụ ảnh dưới 512 px) không được đưa vào pipeline sinh ảnh mới,
+    nhưng vẫn nằm trong metadata để Design Passport cũ tra được nguồn.
+    """
     metadata_path = project_root / "data" / "heritage" / "metadata.json"
     payload = json.loads(metadata_path.read_text(encoding="utf-8"))
     raw_items = payload.get("items")
@@ -33,6 +38,10 @@ def load_heritage_metadata(project_root: Path) -> list[dict]:
             raise ValueError(f"Khóa items và heritage_id không khớp cho {key}.")
         if not (project_root / item["image_path"]).is_file():
             raise FileNotFoundError(f"Không tìm thấy ảnh hiện vật: {item['image_path']}")
+        if item.get("status", "active") != "active" and not include_retired:
+            continue
         items.append(item)
+    if not items:
+        raise ValueError("Không có hiện vật nào ở trạng thái active.")
 
     return items

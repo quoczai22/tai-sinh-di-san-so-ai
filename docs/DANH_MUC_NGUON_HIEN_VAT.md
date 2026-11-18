@@ -67,7 +67,15 @@ Các bước sau do hệ thống làm tự động, không có chỉnh sửa tay
 
 ## 6. Việc chưa làm
 
-- Chưa liên hệ nhóm tác giả LR3D-CULT2 để xác nhận xuất xứ và giấy phép từng vật. Cho đến lúc đó, sáu hiện vật chỉ dùng cho thử nghiệm và trình bày, kèm nhãn chưa xác minh.
+- Nhóm cho biết ngày 19/11/2026 đã được phép dùng bộ dữ liệu cho mục đích phi thương mại. **Hồ sơ chưa lưu bằng chứng**: điền bảng bên dưới và đính kèm thư hoặc tin nhắn xác nhận. Phạm vi cho phép chưa rõ: có gồm hiển thị hoặc cho tải mô hình 3D trên trang công khai không. Xuất xứ và giấy phép từng vật vẫn chưa xác minh. Mọi nơi hiển thị dữ liệu phải kèm nhãn "chỉ dùng phi thương mại".
+
+| Mục | Nội dung cần ghi |
+|---|---|
+| Người cấp phép (tên, đơn vị) | Chưa ghi |
+| Ngày và hình thức (thư điện tử, tin nhắn, trang giấy phép) | Chưa ghi |
+| Phạm vi: dùng nội bộ, hiển thị công khai, cho tải mô hình 3D, đăng ảnh kết quả | Chưa ghi |
+| Điều kiện kèm theo (cách ghi công, thời hạn) | Chưa ghi |
+| File bằng chứng đính kèm | Chưa có |
 - Chưa có chuyên gia di sản hoặc thiết kế xem xét mẫu.
 - Chưa tích hợp các trường nguồn này vào Design Passport của ứng dụng (xem mục 9 của `docs/HUONG_CAI_TIEN_V2.md`).
 - Phần lớn nhãn nguồn trong giao diện web (tiêu đề trang, chân trang, các đoạn giới thiệu) vẫn ghi chung "Bát Tràng" ở chín chỗ, chưa đối chiếu với tuyên bố ở mục 4.

@@ -1,0 +1,18 @@
+{
+  "version": "ER-1.0",
+  "scale": {"min": 1, "max": 5, "labels": {"1": "Rất kém", "2": "Kém", "3": "Chấp nhận được", "4": "Tốt", "5": "Rất tốt"}},
+  "criteria": [
+    {"key": "motif_recognizability", "label": "Nhận ra họa tiết gốc", "question": "Đặt cạnh ảnh hiện vật, có nhận ra họa tiết trên áo bắt nguồn từ hiện vật này không?", "owner": "heritage"},
+    {"key": "cultural_appropriateness", "label": "Phù hợp văn hoá", "question": "Biểu tượng có được dùng đúng ngữ cảnh (không đặt biểu tượng thờ tự, chữ Hán, linh vật vào vị trí phản cảm; không pha trộn sai bản sắc)?", "owner": "heritage"},
+    {"key": "aesthetic", "label": "Thẩm mỹ thiết kế", "question": "Bố cục, màu sắc, tỉ lệ họa tiết trên áo có hài hoà, có thể mặc được không?", "owner": "design"},
+    {"key": "garment_integrity", "label": "Toàn vẹn dáng áo dài", "question": "Dáng áo (cổ, tay, tà, eo) có đúng áo dài, không biến dạng?", "owner": "design"},
+    {"key": "looks_like_printed_fabric", "label": "Giống vải in thật", "question": "Họa tiết có trông như in/dệt trên vải theo nếp, hay như hình dán phẳng?", "owner": "design"}
+  ],
+  "decision": {
+    "approve": "Đạt — cho phép phê duyệt.",
+    "revise": "Cần chỉnh sửa — ghi rõ lý do và bước cần làm lại.",
+    "reject": "Loại — ghi rõ lý do."
+  },
+  "pass_rule": "Đạt khi không tiêu chí nào < 3 VÀ 'Phù hợp văn hoá' ≥ 4 (do chuyên gia di sản chấm). Quyết định cuối vẫn do chuyên gia chọn; quy tắc chỉ cảnh báo khi quyết định 'Đạt' mâu thuẫn với điểm.",
+  "blind_protocol": "Người chấm không thấy mã biến thể, trọng số, điểm AI hay quyết định của người khác; thứ tự hiển thị xáo trộn theo người chấm."
+}

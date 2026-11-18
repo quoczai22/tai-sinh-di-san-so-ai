@@ -1,0 +1,18 @@
+{
+  "id": "EXP-A",
+  "title": "Ảnh hưởng RIÊNG của trọng số ControlNet lên hoa văn và thiết kế cuối",
+  "question": "Khi chỉ thay trọng số ControlNet (giữ nguyên prompt, bảng màu, bố cục, bước hoàn thiện), mức giữ họa tiết và đánh giá của người thay đổi thế nào, và dao động giữa các seed lớn đến đâu?",
+  "why": "Bộ 4 biến thể cũ đổi ĐỒNG THỜI 4 thứ (trọng số, cụm prompt theo mức, bảng màu ở V1, bố cục do CLIP chọn) và chỉ một seed — không quy kết được ảnh hưởng của trọng số (BTC, yêu cầu 2).",
+  "design": "single_factor_with_replicates",
+  "independent_variable": {"name": "controlnet_weight", "levels": [0.85, 0.65, 0.45, 0.25]},
+  "replicates": {"name": "seed", "levels": [42, 7, 123, 2024, 31415]},
+  "fixed": {"prompt_modifier": "", "palette_mode": "free", "layout": "front_panel", "polish_strength": 0.40,
+            "polish_seed": "same_as_seed", "steps": 25, "guidance": 7.5, "prompt_terms_version": "data/prompt_terms.json@2026-11-18"},
+  "units": {"heritage": "active"},
+  "requires_gpu": true,
+  "metrics": {"automatic": ["vessel_leakage", "seam_ratio", "pattern_preservation", "garment_shape_iou", "clip_similarity_pattern_vs_ceramic"],
+              "human": ["motif_recognizability", "cultural_appropriateness", "aesthetic", "garment_integrity"]},
+  "blind_review": {"enabled": true, "min_raters": 3, "shown_per_item": 1},
+  "analysis": "Trung bình ± độ lệch chuẩn, khoảng tin cậy 95% và hệ số biến thiên theo seed cho từng mức; so sánh cặp các mức trên cùng hiện vật + seed (Wilcoxon); độ đồng thuận người chấm (Krippendorff alpha).",
+  "status": "planned"
+}

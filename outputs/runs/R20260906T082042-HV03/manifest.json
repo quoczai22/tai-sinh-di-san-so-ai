@@ -1,0 +1,276 @@
+{
+  "schema": "run-manifest/1.0",
+  "run_id": "R20260906T082042-HV03",
+  "heritage_id": "BHV_UU_XP1-600x600",
+  "code": "HV03",
+  "source": "evaluation/variants.py (log: evaluation/variants.csv)",
+  "reconstructed_on": "2026-11-18T03:51:23+00:00",
+  "artifacts": [
+    {
+      "role": "source_image",
+      "path": "data/heritage/BHV_UU_XP1-600x600.png",
+      "sha256": "a26c9e1e6a43254c09022e8d8c7188201ab4891d3087ecc3e3a51b95bdb4c938",
+      "bytes": 365542,
+      "size": [
+        600,
+        600
+      ]
+    },
+    {
+      "role": "reference_512",
+      "path": "outputs/variants/BHV_UU_XP1-600x600_00_ref.png",
+      "sha256": "8eaf49284906468afbebb35d8a468cb7fc0bd09fc39f13a27275cb7a8038fafd",
+      "bytes": 281921,
+      "size": [
+        512,
+        512
+      ]
+    },
+    {
+      "role": "control_canny",
+      "path": "outputs/variants/BHV_UU_XP1-600x600_01_canny.png",
+      "sha256": "4dec6292b9a145dbe482e7e9b090f192d7a53a2902cf1dfcbb2e8373e64dfc1d",
+      "bytes": 26979,
+      "size": [
+        512,
+        512
+      ]
+    }
+  ],
+  "designs": [
+    {
+      "design_id": "R20260906T082042-HV03.V1",
+      "passport_id": "DP-HV03-20260906-V1",
+      "variant_index": 1,
+      "artifacts": [
+        {
+          "role": "pattern",
+          "path": "outputs/variants/BHV_UU_XP1-600x600_V1_pattern.png",
+          "sha256": "5ba231e27c4499e4646dd8ff66ad95d484e237cea428b88e23ee26f83c6e046b",
+          "bytes": 597313,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "composite_raw",
+          "path": "outputs/variants/BHV_UU_XP1-600x600_V1_aodai_raw.png",
+          "sha256": "15bdca8136b16465603b5c11a890a73a5c11bb90ed35827edda648178d29632b",
+          "bytes": 400799,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "final_img2img",
+          "path": "web_ui/assets/images/variants/BHV_UU_XP1-600x600_V1_aodai.png",
+          "sha256": "e24065e84da4dcb37855cb5f255f95e814b9f4c17dbc88b3907645f25e4baafb",
+          "bytes": 397698,
+          "size": [
+            512,
+            512
+          ],
+          "legacy_sha256_prefix": "e24065e84da4dcb3"
+        },
+        {
+          "role": "repair_pattern_lock",
+          "path": "outputs/runs/R20260906T082042-HV03/V1_pattern_lock.png",
+          "sha256": "04d2e16926b2f8959a5b5ab0ef1f2a51bc8c4a9d0e6c0069c44e7d2af58b478e",
+          "bytes": 402848,
+          "size": [
+            512,
+            512
+          ],
+          "method": "pattern_lock_v1"
+        }
+      ],
+      "quality_decision": "FAIL",
+      "repair_decision": "PASS"
+    },
+    {
+      "design_id": "R20260906T082042-HV03.V2",
+      "passport_id": "DP-HV03-20260906-V2",
+      "variant_index": 2,
+      "artifacts": [
+        {
+          "role": "pattern",
+          "path": "outputs/variants/BHV_UU_XP1-600x600_V2_pattern.png",
+          "sha256": "a3783f60391ee4ffa2871c9dfb3169207d857393acfc14c7059d26dbea2136a5",
+          "bytes": 628487,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "composite_raw",
+          "path": "outputs/variants/BHV_UU_XP1-600x600_V2_aodai_raw.png",
+          "sha256": "24e660c9ab2d46ad14c0bdfc4bfe1c5e4bd8304e735d48d98b4531ec44da44a1",
+          "bytes": 369683,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "final_img2img",
+          "path": "web_ui/assets/images/variants/BHV_UU_XP1-600x600_V2_aodai.png",
+          "sha256": "8c80471a418371c82ea3c06a84f79fb7f921c0a2fefd548de081008e35bb2253",
+          "bytes": 369531,
+          "size": [
+            512,
+            512
+          ],
+          "legacy_sha256_prefix": "8c80471a418371c8"
+        },
+        {
+          "role": "repair_pattern_lock",
+          "path": "outputs/runs/R20260906T082042-HV03/V2_pattern_lock.png",
+          "sha256": "9d7c4c78535fd82ba206946e135eef46a582b5a95962ec3259af7a63171bb196",
+          "bytes": 376441,
+          "size": [
+            512,
+            512
+          ],
+          "method": "pattern_lock_v1"
+        }
+      ],
+      "quality_decision": "FAIL",
+      "repair_decision": "PASS"
+    },
+    {
+      "design_id": "R20260906T082042-HV03.V3",
+      "passport_id": "DP-HV03-20260906-V3",
+      "variant_index": 3,
+      "artifacts": [
+        {
+          "role": "pattern",
+          "path": "outputs/variants/BHV_UU_XP1-600x600_V3_pattern.png",
+          "sha256": "1d22151b9aa314368da6d2ab90213d8434b114ae794c84bef97894d61970320f",
+          "bytes": 627957,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "composite_raw",
+          "path": "outputs/variants/BHV_UU_XP1-600x600_V3_aodai_raw.png",
+          "sha256": "ccedb75329df08109fa7e4d22dbe8bcde2a19589762bcda6b853f9509fbe3232",
+          "bytes": 381158,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "final_img2img",
+          "path": "web_ui/assets/images/variants/BHV_UU_XP1-600x600_V3_aodai.png",
+          "sha256": "2e6945740a2fad40206ae7323034a5cfb7ff00aaba61babd7fd36ba0259b71d8",
+          "bytes": 381259,
+          "size": [
+            512,
+            512
+          ],
+          "legacy_sha256_prefix": "2e6945740a2fad40"
+        },
+        {
+          "role": "repair_pattern_lock",
+          "path": "outputs/runs/R20260906T082042-HV03/V3_pattern_lock.png",
+          "sha256": "0e706af7d553f8769f9269075932d0e8999d7270516cd8ac2dd90caff67d3533",
+          "bytes": 388547,
+          "size": [
+            512,
+            512
+          ],
+          "method": "pattern_lock_v1"
+        }
+      ],
+      "quality_decision": "FAIL",
+      "repair_decision": "WARN"
+    },
+    {
+      "design_id": "R20260906T082042-HV03.V4",
+      "passport_id": "DP-HV03-20260906-V4",
+      "variant_index": 4,
+      "artifacts": [
+        {
+          "role": "pattern",
+          "path": "outputs/variants/BHV_UU_XP1-600x600_V4_pattern.png",
+          "sha256": "e8aed5645ccb8839b35b3d314d818bfeb19b136df40174ce15579d531a66ce5b",
+          "bytes": 582730,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "composite_raw",
+          "path": "outputs/variants/BHV_UU_XP1-600x600_V4_aodai_raw.png",
+          "sha256": "ff477123e6c177dabbf3dd7d3b7600886c80dcf942eade4acbebb0581e404054",
+          "bytes": 398576,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "final_img2img",
+          "path": "web_ui/assets/images/variants/BHV_UU_XP1-600x600_V4_aodai.png",
+          "sha256": "0da661baad7cf30ca42d61efd722c1eb4c8eb1be7cac52a060c5935ef30fb0e2",
+          "bytes": 403539,
+          "size": [
+            512,
+            512
+          ],
+          "legacy_sha256_prefix": "0da661baad7cf30c"
+        },
+        {
+          "role": "repair_pattern_lock",
+          "path": "outputs/runs/R20260906T082042-HV03/V4_pattern_lock.png",
+          "sha256": "d43fa890879b6cfd694247fc5da4e40a032121e04e99d37f29ac71ac731cb0b4",
+          "bytes": 409483,
+          "size": [
+            512,
+            512
+          ],
+          "method": "pattern_lock_v1"
+        }
+      ],
+      "quality_decision": "FAIL",
+      "repair_decision": "PASS"
+    }
+  ],
+  "integrity": [
+    {
+      "design_id": "R20260906T082042-HV03.V1",
+      "logged_sha256_prefix": "e24065e84da4dcb3",
+      "web_ui_copy_matches": true,
+      "outputs_copy_matches": false,
+      "note": "Tệp cùng tên trong outputs/variants đã bị một lần chạy sau (API, không ghi nhật ký) ghi đè."
+    },
+    {
+      "design_id": "R20260906T082042-HV03.V2",
+      "logged_sha256_prefix": "8c80471a418371c8",
+      "web_ui_copy_matches": true,
+      "outputs_copy_matches": false,
+      "note": "Tệp cùng tên trong outputs/variants đã bị một lần chạy sau (API, không ghi nhật ký) ghi đè."
+    },
+    {
+      "design_id": "R20260906T082042-HV03.V3",
+      "logged_sha256_prefix": "2e6945740a2fad40",
+      "web_ui_copy_matches": true,
+      "outputs_copy_matches": false,
+      "note": "Tệp cùng tên trong outputs/variants đã bị một lần chạy sau (API, không ghi nhật ký) ghi đè."
+    },
+    {
+      "design_id": "R20260906T082042-HV03.V4",
+      "logged_sha256_prefix": "0da661baad7cf30c",
+      "web_ui_copy_matches": true,
+      "outputs_copy_matches": false,
+      "note": "Tệp cùng tên trong outputs/variants đã bị một lần chạy sau (API, không ghi nhật ký) ghi đè."
+    }
+  ]
+}

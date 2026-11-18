@@ -73,3 +73,24 @@ def save(result: dict, out_dir: Path, tag: str | None = None) -> Path:
     path = out_dir / f"{name}.png"
     result["image"].save(path)
     return path
+
+
+def generate_custom(gen, heritage_id: str, weight: float, seed: int, modifier: str = "",
+                    prepared: dict | None = None) -> dict:
+    """Sinh hoa văn với trọng số ControlNet và cụm điều tiết prompt TÁCH RỜI.
+
+    `generate()` gắn cố định "mức Intensity" = (trọng số + cụm prompt) — đổi mức là
+    đổi HAI biến cùng lúc. Thí nghiệm có kiểm soát (evaluation/experiment.py) cần
+    đổi riêng từng biến, nên dùng hàm này.
+    """
+    p = prepared or cn.prepare(heritage_id)
+    t = TERMS[heritage_id]
+    positive = assemble_pattern(t["name_en"], t["base_description"], modifier)
+    assert_fits(positive, f"{heritage_id}/w{weight}")
+    if not getattr(gen, "seamless", False):
+        gen.set_seamless(True)
+    img, secs, peak = gen.generate(positive, NEG_PATTERN, p["control"], weight, seed)
+    return {"image": img, "positive_prompt": positive, "negative_prompt": NEG_PATTERN, "weight": weight,
+            "modifier": modifier, "seed": seed, "duration_s": secs, "peak_vram_gb": peak,
+            "heritage_id": heritage_id}
+

@@ -186,7 +186,8 @@ def _layout_mask(template: Image.Image, layout: dict) -> np.ndarray:
 
 
 def apply(pattern: Image.Image, layout: str | None = None, opacity: float = 0.92,
-          template_path: Path = TEMPLATE, grade: bool = True) -> Image.Image:
+          template_path: Path = TEMPLATE, grade: bool = True,
+          displace: float | None = None, shading: bool = True) -> Image.Image:
     """Đắp hoa văn lên áo dài theo một cách bố trí (layout).
 
     Dùng phép nhân chứ không dán đè: nếp gấp và bóng đổ của vải vẫn hiện qua hoa
@@ -217,13 +218,16 @@ def apply(pattern: Image.Image, layout: str | None = None, opacity: float = 0.92
     canvas = big[oy:oy + H, ox:ox + W]
 
     # Uốn theo nếp vải — biến dạng HÌNH HỌC
-    mx, my = displacement_map(tpl, strength=lay.get("displace", 14.0))
+    # `displace`/`shading` chỉ để THÍ NGHIỆM tắt từng bước (EXP-C, ablation giai
+    # đoạn 2). Giá trị mặc định giữ nguyên hành vi cũ.
+    mx, my = displacement_map(tpl, strength=lay.get("displace", 14.0) if displace is None else displace)
     warped = cv2.remap(canvas, mx, my, cv2.INTER_LINEAR,
                        borderMode=cv2.BORDER_REFLECT).astype(np.float32)
 
     # Truyền SÁNG — thứ displacement map không làm được. Nhân bản đồ độ sáng của
     # vải lên hoa văn để nó tối ở nếp gấp và sáng ở chỗ hứng nắng.
-    warped *= shading_map(tpl, mask)[:, :, None]
+    if shading:
+        warped *= shading_map(tpl, mask)[:, :, None]
 
     base = np.asarray(tpl, np.float32)
     m = np.clip(mask * opacity, 0, 1)[:, :, None]
@@ -312,9 +316,9 @@ def make_template(seed: int = 43) -> Path:
                generator=torch.Generator("cuda").manual_seed(seed)).images[0]
     del pipe; torch.cuda.empty_cache()
     img.save(TEMPLATE)
-    PANEL_FILE.write_text(json.dumps({"panel": DEFAULT_PANEL,
-                                      "note": "x0,y0,x1,y1 theo tỉ lệ 0-1 của ảnh mẫu"},
-                                     ensure_ascii=False, indent=2), encoding="utf-8")
+    # Bản cũ ghi thêm PANEL_FILE/DEFAULT_PANEL — hai tên chưa từng được khai báo
+    # (NameError khi chạy). Toạ độ bố cục nay nằm trong layouts.json, tính theo hộp
+    # bao của áo nên không cần ghi lại khi đổi ảnh mẫu.
     return TEMPLATE
 
 

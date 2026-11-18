@@ -1,0 +1,594 @@
+{
+  "schema": "design-passport/1.0",
+  "passport_id": "DP-HV02-20260906-V4",
+  "design_id": "R20260906T082255-HV02.V4",
+  "run_id": "R20260906T082255-HV02",
+  "created_at": "2026-09-06T08:23:22+00:00",
+  "heritage": {
+    "heritage_id": "HSBT_XP-300x300",
+    "code": "HV02",
+    "name": "Bình gốm hoa sen mực đen",
+    "status": "retired",
+    "source_title": "binh hoa dang vo gom bat trang hoa tiet hoa sen ve mau truyen thong cao 30cm",
+    "source_url": "https://fullhome-decor.com/san-pham/binh-hoa-dang-vo-gom-bat-trang-hoa-tiet-hoa-sen-ve-mau-truyen-thong-cao-30cm/",
+    "holder": "fullhome-decor.com (website bán gốm — pháp nhân chưa xác minh)",
+    "author": null,
+    "rights_status": "unverified",
+    "license": null,
+    "attribution": "Ảnh: fullhome-decor.com (https://fullhome-decor.com/san-pham/binh-hoa-dang-vo-gom-bat-trang-hoa-tiet-hoa-sen-ve-mau-truyen-thong-cao-30cm/). Quyền sử dụng chưa được xác minh; chỉ dùng phi thương mại cho nghiên cứu và trình diễn trong cuộc thi.",
+    "dating": null,
+    "registry_data_version": "orig-sha256:2d63823901ee",
+    "source_image_sha256": "2d63823901ee2560d504832876683aba60025a4f51b42257f248113799714026"
+  },
+  "artifacts": [
+    {
+      "role": "source_image",
+      "path": "data/heritage/HSBT_XP-300x300.png",
+      "sha256": "2d63823901ee2560d504832876683aba60025a4f51b42257f248113799714026",
+      "bytes": 70620,
+      "size": [
+        300,
+        300
+      ]
+    },
+    {
+      "role": "reference_512",
+      "path": "outputs/variants/HSBT_XP-300x300_00_ref.png",
+      "sha256": "e5c790d41d42ce235c6a02756aa6689c64a7590dac002a5d18dd051930b7397a",
+      "bytes": 183733,
+      "size": [
+        512,
+        512
+      ]
+    },
+    {
+      "role": "control_canny",
+      "path": "outputs/variants/HSBT_XP-300x300_01_canny.png",
+      "sha256": "71046dcbee25bd85f2602473c4160ae629f3ceb025db357ba825c313983eacac",
+      "bytes": 16639,
+      "size": [
+        512,
+        512
+      ]
+    },
+    {
+      "role": "pattern",
+      "path": "outputs/variants/HSBT_XP-300x300_V4_pattern.png",
+      "sha256": "e5774f2304e806ba2080005b96989db00ab5606d1d8e3fbed450ccc177a18468",
+      "bytes": 513254,
+      "size": [
+        512,
+        512
+      ]
+    },
+    {
+      "role": "composite_raw",
+      "path": "outputs/variants/HSBT_XP-300x300_V4_aodai_raw.png",
+      "sha256": "0a1217c2d4f4750d21220b4d771b795a0d75375bba2680fb99d0ce272553ce4a",
+      "bytes": 397920,
+      "size": [
+        512,
+        512
+      ]
+    },
+    {
+      "role": "final_img2img",
+      "path": "web_ui/assets/images/variants/HSBT_XP-300x300_V4_aodai.png",
+      "sha256": "fef445f099af47b22cff5a46dc68b5950978a7b464927f6399cc0cdc41dc0300",
+      "bytes": 409575,
+      "size": [
+        512,
+        512
+      ],
+      "legacy_sha256_prefix": "fef445f099af47b2"
+    }
+  ],
+  "generation": {
+    "pipeline": "two-stage v6 (evaluation/variants.py)",
+    "models": {
+      "sd": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+      "controlnet": "lllyasviel/control_v11p_sd15_canny",
+      "clip_layout_scorer": "openai/clip-vit-base-patch32",
+      "description_llm": "gemini/gemini-3.7-flash"
+    },
+    "versions": {
+      "torch": "2.13.0+cu126",
+      "diffusers": "0.40.0",
+      "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU 8GB"
+    },
+    "prompt": "a flat decorative pattern inspired by Bat Trang monochrome lotus motif, featuring Black ink wash lotus blossoms, leaves, and thorny stems on white background., bold contemporary reinterpretation, hand-painted ceramic enamel style, bold outline linework, asymmetric composition, seamless repeating pattern.",
+    "negative_prompt": "vase, pot, jar, vessel, bottle, ceramic object, 3d render, photograph, person, mannequin, garment, kaleidoscope, mandala, mirror symmetry, radial symmetry, neon colors, oversaturated, blurry, low quality, watermark, text, distorted",
+    "seed": 42,
+    "steps": 25,
+    "guidance": 7.5,
+    "scheduler": "UniPCMultistep",
+    "controlnet": {
+      "conditioning_scale": 0.25,
+      "intensity_level": 4,
+      "intensity_name": "Tự do sáng tạo",
+      "canny_low": 100,
+      "canny_high": 200,
+      "resolution": 512,
+      "control_mode": "ornament_only",
+      "outline_erode_px": 14,
+      "edge_px": 15525,
+      "conditioning_mode": "whole_object"
+    },
+    "palette": {
+      "mode": "free",
+      "source_palette": [
+        "#d3e0e3",
+        "#afb8b1",
+        "#434f49",
+        "#788480",
+        "#19211c"
+      ]
+    },
+    "layout": {
+      "name": "shoulder_hem",
+      "label": "Vai kết hợp gấu tà",
+      "scale": 0.78,
+      "selected_by": "clip_auto",
+      "score": 0.0836,
+      "ranking": "center_medallion:0.0886;front_panel:0.088;shoulder:0.0876;shoulder_hem:0.0836;side_stripe:0.0777;hem_band:0.0722;full_body:0.0689"
+    },
+    "polish_img2img": {
+      "strength": 0.4,
+      "steps": 30,
+      "guidance": 7.0,
+      "seed": 42,
+      "prompt": "a woman wearing an elegant Vietnamese ao dai with a printed silk pattern, the print follows the fabric folds naturally, professional fashion photograph, soft daylight",
+      "negative_prompt": "flat pasted graphic, sticker, wallpaper, collage, cut out, tiled repeat, harsh edges, deformed hands, extra limbs, blurry, watermark, text"
+    },
+    "reference_metrics": {
+      "clip_similarity_pattern_vs_ceramic": 0.6988,
+      "note": "CLIP đo trên hoa văn GIAI ĐOẠN 1, trước ghép và img2img — chỉ để tham khảo."
+    },
+    "duration_s": 5.62
+  },
+  "process_steps": [
+    {
+      "step": "collect_image",
+      "label": "Thu thập ảnh hiện vật (fullhome-decor.com (website bán gốm — pháp nhân chưa xác minh))",
+      "actor_type": "human",
+      "actor": "Nhóm dự án",
+      "tool": "Trình duyệt web",
+      "at": null,
+      "inputs": [],
+      "outputs": [
+        "2d63823901ee2560d504832876683aba60025a4f51b42257f248113799714026"
+      ],
+      "note": "Không có nhật ký ngày tải ảnh; ngày sớm nhất ảnh được dùng là 2026-09-06 (evaluation/variants.csv)."
+    },
+    {
+      "step": "describe_motif",
+      "label": "Viết mô tả hoa văn tiếng Anh ≤21 token",
+      "actor_type": "ai",
+      "actor": "gemini/gemini-3.7-flash",
+      "tool": "scripts/07_describe_heritage.py",
+      "at": "2026-09-06T00:00:00+00:00",
+      "inputs": [],
+      "outputs": [],
+      "note": null
+    },
+    {
+      "step": "preprocess",
+      "label": "Tách nền, letterbox 512, Canny chỉ giữ hoa văn",
+      "actor_type": "system",
+      "actor": "generation/controlnet.py",
+      "tool": "OpenCV",
+      "at": "2026-09-06T08:23:22+00:00",
+      "inputs": [
+        "2d63823901ee2560d504832876683aba60025a4f51b42257f248113799714026"
+      ],
+      "outputs": [
+        "e5c790d41d42ce235c6a02756aa6689c64a7590dac002a5d18dd051930b7397a",
+        "71046dcbee25bd85f2602473c4160ae629f3ceb025db357ba825c313983eacac"
+      ],
+      "note": null
+    },
+    {
+      "step": "generate_pattern",
+      "label": "Sinh hoa văn phẳng (ControlNet 0.25, seed 42)",
+      "actor_type": "ai",
+      "actor": "Stable Diffusion 1.5 + ControlNet Canny",
+      "tool": "generation/pattern.py",
+      "at": "2026-09-06T08:23:22+00:00",
+      "inputs": [
+        "71046dcbee25bd85f2602473c4160ae629f3ceb025db357ba825c313983eacac"
+      ],
+      "outputs": [
+        "e5774f2304e806ba2080005b96989db00ab5606d1d8e3fbed450ccc177a18468"
+      ],
+      "note": null
+    },
+    {
+      "step": "layout_select",
+      "label": "Chọn bố cục 'Vai kết hợp gấu tà'",
+      "actor_type": "ai",
+      "actor": "CLIP ViT-B/32",
+      "tool": "generation/layout_select.py",
+      "at": "2026-09-06T08:23:22+00:00",
+      "inputs": [],
+      "outputs": [],
+      "note": null
+    },
+    {
+      "step": "composite",
+      "label": "Ghép tất định lên áo mẫu (mask mềm, displacement, shading)",
+      "actor_type": "system",
+      "actor": "generation/garment.py",
+      "tool": "OpenCV/NumPy",
+      "at": "2026-09-06T08:23:22+00:00",
+      "inputs": [
+        "e5774f2304e806ba2080005b96989db00ab5606d1d8e3fbed450ccc177a18468"
+      ],
+      "outputs": [
+        "0a1217c2d4f4750d21220b4d771b795a0d75375bba2680fb99d0ce272553ce4a"
+      ],
+      "note": null
+    },
+    {
+      "step": "polish",
+      "label": "Hoàn thiện img2img (strength 0.4)",
+      "actor_type": "ai",
+      "actor": "Stable Diffusion 1.5 img2img",
+      "tool": "generation/garment.py",
+      "at": "2026-09-06T08:23:22+00:00",
+      "inputs": [
+        "0a1217c2d4f4750d21220b4d771b795a0d75375bba2680fb99d0ce272553ce4a"
+      ],
+      "outputs": [
+        "fef445f099af47b22cff5a46dc68b5950978a7b464927f6399cc0cdc41dc0300"
+      ],
+      "note": null
+    },
+    {
+      "step": "quality_gate",
+      "label": "Cổng chất lượng G2+G3: WARN",
+      "actor_type": "system",
+      "actor": "quality/gate.py",
+      "tool": "QG-1.0",
+      "at": "2026-11-18T03:51:23+00:00",
+      "inputs": [],
+      "outputs": [],
+      "note": null
+    }
+  ],
+  "quality": {
+    "G2_pattern": {
+      "gate": "G2_pattern",
+      "decision": "PASS",
+      "metrics": {
+        "vessel_leakage": {
+          "value": 0.0,
+          "status": "PASS",
+          "warn": 0.2,
+          "fail": 0.4,
+          "label": "Rò dáng vật chứa (VLS)"
+        },
+        "seam_ratio": {
+          "value": 1.114,
+          "status": "PASS",
+          "warn": 1.5,
+          "fail": 2.0,
+          "label": "Đường nối khi lát"
+        }
+      },
+      "details": {
+        "vessel_leakage": 0.0,
+        "border_background": 0.0,
+        "silhouette_iou_vs_artifact": 0.3196,
+        "seam_ratio": 1.114,
+        "seam_h": 1.114,
+        "seam_v": 0.927
+      },
+      "next": null
+    },
+    "G3_final": {
+      "gate": "G3_final",
+      "decision": "WARN",
+      "metrics": {
+        "pattern_preservation": {
+          "value": 0.5098,
+          "status": "WARN",
+          "warn": 0.6,
+          "fail": 0.4,
+          "label": "Giữ họa tiết (PPS)"
+        },
+        "garment_shape_iou": {
+          "value": 0.9447,
+          "status": "WARN",
+          "warn": 0.95,
+          "fail": 0.92,
+          "label": "Giữ dáng áo (GSC)"
+        },
+        "sharpness_ratio": {
+          "value": 0.9004,
+          "status": "PASS",
+          "warn": 0.45,
+          "fail": 0.25,
+          "label": "Độ nét so với bản ghép"
+        },
+        "palette_shift_de": {
+          "value": 5.74,
+          "status": "PASS",
+          "warn": 10.0,
+          "fail": 20.0,
+          "label": "Lệch bảng màu họa tiết (ΔE)"
+        }
+      },
+      "details": {
+        "structure_ncc": 0.4254,
+        "chroma_ncc": 0.5943,
+        "pattern_area_pct": 11.07,
+        "alignment": {
+          "ecc": 0.947,
+          "scale": 0.9978,
+          "shift_px": 0.97,
+          "resampled": false
+        },
+        "garment_area_change_pct": 3.23,
+        "clipping_pct": 3.98
+      },
+      "routes": []
+    },
+    "overall": {
+      "decision": "WARN",
+      "route_to": "qc_review",
+      "message": "QC Officer xem xét trước khi chuyển chuyên gia (có thể chuyển kèm ghi chú).",
+      "eligible_for_expert": false
+    },
+    "config_version": "QG-1.0",
+    "evaluated_at": "2026-11-18T03:51:23+00:00"
+  },
+  "versions": [
+    {
+      "version": 1,
+      "kind": "ai_generated",
+      "path": "web_ui/assets/images/variants/HSBT_XP-300x300_V4_aodai.png",
+      "sha256": "fef445f099af47b22cff5a46dc68b5950978a7b464927f6399cc0cdc41dc0300",
+      "parent_version": null,
+      "parent_sha256": null,
+      "created_at": "2026-09-06T08:23:22+00:00",
+      "created_by": "pipeline",
+      "actor_type": "ai",
+      "ai_assisted": true,
+      "note": "Thiết kế cuối do pipeline sinh."
+    }
+  ],
+  "edits": [],
+  "reviews": [],
+  "approval": {
+    "status": "qa_warning",
+    "label": "Có cảnh báo — chờ QC xem xét",
+    "decided_by": "quality_gate",
+    "decided_at": "2026-11-18T03:51:23+00:00",
+    "reason": "Chờ QC Officer xem xét cảnh báo trước khi chuyển chuyên gia."
+  },
+  "ai_disclosure": {
+    "label": "Thiết kế được tạo với sự hỗ trợ của AI",
+    "ai_steps": [
+      "Viết mô tả hoa văn tiếng Anh ≤21 token",
+      "Sinh hoa văn phẳng (ControlNet 0.25, seed 42)",
+      "Chọn bố cục 'Vai kết hợp gấu tà'",
+      "Hoàn thiện img2img (strength 0.4)"
+    ],
+    "human_steps": [
+      "Thu thập ảnh hiện vật (fullhome-decor.com (website bán gốm — pháp nhân chưa xác minh))"
+    ],
+    "system_steps": [
+      "Tách nền, letterbox 512, Canny chỉ giữ hoa văn",
+      "Ghép tất định lên áo mẫu (mask mềm, displacement, shading)",
+      "Cổng chất lượng G2+G3: WARN"
+    ]
+  },
+  "ledger": [
+    {
+      "seq": 1,
+      "at": "2026-11-18T03:51:50+00:00",
+      "event": "step:collect_image",
+      "actor": "Nhóm dự án",
+      "actor_type": "human",
+      "payload_hash": "d367c22a3813b52f56119760c56032c54a2e1e4fe9cfb3cdc659f33f6d68c1a2",
+      "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "payload": {
+        "label": "Thu thập ảnh hiện vật (fullhome-decor.com (website bán gốm — pháp nhân chưa xác minh))",
+        "tool": "Trình duyệt web",
+        "inputs": [],
+        "outputs": [
+          "2d63823901ee2560d504832876683aba60025a4f51b42257f248113799714026"
+        ]
+      },
+      "entry_hash": "4e2dc62e9f72c0a78d68fa7886f6b01e2fa2ecd33c583f472800f85cc0f7898f"
+    },
+    {
+      "seq": 2,
+      "at": "2026-09-06T00:00:00+00:00",
+      "event": "step:describe_motif",
+      "actor": "gemini/gemini-3.7-flash",
+      "actor_type": "ai",
+      "payload_hash": "cf03759d9e2771a56cdbc6ba73cd852c02d242a408bbf14c1d1e6e4900672765",
+      "prev_hash": "4e2dc62e9f72c0a78d68fa7886f6b01e2fa2ecd33c583f472800f85cc0f7898f",
+      "payload": {
+        "label": "Viết mô tả hoa văn tiếng Anh ≤21 token",
+        "tool": "scripts/07_describe_heritage.py",
+        "inputs": [],
+        "outputs": []
+      },
+      "entry_hash": "043acf015aa6281514165b57f9a8355571cda65b95e67aabfa8f0a77af8f1d18"
+    },
+    {
+      "seq": 3,
+      "at": "2026-09-06T08:23:22+00:00",
+      "event": "step:preprocess",
+      "actor": "generation/controlnet.py",
+      "actor_type": "system",
+      "payload_hash": "396f2709c279ee3056732969d8f2619d01646e9b8ee0d9f9511b0a677dce6fa3",
+      "prev_hash": "043acf015aa6281514165b57f9a8355571cda65b95e67aabfa8f0a77af8f1d18",
+      "payload": {
+        "label": "Tách nền, letterbox 512, Canny chỉ giữ hoa văn",
+        "tool": "OpenCV",
+        "inputs": [
+          "2d63823901ee2560d504832876683aba60025a4f51b42257f248113799714026"
+        ],
+        "outputs": [
+          "e5c790d41d42ce235c6a02756aa6689c64a7590dac002a5d18dd051930b7397a",
+          "71046dcbee25bd85f2602473c4160ae629f3ceb025db357ba825c313983eacac"
+        ]
+      },
+      "entry_hash": "76d3ea90c044662aa22f91752970258ffa5555dc5f1ccd839b29a7c723afae03"
+    },
+    {
+      "seq": 4,
+      "at": "2026-09-06T08:23:22+00:00",
+      "event": "step:generate_pattern",
+      "actor": "Stable Diffusion 1.5 + ControlNet Canny",
+      "actor_type": "ai",
+      "payload_hash": "d4261556e25cded935a4a9ce6bd5dd51387859cd8667a882b78e3c3fd62ce14d",
+      "prev_hash": "76d3ea90c044662aa22f91752970258ffa5555dc5f1ccd839b29a7c723afae03",
+      "payload": {
+        "label": "Sinh hoa văn phẳng (ControlNet 0.25, seed 42)",
+        "tool": "generation/pattern.py",
+        "inputs": [
+          "71046dcbee25bd85f2602473c4160ae629f3ceb025db357ba825c313983eacac"
+        ],
+        "outputs": [
+          "e5774f2304e806ba2080005b96989db00ab5606d1d8e3fbed450ccc177a18468"
+        ]
+      },
+      "entry_hash": "abc04de9577d80cff0ca715ef233ee99be09e9ec783e87415a870709a8b0a49b"
+    },
+    {
+      "seq": 5,
+      "at": "2026-09-06T08:23:22+00:00",
+      "event": "step:layout_select",
+      "actor": "CLIP ViT-B/32",
+      "actor_type": "ai",
+      "payload_hash": "b442c0aa3ede3f8a2e807b82b9a6049e6659f05a6ee8ace5a787a80c7f14dda0",
+      "prev_hash": "abc04de9577d80cff0ca715ef233ee99be09e9ec783e87415a870709a8b0a49b",
+      "payload": {
+        "label": "Chọn bố cục 'Vai kết hợp gấu tà'",
+        "tool": "generation/layout_select.py",
+        "inputs": [],
+        "outputs": []
+      },
+      "entry_hash": "7a71022fcef244185614b6dac12985cefc69e6493918eb8f1972bfbc0bc50abb"
+    },
+    {
+      "seq": 6,
+      "at": "2026-09-06T08:23:22+00:00",
+      "event": "step:composite",
+      "actor": "generation/garment.py",
+      "actor_type": "system",
+      "payload_hash": "9d9bfd6a05bdc0f3eff8730ce818e58739d9c754d88a95f1ff6766799450dcc8",
+      "prev_hash": "7a71022fcef244185614b6dac12985cefc69e6493918eb8f1972bfbc0bc50abb",
+      "payload": {
+        "label": "Ghép tất định lên áo mẫu (mask mềm, displacement, shading)",
+        "tool": "OpenCV/NumPy",
+        "inputs": [
+          "e5774f2304e806ba2080005b96989db00ab5606d1d8e3fbed450ccc177a18468"
+        ],
+        "outputs": [
+          "0a1217c2d4f4750d21220b4d771b795a0d75375bba2680fb99d0ce272553ce4a"
+        ]
+      },
+      "entry_hash": "bd28149358889dd2e7063d15611f03a81a6ce789bd0ab46cafbc8e9272d94208"
+    },
+    {
+      "seq": 7,
+      "at": "2026-09-06T08:23:22+00:00",
+      "event": "step:polish",
+      "actor": "Stable Diffusion 1.5 img2img",
+      "actor_type": "ai",
+      "payload_hash": "c3416932c434b9c37989777e6f73627b70798aaa80731158fd5abaf97d5b34e8",
+      "prev_hash": "bd28149358889dd2e7063d15611f03a81a6ce789bd0ab46cafbc8e9272d94208",
+      "payload": {
+        "label": "Hoàn thiện img2img (strength 0.4)",
+        "tool": "generation/garment.py",
+        "inputs": [
+          "0a1217c2d4f4750d21220b4d771b795a0d75375bba2680fb99d0ce272553ce4a"
+        ],
+        "outputs": [
+          "fef445f099af47b22cff5a46dc68b5950978a7b464927f6399cc0cdc41dc0300"
+        ]
+      },
+      "entry_hash": "1c4a0ca3e2dee3aea2c7edf5a81b60bfdbf5a9aa686e406b59cfe16edc275dc3"
+    },
+    {
+      "seq": 8,
+      "at": "2026-09-06T08:23:22+00:00",
+      "event": "version:ai_generated",
+      "actor": "pipeline",
+      "actor_type": "ai",
+      "payload_hash": "0dd39db84c0d105b59c8303ea5ee97ffab881dab1562efbfa6a1f873394200a6",
+      "prev_hash": "1c4a0ca3e2dee3aea2c7edf5a81b60bfdbf5a9aa686e406b59cfe16edc275dc3",
+      "payload": {
+        "version": 1,
+        "sha256": "fef445f099af47b22cff5a46dc68b5950978a7b464927f6399cc0cdc41dc0300",
+        "parent": null
+      },
+      "entry_hash": "99549ca0ed5609dc587abafa37d8863ac2ea5c824453be35ec0e6b4379fce43d"
+    },
+    {
+      "seq": 9,
+      "at": "2026-11-18T03:51:23+00:00",
+      "event": "step:quality_gate",
+      "actor": "quality/gate.py",
+      "actor_type": "system",
+      "payload_hash": "9734e56bba21adc4a89588ac150f7d43f548d6af76b14dd459ef451d7333acd5",
+      "prev_hash": "99549ca0ed5609dc587abafa37d8863ac2ea5c824453be35ec0e6b4379fce43d",
+      "payload": {
+        "label": "Cổng chất lượng G2+G3: WARN",
+        "tool": "QG-1.0",
+        "inputs": [],
+        "outputs": []
+      },
+      "entry_hash": "f4867a53330fa5c4810d9130cd9d9b851313dda9fe826dd1b13ad176a9a8a182"
+    },
+    {
+      "seq": 10,
+      "at": "2026-11-18T03:51:23+00:00",
+      "event": "quality_gate",
+      "actor": "quality_gate",
+      "actor_type": "system",
+      "payload_hash": "7117a0831883bb4103809e91fedd91f97615a3f82ffa95806f2ce9cbfdb5549b",
+      "prev_hash": "f4867a53330fa5c4810d9130cd9d9b851313dda9fe826dd1b13ad176a9a8a182",
+      "payload": {
+        "decision": "WARN",
+        "config_version": "QG-1.0"
+      },
+      "entry_hash": "ab15c2c22ebf9da7739b80d53f60af43edbac7ef92ce3b9e74d5062114a3a22d"
+    },
+    {
+      "seq": 11,
+      "at": "2026-11-18T03:51:23+00:00",
+      "event": "approval:qa_warning",
+      "actor": "quality_gate",
+      "actor_type": "system",
+      "payload_hash": "f851f290530e8a30cb3f60b7aaf4c44be802cf3f373eadff64666152548cad49",
+      "prev_hash": "ab15c2c22ebf9da7739b80d53f60af43edbac7ef92ce3b9e74d5062114a3a22d",
+      "payload": {
+        "reason": "Chờ QC Officer xem xét cảnh báo trước khi chuyển chuyên gia."
+      },
+      "entry_hash": "56a40f8a1dfb8f6681c494a33a3127cdaf282143370637648649ac791a172d6a"
+    }
+  ],
+  "rights": {
+    "demo_display": {
+      "allowed": false,
+      "level": "block",
+      "reason": "Hiện vật đã ngừng sử dụng (retired) — chỉ còn giá trị lưu trữ minh chứng."
+    },
+    "publish_public": {
+      "allowed": false,
+      "level": "block",
+      "reason": "Hiện vật đã ngừng sử dụng (retired) — chỉ còn giá trị lưu trữ minh chứng."
+    },
+    "commercial_use": {
+      "allowed": false,
+      "level": "block",
+      "reason": "Hiện vật đã ngừng sử dụng (retired) — chỉ còn giá trị lưu trữ minh chứng."
+    }
+  }
+}

@@ -125,7 +125,8 @@ def _fill_holes(m: np.ndarray) -> np.ndarray:
 
 
 def object_mask(img: Image.Image, thr: int = 245, erode_px: int = 0,
-                alpha: np.ndarray | None = None, tol: int | None = None) -> np.ndarray:
+                alpha: np.ndarray | None = None, tol: int | None = None,
+                fill_holes: bool = True) -> np.ndarray:
     """Mask vùng món đồ.
 
     Ưu tiên alpha. Không có alpha thì so với MÀU NỀN suy từ viền ảnh — không
@@ -149,7 +150,7 @@ def object_mask(img: Image.Image, thr: int = 245, erode_px: int = 0,
         if m.mean() > 0.92:
             m = (np.array(img.convert("L")) < thr).astype(np.uint8)
     m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((7, 7), np.uint8))
-    if alpha is None:
+    if alpha is None and fill_holes:
         m = _fill_holes(m)  # men sáng gần màu nền làm mặt nạ thủng ở giữa vật; lấp lại phần không nối với mép khung
     if erode_px:
         m = cv2.erode(m, np.ones((erode_px, erode_px), np.uint8))

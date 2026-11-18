@@ -104,7 +104,7 @@ URL đầy đủ nằm trong `data/metadata.json`.
 
 - Có khoảng 12 đến 15 vật lam trắng sạch với texture 4096 đến 8192 px. Mỗi vật cho được nhiều crop, nên kho phần tử và nhánh LoRA thử nghiệm (mục 4.4) đáng thử, nhưng chưa chắc có lợi.
 - Không xác định được vật nào là Bát Tràng. Không khẳng định từng vật là Bát Tràng; chỉ dùng câu chuẩn ở `docs/DANH_MUC_NGUON_HIEN_VAT.md` mục 4 (nhắc Bát Tràng và Thanh Hà theo mô tả của bộ dữ liệu).
-- Giấy phép từng vật chưa rõ và có thể mâu thuẫn với CC BY 4.0 ghi chung trên trang. Chỉ dùng cho thử nghiệm nội bộ, chưa đưa vào sản phẩm công khai.
+- Giấy phép từng vật chưa rõ và có thể mâu thuẫn với CC BY 4.0 ghi chung trên trang. Chỉ dùng cho thử nghiệm nội bộ, chưa đưa vào sản phẩm công khai. Cập nhật 19/11/2026: nhóm cho biết đã được phép dùng phi thương mại (chưa có bằng chứng lưu trong hồ sơ, xem mục 3.5). Khi có bằng chứng, dùng cho bản thử nghiệm của ban tổ chức là hợp lý, kèm nhãn phi thương mại.
 - Việc cần làm: hỏi nhóm tác giả bằng văn bản về ánh xạ vật và nguồn gốc, giấy phép từng vật. Chưa có ai liên hệ (câu hỏi 6 ở mục 0).
 - Giới hạn của đánh giá này: nhìn bằng mắt trên ảnh thu nhỏ, chưa kiểm tra từng vật ở độ phân giải đầy đủ. Kết quả đo nằm ngoài repo (file CSV và bảng ảnh trong thư mục tạm của phiên làm việc).
 
@@ -169,12 +169,47 @@ Dataset có mô hình 3D (`.obj`), texture trải phẳng, 180 ảnh render và 
 | 3 | Thước đo chuẩn cho việc giữ họa tiết | Texture thật làm đáp án. Render bình từ góc đã biết, chạy trích xuất, so với texture bằng SSIM hoặc DreamSim | Số liệu định lượng cho yêu cầu 1. Nếu làm, thêm vào mục 8.1 | Trung bình | Phải ánh xạ UV đúng, chưa kiểm tra khả thi |
 | 4 | Tìm phần tử theo từ khóa | Dán nhãn crop bằng CLIP zero-shot (hoa sen, rồng, mây). Người dùng chọn từ khóa, hệ thống lấy phần tử, lấy Canny, rồi sinh biến thể | Đa dạng không cần huấn luyện | Trung bình | Nhãn tự động có thể sai |
 | 5 | Lát liền mạch từ mảng thật | Dùng mảng lớn như #15, #124 làm nguồn lát thay vì sinh bằng SD. Ghép bằng quilting (ghép mảnh theo đường cắt tối ưu) | Họa tiết nét hơn, giảm seam | Trung bình | Số mảng đủ lớn không nhiều |
-| 6 | Xem hiện vật 3D trên giao diện | Hiển thị `.obj` và texture bằng three.js cạnh Passport | Minh bạch nguồn: người xem thấy hiện vật gốc và phần cắt | Trung bình | File nặng, giấy phép vật được hiển thị |
+| 6 | Xem hiện vật 3D trên giao diện (chi tiết ở mục 3.5) | Hiển thị `.obj` và texture bằng three.js cạnh Passport | Minh bạch nguồn: người xem thấy hiện vật gốc và phần cắt | Trung bình | File nặng, giấy phép vật được hiển thị |
 | 7 | LoRA | Mục 4.4 | Phong cách men lam nhất quán | Cao | Giấy phép, dữ liệu |
 
 Hướng 1 là nền cho hướng 2, 4, 5. Hướng 2 và 3 chỉ đo và đối chiếu nội bộ nên rủi ro giấy phép thấp hơn. Hướng 1, 4, 5, 6 đưa dữ liệu vào sản phẩm nên cần lập bảng giấy phép từng vật trước.
 
 Điều kiện chung: ghi rõ nguồn dataset (mục 12), không khẳng định từng vật là Bát Tràng (dùng câu chuẩn ở danh mục nguồn), không commit ảnh thô (để trong `data/`, theo CLAUDE.md), không dùng ở bản công khai nếu giấy phép chưa rõ.
+
+### 3.5. Khung xem 3D xoay bằng chuột (tùy chọn)
+
+Mục đích: ban tổ chức xem được hiện vật gốc ngay trên giao diện và đối chiếu với thiết kế, làm rõ chuỗi "đầu vào, hoa văn, áo cuối" (yêu cầu 1) và nguồn gốc (yêu cầu 3).
+
+**Quyền sử dụng (cập nhật 19/11/2026).** Nhóm cho biết đã được phép dùng bộ dữ liệu cho mục đích phi thương mại. Hồ sơ chưa lưu bằng chứng: cần ghi người cấp phép, ngày và hình thức xác nhận vào `docs/DANH_MUC_NGUON_HIEN_VAT.md` mục 6. Phạm vi cho phép cũng cần làm rõ trước khi đưa lên trang công khai: có gồm hiển thị và cho tải mô hình 3D, hay chỉ dùng nội bộ. Khung xem phải kèm nhãn "chỉ dùng phi thương mại" và dòng ghi công ở mục 12.
+
+Dữ liệu của sáu hiện vật (đã đo 19/11/2026):
+
+| Vật | Mô hình `.obj` | Số mặt | Texture gốc |
+|---|---|---|---|
+| #61 | 3 MB | 16 nghìn | 8 MB |
+| #124 | 4 MB | 21 nghìn | 2 MB |
+| #50 | 5 MB | 25 nghìn | 28 MB |
+| #33 | 13 MB | 67 nghìn | 40 MB |
+| #97 | 30 MB | 169 nghìn | 15 MB |
+| #38 | 190 MB | 1,04 triệu | 10 MB |
+
+Hai cách làm:
+
+| | A. Xem 3D thật (three.js, thư viện WebGL) | B. Chuỗi ảnh xoay 360 độ |
+|---|---|---|
+| Cách làm | Nạp mô hình và texture, xoay và phóng to bằng chuột | Dùng ảnh render đa góc có sẵn (2 vòng camera, mỗi vòng 90 khung), kéo chuột để đổi khung |
+| Tải về | Phải giảm lưới và nén texture | Khoảng 36 khung mỗi vật, nén còn khoảng 1 MB |
+| Trải nghiệm | Xoay tự do, nhìn rõ họa tiết | Chỉ xoay quanh trục, ảnh 512 px |
+| Công sức | Trung bình | Thấp |
+
+Các bước nếu làm cách A (chưa làm):
+
+1. Giảm số mặt của #33, #97, #38 xuống khoảng 20 đến 50 nghìn. Công cụ giảm lưới và chuyển sang định dạng glTF (định dạng 3D gọn cho web) chưa cài trong môi trường, chất lượng sau giảm chưa kiểm chứng.
+2. Nén texture về JPEG khoảng 2048 px (vài trăm KB đến 1 MB).
+3. Viết khung xem trên trang tĩnh `web_ui/` bằng three.js, điều khiển xoay bằng chuột và cảm ứng, đặt cạnh ảnh thiết kế.
+4. Kiểm thử tải trang trên điện thoại. Mục tiêu đề xuất: mỗi vật dưới 5 MB, tải trong vài giây trên mạng thường (chưa có cơ sở thực nghiệm).
+
+Thứ tự đề xuất: làm cách B trước vì rủi ro giấy phép thấp hơn và ít công sức. Cách A chỉ cho các vật nhẹ (#61, #124, #50) sau khi làm rõ phạm vi giấy phép. Bỏ #38 hoặc giảm lưới rất mạnh.
 
 ## 4. Giai đoạn 1: vẽ lại họa tiết bằng ControlNet (mọi mức)
 
@@ -428,6 +463,7 @@ Các paper nằm trong thư mục `docs/paper tham khảo/`. Kỹ thuật chính
 | Mục | Thay đổi |
 |---|---|
 | Mục tiêu và kết luận | Từ "LoRA, polish, 5 seed" sang "trích xuất tất định, nền áo cao phân giải, minh chứng ba yêu cầu" |
+| Khung xem 3D và quyền phi thương mại | Mới: mục 3.5, hai cách làm, số liệu dung lượng sáu vật. Nhóm cho biết được phép dùng phi thương mại, chưa có bằng chứng trong hồ sơ |
 | Đầu vào mặc định (quyết định 19/11) | Ảnh hiện vật mặc định là ảnh render cả bình (đúng luồng hồ sơ gốc), mảng phẳng và phần tử là nhánh so sánh E1. Sửa lỗi nền xám trong `controlnet.prepare`. Mục 2.1, 4.1, 8.3 |
 | Hướng mức 1 (quyết định 19/11) | Bỏ "mức 1 giữ nguyên pixel bằng phương pháp tất định" làm đường chính. Mọi mức vẽ lại bằng ControlNet, mức 1 là mức trung thành đo bằng M4. Dán nguyên phần tử thành mốc đối chiếu tùy chọn (mục 3.3). Sửa mục 1, 3, 4, 7, 8.1 đến 8.3 và lịch ở mục 10 |
 | LR3D-CULT2 | Từ dataset chính huấn luyện LoRA xuống nguồn tham khảo, kèm kết quả quét 120 vật thể và đính chính về tiền tố `sketchfab_collection` |
