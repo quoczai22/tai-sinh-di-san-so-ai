@@ -1,6 +1,11 @@
 {
  "LR3D_33": {
   "object_id": "ceramic_vases_33",
+  "render_source": {
+   "member": "ceramic_vases_33/images/sketchfab_collection_1_CAM1_1.0001.png",
+   "camera": "1",
+   "frame": 1
+  },
   "texture_file": "ceramic_vases_33.png",
   "valid_mask_method": "uv",
   "uv_coverage": 0.5176,
@@ -22,6 +27,11 @@
  },
  "LR3D_61": {
   "object_id": "ceramic_vases_61",
+  "render_source": {
+   "member": "ceramic_vases_61/images/sketchfab_collection_2_CAM1_1.0001.png",
+   "camera": "1",
+   "frame": 1
+  },
   "texture_file": "ceramic_vases_61.png",
   "valid_mask_method": "uv",
   "uv_coverage": 0.7395,
@@ -43,6 +53,11 @@
  },
  "LR3D_50": {
   "object_id": "ceramic_vases_50",
+  "render_source": {
+   "member": "ceramic_vases_50/images/sketchfab_collection_1_CAM1_1.0001.png",
+   "camera": "1",
+   "frame": 1
+  },
   "texture_file": "ceramic_vases_50.png",
   "valid_mask_method": "uv",
   "uv_coverage": 0.6125,
@@ -64,6 +79,11 @@
  },
  "LR3D_38": {
   "object_id": "ceramic_vases_38",
+  "render_source": {
+   "member": "ceramic_vases_38/images/sketchfab_collection_1_CAM1_1.0001.png",
+   "camera": "1",
+   "frame": 1
+  },
   "texture_file": "ceramic_vases_38.png",
   "valid_mask_method": "uv",
   "uv_coverage": 0.6342,
@@ -85,6 +105,11 @@
  },
  "LR3D_97": {
   "object_id": "ceramic_vases_97",
+  "render_source": {
+   "member": "ceramic_vases_97/images/sketchfab_collection_3_CAM1_1.0001.png",
+   "camera": "1",
+   "frame": 1
+  },
   "texture_file": "ceramic_vases_97.png",
   "valid_mask_method": "uv",
   "uv_coverage": 0.4611,
@@ -106,6 +131,11 @@
  },
  "LR3D_124": {
   "object_id": "ceramic_vases_124",
+  "render_source": {
+   "member": "ceramic_vases_124/images/sketchfab_collection_3_CAM1_1.0001.png",
+   "camera": "1",
+   "frame": 1
+  },
   "texture_file": "ceramic_vases_124.jpeg",
   "valid_mask_method": "uv",
   "uv_coverage": 0.7383,

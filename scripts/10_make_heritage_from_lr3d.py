@@ -3,21 +3,24 @@
 Chạy (sau scripts/08_extract_lr3d.py):
     uv run --no-project --python .venv/Scripts/python.exe python scripts/10_make_heritage_from_lr3d.py
 
-Với mỗi vật thể, lấy một mảng texture phẳng làm ảnh nạp cho giai đoạn 1:
-1. Vùng hợp lệ = phần texture được mô hình 3D phủ lên (UV), như generation/elements.py.
-2. Tách các mảnh UV rời nhau (đảo). Chọn đảo có nhiều nét mực nhất (diện tích nhân tỉ lệ pixel sẫm hơn nền men).
-3. Cắt khung bao của đảo, thu nhỏ nếu cạnh dài hơn 2048 pixel, kênh alpha là mặt nạ của đảo.
-
-Ảnh ra là PNG RGBA: generation/controlnet.py đã biết dùng kênh alpha làm mặt nạ món đồ.
+Mỗi vật thể cho hai ảnh:
+- Ảnh hiện vật mặc định = ảnh render cả bình (script 08 đã trích), đúng luồng hồ sơ gốc.
+- Mảng texture phẳng (biến thể so sánh), cắt tự động:
+  1. Vùng hợp lệ = phần texture được mô hình 3D phủ lên (UV), như generation/elements.py.
+  2. Tách các mảnh UV rời nhau (đảo). Chọn đảo có nhiều nét mực nhất (diện tích nhân tỉ lệ pixel sẫm hơn nền men).
+  3. Cắt khung bao của đảo, thu nhỏ nếu cạnh dài hơn 2048 pixel, kênh alpha là mặt nạ của đảo.
+  Ảnh ra là PNG RGBA: generation/controlnet.py đã biết dùng kênh alpha làm mặt nạ món đồ.
 Không dùng mặt nạ tay. Việc chọn 6 vật thể là bước chọn nguồn, ghi ở SELECTED bên dưới.
 
 Đầu ra:
-- data/heritage/LR3D_<số>.png
-- data/heritage/lr3d_crops.json : khung cắt, tỉ lệ thu nhỏ, kích thước, để ghi vào hồ sơ nguồn
+- data/heritage/LR3D_<số>.png         : ảnh render cả bình (ảnh hiện vật mặc định)
+- data/heritage/panels/LR3D_<số>.png  : mảng texture phẳng
+- data/heritage/lr3d_crops.json       : khung cắt mảng, nguồn ảnh render, để ghi vào hồ sơ nguồn
 """
 import argparse
 import json
 import re
+import shutil
 import sys
 from pathlib import Path
 
@@ -114,11 +117,16 @@ def main() -> None:
 
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
+    panels = out / "panels"
+    panels.mkdir(exist_ok=True)
     crops_file = out / "lr3d_crops.json"
     # chạy một phần (--ids) chỉ thay bản ghi của các vật đó, giữ bản ghi của vật khác
     records = json.loads(crops_file.read_text(encoding="utf-8")) if crops_file.exists() else {}
     for n in a.ids:
         folder = Path(a.src) / f"ceramic_vases_{n}"
+        render_src = folder / "render.png"
+        if not render_src.is_file():  # kiểm tra trước khi ghi bất cứ file nào của vật này
+            raise FileNotFoundError(f"chưa có {render_src}, chạy scripts/08_extract_lr3d.py trước")
         tex = find_texture(folder)
         obj = next(iter(sorted(p for p in folder.iterdir() if p.suffix.lower() == ".obj")), None)
         rgb = read_rgb(tex)
@@ -139,12 +147,17 @@ def main() -> None:
         ok, buf = cv2.imencode(".png", cv2.cvtColor(rgba, cv2.COLOR_RGBA2BGRA))
         if not ok:
             raise IOError(f"không mã hóa được PNG cho {name}")
-        (out / f"{name}.png").write_bytes(buf.tobytes())
-        records[name] = {"object_id": f"ceramic_vases_{n}", "texture_file": tex.name, "valid_mask_method": method,
+        (panels / f"{name}.png").write_bytes(buf.tobytes())
+        # ảnh hiện vật mặc định = ảnh render cả bình (đã trích bởi script 08), đúng luồng hồ sơ gốc
+        shutil.copyfile(render_src, out / f"{name}.png")
+        rsrc = folder / "render_source.json"
+        render_info = json.loads(rsrc.read_text(encoding="utf-8")) if rsrc.is_file() else {}
+        records[name] = {"object_id": f"ceramic_vases_{n}", "render_source": render_info,
+                         "texture_file": tex.name, "valid_mask_method": method,
                          "uv_coverage": cov, "crop_box_xyxy": [x0, y0, x1, y1], "scale": round(s, 4),
                          "size_wh": [int(rgba.shape[1]), int(rgba.shape[0])], **info}
+        crops_file.write_text(json.dumps(records, ensure_ascii=False, indent=1), encoding="utf-8")  # ghi sau mỗi vật
         print(name, records[name], flush=True)
-    crops_file.write_text(json.dumps(records, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
 if __name__ == "__main__":
