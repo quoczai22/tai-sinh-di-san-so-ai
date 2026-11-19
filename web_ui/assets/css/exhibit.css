@@ -1169,3 +1169,15 @@ html.motion-off .thread-path { stroke-dashoffset: 0; }
 .dt-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease-out); }
 .dt-thumb:hover img { transform: scale(1.05); }
 .dt-cta { align-self: flex-start; margin-top: 18px; }
+
+/* Tiêu đề các phần trang chủ (Bộ sưu tập, Tà áo…): quầng ngà phía sau để đuôi phượng không dìm chữ */
+.home .chapter-intro { position: relative; isolation: isolate; }
+.home .chapter-intro::before {
+    content: ""; position: absolute; z-index: -1; left: 50%; top: -44px; translate: -50% 0; width: min(900px, 94vw); height: calc(100% + 88px);
+    background: radial-gradient(closest-side, rgba(244, 240, 230, .97) 0%, rgba(244, 240, 230, .9) 55%, rgba(244, 240, 230, .5) 78%, transparent); pointer-events: none;
+}
+.home .chapter-intro .kicker { font-weight: 600; text-shadow: 0 0 2px var(--paper), 0 0 10px var(--paper); }
+/* Khung chim phượng cao theo đúng tỉ lệ hình (1440×1800) để đuôi không bị cắt ngang ở màn rộng */
+.phoenix { height: max(1900px, calc(100vw * 1.25 + 40px)); }
+@media (max-width: 980px) { .phoenix { height: 1400px; } }
+@media (max-width: 640px) { .phoenix { height: 1060px; } }
