@@ -32,15 +32,18 @@ REJECT_COLUMNS = ["timestamp", "tag", "attempt", "seed", "strength", "failed_met
                   "thresholds", "reason", "next_action", "image"]
 
 
-def make_g3_evaluator(raw: Image.Image, layout: str, cfg: dict | None = None) -> Callable[[Image.Image], dict]:
-    """Tạo hàm đo cổng G3 cho một thiết kế: nhận ảnh polish, trả kết quả `evaluate_final`."""
+def make_g3_evaluator(raw: Image.Image, layout: str, cfg: dict | None = None, template_path: Path | None = None,
+                      garment_region: np.ndarray | None = None) -> Callable[[Image.Image], dict]:
+    """Tạo hàm đo cổng G3 cho một thiết kế: nhận ảnh polish, trả kết quả `evaluate_final`.
+
+    template_path và garment_region: áo và vùng áo tính sẵn; mặc định áo mẫu cố định."""
     from generation import garment                                  # noqa: PLC0415
     from quality import gate as QG                                  # noqa: PLC0415
 
-    tpl = Image.open(garment.TEMPLATE).convert("RGB")
+    tpl = Image.open(template_path or garment.TEMPLATE).convert("RGB")
     template = np.asarray(tpl)
-    prior = garment.garment_mask(tpl)
-    layout_mask = garment._layout_mask(tpl, garment.get_layout(layout))
+    prior = garment.garment_mask(tpl) if garment_region is None else garment_region
+    layout_mask = garment._layout_mask(tpl, garment.get_layout(layout), garment_region)
     raw_a = np.asarray(raw.convert("RGB"))
     cfg = cfg or QG.load_config()
     return lambda final: QG.evaluate_final(raw_a, np.asarray(final.convert("RGB")), template,

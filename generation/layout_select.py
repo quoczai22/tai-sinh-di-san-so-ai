@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import sys
 from functools import lru_cache
+from pathlib import Path
 
 import torch
 import torch.nn.functional as F
@@ -56,11 +57,15 @@ def score_design(img: Image.Image) -> float:
     return round(float(s[:len(GOOD)].mean() - s[len(GOOD):].mean()), 4)
 
 
-def rank(pattern: Image.Image, only: list[str] | None = None) -> list[dict]:
-    """Ghép hoa văn theo mọi bố cục rồi xếp hạng. Cao nhất đứng đầu."""
+def rank(pattern: Image.Image, only: list[str] | None = None, template_path: Path | None = None,
+         garment_region=None) -> list[dict]:
+    """Ghép hoa văn theo mọi bố cục rồi xếp hạng. Cao nhất đứng đầu.
+
+    template_path và garment_region: áo và vùng áo tính sẵn (áo do LoRA sinh); mặc định dùng áo mẫu cố định."""
     out = []
     for name in (only or garment.layout_names()):
-        img = garment.apply(pattern, layout=name)
+        kw = {"template_path": template_path} if template_path else {}
+        img = garment.apply(pattern, layout=name, garment_region=garment_region, **kw)
         lay = garment.get_layout(name)
         out.append({"layout": name, "label": lay["label"], "scale": lay["scale"],
                     "score": score_design(img), "image": img})
