@@ -60,7 +60,10 @@ def main() -> int:
     selection_cfg = load_selection_config(ROOT)["criteria"]
     raw_items = {it["heritage_id"]: it for it in all_items(ROOT)}
     for h in heritage:
-        h["image"] = webp(ROOT / raw_items[h["id"]]["image_path"], MEDIA / "heritage" / f"{h['id']}.webp", 720)
+        # Ảnh hiển thị: ưu tiên ảnh đã tách nền (scripts/15_cutout_heritage.py), nếu chưa có thì dùng ảnh render gốc
+        cut = ROOT / "data" / "heritage" / "cutouts" / f"{h['id']}.png"
+        src = cut if cut.exists() else ROOT / raw_items[h["id"]]["image_path"]
+        h["image"] = webp(src, MEDIA / "heritage" / f"{h['id']}.webp", 720)
         h["selection"] = assess_selection(raw_items[h["id"]], ROOT)
         h["rights"] = {a: rights_gate(raw_items[h["id"]], a, ROOT).as_dict()
                        for a in ("experiment", "demo_display", "publish_public", "commercial_use")}

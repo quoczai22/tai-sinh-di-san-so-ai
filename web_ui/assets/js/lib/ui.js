@@ -115,35 +115,6 @@ export function artifactNodes(passport) {
     });
 }
 
-export function drawer(title, content, onClose) {
-    const root = document.getElementById('overlay-root');
-    clear(root);
-    const prev = document.activeElement;
-    let closed = false;
-    const close = () => {
-        if (closed) return;
-        closed = true;
-        document.removeEventListener('keydown', onKey);
-        document.body.classList.remove('drawer-open');
-        backdrop.classList.remove('open');
-        panel.classList.remove('open');
-        setTimeout(() => { backdrop.remove(); panel.remove(); prev?.focus?.({ preventScroll: true }); onClose?.(); }, reduced() ? 0 : 320);
-    };
-    const onKey = (e) => { if (e.key === 'Escape') close(); };
-    document.addEventListener('keydown', onKey);
-    const closeBtn = h('button', { class: 'btn small', onclick: close, 'aria-label': 'Đóng' }, icon('close'), 'Đóng');
-    const panel = h('div', { class: 'drawer', role: 'dialog', 'aria-modal': 'true', 'aria-label': title },
-        h('div', { class: 'drawer-head' }, h('h2', {}, title), closeBtn),
-        h('div', { class: 'drawer-body' }, content));
-    const backdrop = h('div', { class: 'drawer-backdrop', onclick: close });
-    root.append(backdrop, panel);
-    document.body.classList.add('drawer-open');
-    requestAnimationFrame(() => requestAnimationFrame(() => { backdrop.classList.add('open'); panel.classList.add('open'); }));
-    enhance(panel);
-    closeBtn.focus({ preventScroll: true });
-    return close;
-}
-
 export function metricLine(label, value, chip) {
     return h('div', { class: 'metric-line' }, h('span', {}, label), h('span', {}, h('b', {}, value), chip ? ' ' : null, chip || null));
 }

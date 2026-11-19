@@ -86,7 +86,7 @@ Bộ 24 thiết kế (6 hiện vật LR3D-CULT2 × 4 mức sáng tạo) sinh b�
 - Cả 24 thiết kế qua polish ngay lần đầu; vòng thử lại không chạy lần nào.
 - Cả 10 cảnh báo G3 đến từ chỉ số giữ chi tiết mịn (dưới 0,85). Các chỉ số khác của G3 đều đạt ở cả 24 thiết kế. Nghĩa là bản cuối vẫn mất trung bình khoảng 14% chi tiết mịn so với bản ghép thô.
 - G2: 3 thiết kế bị loại đều của hiện vật HV12 (LR3D_124) do đường nối (2,41 đến 3,04); 3 thiết kế cảnh báo VLS (0,201 đến 0,221) và 2 cảnh báo đường nối (1,59 và 1,92).
-- Trạng thái Passport sau cổng: 9 chờ chuyên gia, 12 chờ QC, 3 không đạt (3 thiết kế này bị ẩn khỏi trang Bộ sưu tập).
+- Trạng thái Passport sau cổng: 9 chờ chuyên gia, 12 chờ QC, 3 không đạt (3 thiết kế này bị ẩn khỏi trang chủ và trang Kết quả).
 
 ### Mốc so sánh: bản 06/09/2026 (số liệu lịch sử)
 

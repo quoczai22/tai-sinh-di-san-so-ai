@@ -34,7 +34,7 @@ Kết quả bộ demo hiện tại (24 thiết kế, 6 hiện vật × 4 mức s
 uv run python -m http.server 5500 --directory web_ui
 ```
 
-Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang chủ, Studio, Bộ sưu tập. Không có API thì giao diện tự chạy **chế độ ngoại tuyến**, đọc dữ liệu thật đã xuất sẵn trong `web_ui/data/` (bộ demo 24 thiết kế).
+Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang chủ, Studio (chọn hiện vật) và Kết quả (4 tà áo). Không có API thì giao diện tự chạy **chế độ ngoại tuyến**, đọc dữ liệu thật đã xuất sẵn trong `web_ui/data/` (bộ demo 24 thiết kế).
 
 ## 3. Kiến trúc
 
@@ -61,7 +61,7 @@ Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang ch
 | Sinh ảnh | Stable Diffusion 1.5 + ControlNet v1.1 Canny + LoRA dáng áo dài (`diffusers`, `peft`, PyTorch CUDA), SAM (tách vùng áo), CLIP (`transformers`) |
 | Xử lý ảnh, phép đo | OpenCV, Pillow, NumPy, scikit-image, SciPy |
 | API | FastAPI + Uvicorn (`api/main.py`); PyTorch chỉ nạp khi cần, máy không GPU thì `/generate` trả 503 |
-| Giao diện | HTML/CSS/JS thuần (ES modules), không framework; 3 trang cho người xem (Trang chủ, Studio, Bộ sưu tập) |
+| Giao diện | HTML/CSS/JS thuần (ES modules), không framework; 3 trang cho người xem (Trang chủ, Studio, Kết quả) |
 | Dữ liệu | Tệp JSON/CSV trong repo, không dùng cơ sở dữ liệu |
 | Kiểm thử | pytest (249 ca, không cần GPU) |
 
@@ -123,6 +123,7 @@ uv run pytest     # 249 ca; không cần GPU (1 ca dành cho máy không có PyT
 ```powershell
 uv run python scripts/03_download_models.py                                  # tải SD 1.5 và ControlNet; CLIP và SAM tự tải lần đầu khi chạy
 uv run python scripts/14_generate_demo_set.py                                # sinh bộ demo (khoảng 15 phút); thêm mã hiện vật để chạy riêng một vật
+uv run python scripts/15_cutout_heritage.py                                  # tách nền ảnh 6 hiện vật (SAM) thành PNG trong suốt, chỉ dùng để hiển thị
 uv run python scripts/11_export_demo_data.py                                 # cập nhật web_ui/data cho chế độ ngoại tuyến
 uv run python -m evaluation.experiment run evaluation/experiments/EXP-A_controlnet_weight.json   # chưa chạy, 120 lượt
 ```

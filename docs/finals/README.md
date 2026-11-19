@@ -58,7 +58,7 @@ Bộ tài liệu này chỉ phục vụ vòng chung kết và tập trung vào b
 
 | Tiêu chí | Mức đạt | Còn thiếu |
 |---|---|---|
-| UI/UX | 3 trang cho người xem (Trang chủ, Studio đầu vào → đầu ra, Bộ sưu tập), kiểm tra ở 1440 px và 390 px | Chưa thử với người dùng thật |
+| UI/UX | 3 trang cho người xem (Trang chủ, Studio chọn hiện vật, Kết quả 4 tà áo), kiểm tra ở 1440 px và 390 px | Chưa thử với người dùng thật |
 | Quy trình nghiệp vụ | 18 bước đều có phần tử BPMN; mỗi gateway gắn với mã | – |
 | BPMN | XML chuẩn BPMN 2.0, đọc được bằng bpmn-moddle không cảnh báo; có kiểm thử ngữ nghĩa | – |
 | UML | 7 tác nhân, 19 ca, include/extend có lý do | 3 ca mới là kế hoạch hoặc chạy một phần |

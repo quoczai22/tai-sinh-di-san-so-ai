@@ -57,10 +57,18 @@ export function media(artifactOrPath, display) {
 // Số liệu tĩnh tại thời điểm xuất dữ liệu (toàn vẹn Passport, thời gian sinh ghi trong variants.csv)
 export const dashboardSnapshot = () => cached('demo:dashboard', () => getJson('./data/dashboard.json'));
 
+// Tên hiện vật hiển thị cho người xem: bỏ mã bộ dữ liệu ở cuối (" (LR3D-CULT2 #61)") và tiền tố lặp lại
+// "Hiện vật men lam: ", rồi viết hoa chữ đầu. Ví dụ "Hiện vật men lam: rồng và mây (LR3D-CULT2 #61)" thành "Rồng và mây".
+const plainName = (name) => {
+    const n = (name || '').replace(/\s*\(LR3D-CULT2 #\d+\)\s*$/, '').replace(/^Hiện vật men lam:\s*/i, '');
+    return n.charAt(0).toUpperCase() + n.slice(1);
+};
+const plain = (h) => ({ ...h, items: h.items.map((it) => ({ ...it, name: plainName(it.name) })) });
+
 export async function heritage() {
     const demo = await cached('demo:heritage', () => getJson('./data/heritage.json'));
-    if (state.mode !== 'live') return demo;
-    return cached('live:heritage', async () => {
+    if (state.mode !== 'live') return plain(demo);
+    return plain(await cached('live:heritage', async () => {
         const items = await getJson(`${API}/heritage?include_retired=true`);
         const byId = Object.fromEntries(demo.items.map((x) => [x.id, x]));
         return {
@@ -68,7 +76,7 @@ export async function heritage() {
             items: items.map((it) => ({ ...byId[it.id], ...it, image: `${API}${it.image}`,
                 selection: byId[it.id]?.selection, rights: byId[it.id]?.rights })),
         };
-    });
+    }));
 }
 
 export async function passports() {

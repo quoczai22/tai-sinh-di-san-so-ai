@@ -213,7 +213,9 @@ def heritage_image(heritage_id: str) -> FileResponse:
     item = next((item for item in heritage_items(True) if item["heritage_id"] == heritage_id), None)
     if item is None:
         raise HTTPException(status_code=404, detail="Không tìm thấy ảnh hiện vật.")
-    return FileResponse(PROJECT_ROOT / item["image_path"])
+    # Ảnh hiển thị: ưu tiên ảnh đã tách nền (nền trong suốt) nếu có
+    cut = PROJECT_ROOT / "data" / "heritage" / "cutouts" / f"{heritage_id}.png"
+    return FileResponse(cut if cut.exists() else PROJECT_ROOT / item["image_path"])
 
 
 @app.post("/generate", status_code=202, dependencies=[Depends(rate_limit)])

@@ -14,7 +14,7 @@ evaluation/
   experiments/*.json  đặc tả EXP-A, EXP-B, EXP-C
 api/                main.py (v1.1.0) · store.py · audit.py
 config/             heritage_selection.json · quality_gate.json · expert_rubric.json
-web_ui/             giao diện cho người xem: Trang chủ, Studio, Bộ sưu tập (giao diện 09/2026 lưu ở archive/web_ui_2026-09/)
+web_ui/             giao diện cho người xem: Trang chủ, Studio, Kết quả (giao diện 09/2026 lưu ở archive/web_ui_2026-09/)
 scripts/            08 chuyển schema, trích LR3D · 09 nạp ảnh hiện vật · 10 tạo hiện vật từ LR3D · 11 xuất dữ liệu trình diễn, lọc VietFashion · 12 dựng sơ đồ, xuất tập LoRA · 13 huấn luyện LoRA · 14 sinh bộ demo
 tests/              249 ca pytest
 ```
@@ -46,7 +46,7 @@ Endpoint cũ giữ nguyên đường dẫn và các trường trả về (có ca
 
 | Nhóm | Endpoint |
 |---|---|
-| Có từ bản cũ | `GET /health`, `GET /heritage`, `GET /heritage/{id}`, `GET /media/heritage/{id}`, `POST /generate`, `GET /generate/{job}`, `POST /audit`, `GET /media/variant/{tệp}` |
+| Có từ bản cũ | `GET /health`, `GET /heritage`, `GET /heritage/{id}`, `GET /media/heritage/{id}` (trả ảnh đã tách nền trong `data/heritage/cutouts/` nếu có), `POST /generate`, `GET /generate/{job}`, `POST /audit`, `GET /media/variant/{tệp}` |
 | Nguồn gốc | `GET /heritage/{id}/provenance`, `GET /provenance/catalog` |
 | Lần chạy | `GET /runs`, `GET /runs/{id}`, `GET /media/run/{id}/{tệp}`, `GET /media/artifact?path=` (chỉ trong `outputs/`, `data/heritage/`, `web_ui/assets/images/`) |
 | Passport | `GET /passports`, `GET /passports/{id}` (kèm dòng thời gian, kết quả kiểm tra toàn vẹn), `GET /passports/{id}/export` |
@@ -69,16 +69,15 @@ Lấy cảm hứng từ cách các nền tảng di sản trực tuyến kể chu
 
 | Thành phần | Mô tả |
 |---|---|
-| Điều hướng | Logo hoa sen ở giữa; trái: Trang chủ, Studio; phải: Bộ sưu tập và nút menu ☰ (dùng trên điện thoại) |
+| Điều hướng | Logo hoa sen ở giữa; trái: Trang chủ, Studio; phải: nút menu ☰ (menu có Trang chủ và Studio; trang Kết quả chỉ vào qua nút Tạo thiết kế) |
 | Trang chủ | Ảnh bìa với quạt thẻ Hiện vật → Hoa văn → Áo dài; chim phượng và câu mở đầu; Hành trình 3 chặng; lưới hiện vật; lưới áo dài; mặt trống đồng và lời kết |
-| Studio | Đầu vào (hiện vật) → nút Tạo thiết kế → Đầu ra (4 tà áo). Khung đầu ra trống tới khi bấm. Có GPU: sinh thật kèm tiến độ. Không có GPU: mở bộ đã tạo trước, ghi rõ ngày tạo, không giả lập việc sinh |
-| Bộ sưu tập | Lưới áo dài gom theo hiện vật nguồn |
-| Khung chi tiết | Bấm hiện vật hoặc tà áo: ảnh lớn, tên, mô tả, nguồn ảnh (ghi công), nhãn AI, nút đi tiếp. Không có chỉ số kỹ thuật |
+| Studio | Chọn hiện vật (Đầu vào) rồi nút Tạo thiết kế; tạo xong tự chuyển sang trang Kết quả. Có GPU: sinh thật kèm tiến độ. Không có GPU: mở bộ đã tạo trước trên GPU (từ 20/11/2026 giao diện không còn dòng ghi chú ngày tạo, nên báo cáo phải nêu rõ đây là bộ có sẵn khi chạy ngoại tuyến), không giả lập việc sinh |
+| Kết quả (`#/result/<mã hiện vật>`) | Bốn tà áo của bộ thiết kế mới nhất của hiện vật, nhãn AI; nút Tạo lại và Chọn hiện vật khác. Không có khung chi tiết hay chỉ số kỹ thuật |
 | Chuyển động | Theo vị trí cuộn (chim phượng, câu mở đầu sáng dần, hiện vật nổi lên); chỉ chuyển động tự chạy dừng khi hệ điều hành bật giảm chuyển động; có nút tắt chuyển động trong menu |
 
 ### Phạm vi giao diện web (19/11/2026)
 
-Web chỉ dành cho người xem: **Trang chủ · Studio · Bộ sưu tập**. Các chức năng nghiệp vụ không còn là trang web mà nằm ở:
+Web chỉ dành cho người xem: **Trang chủ · Studio · Kết quả**. Các chức năng nghiệp vụ không còn là trang web mà nằm ở:
 
 | Chức năng | Nằm ở |
 |---|---|

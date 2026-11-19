@@ -6,8 +6,7 @@
 import { clear, h, icon } from './dom.js';
 import * as data from './data.js';
 import { cycle, parallax, reduced, splitWords } from './motion.js';
-import { APPROVAL, aiMark } from './ui.js';
-import { openDesign } from './detail.js';
+import { aiMark } from './ui.js';
 
 let current = null;
 const PREF = ['pending_expert_review', 'qa_warning', 'revision_requested', 'approved', 'qa_failed'];
@@ -55,17 +54,12 @@ async function libraryVisual(root) {
         .filter((s) => s.d);
     if (!sets.length) return null;
     const stage = h('div', { class: 'fan-stage' });
-    const caps = h('div', { class: 'fan-captions', 'aria-live': 'polite' });
     const dots = h('div', { class: 'fan-dots', role: 'group', 'aria-label': 'Chọn hiện vật trình chiếu' });
     const setEls = sets.map(({ it, d }) => h('div', { class: 'fan-set' },
         fanCard('c1', 'Hiện vật', it.image, false, true),
         fanCard('c2', 'Hoa văn', `./${patternOf(d)}`, true),
         fanCard('c3', 'Áo dài', `./${latestOf(d)}`, true)));
-    const capEls = sets.map(({ it, d }) => h('a', { class: 'fan-cap', href: '#/collection', onclick: (e) => { e.preventDefault(); openDesign(d.passport_id); } },
-        h('span', { class: 'fan-cap-code' }, it.name),
-        h('span', { class: 'fan-cap-pid' }, 'Xem thiết kế', icon('arrow'))));
     stage.append(...setEls);
-    caps.append(...capEls);
     const dotEls = sets.map(({ it }, k) => h('button', { type: 'button', 'aria-label': it.name, onclick: () => ctl.go(k) }));
     dots.append(...dotEls);
     const show = (k) => {
@@ -73,12 +67,11 @@ async function libraryVisual(root) {
             el.classList.toggle('on', j === k);
             if (j !== k) [...el.children].forEach((c) => { c.classList.remove('front'); c.style.zIndex = ''; });
         });
-        capEls.forEach((el, j) => { el.classList.toggle('on', j === k); el.tabIndex = j === k ? 0 : -1; el.setAttribute('aria-hidden', String(j !== k)); });
         dotEls.forEach((el, j) => el.setAttribute('aria-pressed', String(j === k)));
     };
     const ctl = cycle(sets.length, show, 5600);
     stage.addEventListener('click', () => ctl.pause());
-    root.append(stage, h('div', { class: 'fan-meta' }, caps, dots));
+    root.append(stage, h('div', { class: 'fan-meta' }, dots));
     return ctl;
 }
 
@@ -91,16 +84,6 @@ async function studioVisual(root, heritageId) {
         h('img', { src: it.image, alt: it.name }),
         h('p', { class: 'float-cap' }, it.name)));
     return null;
-}
-
-async function passportVisual(root, pid) {
-    const d = (await data.passports()).find((p) => p.passport_id === pid);
-    if (!d?.thumb) return false;
-    root.append(h('figure', { class: 'hero-frame', 'data-parallax': '-0.06' },
-        h('div', { class: 'hero-frame-img' }, h('img', { src: `./${latestOf(d)}`, alt: `Thiết kế ${d.passport_id}` }),
-            aiMark()),
-        h('figcaption', {}, d.passport_id, h('span', {}, (APPROVAL[d.approval.status] || {}).text || d.approval.status))));
-    return true;
 }
 
 async function marquee(el) {
@@ -143,8 +126,6 @@ export async function renderHero(route, params, info) {
         try { current = await libraryVisual(visual); } catch (e) { console.warn(e); }
     } else if (route.id === 'studio' && params[0]) {
         // Ảnh hiện vật đã nằm ở khung "Đầu vào" bên dưới, không lặp lại trên ảnh bìa
-    } else if (route.id === 'passport' && params[0] && await passportVisual(visual, params[0]).catch(() => false)) {
-        // ảnh thiết kế đã mang nhãn AI
     } else {
         visual.append(h('div', { class: 'chapter-mark', 'aria-hidden': 'true' }, route.chapter));
     }

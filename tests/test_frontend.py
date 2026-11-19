@@ -19,7 +19,7 @@ JS = sorted((WEB / "assets" / "js").rglob("*.js"))
 @pytest.mark.parametrize("path", JS, ids=lambda p: p.name)
 def test_js_module_syntax(path):
     r = subprocess.run(["node", "--input-type=module", "--check"], input=path.read_text(encoding="utf-8"),
-                       capture_output=True, text=True)
+                       capture_output=True, text=True, encoding="utf-8")
     assert r.returncode == 0, r.stderr
 
 
