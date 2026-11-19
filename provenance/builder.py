@@ -27,7 +27,10 @@ def _terms(heritage_id: str, root: Path) -> dict:
 
 
 def _garment_block(garment: dict | None, rec: dict) -> dict:
-    """Khối `generation.garment` của Passport: áo nền lấy từ đâu và nếu là áo do LoRA sinh thì sinh thế nào."""
+    """Khối `generation.garment` của Passport: áo nền lấy từ đâu và nếu là áo do LoRA sinh thì sinh thế nào.
+
+    Luồng sản phẩm hiện chỉ dùng áo LoRA. Nhánh "fixed" còn lại để dựng Passport cho các lần chạy cũ
+    (scripts/10_build_legacy_runs.py), vốn ghép lên áo mẫu cố định."""
     if not garment or garment.get("source") != "lora":
         return {"source": "fixed", "template": "data/garment/aodai_template.png",
                 "fallback_reason": (garment or {}).get("fallback_reason")}
@@ -50,7 +53,7 @@ def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict,
     """`rec`: bản ghi chuẩn hoá (khoá giống variants.csv). `paths`: Path tuyệt đối
     của source/reference/canny/pattern/raw/final.
 
-    `garment`: thông tin áo nền (khóa `garment` trong manifest của runner): source "lora" hay "fixed",
+    `garment`: thông tin áo nền (khóa `garment` trong manifest của runner): source "lora" (luồng hiện tại) hay "fixed" (lần chạy cũ),
     seed, LoRA, các ứng viên đã thử, đường dẫn ảnh áo và mặt nạ. None nghĩa là áo mẫu cố định."""
     i = int(rec["variant_index"])
     design_id = f"{run_id}.V{i}"

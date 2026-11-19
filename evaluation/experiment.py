@@ -233,7 +233,9 @@ def source_prepared(cache: dict, heritage_id: str, source: str) -> dict:
 
 
 def run_gpu(spec: dict, rows: list[dict], out_dir: Path) -> list[dict]:  # pragma: no cover - cần GPU
-    """EXP-A / EXP-B / EXP-D: cần GPU CUDA. Nạp model một lần cho cả kế hoạch."""
+    """EXP-A / EXP-B / EXP-D / EXP-E: cần GPU CUDA. Nạp model một lần cho cả kế hoạch.
+
+    Mức garment_source="fixed" (áo mẫu cố định) chỉ còn để chạy lại các thí nghiệm cũ; luồng sản phẩm đã bỏ nó."""
     from PIL import Image                                          # noqa: PLC0415
     from generation import controlnet as cn, garment, pattern     # noqa: PLC0415
     from generation.stable_diffusion import Generator             # noqa: PLC0415

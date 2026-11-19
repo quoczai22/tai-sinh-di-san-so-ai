@@ -53,7 +53,6 @@ def generate_design_set(
     variants: tuple[dict, ...] = DEFAULT_VARIANTS,
     run_id: str | None = None,
     source: str = "panel",
-    garment_source: str = "lora",
     garment_lora_dir: Path | None = None,
 ) -> list[dict]:
     """Sinh bộ thiết kế cho một hiện vật.
@@ -63,10 +62,9 @@ def generate_design_set(
     - "render": ảnh hiện vật trong data/heritage/ (với LR3D là ảnh render cả bình), ControlNet bám theo dáng bình.
     - "elements": mỗi biến thể một phần tử trong kho data/elements/.
 
-    garment_source chọn áo dài nền:
-    - "lora" (mặc định): sinh áo mới mỗi lần chạy bằng SD 1.5 + LoRA dáng áo dài, tách vùng áo bằng SAM (generation/garment_lora.py).
-      Không sinh được áo hợp lệ (hoặc máy chưa có LoRA) thì quay về áo mẫu, ghi lý do vào manifest và Passport.
-    - "fixed": ảnh áo mẫu cố định data/garment/aodai_template.png, chỉ còn dùng làm dự phòng và để đối chứng trong thí nghiệm.
+    Áo dài nền luôn do SD 1.5 + LoRA dáng áo dài sinh mới mỗi lần chạy, vùng áo tách bằng SAM
+    (generation/garment_lora.py). Không còn áo mẫu cố định: thiếu LoRA hoặc không sinh được áo hợp lệ thì
+    ném GarmentError, không quay về áo khác. garment_lora_dir chọn thư mục LoRA (mặc định data/lora/aodai_r16_512).
     """
     from provenance import passport as P                          # noqa: PLC0415
     from provenance.builder import build_design_passport          # noqa: PLC0415
@@ -113,20 +111,14 @@ def generate_design_set(
     prepared["reference"].save(ref_path)
     prepared["control"].save(canny_path)
 
-    # Áo nền: sinh mới bằng LoRA hoặc dùng áo mẫu cố định. Sinh áo xong mới nạp bộ sinh hoa văn để không chiếm VRAM cùng lúc.
-    tpl_path, region, garment_info = None, None, {"source": "fixed", "fallback_reason": None}
-    if garment_source == "lora":
-        report(8, "Đang sinh áo dài nền bằng LoRA...")
-        try:
-            from generation import garment_lora                         # noqa: PLC0415
-            g = garment_lora.generate_garment(run_dir, seed=seed, lora_dir=garment_lora_dir)
-            tpl_path, region = g["path"], g["mask"]
-            garment_info = {"source": "lora", "seed": g["seed"], "lora": g["lora"], "tried": g["tried"],
-                            "image": g["path"].relative_to(ROOT).as_posix(),
-                            "mask": g["mask_path"].relative_to(ROOT).as_posix(), "fallback_reason": None}
-        except Exception as exc:                                        # noqa: BLE001
-            log.exception("Không sinh được áo bằng LoRA, dùng áo mẫu cố định")
-            garment_info = {"source": "fixed", "fallback_reason": f"{type(exc).__name__}: {exc}"}
+    # Áo nền: sinh mới bằng LoRA. Sinh áo xong mới nạp bộ sinh hoa văn để hai mô hình không chiếm VRAM cùng lúc.
+    report(8, "Đang sinh áo dài nền bằng LoRA...")
+    from generation import garment_lora                                 # noqa: PLC0415
+    g = garment_lora.generate_garment(run_dir, seed=seed, lora_dir=garment_lora_dir)
+    tpl_path, region = g["path"], g["mask"]
+    garment_info = {"source": "lora", "seed": g["seed"], "lora": g["lora"], "tried": g["tried"],
+                    "image": g["path"].relative_to(ROOT).as_posix(),
+                    "mask": g["mask_path"].relative_to(ROOT).as_posix()}
 
     generator = Generator()
     versions = generator.versions()
@@ -159,8 +151,9 @@ def generate_design_set(
                 used_layouts.add(chosen["layout"])
                 raw_path = run_dir / f"V{index}_aodai_raw.png"
                 chosen["image"].save(raw_path)
-                # polish_mask=True: chỉ polish vùng áo, ngoài áo giữ nguyên từng pixel (mặc định tắt, giữ hành vi cũ)
-                masked = bool(variant.get("polish_mask", False))
+                # polish_mask: chỉ polish vùng áo, ngoài áo giữ nguyên từng pixel (mặc định bật; False là polish toàn ảnh,
+                # làm nền bị vẽ lại: đo được 14 đến 17% pixel ngoài áo đổi hơn 12 mức xám)
+                masked = bool(variant.get("polish_mask", True))
                 strength = float(variant.get(
                     "polish_strength", garment.POLISH_MASKED_STRENGTH if masked else POLISH_STRENGTH))
                 if masked:
@@ -169,8 +162,8 @@ def generate_design_set(
                 else:
                     polish_fn = garment.polish
                 retry_info = None
-                if strength > 0 and variant.get("polish_retry", False):
-                    # Vòng loại và thử lại: lỗi M1/M3 thì đổi seed, hạ độ nhiễu, cuối cùng trả ảnh ghép thô (quality/retry.py)
+                if strength > 0 and variant.get("polish_retry", True):
+                    # Vòng loại và thử lại (mặc định bật): lỗi M1/M3 thì đổi seed, hạ độ nhiễu, cuối cùng trả ảnh ghép thô (quality/retry.py)
                     from quality import retry as QR                    # noqa: PLC0415
                     retry_info = QR.polish_with_retry(
                         chosen["image"], lambda im, st, sd: polish_fn(im, strength=st, seed=sd),
