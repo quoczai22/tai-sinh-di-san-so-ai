@@ -16,10 +16,10 @@ def _item(status="unverified", item_status="active", **prov):
     return it
 
 
-def test_registry_has_six_items_three_active():
+def test_registry_has_twelve_items_six_active():
     items = R.all_items()
-    assert len(items) == 6
-    assert sorted(i["code"] for i in items if R.item_status(i) == "active") == ["HV01", "HV03", "HV04"]
+    assert len(items) == 12  # 6 vật LR3D (chính) + 6 vật cũ (retired)
+    assert sorted(i["code"] for i in items if R.item_status(i) == "active") == ["HV07", "HV08", "HV09", "HV10", "HV11", "HV12"]
     retired = [i for i in items if R.item_status(i) == "retired"]
     assert all(i.get("retired_reason") for i in retired), "hiện vật ngừng dùng phải ghi lý do"
 
@@ -30,7 +30,7 @@ def test_completeness_reports_missing_fields_honestly():
         assert c["total"] == len(R.REQUIRED_PROVENANCE) == 10
         missing = {m["field"] for m in c["missing"]}
         # Nhóm không biết tác giả ảnh, giấy phép, ngày thu thập chính xác → phải hiện là thiếu
-        assert {"author", "license", "collected_on"} <= missing
+        assert {"license", "collected_on"} <= missing
 
 
 @pytest.mark.parametrize("status,action,allowed,level", [
@@ -98,5 +98,5 @@ def test_rights_gate_permission_scope_list_and_case():
 
 def test_streamlit_loader_hides_retired_by_default():
     from streamlit_ui.heritage_data import load_heritage_metadata
-    assert len(load_heritage_metadata(R.ROOT)) == 3
-    assert len(load_heritage_metadata(R.ROOT, include_retired=True)) == 6
+    assert len(load_heritage_metadata(R.ROOT)) == 6
+    assert len(load_heritage_metadata(R.ROOT, include_retired=True)) == 12

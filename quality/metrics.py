@@ -186,8 +186,10 @@ def vessel_leakage(pattern: np.ndarray, reference: np.ndarray, border: int = 24)
     frame[:border] = frame[-border:] = True
     frame[:, :border] = frame[:, -border:] = True
     border_bg = float(flat[frame].mean())
-    m_pat = cn.object_mask(img) > 0
-    m_ref = cn.object_mask(Image.fromarray(reference)) > 0
+    # tol=26 và không lấp lỗ: giữ nguyên phép đo của cổng chất lượng bản 09/2026 để số đã ghi trong Passport
+    # còn tái lập được (generation.controlnet mặc định nay tự chọn ngưỡng và lấp lỗ cho ảnh nền xám).
+    m_pat = cn.object_mask(img, tol=26, fill_holes=False) > 0
+    m_ref = cn.object_mask(Image.fromarray(reference), tol=26, fill_holes=False) > 0
     union = (m_pat | m_ref).sum()
     iou = float((m_pat & m_ref).sum() / union) if union else 0.0
     return {"vessel_leakage": round(border_bg * iou, 4), "border_background": round(border_bg, 4),

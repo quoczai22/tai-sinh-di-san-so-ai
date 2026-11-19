@@ -15,8 +15,8 @@ ROOT = Path(__file__).resolve().parent.parent
 SPECS = sorted((ROOT / "evaluation" / "experiments").glob("EXP-*.json"))
 
 
-@pytest.mark.parametrize("path,n", [("EXP-A_controlnet_weight.json", 60), ("EXP-B_stage2_finish.json", 36),
-                                    ("EXP-C_composite_ablation.json", 24)])
+@pytest.mark.parametrize("path,n", [("EXP-A_controlnet_weight.json", 120), ("EXP-B_stage2_finish.json", 72),
+                                    ("EXP-C_composite_ablation.json", 48)])
 def test_specs_expand_and_pass_validation(path, n):
     spec = E.load_spec(ROOT / "evaluation" / "experiments" / path)
     rows = E.expand_plan(spec)

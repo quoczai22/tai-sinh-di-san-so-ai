@@ -18,7 +18,7 @@ from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
 
-from generation import controlnet as cn, garment, layout_select, palette, pattern
+from generation import controlnet as cn, element_library, garment, layout_select, palette, pattern
 from generation.stable_diffusion import Generator
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -52,7 +52,15 @@ def generate_design_set(
     seed: int = SEED,
     variants: tuple[dict, ...] = DEFAULT_VARIANTS,
     run_id: str | None = None,
+    source: str = "render",
 ) -> list[dict]:
+    """Sinh bộ thiết kế cho một hiện vật.
+
+    source chọn ảnh nạp cho ControlNet (thiếu thì tự quay về bậc thấp hơn: elements, panel, rồi ảnh hiện vật):
+    - "render" (mặc định): ảnh hiện vật trong data/heritage/ (với LR3D là ảnh render cả bình).
+    - "panel": mảng texture phẳng trong data/heritage/panels/.
+    - "elements": mỗi biến thể một phần tử trong kho data/elements/.
+    """
     from provenance import passport as P                          # noqa: PLC0415
     from provenance.builder import build_design_passport          # noqa: PLC0415
     from provenance.registry import get_item, rights_gate         # noqa: PLC0415
@@ -70,8 +78,22 @@ def generate_design_set(
         raise PermissionError(gate.reason)
 
     report(5, "Đang chuẩn bị hoa văn từ hiện vật...")
-    prepared = cn.prepare(heritage_id, ornament_only=True, trim=True)
-    source_colors = palette.dominant_colors(prepared["reference"], prepared["reference_mask"])
+    cache: dict[str, dict] = {}
+
+    def prep(path: Path | None) -> dict:
+        key = str(path)
+        if key not in cache:
+            cache[key] = cn.prepare(heritage_id, ornament_only=True, trim=True, image_path=path)
+        return cache[key]
+
+    inputs = element_library.variant_inputs(heritage_id, source, root=ROOT)
+    try:
+        prepared_list = [prep(p) for _, p in inputs]
+    except (OSError, ValueError):
+        inputs = [("hien_vat", None)] * 4  # file hỏng: quay về ảnh hiện vật mặc định thay vì làm sập lượt sinh
+        prepared_list = [prep(None)] * 4
+    source_ids = [label for label, _ in inputs]
+    prepared = prepared_list[0]  # ảnh tham chiếu của bộ (lưu và ghi vào Passport) lấy theo biến thể 1
     base = output_dir or OUT_DIR
     base = base if base.is_absolute() else ROOT / base
     if run_id is None:
@@ -96,6 +118,8 @@ def generate_design_set(
         for index, variant in enumerate(variants, start=1):
             report(10 + (index - 1) * (80 // total), f"Đang tạo thiết kế {index}/{total}...")
             try:
+                prepared = prepared_list[(index - 1) % len(prepared_list)]
+                source_colors = palette.dominant_colors(prepared["reference"], prepared["reference_mask"])
                 result = pattern.generate(generator, heritage_id, variant["level"], seed, prepared=prepared)
                 design_pattern = result["image"]
                 if variant["palette"] == "original":
@@ -120,6 +144,7 @@ def generate_design_set(
                 similarity = scorer.similarity(prepared["reference"], design_pattern)
                 records.append({
                     "status": "completed", "variant_index": index, "timestamp": _now(),
+                    "source_element": source_ids[(index - 1) % len(source_ids)],  # mã phần tử, "panel" hoặc "hien_vat"
                     "seed": seed, "intensity_level": variant["level"], "level_name": result["level_name"],
                     "controlnet_weight": result["weight"], "palette_mode": variant["palette"],
                     "layout": chosen["layout"], "layout_label": chosen["label"], "layout_scale": chosen["scale"],

@@ -23,11 +23,11 @@ def test_health_keeps_old_fields(api_client):
 
 def test_heritage_list_keeps_old_shape(api_client):
     items = api_client.get("/heritage").json()
-    assert isinstance(items, list) and len(items) == 3
+    assert isinstance(items, list) and len(items) == 6
     for it in items:
         assert OLD_HERITAGE_KEYS <= set(it), OLD_HERITAGE_KEYS - set(it)
         assert it["image"] == f"/media/heritage/{it['id']}"
-    assert len(api_client.get("/heritage", params={"include_retired": True}).json()) == 6
+    assert len(api_client.get("/heritage", params={"include_retired": True}).json()) == 12
 
 
 def test_heritage_detail_and_media(api_client):
@@ -143,7 +143,8 @@ def test_publish_blocked_until_rights_cleared(api_client):
     assert api_client.post("/passports/DP-HV03-20260906-V4/publish").status_code == 409   # chưa duyệt
     api_client.post("/passports/DP-HV03-20260906-V4/reviews", json=_review())
     r = api_client.post("/passports/DP-HV03-20260906-V4/publish")
-    assert r.status_code == 403 and "Không xuất bản" in r.json()["detail"]
+    detail = r.json()["detail"]  # DP-HV03 nay thuộc hiện vật retired nên bị chặn vì ngừng sử dụng hoặc quyền chưa rõ
+    assert r.status_code == 403 and ("Không xuất bản" in detail or "ngừng sử dụng" in detail)
 
 
 def test_export_is_labeled(api_client):
