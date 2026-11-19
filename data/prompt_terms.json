@@ -2,58 +2,58 @@
   "_meta": {
     "purpose": "Anh xa tieng Viet -> tieng Anh cho Prompt Builder giai doan 1 (v6). SD1.5 dung CLIP gan nhu thuan tieng Anh.",
     "budget": "base_description <= 21 token, do bang tokenizer cua SD1.5",
-    "status": "Mo ta do LLM co thi giac sinh, CHUA duoc nguoi ra soat. Dat reviewed_by_human=true sau khi kiem tra tung muc.",
-    "note": "Khoa la ten file trong data/heritage/ (khong co duoi).",
+    "status": "Mo ta do mo hinh co thi giac sinh (Claude), CHUA duoc nguoi ra soat. Dat reviewed_by_human=true sau khi kiem tra tung muc.",
+    "note": "Khoa la ten file trong data/heritage/ (khong co duoi). 2026-11-18: thay 6 muc cu bang 6 muc LR3D-CULT2 (ban cu nam trong lich su git).",
     "constraints": "<= 21 token; cam moi tu chi hinh dang vat chua"
   },
   "terms": {
-    "BT_Hac_XP": {
-      "name_en": "Bat Trang peacock and lotus",
-      "base_description": "Blue and white peacocks and lotus flowers with fine gold detailing.",
+    "LR3D_33": {
+      "name_en": "Blue and white medallion and scroll motif",
+      "base_description": "Cobalt blue peony and lotus scrolls with round medallions and wave borders on white glaze.",
       "source": "llm_vision",
-      "llm_model": "gemini/gemini-3.7-flash",
-      "generated_on": "2026-09-06",
-      "reviewed_by_human": true
+      "llm_model": "claude-sonnet-5-5",
+      "generated_on": "2026-11-18",
+      "reviewed_by_human": false
     },
-    "HSBT_XP-300x300": {
-      "name_en": "Bat Trang monochrome lotus motif",
-      "base_description": "Black ink wash lotus blossoms, leaves, and thorny stems on white background.",
+    "LR3D_61": {
+      "name_en": "Blue and white dragon and cloud band",
+      "base_description": "Cobalt blue dragon winding among clouds with a repeating border band on white glaze.",
       "source": "llm_vision",
-      "llm_model": "gemini/gemini-3.7-flash",
-      "generated_on": "2026-09-06",
-      "reviewed_by_human": true
+      "llm_model": "claude-sonnet-5-5",
+      "generated_on": "2026-11-18",
+      "reviewed_by_human": false
     },
-    "BHV_UU_XP1-600x600": {
-      "name_en": "Bat Trang peacocks and blossoms",
-      "base_description": "Peacocks, blooming pink flowers, and blue waves on vibrant yellow ground.",
+    "LR3D_50": {
+      "name_en": "Blue and white lotus scroll motif",
+      "base_description": "Dense cobalt blue scrolling flower vines on white glaze with border bands.",
       "source": "llm_vision",
-      "llm_model": "gemini/gemini-3.7-flash",
-      "generated_on": "2026-09-06",
-      "reviewed_by_human": true
+      "llm_model": "claude-sonnet-5-5",
+      "generated_on": "2026-11-18",
+      "reviewed_by_human": false
     },
-    "MB_2C_XP_31": {
-      "name_en": "Bat Trang ship and waves",
-      "base_description": "Blue sailing ship on rolling ocean waves with yellow floral background.",
+    "LR3D_38": {
+      "name_en": "Blue flowering plants",
+      "base_description": "Blue stems and leaves with small white raised blossoms on a soft grey blue ground.",
       "source": "llm_vision",
-      "llm_model": "gemini/gemini-3.7-flash",
-      "generated_on": "2026-09-06",
-      "reviewed_by_human": true
+      "llm_model": "claude-sonnet-5-5",
+      "generated_on": "2026-11-18",
+      "reviewed_by_human": false
     },
-    "BT010_2": {
-      "name_en": "Bat Trang blue chrysanthemum scroll",
-      "base_description": "Cobalt blue chrysanthemum blossoms and scrolling leafy vines on white background.",
+    "LR3D_97": {
+      "name_en": "Blue and white cloud scroll and lattice motif",
+      "base_description": "Sparse blue swirling clouds and lattice bands on cream glaze.",
       "source": "llm_vision",
-      "llm_model": "gemini/gemini-3.7-flash",
-      "generated_on": "2026-09-06",
-      "reviewed_by_human": true
+      "llm_model": "claude-sonnet-5-5",
+      "generated_on": "2026-11-18",
+      "reviewed_by_human": false
     },
-    "binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien": {
-      "name_en": "Bat Trang gilded lotus",
-      "base_description": "Gilded embossed lotus blossoms and leaves on a white background.",
+    "LR3D_124": {
+      "name_en": "Blue and white dragon medallion and feather band",
+      "base_description": "Round cobalt blue dragon medallion above a feather band with scalloped cloud border.",
       "source": "llm_vision",
-      "llm_model": "gemini/gemini-3.7-flash",
-      "generated_on": "2026-09-06",
-      "reviewed_by_human": true
+      "llm_model": "claude-sonnet-5-5",
+      "generated_on": "2026-11-18",
+      "reviewed_by_human": false
     }
   },
   "labels_en": {

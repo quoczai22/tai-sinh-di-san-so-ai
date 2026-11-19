@@ -1,0 +1,56 @@
+[
+  {
+    "id": "LR3D_33",
+    "name": "Hiện vật men lam: huy hiệu, mẫu đơn và dây sen",
+    "era": "Chưa xác định niên đại",
+    "subtitle": "Ảnh render cả bình từ mô hình 3D",
+    "category": "Họa tiết men lam",
+    "image_file": "LR3D_33.png",
+    "source_short": "LR3D-CULT2, vật #33 (bộ dữ liệu có phần quét tại Bát Tràng và Thanh Hà, chưa xác định từng vật)"
+  },
+  {
+    "id": "LR3D_61",
+    "name": "Hiện vật men lam: rồng và mây",
+    "era": "Chưa xác định niên đại",
+    "subtitle": "Ảnh render cả bình từ mô hình 3D",
+    "category": "Họa tiết men lam",
+    "image_file": "LR3D_61.png",
+    "source_short": "LR3D-CULT2, vật #61 (bộ dữ liệu có phần quét tại Bát Tràng và Thanh Hà, chưa xác định từng vật)"
+  },
+  {
+    "id": "LR3D_50",
+    "name": "Hiện vật men lam: dây hoa cuộn dày",
+    "era": "Chưa xác định niên đại",
+    "subtitle": "Ảnh render cả bình từ mô hình 3D",
+    "category": "Họa tiết men lam",
+    "image_file": "LR3D_50.png",
+    "source_short": "LR3D-CULT2, vật #50 (bộ dữ liệu có phần quét tại Bát Tràng và Thanh Hà, chưa xác định từng vật)"
+  },
+  {
+    "id": "LR3D_38",
+    "name": "Hiện vật men lam: cây hoa",
+    "era": "Chưa xác định niên đại",
+    "subtitle": "Ảnh render cả bình từ mô hình 3D",
+    "category": "Họa tiết men lam",
+    "image_file": "LR3D_38.png",
+    "source_short": "LR3D-CULT2, vật #38 (bộ dữ liệu có phần quét tại Bát Tràng và Thanh Hà, chưa xác định từng vật)"
+  },
+  {
+    "id": "LR3D_97",
+    "name": "Hiện vật men lam: nét lam thưa trên men kem",
+    "era": "Chưa xác định niên đại",
+    "subtitle": "Ảnh render cả bình từ mô hình 3D",
+    "category": "Họa tiết men lam",
+    "image_file": "LR3D_97.png",
+    "source_short": "LR3D-CULT2, vật #97 (bộ dữ liệu có phần quét tại Bát Tràng và Thanh Hà, chưa xác định từng vật)"
+  },
+  {
+    "id": "LR3D_124",
+    "name": "Hiện vật men lam: huy hiệu rồng và lông vũ",
+    "era": "Chưa xác định niên đại",
+    "subtitle": "Ảnh render cả bình từ mô hình 3D",
+    "category": "Họa tiết men lam",
+    "image_file": "LR3D_124.png",
+    "source_short": "LR3D-CULT2, vật #124 (bộ dữ liệu có phần quét tại Bát Tràng và Thanh Hà, chưa xác định từng vật)"
+  }
+]

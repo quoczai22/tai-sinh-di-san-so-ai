@@ -58,7 +58,7 @@ BANNED = {"vase", "vases", "jar", "jars", "pot", "pots", "bottle", "bottles",
           "photograph", "photo", "3d", "render"}
 
 INSTRUCTION = """You are helping build a textile-pattern generator. You will see a photo of a
-Vietnamese Bat Trang ceramic object.
+blue and white ceramic object (origin not verified).
 
 Describe ONLY the SURFACE DECORATION — the motifs painted or carved on it.
 

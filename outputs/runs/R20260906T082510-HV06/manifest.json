@@ -1,0 +1,265 @@
+{
+  "schema": "run-manifest/1.0",
+  "run_id": "R20260906T082510-HV06",
+  "heritage_id": "binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien",
+  "code": "HV06",
+  "source": "evaluation/variants.py (log: evaluation/variants.csv)",
+  "reconstructed_on": "2026-11-18T03:51:23+00:00",
+  "artifacts": [
+    {
+      "role": "source_image",
+      "path": "data/heritage/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien.jpg",
+      "sha256": "ce4bbfc5828c410e533975348d43e564c28b6b9d4979967322c2640b8c49e700",
+      "bytes": 110725,
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "role": "reference_512",
+      "path": "outputs/variants/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien_00_ref.png",
+      "sha256": "a271057e6c72b8830dd8e4dd41da3eb6c7b9032e36f5d621178691d3365778ab",
+      "bytes": 229969,
+      "size": [
+        512,
+        512
+      ]
+    },
+    {
+      "role": "control_canny",
+      "path": "outputs/variants/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien_01_canny.png",
+      "sha256": "3d6d4a7758b3553751a18af2211be2b9252b6da866fa95c848326be7bf8f252d",
+      "bytes": 14358,
+      "size": [
+        512,
+        512
+      ]
+    }
+  ],
+  "designs": [
+    {
+      "design_id": "R20260906T082510-HV06.V1",
+      "passport_id": "DP-HV06-20260906-V1",
+      "variant_index": 1,
+      "artifacts": [
+        {
+          "role": "pattern",
+          "path": "outputs/variants/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien_V1_pattern.png",
+          "sha256": "7c06abf55fd8f1fe5fe94fb4274e62581b1de808ce90c16901dcf9f8ebeaf962",
+          "bytes": 427691,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "composite_raw",
+          "path": "outputs/variants/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien_V1_aodai_raw.png",
+          "sha256": "a1d0499e2c54d82c046dcb20b078fada0d68b59355f682eba322fb2eab7c5fe4",
+          "bytes": 363904,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "final_img2img",
+          "path": "web_ui/assets/images/variants/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien_V1_aodai.png",
+          "sha256": "1d32cd12c7ecd8e00819030d0829042d1d661c03ab5787259d5bdcab786eb35f",
+          "bytes": 369484,
+          "size": [
+            512,
+            512
+          ],
+          "legacy_sha256_prefix": "1d32cd12c7ecd8e0"
+        },
+        {
+          "role": "repair_pattern_lock",
+          "path": "outputs/runs/R20260906T082510-HV06/V1_pattern_lock.png",
+          "sha256": "2e519ae52d9f51c37a1348cedd66d312e187e7270ef7df01b062bce00e43d98b",
+          "bytes": 373773,
+          "size": [
+            512,
+            512
+          ],
+          "method": "pattern_lock_v1"
+        }
+      ],
+      "quality_decision": "FAIL",
+      "repair_decision": "PASS"
+    },
+    {
+      "design_id": "R20260906T082510-HV06.V2",
+      "passport_id": "DP-HV06-20260906-V2",
+      "variant_index": 2,
+      "artifacts": [
+        {
+          "role": "pattern",
+          "path": "outputs/variants/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien_V2_pattern.png",
+          "sha256": "35046aa1689c35eee7b53cb8ee5181d75ea0b0d3bc827a0e35635a0eb39252fd",
+          "bytes": 582477,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "composite_raw",
+          "path": "outputs/variants/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien_V2_aodai_raw.png",
+          "sha256": "e3199b1e2dad0b29e89d32b7bebda29b1c1e98a58ad19b14c75c78a85bcac96c",
+          "bytes": 391284,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "final_img2img",
+          "path": "web_ui/assets/images/variants/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien_V2_aodai.png",
+          "sha256": "fea80031a31a6f80b5b8519ddb566754bfae94bec8c82203c240a3f0ad2341bc",
+          "bytes": 390291,
+          "size": [
+            512,
+            512
+          ],
+          "legacy_sha256_prefix": "fea80031a31a6f80"
+        }
+      ],
+      "quality_decision": "WARN",
+      "repair_decision": null
+    },
+    {
+      "design_id": "R20260906T082510-HV06.V3",
+      "passport_id": "DP-HV06-20260906-V3",
+      "variant_index": 3,
+      "artifacts": [
+        {
+          "role": "pattern",
+          "path": "outputs/variants/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien_V3_pattern.png",
+          "sha256": "9d68656fc0c1f9854099ac5f060cce14875100db2aa721ebc2158aba1dff6074",
+          "bytes": 518676,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "composite_raw",
+          "path": "outputs/variants/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien_V3_aodai_raw.png",
+          "sha256": "4a214e9f56d911d7a32231e783c1f24ff27970861874300b15d2263177461df6",
+          "bytes": 370985,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "final_img2img",
+          "path": "web_ui/assets/images/variants/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien_V3_aodai.png",
+          "sha256": "395671e076aa8c3334812611ee9177dca4dd78163459005ed2448308f82fe375",
+          "bytes": 374463,
+          "size": [
+            512,
+            512
+          ],
+          "legacy_sha256_prefix": "395671e076aa8c33"
+        },
+        {
+          "role": "repair_pattern_lock",
+          "path": "outputs/runs/R20260906T082510-HV06/V3_pattern_lock.png",
+          "sha256": "af5464cebd5b02fadba54da9ab9bd693023a9c354a3cf6fdcf5bc67960ae635c",
+          "bytes": 379164,
+          "size": [
+            512,
+            512
+          ],
+          "method": "pattern_lock_v1"
+        }
+      ],
+      "quality_decision": "FAIL",
+      "repair_decision": "WARN"
+    },
+    {
+      "design_id": "R20260906T082510-HV06.V4",
+      "passport_id": "DP-HV06-20260906-V4",
+      "variant_index": 4,
+      "artifacts": [
+        {
+          "role": "pattern",
+          "path": "outputs/variants/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien_V4_pattern.png",
+          "sha256": "4ae369e0d23ccbec9facd85309aea812f2e63544b3ef00fd8e7250f3996ca09d",
+          "bytes": 530973,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "composite_raw",
+          "path": "outputs/variants/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien_V4_aodai_raw.png",
+          "sha256": "b6535a54b712c968c8ec75f7f56bd8eab877c09624c469a952361e0bc1c3ac56",
+          "bytes": 367357,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "role": "final_img2img",
+          "path": "web_ui/assets/images/variants/binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-bat-trang-cao-cap-anh-dai-dien_V4_aodai.png",
+          "sha256": "90fada5b0fd5c55141c196323c11aaf992438d2a62d1d686e4806111f02919b5",
+          "bytes": 369575,
+          "size": [
+            512,
+            512
+          ],
+          "legacy_sha256_prefix": "90fada5b0fd5c551"
+        },
+        {
+          "role": "repair_pattern_lock",
+          "path": "outputs/runs/R20260906T082510-HV06/V4_pattern_lock.png",
+          "sha256": "4363fa85766d9e8d9f6f875f0748d0f71fbdacd49411f9dacdd4b05afb7c4cd7",
+          "bytes": 375722,
+          "size": [
+            512,
+            512
+          ],
+          "method": "pattern_lock_v1"
+        }
+      ],
+      "quality_decision": "FAIL",
+      "repair_decision": "PASS"
+    }
+  ],
+  "integrity": [
+    {
+      "design_id": "R20260906T082510-HV06.V1",
+      "logged_sha256_prefix": "1d32cd12c7ecd8e0",
+      "web_ui_copy_matches": true,
+      "outputs_copy_matches": false,
+      "note": "Tệp cùng tên trong outputs/variants đã bị một lần chạy sau (API, không ghi nhật ký) ghi đè."
+    },
+    {
+      "design_id": "R20260906T082510-HV06.V2",
+      "logged_sha256_prefix": "fea80031a31a6f80",
+      "web_ui_copy_matches": true,
+      "outputs_copy_matches": false,
+      "note": "Tệp cùng tên trong outputs/variants đã bị một lần chạy sau (API, không ghi nhật ký) ghi đè."
+    },
+    {
+      "design_id": "R20260906T082510-HV06.V3",
+      "logged_sha256_prefix": "395671e076aa8c33",
+      "web_ui_copy_matches": true,
+      "outputs_copy_matches": false,
+      "note": "Tệp cùng tên trong outputs/variants đã bị một lần chạy sau (API, không ghi nhật ký) ghi đè."
+    },
+    {
+      "design_id": "R20260906T082510-HV06.V4",
+      "logged_sha256_prefix": "90fada5b0fd5c551",
+      "web_ui_copy_matches": true,
+      "outputs_copy_matches": false,
+      "note": "Tệp cùng tên trong outputs/variants đã bị một lần chạy sau (API, không ghi nhật ký) ghi đè."
+    }
+  ]
+}
