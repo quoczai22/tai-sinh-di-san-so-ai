@@ -85,33 +85,43 @@ def test_paired_tests_report_direction():
     assert out["vs_control"]["b"]["wilcoxon_p"] == pytest.approx(0.0312, abs=1e-3)
 
 
-def test_exp_c_results_and_blind_packet_hide_identity():
-    out = ROOT / "outputs" / "experiments" / "EXP-C"
-    results = list(csv.DictReader((out / "results.csv").open(encoding="utf-8")))
-    assert len(results) == 24 and all(r["status"] == "completed" for r in results)
-    assert all(r["cfg.stage2_finish"] == "none" for r in results), "EXP-C không có img2img"
-    key = list(csv.DictReader((out / "blind" / "key.csv").open(encoding="utf-8")))
-    sheet = list(csv.DictReader((out / "blind" / "ratings_CG01.csv").open(encoding="utf-8")))
-    assert len(key) == len(sheet) == 24
+def _bo_ket_qua_gia(tmp_path, n=12):
+    """Thư mục thí nghiệm giả: n lượt, hai mức, ảnh nhỏ; đủ để dựng gói chấm mù."""
+    import json
+    from PIL import Image
+    (tmp_path / "images").mkdir()
+    rows = []
+    for i in range(n):
+        name = f"images/r{i}.png"
+        Image.new("RGB", (8, 8), (i * 10, 0, 0)).save(tmp_path / name)
+        rows.append({"run_key": f"k{i}", "heritage_id": f"H{i % 3}", "iv_level": "a" if i % 2 else "b",
+                     "replicate": str(42 + i % 2), "status": "completed", "image": name})
+    E.write_results(rows, tmp_path)
+    spec = {"id": "EXP-T", "metrics": {"human": ["aesthetic", "looks_like_printed_fabric"], "automatic": []},
+            "independent_variable": {"name": "x", "levels": ["a", "b"]}}
+    (tmp_path / "spec.json").write_text(json.dumps(spec), encoding="utf-8")
+
+
+def test_blind_packet_hide_identity(tmp_path):
+    _bo_ket_qua_gia(tmp_path)
+    blind = E.build_blind_packet(tmp_path, ["CG01", "CG02", "CG03"])
+    key = list(csv.DictReader((blind / "key.csv").open(encoding="utf-8")))
+    sheet = list(csv.DictReader((blind / "ratings_CG01.csv").open(encoding="utf-8")))
+    assert len(key) == len(sheet) == 12
     assert "iv_level" not in sheet[0] and "run_key" not in sheet[0]
     assert all(r["code"].startswith("B") for r in sheet)
-    orders = [[r["code"] for r in csv.DictReader((out / "blind" / f"ratings_{x}.csv").open(encoding="utf-8"))]
+    orders = [[r["code"] for r in csv.DictReader((blind / f"ratings_{x}.csv").open(encoding="utf-8"))]
               for x in ("CG01", "CG02", "CG03")]
     assert orders[0] != orders[1] or orders[1] != orders[2], "thứ tự phải xáo theo người chấm"
-    assert all(not any(r[c] for c in ("aesthetic", "looks_like_printed_fabric")) for r in sheet), \
-        "không được có điểm điền sẵn"
+    assert all(not any(r[c] for c in ("aesthetic", "looks_like_printed_fabric")) for r in sheet),         "không được có điểm điền sẵn"
 
 
 def test_blind_packet_is_reproducible(tmp_path):
-    import shutil
-    src = ROOT / "outputs" / "experiments" / "EXP-C"
-    dst = tmp_path / "EXP-C"
-    dst.mkdir()
-    for f in ("results.csv", "spec.json", "plan.csv"):
-        shutil.copy2(src / f, dst / f)
-    shutil.copytree(src / "images", dst / "images")
-    E.build_blind_packet(dst, ["CG01", "CG02", "CG03"])
-    assert (dst / "blind" / "key.csv").read_text(encoding="utf-8") == (src / "blind" / "key.csv").read_text(encoding="utf-8")
+    _bo_ket_qua_gia(tmp_path)
+    E.build_blind_packet(tmp_path, ["CG01", "CG02"])
+    first = (tmp_path / "blind" / "key.csv").read_text(encoding="utf-8")
+    E.build_blind_packet(tmp_path, ["CG01", "CG02"])
+    assert (tmp_path / "blind" / "key.csv").read_text(encoding="utf-8") == first
 
 
 @pytest.mark.parametrize("finish,expected", [

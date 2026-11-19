@@ -71,10 +71,16 @@ def assess_edit(passport: dict, edited: Path, root: Path, cfg: dict | None = Non
     if raw_art is None or g2 is None or not layout or not (root / raw_art["path"]).exists():
         return None
     cfg = cfg or QG.load_config()
-    tpl_img = Image.open(garment.TEMPLATE).convert("RGB")
+    # Áo nền và vùng áo của đúng thiết kế này (áo do LoRA sinh nằm trong artifacts); Passport cũ không có thì dùng áo mẫu
+    art = {a.get("role"): root / a["path"] for a in passport.get("artifacts", []) if a.get("path")}
+    if art.get("garment", Path("?")).exists() and art.get("garment_mask", Path("?")).exists():
+        tpl_img = Image.open(art["garment"]).convert("RGB")
+        region = (np.asarray(Image.open(art["garment_mask"]).convert("L")) > 0).astype(np.uint8)
+    else:
+        tpl_img, region = Image.open(garment.TEMPLATE).convert("RGB"), None
     template = np.asarray(tpl_img)
-    prior = garment.garment_mask(tpl_img)
-    layout_mask = garment._layout_mask(tpl_img, garment.get_layout(layout))
+    prior = garment.garment_mask(tpl_img) if region is None else region
+    layout_mask = garment._layout_mask(tpl_img, garment.get_layout(layout), region)
     g3 = QG.evaluate_final(_arr(root / raw_art["path"]), _arr(Path(edited)), template, layout_mask, prior, cfg)
     return {"config_version": cfg["version"], "G2_pattern": g2, "G3_final": g3,
             "overall": QG.overall(g2, g3, cfg), "repair": None}

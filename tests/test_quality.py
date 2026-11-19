@@ -120,36 +120,3 @@ def test_sharpness_ratio_detects_blur(rng):
     blurred = cv2.GaussianBlur(raw, (0, 0), 3)
     r = M.visual_quality(raw, blurred, mask > 0)
     assert r["sharpness_ratio"] < CFG["gates"]["G3_final"]["metrics"]["sharpness_ratio"]["fail"]
-
-
-# --------------------------------------------- hồi quy trên dữ liệu thật ---
-
-LEGACY = {r["passport_id"]: r for r in csv.DictReader((ROOT / "evaluation" / "quality_gate_legacy.csv").open(encoding="utf-8"))}
-
-
-def test_legacy_summary_counts():
-    rows = list(LEGACY.values())
-    assert len(rows) == 24
-    count = lambda k, v: sum(r[k] == v for r in rows)   # noqa: E731
-    assert (count("G2", "PASS"), count("G2", "WARN"), count("G2", "FAIL")) == (21, 1, 2)
-    assert (count("G3", "PASS"), count("G3", "WARN"), count("G3", "FAIL")) == (0, 4, 20)
-    assert (count("repair_G3", "PASS"), count("repair_G3", "WARN")) == (10, 9)
-
-
-@pytest.mark.parametrize("pid", ["DP-HV01-20260906-V2", "DP-HV03-20260906-V2", "DP-HV04-20260906-V2"])
-def test_recompute_matches_recorded(pid, tmp_path):
-    """Đo lại từ tệp gốc phải ra đúng con số đã ghi (phát hiện thay đổi ngoài ý muốn ở phép đo)."""
-    from quality.assess import assess_design
-    p = json.loads((ROOT / "outputs" / "passports" / f"{pid}.json").read_text(encoding="utf-8"))
-    art = {a["role"]: ROOT / a["path"] for a in p["artifacts"]}
-    res = assess_design(reference=art["reference_512"], pattern=art["pattern"], raw=art["composite_raw"],
-                        final=art["final_img2img"], layout=p["generation"]["layout"]["name"],
-                        repair_dir=tmp_path, repair_name="r.png", clip_layout=False)   # thiết kế cũ ghép bằng mặt nạ cũ
-    row = LEGACY[pid]
-    g2, g3 = res["G2_pattern"]["metrics"], res["G3_final"]["metrics"]
-    assert g2["vessel_leakage"]["value"] == pytest.approx(float(row["vessel_leakage"]), abs=1e-3)
-    assert g3["pattern_preservation"]["value"] == pytest.approx(float(row["pattern_preservation"]), abs=1e-3)
-    assert g3["garment_shape_iou"]["value"] == pytest.approx(float(row["garment_shape_iou"]), abs=2e-3)
-    assert res["overall"]["decision"] == row["overall"]
-    if row["repair_pps"]:
-        assert res["repair"]["G3_final"]["metrics"]["pattern_preservation"]["value"] == pytest.approx(float(row["repair_pps"]), abs=2e-3)

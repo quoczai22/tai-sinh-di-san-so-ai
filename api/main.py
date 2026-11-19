@@ -291,14 +291,6 @@ def generate_status(job_id: str) -> dict:
         return dict(job)
 
 
-@app.get("/media/variant/{filename}")
-def variant_image(filename: str) -> FileResponse:
-    path = PROJECT_ROOT / "outputs" / "variants" / filename
-    if not path.is_file() or path.parent != (PROJECT_ROOT / "outputs" / "variants"):
-        raise HTTPException(status_code=404, detail="Không tìm thấy ảnh thiết kế.")
-    return FileResponse(path)
-
-
 @app.get("/media/run/{run_id}/{filename}")
 def run_image(run_id: str, filename: str) -> FileResponse:
     path = store.safe_run_file(run_id, filename)
@@ -496,12 +488,9 @@ def export_design(passport_id: str, version: int | None = None) -> Response:
 
 # --------------------------------------------------- quality & experiments --
 
-@app.get("/quality/legacy")
-def quality_legacy() -> list[dict]:
-    path = PROJECT_ROOT / "evaluation" / "quality_gate_legacy.csv"
-    if not path.exists():
-        return []
-    return list(csv.DictReader(path.open(encoding="utf-8")))
+@app.get("/quality/designs")
+def quality_designs() -> list[dict]:
+    return store.quality_rows()
 
 
 @app.get("/experiments")
