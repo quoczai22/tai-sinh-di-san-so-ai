@@ -1077,3 +1077,75 @@ html.motion-off .thread-path { stroke-dashoffset: 0; }
     left: 50%; translate: -50% 0; top: -44px; width: min(980px, 92vw); height: calc(100% + 88px);
     background: radial-gradient(closest-side, rgba(244, 240, 230, .97) 0%, rgba(244, 240, 230, .9) 55%, rgba(244, 240, 230, .5) 78%, transparent);
 }
+
+/* =====================================================================
+   Bản rút gọn cho người xem (19/11/2026)
+   ===================================================================== */
+/* Menu ☰: hai nhóm — Khám phá / Khu chuyên môn */
+.menu-chapters { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); max-width: 980px; }
+.menu-note { min-height: 0; margin: 6px 0 16px; font-style: italic; }
+
+/* ---------- Studio: ĐẦU VÀO → TẠO → ĐẦU RA ---------- */
+.studio-io { display: grid; grid-template-columns: minmax(240px, .8fr) auto minmax(0, 2.2fr); gap: clamp(20px, 3vw, 44px); align-items: start; }
+.io-input { position: sticky; top: calc(var(--nav-h) + 24px); text-align: center; }
+.io-artifact { position: relative; aspect-ratio: 4 / 4.6; display: grid; place-items: center; background: var(--vitrine); }
+.io-artifact img { max-height: 82%; max-width: 78%; object-fit: contain; filter: drop-shadow(0 14px 14px rgba(40, 28, 10, .2)); }
+.io-name { font-family: var(--font-display); font-weight: 400; font-size: 26px; line-height: 1.2; margin: 16px 0 6px; text-wrap: balance; }
+.io-summary { margin: 0 auto; max-width: 30ch; font-size: 14.5px; font-style: italic; color: var(--ink-3); }
+.io-change { display: inline-block; margin-top: 12px; font-size: 14px; color: var(--dat); }
+.io-action { align-self: center; display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 40px; }
+.gen-btn { white-space: nowrap; }
+.gen-btn svg { transition: transform .35s var(--ease-out); }
+.gen-btn:hover:not(:disabled) svg { transform: translateX(4px); }
+.gen-btn:disabled { opacity: .55; cursor: default; }
+.out-progress { width: 160px; }
+.io-output .kicker, .io-input .kicker { justify-content: flex-start; }
+.io-input .kicker { justify-content: center; }
+.out-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; min-height: 300px; }
+.out-empty { grid-column: 1 / -1; display: grid; place-items: center; min-height: 300px; border: 1px dashed var(--line); color: var(--ink-3); font-style: italic; }
+.out-empty p { margin: 0; }
+/* Thiết kế hiện ra lần lượt khi bấm Tạo */
+.out-card { opacity: 0; translate: 0 18px; transition: opacity .7s ease, translate .9s var(--ease-out); transition-delay: calc(var(--k, 0) * 120ms); }
+.out-grid.shown .out-card { opacity: 1; translate: 0 0; }
+.out-card .pic { aspect-ratio: 3 / 4; }
+.out-note { margin: 14px 0 0; font-size: 14px; font-style: italic; color: var(--ink-3); }
+@media (max-width: 1100px) {
+    .studio-io { grid-template-columns: minmax(0, 1fr); }
+    .io-input { position: static; max-width: 380px; margin: 0 auto; }
+    .io-action { padding-top: 0; }
+    .out-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---------- Bộ sưu tập ---------- */
+.coll-group:first-child { margin-top: 0; }
+.coll-head { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 24px; align-items: center; margin-bottom: 24px; }
+.coll-artifact { aspect-ratio: 1; display: grid; place-items: center; background: var(--vitrine); }
+.coll-artifact img { max-height: 84%; max-width: 70%; object-fit: contain; }
+.coll-head .kicker { justify-content: flex-start; margin-bottom: 6px; }
+.coll-head .kicker::before { display: none; }
+.coll-name { font-size: clamp(26px, 3vw, 38px); }
+.coll-try { display: inline-flex; align-items: center; margin-top: 8px; font-size: 14.5px; font-style: italic; color: var(--dat); text-decoration: none; }
+.coll-try:hover .arr { transform: translate(5px, -5px); }
+.coll-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); }
+@media (max-width: 980px) { .coll-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Lời kết trang chủ: hai nút */
+.finale-ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+.finale-copy .finale-ctas { justify-content: inherit; }
+@media (max-width: 980px) { .finale-ctas { justify-content: center; } }
+@media (max-width: 640px) {
+    .io-input { max-width: none; display: grid; grid-template-columns: 110px minmax(0, 1fr); grid-template-areas: "k k" "a n" "a s" "a c"; column-gap: 16px; text-align: left; align-items: start; }
+    .io-input .kicker { grid-area: k; justify-content: flex-start; }
+    .io-artifact { grid-area: a; }
+    .io-name { grid-area: n; font-size: 21px; margin: 0 0 4px; }
+    .io-summary { grid-area: s; margin: 0; font-size: 13.5px; }
+    .io-change { grid-area: c; margin-top: 6px; }
+    .out-grid, .out-empty { min-height: 180px; }
+}
+
+/* Hành trình 3 chặng: căn giữa khi vừa một màn hình (chỉ trượt ngang khi thật sự tràn) */
+.pin-track { justify-content: safe center; }
+.journey-pin.pinned .pin-track { padding-left: var(--gutter); padding-right: var(--gutter); }
+/* Thẻ là liên kết: không để màu "liên kết khi rê chuột" làm chữ chìm vào ảnh */
+.journey-card:hover, .journey-card:focus-visible { color: #fff; }
+.journey-card:has(.jc-img.contain):hover, .journey-card:has(.jc-img.contain):focus-visible { color: var(--cobalt-800); }

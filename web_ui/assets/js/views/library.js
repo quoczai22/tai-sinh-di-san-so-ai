@@ -99,12 +99,11 @@ export async function render() {
     const sample = [...passports].sort(byPref)[0];
     const sampleItem = sample ? items.find((i) => i.id === sample.heritage_id) : active[0];
     const dir = sample ? sample.thumb.replace(/final_img2img\.webp$/, '') : '';
+    // Ba chặng người xem nhìn thấy được: hiện vật → hoa văn → tà áo
     const journey = [
-        ['Chọn hiện vật', 'Bắt đầu từ một chiếc bình gốm có nguồn gốc rõ ràng.', '#/studio', sampleItem?.image, false, true],
-        ['Dệt hoa văn', 'Nét vẽ trên men được chuyển thành tấm hoa văn liền mạch.', sampleItem ? `#/studio/${encodeURIComponent(sampleItem.id)}` : '#/studio', dir && `./${dir}pattern.webp`, true],
-        ['Khoác lên tà áo', 'Hoa văn được đặt lên dáng áo dài, giữ trọn nét gốc.', '#/studio', sample && `./${sample.thumb}`, true],
-        ['Chuyên gia thẩm định', 'Nghệ nhân và nhà thiết kế chấm điểm mà không biết thiết kế của ai.', '#/review', sample && `./${latestOf(sample)}`, true],
-        ['Hồ sơ thiết kế', 'Mỗi tà áo có hồ sơ riêng, ghi lại hành trình từ hiện vật tới bản cuối.', sample ? `#/passport/${sample.passport_id}` : '#/passport', sampleItem?.image, false, true],
+        ['Hiện vật', 'Một chiếc bình gốm Bát Tràng có nguồn gốc rõ ràng.', sampleItem ? `#/studio/${encodeURIComponent(sampleItem.id)}` : '#/studio', sampleItem?.image, false, true],
+        ['Hoa văn', 'Nét vẽ trên men được dệt thành tấm hoa văn liền mạch.', sampleItem ? `#/studio/${encodeURIComponent(sampleItem.id)}` : '#/studio', dir && `./${dir}pattern.webp`, true],
+        ['Tà áo dài', 'Hoa văn khoác lên dáng áo dài, giữ trọn nét gốc.', '#/collection', sample && `./${latestOf(sample)}`, true],
     ];
     const journeyCards = journey.map(([title, sub, href, img, ai, contain], i) => h('a', { class: 'journey-card', href },
         h('div', { class: `jc-img ${contain ? 'contain' : ''}` }, img ? h('img', { src: img, alt: '', loading: 'lazy' }) : null),
@@ -155,18 +154,7 @@ export async function render() {
                 h('p', { class: 'kicker' }, 'Đích đến'),
                 h('h2', { class: 'display' }, 'Di sản được khoác lên người'),
                 h('p', { class: 'finale-text' }, 'Mỗi tà áo mang theo tên hiện vật, nơi lưu giữ và trọn hành trình của nó, để vẻ đẹp ngàn năm của gốm Bát Tràng được trao tiếp một cách trân trọng.'),
-                h('a', { class: 'btn hero-btn primary', href: '#/studio' }, 'Bắt đầu thiết kế', icon('arrow')))));
+                h('div', { class: 'finale-ctas' }, h('a', { class: 'btn hero-btn primary', href: '#/studio' }, 'Bắt đầu thiết kế', icon('arrow')), h('a', { class: 'btn hero-btn ghost', href: '#/collection' }, 'Xem bộ sưu tập')))));
 
-    // ---- 6. Khám phá thêm: ô chuyên mục, hover kiểu tạp chí ----
-    const tiles = [
-        ['Bắt đầu', 'Studio thiết kế', '#/studio'],
-        ['Hồ sơ', 'Hồ sơ thiết kế', '#/passport'],
-        ['Chuyên gia', 'Thẩm định', '#/review'],
-        ['Nguồn gốc', 'Nguồn và bản quyền', '#/sources'],
-    ];
-    const explore = h('section', { class: 'section chapter explore' },
-        h('div', { class: 'tile-grid' }, tiles.map(([k, t, href]) => h('a', { class: 'cat-tile', href },
-            h('span', { class: 'ct-k' }, k), h('span', { class: 't' }, t), h('i', { class: 'arr', 'aria-hidden': 'true' })))));
-
-    return h('div', { class: 'exhibit home' }, phoenix(), statement, journeySection, thread(), collection, thread(), gallery, thread(), finale, explore);
+    return h('div', { class: 'exhibit home' }, phoenix(), statement, journeySection, thread(), collection, thread(), gallery, thread(), finale);
 }
