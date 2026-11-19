@@ -9,16 +9,27 @@ import { aiMark, stateBox } from '../lib/ui.js';
 // ---------------------------------------------------------------------------------------------
 const latestOf = (d) => (d.latest_version_kind === 'system_repair' && d.repair_thumb ? d.repair_thumb : d.thumb);
 
+// Đổi ảnh bất kỳ (ví dụ WebP) sang PNG bằng canvas, để file người xem nhận luôn là định dạng ảnh phổ biến.
+async function toPng(blob) {
+    const bitmap = await createImageBitmap(blob);
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    canvas.getContext('2d').drawImage(bitmap, 0, 0);
+    return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob'))), 'image/png'));
+}
+
 // Tải ảnh về máy: lấy ảnh dạng blob rồi bấm một liên kết download (thuộc tính download không chạy với ảnh khác nguồn).
-// Nếu không lấy được thì mở ảnh ở thẻ mới để người xem tự lưu.
+// File tải về luôn là PNG hoặc JPEG, không bao giờ là WebP. Nếu không lấy được thì mở ảnh ở thẻ mới để người xem tự lưu.
 async function downloadImage(src, filename) {
     try {
         const res = await fetch(src);
         if (!res.ok) throw new Error(res.status);
-        const blob = await res.blob();
+        let blob = await res.blob();
         // Đuôi file: theo loại ảnh máy chủ báo; nếu không có thì lấy theo đuôi trong đường dẫn ảnh
-        const ext = { 'image/png': 'png', 'image/webp': 'webp', 'image/jpeg': 'jpg' }[blob.type]
+        let ext = { 'image/png': 'png', 'image/webp': 'webp', 'image/jpeg': 'jpg' }[blob.type]
             || (decodeURIComponent(src).match(/\.(png|webp|jpe?g)(?:$|[?&#])/i)?.[1] || 'png').toLowerCase();
+        if (ext === 'webp') { blob = await toPng(blob); ext = 'png'; }
         const url = URL.createObjectURL(blob);
         const a = h('a', { href: url, download: `${filename}.${ext}` });
         document.body.append(a);
@@ -61,11 +72,19 @@ function openLightbox({ src, alt, filename, opener }) {
     download.focus();
 }
 
+// Ảnh gốc đầy đủ của thiết kế. Chế độ trực tiếp: tệp PNG từ máy chủ. Chế độ trình diễn: bản PNG gốc scripts/11_export_demo_data.py
+// chép vào assets/images/variants/<mã hiện vật>_V<số>_aodai.png (thiết kế đã được hệ thống sửa thì chỉ có bản WebP nén).
+function fullImage(d, heritageId, fallback) {
+    if (data.isLive() || latestOf(d) !== d.thumb) return fallback;
+    return `./assets/images/variants/${encodeURIComponent(heritageId)}_V${d.passport_id.split('-V').pop()}_aodai.png`;
+}
+
 function designCard(d, n, heritageId) {
     const src = data.media(d.final_path, latestOf(d));
+    const fullSrc = fullImage(d, heritageId, src);
     const card = h('article', { class: 'design out-card', role: 'button', tabindex: '0', 'aria-label': `Xem thiết kế ${n}`, style: { '--k': String(n - 1) } },
         h('div', { class: 'pic' }, h('img', { src, alt: `Thiết kế ${n}`, loading: 'lazy' }), aiMark()));
-    const open = () => openLightbox({ src, alt: `Thiết kế ${n}`, filename: `thiet-ke-${heritageId}-${n}`, opener: card });
+    const open = () => openLightbox({ src: fullSrc, alt: `Thiết kế ${n}`, filename: `thiet-ke-${heritageId}-${n}`, opener: card });
     card.addEventListener('click', open);
     card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
     return card;
