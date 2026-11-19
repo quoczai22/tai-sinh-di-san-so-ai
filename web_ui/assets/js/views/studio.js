@@ -1,7 +1,7 @@
 import { h, icon, toast } from '../lib/dom.js';
 import * as data from '../lib/data.js';
 import { section, stateBox } from '../lib/ui.js';
-import { mountViewer } from '../lib/viewer3d.js';
+import { hoverSpin, mountViewer } from '../lib/viewer3d.js';
 
 // ---------------------------------------------------------------------------------------------
 // Studio cho người xem: chọn hiện vật (đầu vào) → bấm Tạo thiết kế → chuyển sang trang Kết quả (#/result).
@@ -9,12 +9,20 @@ import { mountViewer } from '../lib/viewer3d.js';
 // · Không có GPU: không giả lập việc sinh. Bấm Tạo mở trang Kết quả với bộ thiết kế mô hình đã tạo trước
 //   đó trên GPU (trang Kết quả ghi rõ ngày tạo).
 // ---------------------------------------------------------------------------------------------
+// Thẻ hiện vật trong lưới chọn: rê chuột vào thì bình xoay 3D, rê ra thì đứng yên
+function pickerCard(it) {
+    const pic = h('div', { class: 'pic' }, h('img', { src: it.image, alt: '', loading: 'lazy' }));
+    const card = h('a', { class: 'artifact', href: `#/studio/${encodeURIComponent(it.id)}`, style: { textDecoration: 'none' } },
+        pic,
+        h('div', { class: 'body' }, h('div', { class: 'code' }, it.dating || 'Gốm Bát Tràng'), h('div', { class: 'name' }, it.name)));
+    hoverSpin(card, pic, it.id);
+    return card;
+}
+
 function picker(items) {
     return section('Chọn một hiện vật', 'Hoa văn của hiện vật bạn chọn sẽ được dệt lên tà áo dài.',
         h('div', { class: 'artifact-grid' }, items.filter((i) => i.status === 'active').map((it) =>
-            h('a', { class: 'artifact', href: `#/studio/${encodeURIComponent(it.id)}`, style: { textDecoration: 'none' } },
-                h('div', { class: 'pic' }, h('img', { src: it.image, alt: '', loading: 'lazy' })),
-                h('div', { class: 'body' }, h('div', { class: 'code' }, it.dating || 'Gốm Bát Tràng'), h('div', { class: 'name' }, it.name))))));
+            pickerCard(it))));
 }
 
 export async function render([heritageId]) {

@@ -117,4 +117,5 @@ pip install -r requirements-dev.txt && pytest   # kiểm thử, không cần GPU
 - `web_ui/assets/js/lib/viewer3d.js` dựng khung xoay 3D bằng Three.js (bản chép sẵn trong `assets/js/vendor/three/`, giấy phép MIT, nạp qua importmap trong `index.html`). Thư viện chỉ tải khi mở trang Studio của một hiện vật.
 - Mô hình là `assets/models/<mã hiện vật>.glb`, tạo bằng `scripts/16_export_heritage_glb.py` từ mô hình gốc trong `data/lr3d_src/` (thư mục này bị `.gitignore`).
 - Thao tác: kéo chuột để xoay, lăn chuột để thu phóng, tự xoay nhẹ và dừng khi đang kéo. Nền canvas trong suốt nên khung nền be của trang hiện phía sau.
-- Dự phòng: không có WebGL hoặc không có file GLB thì giữ ảnh phẳng đã tách nền. Trang chọn hiện vật, Thư viện, ảnh bìa và trang Kết quả không dùng 3D.
+- Thẻ trong lưới (Thư viện và lưới chọn của Studio): `hoverSpin()` dựng bình 3D đứng yên khi thẻ sắp vào màn hình (trong lúc chờ vẫn hiện ảnh phẳng). Bình tự xoay cùng tốc độ như trang riêng khi rê chuột hoặc focus bàn phím vào thẻ, rê ra thì dừng vòng vẽ và canvas giữ nguyên góc đang xoay. Thẻ không kéo xoay được để bấm vào vẫn mở Studio. Bật "giảm chuyển động" thì bình vẫn hiện 3D nhưng không xoay khi rê chuột.
+- Dự phòng: không có WebGL hoặc không có file GLB thì giữ ảnh phẳng đã tách nền. Ảnh bìa, thẻ Hành trình và trang Kết quả không dùng 3D.

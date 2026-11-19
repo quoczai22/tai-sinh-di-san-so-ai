@@ -1,12 +1,18 @@
 // ---------------------------------------------------------------------------------------------
 // Khung xem 3D cho một hiện vật: kéo chuột để xoay 360 độ, lăn chuột để thu phóng, tự xoay nhẹ khi chưa chạm.
 // Mô hình là file GLB nhẹ trong assets/models/<mã hiện vật>.glb (tạo bằng scripts/16_export_heritage_glb.py).
-// Three.js chỉ tải khi mở trang Studio của một hiện vật. Lỗi hoặc không có WebGL thì giữ nguyên ảnh phẳng.
+// Three.js chỉ tải khi cần. Lỗi hoặc không có WebGL thì giữ nguyên ảnh phẳng.
+// Hai cách dùng:
+//  · mountViewer(box, id)                  trang riêng của hiện vật: kéo chuột để xoay, tự xoay nhẹ.
+//  · hoverSpin(card, box, id)              trang có cả 6 hiện vật: bình hiện sẵn dạng 3D đứng yên, rê chuột vào
+//                                          thẻ thì bình tự xoay, rê ra thì đứng yên đúng tại góc đang xoay.
 // ---------------------------------------------------------------------------------------------
 const MODEL_DIR = './assets/models/';
-const MODEL_VERSION = 'finals-59';       // đổi cùng số phiên bản trong index.html để trình duyệt không dùng file GLB cũ
+const MODEL_VERSION = 'finals-62';       // đổi cùng số phiên bản trong index.html để trình duyệt không dùng file GLB cũ
 const AUTO_ROTATE_SPEED = 1.4;      // độ/giây nhân với 6, theo OrbitControls
 const RESUME_AFTER_MS = 3500;       // sau khi thả chuột bao lâu thì tự xoay lại
+const live = new Set();             // các khung đang tồn tại, để dọn khung của trang đã bị gỡ
+const reducedMotion = () => document.documentElement.classList.contains('motion-off');
 
 // Quầng bóng mờ dưới chân bình: ảnh gradient tròn vẽ bằng canvas
 function shadowTexture(THREE) {
@@ -25,9 +31,11 @@ function shadowTexture(THREE) {
 
 /**
  * Gắn khung xem 3D vào `box` (phần tử đang chứa ảnh phẳng của hiện vật).
- * Trả về true khi dựng xong, false khi phải giữ ảnh phẳng.
+ * hover = true: chế độ thẻ trong lưới, không kéo chuột được, chỉ xoay khi gọi spin(true).
+ * Trả về { spin(bật/tắt) } khi dựng xong, false khi phải giữ ảnh phẳng.
  */
-export async function mountViewer(box, heritageId) {
+export async function mountViewer(box, heritageId, { hover = false } = {}) {
+    for (const v of live) if (!v.box.isConnected) v.stop();         // dọn khung của trang đã gỡ
     let THREE, GLTFLoader, OrbitControls, RoomEnvironment;
     try {
         [THREE, { GLTFLoader }, { OrbitControls }, { RoomEnvironment }] = await Promise.all([
@@ -78,10 +86,11 @@ export async function mountViewer(box, heritageId) {
     controls.enablePan = false;
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
-    controls.autoRotate = true;
+    controls.autoRotate = !hover && !reducedMotion();
     controls.autoRotateSpeed = AUTO_ROTATE_SPEED;
     controls.minPolarAngle = Math.PI * 0.18;                        // không lật bình quá trên đỉnh hoặc xuống dưới đáy
     controls.maxPolarAngle = Math.PI * 0.62;
+    controls.enabled = !hover;                                      // thẻ trong lưới chỉ xoay khi rê chuột, không kéo được
 
     // Đặt khung hình vừa cả chiều cao lẫn bề ngang của bình
     const fit = () => {
@@ -91,7 +100,7 @@ export async function mountViewer(box, heritageId) {
         renderer.setSize(w, h, false);
         camera.aspect = w / h;
         const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-        const d = Math.max(0.5 / t, radius / (t * camera.aspect)) * 1.35;
+        const d = Math.max(0.5 / t, radius / (t * camera.aspect)) * (hover ? 1.12 : 1.35);   // thẻ trong lưới: bình to gần bằng ảnh phẳng
         controls.minDistance = d * 0.55;
         controls.maxDistance = d * 1.6;
         if (!fit.done) {
@@ -99,12 +108,16 @@ export async function mountViewer(box, heritageId) {
             fit.done = true;
         }
         camera.updateProjectionMatrix();
+        if (hover && !raf) draw();                                  // đổi kích thước làm canvas trống: vẽ lại đúng góc đang đứng
     };
 
     const canvas = renderer.domElement;
     canvas.className = 'viewer3d';
     canvas.setAttribute('aria-label', 'Mô hình 3D của hiện vật, kéo chuột để xoay');
+    if (hover) canvas.style.touchAction = 'auto';                    // không chặn cuộn trang bằng ngón tay trên thẻ
     box.append(canvas);
+    let raf = 0;
+    const draw = () => { controls.update(); renderer.render(scene, camera); };
     const ro = new ResizeObserver(fit);
     ro.observe(box);
     fit();
@@ -112,23 +125,62 @@ export async function mountViewer(box, heritageId) {
     // Dừng tự xoay khi đang kéo, xoay lại sau khi thả vài giây
     let resume;
     controls.addEventListener('start', () => { clearTimeout(resume); controls.autoRotate = false; });
-    controls.addEventListener('end', () => { resume = setTimeout(() => { controls.autoRotate = true; }, RESUME_AFTER_MS); });
+    controls.addEventListener('end', () => { resume = setTimeout(() => { controls.autoRotate = !reducedMotion(); }, RESUME_AFTER_MS); });
 
-    // Vòng vẽ: tự dừng và dọn dẹp khi khung xem bị gỡ khỏi trang
-    const stop = () => {
+    // Vòng vẽ chỉ chạy khi cần; tự dọn khi khung xem bị gỡ khỏi trang
+    const entry = { box, stop() {
+        if (entry.dead) return;
+        entry.dead = true;
+        cancelAnimationFrame(raf);
         ro.disconnect();
         clearTimeout(resume);
         controls.dispose();
         renderer.dispose();
         pmrem.dispose();
+        live.delete(entry);
+    } };
+    live.add(entry);
+    const frame = () => {
+        if (!box.isConnected) { entry.stop(); return; }
+        draw();
+        raf = requestAnimationFrame(frame);
     };
-    const loop = () => {
-        if (!box.isConnected) { stop(); return; }
-        controls.update();
-        renderer.render(scene, camera);
-        requestAnimationFrame(loop);
-    };
-    requestAnimationFrame(loop);
+    const run = () => { if (!raf && !entry.dead) raf = requestAnimationFrame(frame); };
+    const halt = () => { cancelAnimationFrame(raf); raf = 0; };
+
     box.classList.add('has-3d');
-    return true;
+    if (hover) draw();                                              // vẽ khung đầu tiên rồi đứng yên
+    else run();
+    return {
+        spin(on) {
+            controls.autoRotate = on;
+            if (on) run(); else halt();                             // dừng vòng vẽ: canvas giữ nguyên hình cuối
+        },
+    };
+}
+
+/**
+ * Thẻ trong lưới nhiều hiện vật: bình hiện sẵn dạng 3D đứng yên (dựng khi thẻ sắp vào màn hình).
+ * Rê chuột (hoặc focus bàn phím) vào thẻ thì bình tự xoay như ở trang riêng, rê ra thì đứng yên tại góc đang xoay.
+ * Trong lúc chờ dựng 3D, thẻ vẫn hiện ảnh phẳng.
+ */
+export function hoverSpin(card, box, heritageId) {
+    let view = null, loading = false, failed = false, hovering = false;
+    const load = async () => {
+        if (view || loading || failed) return;
+        loading = true;
+        view = await mountViewer(box, heritageId, { hover: true });
+        loading = false;
+        failed = !view;
+        if (view && hovering && !reducedMotion()) view.spin(true);   // người xem đã rê chuột vào trong lúc tải
+    };
+    new IntersectionObserver((entries, obs) => {
+        if (entries.some((e) => e.isIntersecting)) { obs.disconnect(); load(); }
+    }, { rootMargin: '200px' }).observe(card);
+    const enter = () => { hovering = true; if (reducedMotion()) return; if (view) view.spin(true); else load(); };
+    const leave = () => { hovering = false; view?.spin(false); };
+    card.addEventListener('pointerenter', enter);
+    card.addEventListener('pointerleave', leave);
+    card.addEventListener('focusin', enter);
+    card.addEventListener('focusout', leave);
 }

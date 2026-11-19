@@ -4,6 +4,7 @@ import { litWords } from '../lib/motion.js';
 import { phoenix } from '../lib/phoenix.js';
 import { cloud, drum, thread } from '../lib/drum.js';
 import { aiMark } from '../lib/ui.js';
+import { hoverSpin } from '../lib/viewer3d.js';
 
 // Trang chủ dành cho người xem: chỉ ảnh, tên và câu chuyện. Bấm hiện vật thì sang Studio của hiện vật đó;
 // bấm tà áo thì sang trang Kết quả của hiện vật tạo ra nó.
@@ -52,12 +53,17 @@ export async function render() {
             h('div', { class: 'pin-progress', 'aria-hidden': 'true' }, h('span'))));
 
     // ---- 3. Hiện vật: lưới ảnh, bình nổi lên theo nhịp cuộn ----
-    const artifactCard = (it, k) => h('a', { class: 'artifact-card', href: `#/studio/${encodeURIComponent(it.id)}`, 'data-scene': '', style: { '--k': String(k % 3) },
-        'aria-label': `${it.name}, tạo thiết kế` },
-    h('div', { class: 'ac-stage' }, h('div', { class: 'ac-halo', 'aria-hidden': 'true' }), h('img', { src: it.image, alt: '', loading: 'lazy' })),
-    h('div', { class: 'ac-body' },
-        h('div', { class: 'code' }, it.dating || 'Gốm Bát Tràng'),
-        h('div', { class: 'name' }, it.name)));
+    const artifactCard = (it, k) => {
+        const stage = h('div', { class: 'ac-stage' }, h('div', { class: 'ac-halo', 'aria-hidden': 'true' }), h('img', { src: it.image, alt: '', loading: 'lazy' }));
+        const card = h('a', { class: 'artifact-card', href: `#/studio/${encodeURIComponent(it.id)}`, 'data-scene': '', style: { '--k': String(k % 3) },
+            'aria-label': `${it.name}, tạo thiết kế` },
+        stage,
+        h('div', { class: 'ac-body' },
+            h('div', { class: 'code' }, it.dating || 'Gốm Bát Tràng'),
+            h('div', { class: 'name' }, it.name)));
+        hoverSpin(card, stage, it.id);                              // rê chuột vào thẻ: bình xoay 3D, rê ra: đứng yên
+        return card;
+    };
     const collection = h('section', { class: 'section chapter', id: 'hien-vat', tabindex: '-1' },
         chapterHead('Bộ sưu tập', 'Hiện vật', 'Những chiếc bình gốm làm nguồn hoa văn.'),
         h('div', { class: 'artifact-grid-v2' }, active.map(artifactCard)));
