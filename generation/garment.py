@@ -144,12 +144,35 @@ def grade_to_scene(pattern: Image.Image, template: Image.Image,
     return Image.fromarray(out)
 
 
+def ground_alpha(pattern: Image.Image) -> np.ndarray:
+    """Độ đục (0 đến 1) của từng pixel hoa văn: nền trong suốt, nét mực đục.
+
+    Vì sao cần: ảnh hoa văn do SD sinh có nền (giấy kem, tường xám phía sau bình). In nguyên khối lên áo
+    thì nền thành những mảng kem hoặc xám hình chữ nhật, trông như miếng vải dán. Chỉ in phần mực.
+
+    Cách làm (LAB, L 0..100): pixel là mực khi nó có sắc (sắc độ từ 16 đến 34, mực xanh của gốm) hoặc đủ tối
+    (L từ 60 xuống 35, nét viền đen xám). Pixel sáng và ít sắc là nền, không in. Không dựa vào một màu nền
+    duy nhất vì nền sau bình có nhiều tông (kem, xám, bóng đổ). Nếu gần như không có mực (độ đục trung
+    bình dưới 5%, ví dụ hoa văn trắng trên nền kem) thì giữ đục hoàn toàn để hoa văn không biến mất.
+    """
+    rgb = np.asarray(pattern.convert("RGB"), np.float32) / 255.0
+    lab = cv2.cvtColor(rgb, cv2.COLOR_RGB2LAB)                 # L 0..100, a và b khoảng -127..127
+    chroma = np.hypot(lab[:, :, 1], lab[:, :, 2])
+    colored = np.clip((chroma - 16.0) / (34.0 - 16.0), 0.0, 1.0)
+    dark = np.clip((60.0 - lab[:, :, 0]) / (60.0 - 35.0), 0.0, 1.0)
+    alpha = np.maximum(colored, dark).astype(np.float32)
+    if alpha.mean() < 0.05:
+        return np.ones_like(alpha)
+    return alpha
+
+
 def _feather(mask: np.ndarray, px: float) -> np.ndarray:
     """Làm mềm mép rất mạnh để hoa văn TAN dần vào vải thay vì bị cắt ngang."""
     return cv2.GaussianBlur(mask.astype(np.float32), (0, 0), max(px, 0.1))
 
 
-def _layout_mask(template: Image.Image, layout: dict, mask: np.ndarray | None = None) -> np.ndarray:
+def _layout_mask(template: Image.Image, layout: dict, mask: np.ndarray | None = None,
+                 clip_to_garment: bool = True) -> np.ndarray:
     """Hợp các vùng của layout, GIAO với vùng áo — hoa văn không tràn ra ngoài áo.
 
     Toạ độ tính theo tỉ lệ hộp bao của ÁO, không phải của cả ảnh: đổi ảnh mẫu
@@ -181,15 +204,22 @@ def _layout_mask(template: Image.Image, layout: dict, mask: np.ndarray | None = 
         f = np.clip((1.0 - d) / max(1.0 - core, 1e-3), 0, 1)
         band = np.maximum(band, 0.5 - 0.5 * np.cos(np.pi * f))
 
-    m = g.astype(np.float32) * band
-    return _feather(m, layout.get("feather", 14.0))
+    # Làm mềm mép vùng in rồi MỚI giới hạn lại trong áo: làm mờ sau khi nhân với vùng áo sẽ lan ra ngoài áo
+    # (feather 14px), hoa văn bị ghép lên nền ở khe giữa tay và thân. `inner` co 1px để khỏi dính viền nền.
+    # clip_to_garment=False chỉ để tính lại phép đo cho thiết kế cũ, vốn ghép bằng mặt nạ cũ bị tràn.
+    m = _feather(g.astype(np.float32) * band, layout.get("feather", 14.0))
+    if not clip_to_garment:
+        return m
+    return m * cv2.erode((g > 0).astype(np.uint8), np.ones((3, 3), np.uint8)).astype(np.float32)
 
 
 def apply(pattern: Image.Image, layout: str | None = None, opacity: float = 0.92,
           template_path: Path = TEMPLATE, grade: bool = True,
           displace: float | None = None, shading: bool = True,
-          garment_region: np.ndarray | None = None) -> Image.Image:
+          garment_region: np.ndarray | None = None, remove_ground: bool = True) -> Image.Image:
     """Đắp hoa văn lên áo dài theo một cách bố trí (layout).
+
+    remove_ground: tách nền hoa văn (xem ground_alpha) để không in mảng nền thành khối kem; False cho ablation.
 
     Dùng phép nhân chứ không dán đè: nếp gấp và bóng đổ của vải vẫn hiện qua hoa
     văn, nên trông như in trên vải thật thay vì dán một hình phẳng lên ảnh.
@@ -205,12 +235,15 @@ def apply(pattern: Image.Image, layout: str | None = None, opacity: float = 0.92
 
     # Hoa văn nay LIỀN MẠCH sẵn (sinh với circular padding), nên lát thẳng là đủ.
     # Không còn lát gương — cách đó tạo đối xứng kaleidoscope, xa nét vẽ men gốm.
+    alpha = ground_alpha(pattern) if remove_ground else np.ones((pattern.height, pattern.width), np.float32)
     if grade:
         pattern = grade_to_scene(pattern, tpl)
     ys, xs = np.where(mask > 0.05)
     mw = int(xs.max() - xs.min()) + 1
     tw = max(16, int(mw * lay.get("scale", 1.0)))
-    tile = np.asarray(pattern.resize(
+    # Kênh thứ 4 là độ đục của nét mực; lát và uốn cùng với màu để hai thứ luôn khớp nhau
+    rgba = np.dstack([np.asarray(pattern.convert("RGB")), (alpha * 255).round().astype(np.uint8)])
+    tile = np.asarray(Image.fromarray(rgba).resize(
         (tw, max(1, int(tw * pattern.height / pattern.width))), Image.LANCZOS))
     th = tile.shape[0]
     big = np.tile(tile, (int(np.ceil(H / th)) + 2, int(np.ceil(W / tw)) + 2, 1))
@@ -222,8 +255,9 @@ def apply(pattern: Image.Image, layout: str | None = None, opacity: float = 0.92
     # `displace`/`shading` chỉ để THÍ NGHIỆM tắt từng bước (EXP-C, ablation giai
     # đoạn 2). Giá trị mặc định giữ nguyên hành vi cũ.
     mx, my = displacement_map(tpl, strength=lay.get("displace", 14.0) if displace is None else displace)
-    warped = cv2.remap(canvas, mx, my, cv2.INTER_LINEAR,
-                       borderMode=cv2.BORDER_REFLECT).astype(np.float32)
+    warped_all = cv2.remap(canvas, mx, my, cv2.INTER_LINEAR,
+                           borderMode=cv2.BORDER_REFLECT).astype(np.float32)
+    warped, ink = warped_all[:, :, :3], warped_all[:, :, 3] / 255.0
 
     # Truyền SÁNG — thứ displacement map không làm được. Nhân bản đồ độ sáng của
     # vải lên hoa văn để nó tối ở nếp gấp và sáng ở chỗ hứng nắng.
@@ -231,7 +265,7 @@ def apply(pattern: Image.Image, layout: str | None = None, opacity: float = 0.92
         warped *= shading_map(tpl, mask)[:, :, None]
 
     base = np.asarray(tpl, np.float32)
-    m = np.clip(mask * opacity, 0, 1)[:, :, None]
+    m = np.clip(mask * opacity * ink, 0, 1)[:, :, None]
     blended = base * (1 - m) + np.clip(warped, 0, 255) * m
     return Image.fromarray(np.clip(blended, 0, 255).astype(np.uint8))
 

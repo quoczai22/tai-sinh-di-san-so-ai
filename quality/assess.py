@@ -24,13 +24,15 @@ def _arr(path: Path) -> np.ndarray:
 def assess_design(*, reference: Path, pattern: Path, raw: Path, final: Path, layout: str,
                   repair_dir: Path | None = None, repair_name: str | None = None,
                   cfg: dict | None = None, template_path: Path | None = None,
-                  garment_region: np.ndarray | None = None) -> dict:
-    """template_path và garment_region: áo và vùng áo tính sẵn (áo do LoRA sinh); mặc định áo mẫu cố định."""
+                  garment_region: np.ndarray | None = None, clip_layout: bool = True) -> dict:
+    """template_path và garment_region: áo và vùng áo tính sẵn (áo do LoRA sinh); mặc định áo mẫu cố định.
+
+    clip_layout=False: tính lại thiết kế cũ (trước khi sửa lỗi hoa văn tràn ra ngoài áo) bằng đúng mặt nạ cũ."""
     cfg = cfg or QG.load_config()
     tpl_img = Image.open(template_path or garment.TEMPLATE).convert("RGB")
     template = np.asarray(tpl_img)
     prior = garment.garment_mask(tpl_img) if garment_region is None else garment_region
-    layout_mask = garment._layout_mask(tpl_img, garment.get_layout(layout), garment_region)
+    layout_mask = garment._layout_mask(tpl_img, garment.get_layout(layout), garment_region, clip_layout)
     raw_a, fin_a = _arr(raw), _arr(final)
     g2 = QG.evaluate_pattern(_arr(pattern), _arr(reference), cfg)
     g3 = QG.evaluate_final(raw_a, fin_a, template, layout_mask, prior, cfg)

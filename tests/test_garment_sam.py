@@ -46,8 +46,70 @@ def test_layout_mask_dung_vung_ao_tinh_san_thay_vi_tach_theo_mau():
     vung = np.zeros((300, 200), np.uint8)
     vung[50:250, 70:130] = 1                                # thân áo hẹp ở giữa
     m = garment._layout_mask(tpl, garment.get_layout("front_panel"), vung)
-    # Mép được làm mềm (độ lệch chuẩn 14 px) nên có rò nhẹ; ngoài 3 độ lệch chuẩn (42 px) phải bằng 0.
+    # Mép vùng in được làm mềm nhưng KHÔNG được lan ra ngoài áo: ngoài vùng áo phải bằng đúng 0.
     # Nếu tách theo màu trên ảnh trắng thì mặt nạ sẽ phủ cả ảnh và phép thử này lỗi.
-    ys, xs = np.where(m > 0.01)
-    assert xs.min() >= 70 - 45 and xs.max() < 130 + 45 and ys.min() >= 50 - 45 and ys.max() < 250 + 45
+    assert m[vung == 0].max() == 0
     assert m[150, 100] > 0.5                                  # giữa thân áo vẫn có hoa văn
+
+
+def test_hoa_van_khong_tran_vao_khe_giua_tay_va_than_ao(tmp_path):
+    """Áo có khe nền giữa tay và thân (như áo LoRA tay loe): ghép hoa văn không được đổi pixel nào ngoài áo."""
+    rng = np.random.default_rng(0)
+    nen = rng.integers(60, 120, (300, 200, 3)).astype(np.uint8)             # nền xám có nhiễu
+    vung = np.zeros((300, 200), np.uint8)
+    vung[40:280, 70:130] = 1                                                 # thân
+    vung[60:200, 20:45] = 1                                                  # tay trái, cách thân 25 px
+    vung[60:200, 155:180] = 1                                                # tay phải
+    ao = nen.copy()
+    ao[vung > 0] = (235, 235, 235)
+    pat = Image.fromarray(rng.integers(0, 255, (64, 64, 3)).astype(np.uint8))
+    path = tmp_path / "ao_khe.png"
+    Image.fromarray(ao).save(path)
+    for lay in garment.layout_names():
+        out = np.asarray(garment.apply(pat, layout=lay, template_path=path, garment_region=vung))
+        assert (out[vung == 0] == ao[vung == 0]).all(), f"layout {lay} làm đổi pixel ngoài áo"
+
+
+# ---------------------------------------------------------------- tách nền hoa văn ----
+
+def _hoa_van_nen_kem():
+    """Nền kem, một ô mực xanh ở giữa và một vạch đen: mực đục, nền trong suốt."""
+    a = np.full((64, 64, 3), (238, 232, 214), np.uint8)
+    a[20:44, 20:44] = (30, 60, 170)
+    a[4:8, 4:60] = (35, 35, 35)
+    return Image.fromarray(a)
+
+
+def test_ground_alpha_nen_trong_suot_muc_duc():
+    al = garment.ground_alpha(_hoa_van_nen_kem())
+    assert al[50, 10] < 0.05 and al[60, 60] < 0.05          # nền kem
+    assert al[30, 30] > 0.95                                  # mực xanh
+    assert al[5, 30] > 0.95                                   # nét đen
+
+
+def test_ground_alpha_khong_lam_bien_mat_hoa_van_khong_co_muc():
+    trang = Image.fromarray(np.full((32, 32, 3), (240, 236, 220), np.uint8))
+    assert garment.ground_alpha(trang).min() == 1.0          # không có mực thì giữ nguyên, không xóa sạch
+
+
+def test_ground_alpha_giu_nen_co_mau_dam():
+    do = Image.fromarray(np.full((32, 32, 3), (170, 40, 40), np.uint8))
+    assert garment.ground_alpha(do).min() == 1.0             # nền đỏ là chính hoa văn, không tách
+
+
+def test_apply_de_lo_vai_ao_o_cho_nen_hoa_van(tmp_path):
+    vung = np.zeros((300, 200), np.uint8)
+    vung[40:280, 40:160] = 1
+    ao = np.full((300, 200, 3), 120, np.uint8)
+    ao[vung > 0] = (240, 240, 240)
+    path = tmp_path / "ao.png"
+    Image.fromarray(ao).save(path)
+    pat = _hoa_van_nen_kem()
+    khong_tach = np.asarray(garment.apply(pat, layout="front_panel", template_path=path, garment_region=vung,
+                                          remove_ground=False)).astype(int)
+    tach = np.asarray(garment.apply(pat, layout="front_panel", template_path=path, garment_region=vung)).astype(int)
+    trong_ao = vung > 0
+    # Không tách: nền kem phủ lên cả vùng in, vải đổi màu. Có tách: chỉ vùng mực đổi, phần còn lại giữ vải trắng.
+    doi_khong_tach = (np.abs(khong_tach - ao.astype(int)).max(2) > 6)[trong_ao].mean()
+    doi_tach = (np.abs(tach - ao.astype(int)).max(2) > 6)[trong_ao].mean()
+    assert doi_tach < doi_khong_tach * 0.6

@@ -144,7 +144,7 @@ def test_recompute_matches_recorded(pid, tmp_path):
     art = {a["role"]: ROOT / a["path"] for a in p["artifacts"]}
     res = assess_design(reference=art["reference_512"], pattern=art["pattern"], raw=art["composite_raw"],
                         final=art["final_img2img"], layout=p["generation"]["layout"]["name"],
-                        repair_dir=tmp_path, repair_name="r.png")
+                        repair_dir=tmp_path, repair_name="r.png", clip_layout=False)   # thiết kế cũ ghép bằng mặt nạ cũ
     row = LEGACY[pid]
     g2, g3 = res["G2_pattern"]["metrics"], res["G3_final"]["metrics"]
     assert g2["vessel_leakage"]["value"] == pytest.approx(float(row["vessel_leakage"]), abs=1e-3)
