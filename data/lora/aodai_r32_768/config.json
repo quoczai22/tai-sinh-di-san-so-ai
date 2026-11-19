@@ -1,0 +1,29 @@
+{
+  "data": "D:\\CÁC CUỘC THI\\Sáng tạo trẻ Quốc gia trong lĩnh vực Trí tuệ nhân tạo năm 2026\\tai-sinh-di-san-so-ai\\data\\vietfashion\\lora_train",
+  "out": "data\\lora\\aodai_r32_768",
+  "steps": 400,
+  "grad_accum": 4,
+  "width": 768,
+  "height": 1032,
+  "rank": 32,
+  "lr": 0.0001,
+  "seed": 42,
+  "save_every": 0,
+  "base_model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+  "n_images": 226,
+  "resolution": [
+    768,
+    1032
+  ],
+  "target_modules": [
+    "to_q",
+    "to_k",
+    "to_v",
+    "to_out.0"
+  ],
+  "trainable_params": 6377472,
+  "peak_vram_gb": 2.51,
+  "seconds": 2300.5,
+  "torch": "2.13.0+cu126",
+  "data_license": "VietFashion CC BY-NC 4.0, chỉ dùng phi thương mại"
+}
