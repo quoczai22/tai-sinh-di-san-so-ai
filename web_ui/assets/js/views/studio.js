@@ -1,6 +1,7 @@
 import { h, icon, toast } from '../lib/dom.js';
 import * as data from '../lib/data.js';
 import { section, stateBox } from '../lib/ui.js';
+import { mountViewer } from '../lib/viewer3d.js';
 
 // ---------------------------------------------------------------------------------------------
 // Studio cho người xem: chọn hiện vật (đầu vào) → bấm Tạo thiết kế → chuyển sang trang Kết quả (#/result).
@@ -62,9 +63,13 @@ export async function render([heritageId]) {
         }
     } }, 'Tạo thiết kế', icon('arrow'));
 
+    // Khung hiện vật: ảnh phẳng làm sẵn; nếu có mô hình 3D thì thay bằng khung xoay 360 độ bằng chuột
+    const artifactBox = h('div', { class: 'io-artifact' }, h('img', { src: item.image, alt: item.name }));
+    mountViewer(artifactBox, heritageId);
+
     return h('div', { class: 'studio-io' },
         h('div', { class: 'io-input' },
-            h('div', { class: 'io-artifact' }, h('img', { src: item.image, alt: item.name })),
+            artifactBox,
             h('h2', { class: 'io-name' }, item.name),
             h('a', { class: 'io-change', href: '#/studio' }, 'Đổi hiện vật')),
         h('div', { class: 'io-action' },

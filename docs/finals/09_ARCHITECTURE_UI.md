@@ -111,3 +111,10 @@ python -m http.server 5500                 # mở http://localhost:5500/web_ui/
 python scripts/11_export_demo_data.py      # cập nhật dữ liệu cho chế độ trình diễn
 pip install -r requirements-dev.txt && pytest   # kiểm thử, không cần GPU
 ```
+
+## Khung xem 3D (trang Studio của từng hiện vật)
+
+- `web_ui/assets/js/lib/viewer3d.js` dựng khung xoay 3D bằng Three.js (bản chép sẵn trong `assets/js/vendor/three/`, giấy phép MIT, nạp qua importmap trong `index.html`). Thư viện chỉ tải khi mở trang Studio của một hiện vật.
+- Mô hình là `assets/models/<mã hiện vật>.glb`, tạo bằng `scripts/16_export_heritage_glb.py` từ mô hình gốc trong `data/lr3d_src/` (thư mục này bị `.gitignore`).
+- Thao tác: kéo chuột để xoay, lăn chuột để thu phóng, tự xoay nhẹ và dừng khi đang kéo. Nền canvas trong suốt nên khung nền be của trang hiện phía sau.
+- Dự phòng: không có WebGL hoặc không có file GLB thì giữ ảnh phẳng đã tách nền. Trang chọn hiện vật, Thư viện, ảnh bìa và trang Kết quả không dùng 3D.

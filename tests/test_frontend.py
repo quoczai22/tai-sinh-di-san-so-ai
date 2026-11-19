@@ -54,3 +54,15 @@ def test_no_hardcoded_similarity_in_new_ui():
 def test_no_inner_html_with_data():
     for p in JS:
         assert ".innerHTML" not in p.read_text(encoding="utf-8"), p.name
+
+
+def test_every_active_heritage_has_a_valid_glb_model():
+    """Mỗi hiện vật đang dùng có mô hình 3D GLB hợp lệ (đầu file 'glTF') và đủ nhẹ để tải trên web."""
+    heritage = json.loads((WEB / "data" / "heritage.json").read_text(encoding="utf-8"))
+    for it in heritage["items"]:
+        if it["status"] != "active":
+            continue
+        glb = WEB / "assets" / "models" / f"{it['id']}.glb"
+        assert glb.exists(), it["id"]
+        assert glb.read_bytes()[:4] == b"glTF", it["id"]
+        assert glb.stat().st_size < 8_000_000, it["id"]
