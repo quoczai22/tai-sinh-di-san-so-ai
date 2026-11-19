@@ -27,13 +27,14 @@
     "palette_mode": "free",
     "layout": "front_panel",
     "polish_seed": "same_as_seed",
-    "stage2_finish": "masked_0.30"
+    "stage2_finish": "masked_0.30",
+    "source": "panel"
   },
   "units": {
     "heritage": "active"
   },
   "requires_gpu": true,
-  "notes": "Seed lặp đồng thời là seed hoa văn, seed polish và seed sinh áo LoRA. Cùng (hiện vật, seed) thì hoa văn giống hệt giữa hai mức, chỉ khác áo nền. Mỗi seed sinh một áo LoRA dùng chung cho 6 hiện vật. Seed nào LoRA không sinh được áo hợp lệ thì các lượt LoRA của seed đó ghi 'garment_failed', không quay về áo mẫu (tránh trộn hai mức). Chỉ số giữ dáng áo đo so với chính áo nền của lượt đó, nên không so được độ đẹp của dáng áo: việc đó dành cho người chấm mù.",
+  "notes": "Seed lặp đồng thời là seed hoa văn, seed polish và seed sinh áo LoRA. Cùng (hiện vật, seed) thì hoa văn giống hệt giữa hai mức, chỉ khác áo nền. Mỗi seed sinh một áo LoRA dùng chung cho 6 hiện vật. Seed nào LoRA không sinh được áo hợp lệ thì các lượt LoRA của seed đó ghi 'garment_failed', không quay về áo mẫu (tránh trộn hai mức). Chỉ số giữ dáng áo đo so với chính áo nền của lượt đó, nên không so được độ đẹp của dáng áo: việc đó dành cho người chấm mù. Ảnh nạp ControlNet cố định là mảng hoa văn phẳng (source=panel), theo kết quả EXP-E.",
   "metrics": {
     "automatic": [
       "pattern_preservation",

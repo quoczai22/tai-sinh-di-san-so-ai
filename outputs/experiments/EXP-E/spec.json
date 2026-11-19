@@ -1,0 +1,56 @@
+{
+  "id": "EXP-E",
+  "title": "Nguồn ảnh nạp cho ControlNet: ảnh bình render so với mảng hoa văn phẳng (thí nghiệm E1 trong HUONG_CAI_TIEN_V2.md mục 8.3)",
+  "question": "Nạp mảng hoa văn phẳng (đã trải từ bình) có cho hoa văn phẳng hơn, ít lọt hình bình, chân đế và nền hơn so với nạp ảnh render cả bình? Đo bằng chỉ số lọt hình bình (vessel_leakage) và chấm mù.",
+  "why": "Ảnh hoa văn giai đoạn 1 đang vẽ cả chiếc bình kèm chân đế và nền, nên khi lát lên áo xuất hiện hình bình lặp lại. Nguyên nhân nghi ngờ: ảnh nạp mặc định là ảnh render cả bình (data/heritage/LR3D_xx.png), ControlNet bám theo dáng bình.",
+  "design": "single_factor_with_replicates",
+  "independent_variable": {
+    "name": "source",
+    "levels": [
+      "render",
+      "panel"
+    ]
+  },
+  "replicates": {
+    "name": "seed",
+    "levels": [
+      42,
+      43,
+      44
+    ]
+  },
+  "fixed": {
+    "controlnet_weight": 0.65,
+    "prompt_modifier": "",
+    "palette_mode": "free",
+    "layout": "front_panel",
+    "polish_seed": "same_as_seed",
+    "stage2_finish": "masked_0.30",
+    "garment_source": "fixed"
+  },
+  "units": {
+    "heritage": "active"
+  },
+  "requires_gpu": true,
+  "notes": "Áo mẫu cố định để chỉ đổi một biến. Cùng (hiện vật, seed) thì hai mức chỉ khác ảnh nạp cho ControlNet. Mức 'render' là cách hiện tại.",
+  "metrics": {
+    "automatic": [
+      "vessel_leakage",
+      "pattern_preservation",
+      "garment_shape_iou",
+      "palette_shift_de"
+    ],
+    "human": [
+      "motif_recognizability",
+      "looks_like_printed_fabric",
+      "aesthetic"
+    ]
+  },
+  "blind_review": {
+    "enabled": true,
+    "min_raters": 3,
+    "shown_per_item": 1
+  },
+  "analysis": "Như EXP-B. Mức 'render' là đối chứng. Chiều tốt của vessel_leakage là thấp hơn.",
+  "status": "planned"
+}

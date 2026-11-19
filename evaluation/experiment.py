@@ -38,6 +38,7 @@ BASE_CONFIG = {
     "layout": "front_panel", "polish_strength": 0.40, "polish_seed": "same_as_seed",
     "steps": 25, "guidance": 7.5, "composite_mode": "full", "stage2_finish": "img2img_0.40",
     "garment_source": "fixed",   # "fixed" là áo mẫu cố định, "lora" là áo do LoRA sinh (EXP-D)
+    "source": "render",          # ảnh nạp cho ControlNet: "render" (cả bình), "panel" (mảng phẳng), "elements" (EXP-E)
 }
 
 
@@ -217,6 +218,20 @@ def pregenerate_garments(seeds: list[int], out_dir: Path, generate=None) -> dict
     return out
 
 
+def source_prepared(cache: dict, heritage_id: str, source: str) -> dict:
+    """Ảnh điều kiện cho ControlNet của một hiện vật theo nguồn (render, panel, elements), có nhớ lại để khỏi tính lại.
+
+    elements: lấy phần tử đầu tiên trong kho (thí nghiệm cần một ảnh cố định). Thiếu nguồn thì quay về bậc thấp hơn
+    như `element_library.variant_inputs`.
+    """
+    from generation import controlnet as cn, element_library      # noqa: PLC0415
+    key = (heritage_id, source)
+    if key not in cache:
+        _, path = element_library.variant_inputs(heritage_id, source)[0]
+        cache[key] = cn.prepare(heritage_id, ornament_only=True, trim=True, image_path=path)
+    return cache[key]
+
+
 def run_gpu(spec: dict, rows: list[dict], out_dir: Path) -> list[dict]:  # pragma: no cover - cần GPU
     """EXP-A / EXP-B / EXP-D: cần GPU CUDA. Nạp model một lần cho cả kế hoạch."""
     from PIL import Image                                          # noqa: PLC0415
@@ -246,7 +261,7 @@ def run_gpu(spec: dict, rows: list[dict], out_dir: Path) -> list[dict]:  # pragm
                     continue
                 g_info = g["info"]
                 tpl_path, region = g_info["path"], g_info["mask"]
-            prep = prepared.setdefault(hid, cn.prepare(hid, ornament_only=True, trim=True))
+            prep = source_prepared(prepared, hid, r.get("cfg.source", "render"))
             pattern_seed = int(r.get("cfg.pattern_seed") or seed)
             res = pattern.generate_custom(gen, hid, float(r["cfg.controlnet_weight"]), pattern_seed,
                                           r["cfg.prompt_modifier"] or "", prepared=prep)

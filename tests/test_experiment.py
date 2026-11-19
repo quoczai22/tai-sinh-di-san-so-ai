@@ -17,7 +17,8 @@ SPECS = sorted((ROOT / "evaluation" / "experiments").glob("EXP-*.json"))
 
 @pytest.mark.parametrize("path,n", [("EXP-A_controlnet_weight.json", 120), ("EXP-B_stage2_finish.json", 126),
                                     ("EXP-C_composite_ablation.json", 48),
-                                    ("EXP-D_garment_source.json", 60)])
+                                    ("EXP-D_garment_source.json", 60),
+                                    ("EXP-E_pattern_source.json", 36)])
 def test_specs_expand_and_pass_validation(path, n):
     spec = E.load_spec(ROOT / "evaluation" / "experiments" / path)
     rows = E.expand_plan(spec)
@@ -194,3 +195,16 @@ def test_gach_cham_mu_bo_luot_khong_ra_anh_va_analyze_dem_trang_thai(tmp_path):
     assert len(key) == 1 and key[0]["iv_level"] == "fixed"
     summary = E.analyze(tmp_path)
     assert summary["status_counts"] == {"fixed": {"completed": 1}, "lora": {"garment_failed": 1}}
+
+
+def test_source_prepared_nho_lai_theo_hien_vat_va_nguon(monkeypatch):
+    from generation import controlnet as cn
+    calls = []
+    monkeypatch.setattr(cn, "prepare", lambda hid, **kw: calls.append((hid, kw.get("image_path"))) or {"x": len(calls)})
+    cache = {}
+    a = E.source_prepared(cache, "LR3D_61", "panel")
+    b = E.source_prepared(cache, "LR3D_61", "panel")
+    c = E.source_prepared(cache, "LR3D_61", "render")
+    assert a is b and a is not c and len(calls) == 2
+    assert calls[0][1] is not None and calls[0][1].name == "LR3D_61.png"      # mảng phẳng
+    assert calls[1][1] is None                                                 # ảnh bình render mặc định

@@ -52,15 +52,15 @@ def generate_design_set(
     seed: int = SEED,
     variants: tuple[dict, ...] = DEFAULT_VARIANTS,
     run_id: str | None = None,
-    source: str = "render",
+    source: str = "panel",
     garment_source: str = "lora",
     garment_lora_dir: Path | None = None,
 ) -> list[dict]:
     """Sinh bộ thiết kế cho một hiện vật.
 
     source chọn ảnh nạp cho ControlNet (thiếu thì tự quay về bậc thấp hơn: elements, panel, rồi ảnh hiện vật):
-    - "render" (mặc định): ảnh hiện vật trong data/heritage/ (với LR3D là ảnh render cả bình).
-    - "panel": mảng texture phẳng trong data/heritage/panels/.
+    - "panel" (mặc định): mảng texture phẳng trong data/heritage/panels/. Cho hoa văn phẳng, ít lọt hình bình (thí nghiệm EXP-E).
+    - "render": ảnh hiện vật trong data/heritage/ (với LR3D là ảnh render cả bình), ControlNet bám theo dáng bình.
     - "elements": mỗi biến thể một phần tử trong kho data/elements/.
 
     garment_source chọn áo dài nền:
