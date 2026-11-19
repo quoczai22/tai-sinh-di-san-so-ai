@@ -13,7 +13,7 @@ const ROUTES = [
     { group: 'Khám phá', id: 'library', label: 'Trang chủ', short: 'Trang chủ', icon: 'library', primary: true, load: () => import('./views/library.js'),
       title: 'Thư viện di sản', lede: 'Hoa văn trên gốm Bát Tràng, chọn lọc và ghi nguồn, làm chất liệu cho tà áo dài.' },
     { group: 'Khám phá', id: 'studio', label: 'Studio thiết kế', short: 'Studio', icon: 'studio', primary: true, load: () => import('./views/studio.js'),
-      title: 'Studio thiết kế', lede: 'Chọn một hiện vật, bấm tạo, nhận bốn thiết kế áo dài dệt từ hoa văn của nó.' },
+      title: 'Studio thiết kế', lede: '' },
     // Trang Kết quả chỉ vào qua nút Tạo thiết kế, không nằm trong menu
     { group: 'Khám phá', id: 'result', label: 'Kết quả', short: 'Kết quả', icon: 'studio', hidden: true, load: () => import('./views/result.js'),
       title: 'Kết quả thiết kế', lede: 'Bốn thiết kế áo dài dệt từ hoa văn của hiện vật bạn chọn.' },
