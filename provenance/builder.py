@@ -102,6 +102,10 @@ def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict,
     pp["generation"]["polish_img2img"].update({
         "masked": bool(rec.get("polish_mask", False)), "status": rec.get("polish_status", "single_pass"),
         "attempts": int(rec.get("polish_attempts", 1))})
+    # Vòng sinh lại hoa văn khi G2 LỖI: seed hoa văn thực dùng (khác seed gốc nếu đã sinh lại) và các lần thử
+    pp["generation"]["pattern_seed"] = int(rec.get("pattern_seed", rec["seed"]))
+    pp["generation"]["pattern_retry"] = {"status": rec.get("pattern_status", "single_pass"),
+                                         "attempts": rec.get("pattern_attempt_log") or []}
     if rec.get("polish_lock"):
         from quality import repair as _repair                        # noqa: PLC0415
         pp["generation"]["polish_img2img"]["pattern_lock"] = {"method": _repair.METHOD, "params": _repair.PARAMS}
@@ -123,7 +127,7 @@ def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict,
                actor_type="system", actor="generation/controlnet.py", tool="OpenCV", at=ts,
                inputs=[src["sha256"]], outputs=[ref["sha256"], canny["sha256"]])
     P.add_step(pp, step="generate_pattern",
-               label=f"Sinh hoa văn phẳng (ControlNet {rec['controlnet_weight']}, seed {rec['seed']})",
+               label=f"Sinh hoa văn phẳng (ControlNet {rec['controlnet_weight']}, seed {rec.get('pattern_seed', rec['seed'])})",
                actor_type="ai", actor="Stable Diffusion 1.5 + ControlNet Canny", tool="generation/pattern.py",
                at=ts, inputs=[canny["sha256"]], outputs=[pat["sha256"]])
     if rec["palette_mode"] == "original":

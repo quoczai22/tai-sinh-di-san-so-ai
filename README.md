@@ -171,6 +171,6 @@ Chỉ ghi số đã đo; phần chưa có dữ liệu ghi là "mục tiêu cần
 - **Chưa có phiếu chấm của người thật:** cần ít nhất một người am hiểu di sản và một người am hiểu thiết kế xem mẫu và điền phiếu; gói chấm mù EXP-D cần ít nhất 3 người chấm; đủ ≥ 30 phiếu thì hiệu chỉnh ngưỡng thành QG-1.1 (không sửa đè QG-1.0).
 - **Chưa hiện vật nào có giấy phép từng vật (0/6):** 6 hiện vật LR3D-CULT2 thuộc bộ dữ liệu công bố CC BY 4.0 nhưng từng vật có thể lấy từ nguồn giấy phép học thuật; hệ thống đang chặn xuất bản công khai; đã có mẫu thư xin phép, chưa gửi.
 - **LoRA học từ VietFashion (CC BY-NC 4.0):** chỉ dùng phi thương mại, phải ghi công bài ICMR 2026 (xem `data/lora/README.md`).
-- 3 thiết kế của hiện vật LR3D_124 bị G2 loại (đường nối), hệ thống chưa tự sinh lại hoa văn.
+- Hiện vật LR3D_124 hay bị G2 loại vì đường nối (3 trong 4 thiết kế ở bộ demo). Vòng sinh lại bằng đổi seed chỉ cứu được một phần (thử thật: 1 trong 3), xem `docs/finals/05_QUALITY_ASSURANCE.md`.
 - Giao diện web chỉ còn 3 trang; Passport và chỉ số chất lượng đọc qua API và tệp dữ liệu, không hiện trên web.
 - Bản cuối vẫn mất khoảng 13 đến 14% chi tiết mịn so với bản ghép thô; nếu cần giữ tuyệt đối có thể bỏ polish và dùng bản ghép.
