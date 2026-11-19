@@ -42,27 +42,30 @@ export async function openDesign(pid) {
     drawer(`${p.passport_id}`, body);
 }
 
-// Thẻ cho người xem: ảnh, tên, cách đặt hoa văn, tình trạng bằng lời. Chỉ số kỹ thuật nằm trong "Xem chi tiết".
-const PLAIN = {
-    pending_expert_review: ['Chờ chuyên gia', true], approved: ['Đã duyệt', true], qa_warning: ['Đang xem lại', false],
-    revision_requested: ['Đang chỉnh sửa', false], qa_failed: ['Chưa đạt', false], rejected: ['Không dùng', false], draft: ['Đang tạo', false],
-};
+// ---------------------------------------------------------------------------------------------
+// Studio cho người xem: ĐẦU VÀO (hiện vật) → nút Tạo thiết kế → ĐẦU RA (4 tà áo).
+// Không hiện các bước trung gian (hoa văn, cổng kiểm định, Passport) — xem trong "Xem chi tiết".
+// · Có máy chủ GPU: bấm Tạo là sinh thật, có thanh tiến độ, xong hiện bộ mới.
+// · Không có GPU: không giả lập việc sinh. Bấm Tạo sẽ mở bộ thiết kế mô hình đã tạo trước đó trên GPU,
+//   ghi rõ ngày tạo. Trước khi bấm, khung đầu ra để trống.
+// ---------------------------------------------------------------------------------------------
+const latestOf = (d) => (d.latest_version_kind === 'system_repair' && d.repair_thumb ? d.repair_thumb : d.thumb);
+const runDate = (r) => { const m = /^R(\d{4})(\d{2})(\d{2})/.exec(r || ''); return m ? `${m[3]}/${m[2]}/${m[1]}` : ''; };
+
 function designCard(d, n) {
-    const thumb = data.media(d.final_path, d.thumb);
-    const [status, ok] = PLAIN[d.approval.status] || [d.approval.label || '', false];
     const open = () => openDesign(d.passport_id);
-    return h('article', { class: 'design', tabindex: '0', role: 'button', 'aria-label': `Thiết kế ${n}, ${d.layout || ''} — xem chi tiết`,
+    return h('article', { class: 'design out-card', tabindex: '0', role: 'button', 'aria-label': `Thiết kế ${n}, ${d.layout || ''} — xem chi tiết`,
+        style: { '--k': String(n - 1) },
         onclick: open, onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } } },
-        h('div', { class: 'pic' }, h('img', { src: thumb, alt: `Thiết kế ${n}`, loading: 'lazy' }), aiMark()),
-        h('div', { class: 'body' },
-            h('span', { class: `status ${ok ? 'ok' : ''}` }, status),
-            h('span', { class: 'title' }, `Thiết kế ${n}`),
-            d.layout ? h('span', { class: 'layout' }, d.layout) : null,
-            h('span', { class: 'more' }, 'Xem chi tiết', h('i', { class: 'arr', 'aria-hidden': 'true' }))));
+    h('div', { class: 'pic' }, h('img', { src: data.media(d.final_path, latestOf(d)), alt: `Thiết kế ${n}`, loading: 'lazy' }), aiMark()),
+    h('div', { class: 'body' },
+        h('span', { class: 'title' }, `Thiết kế ${n}`),
+        d.layout ? h('span', { class: 'layout' }, d.layout) : null,
+        h('span', { class: 'more' }, 'Xem chi tiết', h('i', { class: 'arr', 'aria-hidden': 'true' }))));
 }
 
 function picker(items) {
-    return section('Chọn hiện vật', null,
+    return section('Chọn một hiện vật', 'Hoa văn của hiện vật bạn chọn sẽ được dệt lên tà áo dài.',
         h('div', { class: 'artifact-grid' }, items.filter((i) => i.status === 'active').map((it) =>
             h('a', { class: 'artifact', href: `#/studio/${encodeURIComponent(it.id)}`, style: { textDecoration: 'none' } },
                 h('div', { class: 'pic' }, h('img', { src: it.image, alt: '', loading: 'lazy' })),
@@ -73,40 +76,44 @@ export async function render([heritageId]) {
     const { items } = await data.heritage();
     if (!heritageId) return picker(items);
     const item = items.find((i) => i.id === heritageId);
-    if (!item) return stateBox('error', 'Không tìm thấy hiện vật', 'Mã hiện vật không có trong Thư viện.', h('a', { class: 'btn', href: '#/studio' }, 'Chọn hiện vật khác'));
+    if (!item) return stateBox('error', 'Không tìm thấy hiện vật', 'Hiện vật này không có trong Thư viện.', h('a', { class: 'btn', href: '#/studio' }, 'Chọn hiện vật khác'));
     data.audit('heritage_selected', { step: 1, heritage_id: heritageId });
-    const all = (await data.passports()).filter((p) => p.heritage_id === heritageId);
-    const runs = [...new Set(all.map((p) => p.run_id))].sort().reverse();
-    let currentRun = runs[0];
-    const grid = h('div', { class: 'design-grid' });
-    const drawRun = () => {
-        const list = all.filter((p) => p.run_id === currentRun).sort((a, b) => a.passport_id.localeCompare(b.passport_id));
-        grid.replaceChildren(...(list.length ? list.map((d, k) => designCard(d, k + 1))
-            : [stateBox('', 'Chưa có thiết kế nào cho hiện vật này', data.canGenerate()
-                ? 'Bấm "Sinh 4 thiết kế" để tạo bộ đầu tiên.'
-                : 'Hiện vật mới đã đạt tiêu chí tuyển ảnh nhưng chưa được chạy trên GPU. Kết nối máy chủ GPU để sinh bộ đầu tiên.')]));
-    };
-    drawRun();
 
-    const reviewedSteps = all.some((p) => p.reviews > 0);
-    const steps = [['Hiện vật', true], ['Hoa văn', all.length > 0], ['Áo dài', all.length > 0], ['Kiểm định', all.length > 0],
-        ['Thẩm định', reviewedSteps], ['Passport', all.length > 0]];
-    const firstOpen = steps.findIndex(([, done]) => !done);
-    const reached = firstOpen === -1 ? steps.length - 1 : firstOpen;
-    const stepper = h('ol', { class: 'stepper timeline-steps', 'aria-label': 'Tiến trình thiết kế',
-        style: { '--p': String(reached / (steps.length - 1)) } }, steps.map(([label, done], i) =>
-        h('li', { class: done ? 'done' : i === firstOpen ? 'current' : '' }, label)));
+    const all = (await data.passports()).filter((p) => p.heritage_id === heritageId);
+    const latestRun = [...new Set(all.map((p) => p.run_id))].sort().reverse()[0];
+    const latest = all.filter((p) => p.run_id === latestRun).sort((a, b) => a.passport_id.localeCompare(b.passport_id));
+    const can = data.canGenerate();
+
+    const outGrid = h('div', { class: 'out-grid' });
+    const outNote = h('p', { class: 'out-note', role: 'status', 'aria-live': 'polite' });
+    const progressBar = h('span');
+    const progress = h('div', { class: 'out-progress', hidden: true }, h('div', { class: 'progress' }, progressBar));
+    const empty = h('div', { class: 'out-empty' }, h('p', {}, 'Bốn thiết kế áo dài sẽ hiện ở đây.'));
+    outGrid.append(empty);
+
+    const show = (list, note) => {
+        outGrid.replaceChildren(...list.map((d, k) => designCard(d, k + 1)));
+        outNote.textContent = note;
+        requestAnimationFrame(() => outGrid.classList.add('shown'));
+        // Màn hình hẹp: phần Đầu ra nằm dưới, tự cuộn tới để người xem thấy kết quả
+        const r = outGrid.getBoundingClientRect();
+        if (r.top > window.innerHeight * 0.6) outGrid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
 
     const seedInput = h('input', { type: 'number', min: 0, max: 2147483647, value: 42, id: 'seed', inputmode: 'numeric' });
-    const progressBar = h('span');
-    const progressText = h('div', { class: 'small muted', role: 'status', 'aria-live': 'polite' });
-    const progress = h('div', { class: 'stack', hidden: true }, h('div', { class: 'progress' }, progressBar), progressText);
-    const can = data.canGenerate();
-    const genBtn = h('button', { class: 'btn primary', disabled: !can, onclick: async () => {
+    const genBtn = h('button', { class: 'btn hero-btn primary gen-btn', onclick: async () => {
+        if (!can) {
+            // Không có GPU: mở bộ đã tạo trước, nói rõ là kết quả có sẵn
+            if (!latest.length) { outNote.textContent = 'Hiện vật này chưa được chạy trên máy GPU nên chưa có thiết kế.'; return; }
+            genBtn.disabled = true;
+            show(latest, `Chưa kết nối máy GPU nên chưa tạo mới được. Đây là bộ thiết kế mô hình đã tạo từ hiện vật này ngày ${runDate(latestRun)}.`);
+            return;
+        }
         const seed = Number(seedInput.value);
         if (!Number.isInteger(seed) || seed < 0) { toast('Seed phải là số nguyên không âm.'); return; }
         genBtn.disabled = true;
         progress.hidden = false;
+        outNote.textContent = 'Đang tạo thiết kế…';
         try {
             data.audit('generation_requested', { step: 3, heritage_id: heritageId });
             const { job_id: jobId } = await data.startGeneration(heritageId, seed);
@@ -115,37 +122,33 @@ export async function render([heritageId]) {
                 await new Promise((r) => setTimeout(r, 1200));
                 job = await data.jobStatus(jobId);
                 progressBar.style.width = `${job.progress || 0}%`;
-                progressText.textContent = job.label || 'Đang xử lý';
             } while (['queued', 'running'].includes(job.status));
             if (job.status !== 'completed') throw new Error(job.label);
             data.invalidate('live:passports');
-            toast(job.label);
-            location.hash = `#/studio/${encodeURIComponent(heritageId)}`;
-            window.dispatchEvent(new HashChangeEvent('hashchange'));
+            const fresh = (await data.passports()).filter((p) => p.heritage_id === heritageId);
+            const run = [...new Set(fresh.map((p) => p.run_id))].sort().reverse()[0];
+            progress.hidden = true;
+            show(fresh.filter((p) => p.run_id === run).sort((a, b) => a.passport_id.localeCompare(b.passport_id)), 'Đã tạo xong bộ thiết kế mới.');
         } catch (err) {
-            progressText.textContent = `Không sinh được thiết kế: ${err.message}`;
+            progress.hidden = true;
+            outNote.textContent = `Không tạo được thiết kế: ${err.message}`;
             genBtn.disabled = false;
         }
-    } }, 'Sinh 4 thiết kế');
+    } }, 'Tạo thiết kế', icon('arrow'));
 
-    const runLabel = (r) => { const m = /^R(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})/.exec(r || ''); return m ? `${m[3]}/${m[2]}/${m[1]}, ${m[4]}:${m[5]}` : r; };
-    const runSelect = runs.length > 1 ? h('label', { class: 'field' }, 'Bộ thiết kế',
-        h('select', { onchange: (e) => { currentRun = e.target.value; drawRun(); } }, runs.map((r) => h('option', { value: r }, runLabel(r))))) : null;
-
-    return h('div', {},
-        h('div', { class: 'studio-head v2' },
-            h('div', { class: 'stack' },
-                h('span', { class: 'kicker-sm' }, item.dating || 'Gốm Bát Tràng'),
-                h('h2', { class: 'display studio-name' }, item.name),
-                h('p', { class: 'studio-summary' }, item.visualSummary || ''),
-                stepper),
-            h('div', { class: 'stack' },
-                h('div', { class: 'panel stack gen-panel' },
-                    h('h3', {}, 'Sinh bộ thiết kế mới'),
-                    h('div', { class: 'row' }, genBtn, runSelect),
-                    h('details', { class: 'adv' }, h('summary', {}, 'Tuỳ chọn nâng cao'),
-                        h('label', { class: 'field', for: 'seed' }, 'Seed (cùng seed cho cùng kết quả)', seedInput)),
-                    can ? null : h('p', { class: 'gen-off' }, 'Cần máy chủ có GPU để tạo bộ mới. Bên dưới là bộ thiết kế gần nhất.'),
-                    progress))),
-        section('Bộ thiết kế', currentRun ? `Tạo ngày ${runLabel(currentRun)}` : null, grid));
+    return h('div', { class: 'studio-io' },
+        h('div', { class: 'io-input' },
+            h('p', { class: 'kicker' }, 'Đầu vào'),
+            h('div', { class: 'io-artifact' }, h('img', { src: item.image, alt: item.name })),
+            h('h2', { class: 'io-name' }, item.name),
+            item.visualSummary ? h('p', { class: 'io-summary' }, item.visualSummary) : null,
+            h('a', { class: 'io-change', href: '#/studio' }, 'Đổi hiện vật')),
+        h('div', { class: 'io-action' },
+            genBtn,
+            can ? h('details', { class: 'adv' }, h('summary', {}, 'Tuỳ chọn'), h('label', { class: 'field', for: 'seed' }, 'Seed', seedInput)) : null,
+            progress),
+        h('div', { class: 'io-output' },
+            h('p', { class: 'kicker' }, 'Đầu ra'),
+            outGrid,
+            outNote));
 }

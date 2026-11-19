@@ -141,7 +141,7 @@ export async function renderHero(route, params, info) {
             h('a', { class: 'btn hero-btn ghost', href: '#/studio' }, 'Vào Studio thiết kế'));
         try { current = await libraryVisual(visual); } catch (e) { console.warn(e); }
     } else if (route.id === 'studio' && params[0]) {
-        try { await studioVisual(visual, params[0]); } catch (e) { console.warn(e); }
+        // Ảnh hiện vật đã nằm ở khung "Đầu vào" bên dưới, không lặp lại trên ảnh bìa
     } else if (route.id === 'passport' && params[0] && await passportVisual(visual, params[0]).catch(() => false)) {
         // ảnh thiết kế đã mang nhãn AI
     } else {
