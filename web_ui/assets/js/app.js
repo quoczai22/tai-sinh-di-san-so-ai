@@ -4,43 +4,35 @@ import { renderHero } from './lib/hero.js';
 import { applyMotionClass, enhance, reduced, scenes, setMotion } from './lib/motion.js';
 import { stateBox } from './lib/ui.js';
 
-const CHAPTER = { 'Sáng tạo': '01', 'Kiểm soát': '02', 'Truy vết': '03', 'Quản trị': '04' };
+// Web chỉ dành cho người xem: 3 trang. Hồ sơ nghiệp vụ (kiểm định, thí nghiệm, thẩm định, Passport,
+// BPMN, KPI) nằm trong dữ liệu, API và docs/finals — không đưa lên web.
+const CHAPTER = { 'Khám phá': '01' };
+const CHAPTER_NOTE = {};
 
 const ROUTES = [
-    { group: 'Sáng tạo', id: 'library', label: 'Thư viện di sản', short: 'Thư viện', icon: 'library', primary: true, load: () => import('./views/library.js'),
+    { group: 'Khám phá', id: 'library', label: 'Trang chủ', short: 'Trang chủ', icon: 'library', primary: true, load: () => import('./views/library.js'),
       title: 'Thư viện di sản', lede: 'Hoa văn trên gốm Bát Tràng, chọn lọc và ghi nguồn, làm chất liệu cho tà áo dài.' },
-    { group: 'Sáng tạo', id: 'studio', label: 'Studio thiết kế', short: 'Studio', icon: 'studio', primary: true, load: () => import('./views/studio.js'),
-      title: 'Studio thiết kế', lede: 'Chọn một hiện vật và xem bộ bốn thiết kế áo dài được dệt từ hoa văn của nó.' },
-    { group: 'Kiểm soát', id: 'quality', label: 'Kiểm định chất lượng', short: 'Kiểm định', icon: 'quality', primary: true, load: () => import('./views/quality.js'),
-      title: 'Kiểm định chất lượng', lede: 'Đo trên thiết kế cuối: hoa văn còn giữ được không, dáng áo có đúng không. Thẩm mỹ do chuyên gia quyết định.' },
-    { group: 'Kiểm soát', id: 'lab', label: 'Phòng thử nghiệm', short: 'Thử nghiệm', icon: 'lab', load: () => import('./views/lab.js'),
-      title: 'Phòng thử nghiệm', lede: 'Mỗi lần chỉ đổi một biến, lặp nhiều seed, chấm mù.' },
-    { group: 'Kiểm soát', id: 'review', label: 'Thẩm định chuyên gia', short: 'Thẩm định', icon: 'review', primary: true, load: () => import('./views/review.js'),
-      title: 'Thẩm định chuyên gia', lede: 'Chuyên gia di sản và thiết kế chấm mù trước khi một thiết kế được phê duyệt.' },
-    { group: 'Truy vết', id: 'passport', label: 'Design Passport', short: 'Passport', icon: 'passport', primary: true, load: () => import('./views/passport.js'),
-      title: 'Design Passport', lede: 'Hồ sơ của từng thiết kế, từ hiện vật gốc tới bản xuất cuối.' },
-    { group: 'Truy vết', id: 'sources', label: 'Nguồn và bản quyền', short: 'Bản quyền', icon: 'sources', load: () => import('./views/sources.js'),
-      title: 'Nguồn và bản quyền', lede: 'Nguồn, giấy phép và cách ghi công của từng hiện vật.' },
-    { group: 'Quản trị', id: 'dashboard', label: 'Tổng quan', short: 'Tổng quan', icon: 'dashboard', load: () => import('./views/dashboard.js'),
-      title: 'Tổng quan', lede: 'Chỉ số tính từ dữ liệu thật. Chỉ số chưa đo được ghi là mục tiêu cần đo.' },
-    { group: 'Quản trị', id: 'process', label: 'Quy trình nghiệp vụ', short: 'Quy trình', icon: 'process', load: () => import('./views/process.js'),
-      title: 'Quy trình nghiệp vụ', lede: 'Sơ đồ BPMN 2.0 và Use Case của nền tảng.' },
+    { group: 'Khám phá', id: 'studio', label: 'Studio thiết kế', short: 'Studio', icon: 'studio', primary: true, load: () => import('./views/studio.js'),
+      title: 'Studio thiết kế', lede: 'Chọn một hiện vật, bấm tạo, nhận bốn thiết kế áo dài dệt từ hoa văn của nó.' },
+    { group: 'Khám phá', id: 'collection', label: 'Bộ sưu tập', short: 'Bộ sưu tập', icon: 'library', primary: true, load: () => import('./views/collection.js'),
+      title: 'Bộ sưu tập', lede: 'Những tà áo dài đã được dệt từ hoa văn gốm Bát Tràng.' },
 ].map((r) => ({ ...r, chapter: CHAPTER[r.group] }));
 
 let info = { mode: 'demo' };
 
 /* ---------- Điều hướng trên cùng + menu toàn màn hình ---------- */
 function renderNav(active) {
-    // Logo ở giữa, mục chính chia hai bên: 3 mục trái, 2 mục phải + nút Danh mục (cân thị giác).
+    // Logo ở giữa: 2 mục trái, 1 mục phải + nút menu (cân thị giác).
     const primaries = ROUTES.filter((x) => x.primary);
     const link = (r) => h('a', { href: `#/${r.id}`, 'aria-current': r.id === active ? 'page' : null }, r.short);
-    clear(document.getElementById('nav-left')).append(...primaries.slice(0, 3).map(link));
-    clear(document.getElementById('nav')).append(...primaries.slice(3).map(link));
+    clear(document.getElementById('nav-left')).append(...primaries.slice(0, 2).map(link));
+    clear(document.getElementById('nav')).append(...primaries.slice(2).map(link));
     const menu = clear(document.getElementById('menu-chapters'));
     const groups = [...new Set(ROUTES.map((r) => r.group))];
     groups.forEach((g, gi) => {
         menu.append(h('section', { class: 'menu-chapter', style: { '--i': String(gi) } },
             h('h2', { class: 'menu-group' }, g),
+            CHAPTER_NOTE[g] ? h('p', { class: 'menu-note' }, CHAPTER_NOTE[g]) : null,
             h('ul', {}, ROUTES.filter((r) => r.group === g).map((r) => h('li', {},
                 h('a', { href: `#/${r.id}`, 'aria-current': r.id === active ? 'page' : null, onclick: () => closeMenu() },
                     icon(r.icon), h('span', {}, r.label), icon('arrow', 'go')))))));
@@ -98,6 +90,9 @@ async function route() {
     const [, id = 'library', ...params] = (location.hash || '#/library').split('/');
     const r = ROUTES.find((x) => x.id === id) || ROUTES[0];
     closeMenu();
+    // Đổi trang thì đóng khung chi tiết đang mở (vd. bấm "Thử với hiện vật này" trong khung)
+    document.getElementById('overlay-root')?.replaceChildren();
+    document.body.classList.remove('drawer-open');
     renderNav(r.id);
     document.title = `${r.title} — Tái Sinh Di Sản Số`;
     const main = document.getElementById('main');

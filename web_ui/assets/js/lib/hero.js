@@ -7,6 +7,7 @@ import { clear, h, icon } from './dom.js';
 import * as data from './data.js';
 import { cycle, parallax, reduced, splitWords } from './motion.js';
 import { APPROVAL, aiMark } from './ui.js';
+import { openDesign } from './detail.js';
 
 let current = null;
 const PREF = ['pending_expert_review', 'qa_warning', 'revision_requested', 'approved', 'qa_failed'];
@@ -60,7 +61,7 @@ async function libraryVisual(root) {
         fanCard('c1', 'Hiện vật', it.image, false, true),
         fanCard('c2', 'Hoa văn', `./${patternOf(d)}`, true),
         fanCard('c3', 'Áo dài', `./${latestOf(d)}`, true)));
-    const capEls = sets.map(({ it, d }) => h('a', { class: 'fan-cap', href: `#/passport/${d.passport_id}` },
+    const capEls = sets.map(({ it, d }) => h('a', { class: 'fan-cap', href: '#/collection', onclick: (e) => { e.preventDefault(); openDesign(d.passport_id); } },
         h('span', { class: 'fan-cap-code' }, it.name),
         h('span', { class: 'fan-cap-pid' }, 'Xem thiết kế', icon('arrow'))));
     stage.append(...setEls);
@@ -141,7 +142,7 @@ export async function renderHero(route, params, info) {
             h('a', { class: 'btn hero-btn ghost', href: '#/studio' }, 'Vào Studio thiết kế'));
         try { current = await libraryVisual(visual); } catch (e) { console.warn(e); }
     } else if (route.id === 'studio' && params[0]) {
-        try { await studioVisual(visual, params[0]); } catch (e) { console.warn(e); }
+        // Ảnh hiện vật đã nằm ở khung "Đầu vào" bên dưới, không lặp lại trên ảnh bìa
     } else if (route.id === 'passport' && params[0] && await passportVisual(visual, params[0]).catch(() => false)) {
         // ảnh thiết kế đã mang nhãn AI
     } else {

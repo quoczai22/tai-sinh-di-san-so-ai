@@ -88,7 +88,11 @@ def test_heritage_detail_and_media(api_client):
 def test_generate_without_gpu_is_explicit(api_client, monkeypatch):
     import api.main as main
     main._rate.clear()
-    r = api_client.post("/generate", json={"heritage_id": "BT_Hac_XP"})
+    import json
+    from pathlib import Path
+    items = json.loads((Path(__file__).resolve().parent.parent / "data" / "heritage" / "metadata.json").read_text(encoding="utf-8"))["items"]
+    active = next(k for k, v in items.items() if v.get("status") == "active")
+    r = api_client.post("/generate", json={"heritage_id": active})
     try:
         import torch  # noqa: F401
         pytest.skip("máy có torch — ca này dành cho máy không có GPU")

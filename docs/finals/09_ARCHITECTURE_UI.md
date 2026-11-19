@@ -14,7 +14,7 @@ evaluation/
   experiments/*.json  đặc tả EXP-A, EXP-B, EXP-C
 api/                main.py (v1.1.0) · store.py · audit.py
 config/             heritage_selection.json · quality_gate.json · expert_rubric.json
-web_ui/             giao diện chung kết (giao diện 09/2026 lưu ở archive/web_ui_2026-09/)
+web_ui/             giao diện cho người xem: Trang chủ, Studio, Bộ sưu tập (giao diện 09/2026 lưu ở archive/web_ui_2026-09/)
 scripts/            08 chuyển schema · 09 nạp ảnh hiện vật · 10 dựng lại 24 thiết kế · 11 xuất dữ liệu trình diễn · 12 dựng sơ đồ
 tests/              130 ca pytest
 ```
@@ -69,28 +69,25 @@ Lấy cảm hứng từ cách các nền tảng di sản trực tuyến kể chu
 
 | Thành phần | Mô tả |
 |---|---|
-| Điều hướng trên cùng | Trong suốt trên ảnh bìa, chuyển nền giấy mờ khi cuộn; 5 khu vực chính + nút "Danh mục" |
-| Menu toàn màn hình | 4 chương đánh số 01–04 (Sáng tạo, Kiểm soát, Truy vết, Quản trị), mở bằng hiệu ứng vòng tròn lan, các chương trồi lên so le; Esc để đóng; chứa nhãn chế độ và nguồn dữ liệu |
-| Ảnh bìa Thư viện | Nền lam cobalt có vân vòng tròn xoay chậm; "quạt thẻ" Hiện vật → Hoa văn → Áo dài tự chuyển giữa các hiện vật đang dùng, nghiêng theo chuột; chú thích dẫn tới Passport kèm trạng thái phê duyệt thật |
-| Ảnh bìa các khu vực khác | Số chương lớn viền mảnh, băng ảnh thiết kế trôi chậm phía sau (có dòng ghi "thiết kế có hỗ trợ AI"); Studio hiện hiện vật tách nền lơ lửng; Passport chi tiết hiện bản thiết kế mới nhất |
-| Thư viện | Hành trình 5 chặng (thẻ ảnh đánh số), băng thẻ hiện vật trên bệ, dải trích dẫn nguyên tắc cổng chất lượng, thẻ tiêu chí C1–C4 |
-| Chuyển động chung | Tiêu đề trồi lên từng từ; khối nội dung hiện dần khi cuộn; số liệu đếm lên tới giá trị thật; thanh tỉ lệ và biểu đồ mọc dần; sợi chỉ lam báo tiến độ cuộn; ngăn kéo trượt vào |
+| Điều hướng | Logo hoa sen ở giữa; trái: Trang chủ, Studio; phải: Bộ sưu tập và nút menu ☰ (dùng trên điện thoại) |
+| Trang chủ | Ảnh bìa với quạt thẻ Hiện vật → Hoa văn → Áo dài; chim phượng và câu mở đầu; Hành trình 3 chặng; lưới hiện vật; lưới áo dài; mặt trống đồng và lời kết |
+| Studio | Đầu vào (hiện vật) → nút Tạo thiết kế → Đầu ra (4 tà áo). Khung đầu ra trống tới khi bấm. Có GPU: sinh thật kèm tiến độ. Không có GPU: mở bộ đã tạo trước, ghi rõ ngày tạo, không giả lập việc sinh |
+| Bộ sưu tập | Lưới áo dài gom theo hiện vật nguồn |
+| Khung chi tiết | Bấm hiện vật hoặc tà áo: ảnh lớn, tên, mô tả, nguồn ảnh (ghi công), nhãn AI, nút đi tiếp. Không có chỉ số kỹ thuật |
+| Chuyển động | Theo vị trí cuộn (chim phượng, câu mở đầu sáng dần, hiện vật nổi lên); chỉ chuyển động tự chạy dừng khi hệ điều hành bật giảm chuyển động; có nút tắt chuyển động trong menu |
 
-Nguyên tắc: chỉ dùng `transform`/`opacity`; khi hệ điều hành bật giảm chuyển động (`prefers-reduced-motion`) thì mọi hiệu ứng tắt và nội dung hiện ngay. Số đếm chỉ là hiệu ứng hiển thị — giá trị cuối luôn là số liệu thật. Mọi ảnh do AI hỗ trợ tạo đều mang nhãn "AI hỗ trợ tạo".
+### Phạm vi giao diện web (19/11/2026)
 
-### Chín khu vực
+Web chỉ dành cho người xem: **Trang chủ · Studio · Bộ sưu tập**. Các chức năng nghiệp vụ không còn là trang web mà nằm ở:
 
-| Nhóm | Khu vực | Việc chính | Trạng thái đặc biệt |
-|---|---|---|---|
-| Sáng tạo | Thư viện di sản | Xem hiện vật, nguồn, quyền, kết quả C1–C4; lọc đang dùng / ngừng dùng | Hiện vật ngừng dùng hiện lý do |
-| | Studio thiết kế | Chọn hiện vật, nhập seed, sinh 4 phương án, xem cổng chất lượng của từng phương án | Không có GPU → nút sinh bị khoá kèm lý do; đang chạy → thanh tiến độ; lỗi → thông báo cụ thể |
-| Kiểm soát | Kiểm định chất lượng | Phân bố PASS/WARN/FAIL, PPS trước và sau sửa, bảng ngưỡng, chi tiết 24 thiết kế | |
-| | Phòng thử nghiệm | Ba thí nghiệm, kế hoạch, kết quả EXP-C kèm ảnh; so sánh hai cấu hình và cảnh báo khi khác nhau nhiều hơn một tham số | Thí nghiệm chưa chạy hiện "chờ GPU" |
-| | Thẩm định chuyên gia | Hàng đợi chờ chuyên gia / chờ QC / đã quyết định; phiếu chấm mù 5 tiêu chí | Chấm mù: ẩn mã Passport (mã chứa số biến thể), xếp theo mã ẩn danh |
-| Truy vết | Design Passport | Toàn vẹn, chuỗi truy vết, "ai làm gì", tham số, phiên bản, chỉnh sửa, cổng, phiếu, quyền, dòng thời gian | Kiểm tra toàn vẹn không đạt → báo đỏ kèm danh sách lỗi |
-| | Nguồn và bản quyền | Danh mục 10 trường (ô thiếu tô đỏ), thư xin phép tạo sẵn, bảng quy tắc quyền | |
-| Quản trị | Tổng quan | Chỉ số và bảng KPI có mã khớp [08_KPI.md](08_KPI.md) | Ô chưa đo hiện "Mục tiêu cần đo" |
-| | Quy trình nghiệp vụ | BPMN TO-BE, AS-IS, Use Case; xem cỡ thật hoặc thu vừa khung | |
+| Chức năng | Nằm ở |
+|---|---|
+| Kiểm định chất lượng G2/G3 | `quality/`, `evaluation/quality_gate_legacy.csv`, `GET /quality/legacy` |
+| Thí nghiệm EXP-A/B/C | `evaluation/experiment.py`, `outputs/experiments/`, `GET /experiments` |
+| Thẩm định chuyên gia | `config/expert_rubric.json`, `POST /passports/{id}/reviews`, gói chấm mù `outputs/experiments/EXP-C/blind/` |
+| Design Passport | `outputs/passports/`, `GET /passports/{id}`, `GET /passports/{id}/export` |
+| Nguồn và bản quyền | `data/heritage/metadata.json`, `GET /provenance/catalog`, [07](07_PROVENANCE_COPYRIGHT.md) |
+| KPI, BPMN, Use Case | [08](08_KPI.md), [03](03_BPMN.md), [04](04_USE_CASE.md), `docs/finals/diagrams/` |
 
 ### Hai chế độ
 
@@ -103,7 +100,7 @@ Không có nút nào bấm mà không làm gì. Chức năng chưa có máy ch�
 
 - Không dùng `innerHTML` với dữ liệu; mọi phần tử tạo bằng hàm `h()` (có ca kiểm thử).
 - Bàn phím: điều hướng bằng liên kết, nút chấm điểm là `role="radio"`; nền tảng tôn trọng `prefers-reduced-motion`.
-- Responsive: dưới 980 px chỉ còn nút "Danh mục"; đã kiểm tra không tràn ngang ở bề rộng 375 px trên cả 9 khu vực (bản 3).
+- Responsive: dưới 980 px chỉ còn nút menu; đã kiểm tra không tràn ngang ở bề rộng 390 px.
 - Ảnh trình diễn nén WebP; mã băm trong Passport tính trên tệp PNG gốc.
 
 ## Chạy

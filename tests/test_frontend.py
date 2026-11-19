@@ -36,6 +36,8 @@ def test_demo_data_matches_repo():
     stored = sorted(p.stem for p in (ROOT / "outputs" / "passports").glob("DP-*.json"))
     assert sorted(p["passport_id"] for p in passports) == stored
     heritage = json.loads((WEB / "data" / "heritage.json").read_text(encoding="utf-8"))
+    registry = json.loads((ROOT / "data" / "heritage" / "metadata.json").read_text(encoding="utf-8"))
+    assert len(heritage["items"]) == len(registry["items"])
     assert sum(it["status"] == "active" for it in heritage["items"]) == 6   # 6 hiện vật LR3D; 6 hiện vật cũ đã ngừng dùng
     for d in ("bpmn_to_be.svg", "bpmn_as_is.svg", "use_case.svg"):
         assert (WEB / "data" / "diagrams" / d).exists()

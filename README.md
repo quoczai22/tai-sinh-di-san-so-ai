@@ -58,7 +58,7 @@ Mở `http://127.0.0.1:5500`. Không có API thì giao diện tự chạy **ch�
 | API | FastAPI + Uvicorn (`api/main.py`); PyTorch chỉ nạp khi cần, máy không GPU thì `/generate` trả 503 |
 | Giao diện | HTML/CSS/JS thuần (ES modules), không framework; một họ chữ Noto Serif |
 | Dữ liệu | Tệp JSON/CSV trong repo, không dùng cơ sở dữ liệu |
-| Kiểm thử | pytest (130 ca, không cần GPU) |
+| Kiểm thử | pytest (131 ca, không cần GPU) |
 
 ## 4. Cấu trúc thư mục
 
@@ -84,7 +84,7 @@ Mở `http://127.0.0.1:5500`. Không có API thì giao diện tự chạy **ch�
 ├── scripts/              01–04 cài đặt & kiểm GPU · 07 mô tả hoa văn · 08 chuyển schema · 09 nạp ảnh hiện vật
 │                         · 10 dựng lại lần chạy cũ · 11 xuất dữ liệu giao diện · 12 sinh sơ đồ BPMN/Use Case
 ├── streamlit_ui/, app.py Công cụ kiểm chứng pipeline nội bộ (Streamlit)
-├── tests/                130 ca pytest
+├── tests/                131 ca pytest
 ├── docs/
 │   ├── finals/           Hồ sơ vòng chung kết 01–11 + diagrams/ (BPMN 2.0, Use Case)
 │   ├── evidence/         Ảnh đối chiếu hiện vật – hoa văn – bản ghép – bản cuối – bản sửa (quality_gate/)
@@ -113,7 +113,7 @@ Có API ở `127.0.0.1:8000` thì giao diện chạy chế độ trực tiếp (
 **B. Kiểm thử**
 
 ```powershell
-pytest            # 130 ca; 19 ca kiểm tra cú pháp JS cần Node.js, máy không có Node thì được bỏ qua
+pytest            # 131 ca; 20 ca kiểm tra cú pháp JS cần Node.js, máy không có Node thì được bỏ qua
 ```
 
 **C. Sinh ảnh và thí nghiệm (cần GPU NVIDIA ≥ 6 GB, xem [`docs/SETUP_AI_LOCAL.md`](docs/SETUP_AI_LOCAL.md))**
