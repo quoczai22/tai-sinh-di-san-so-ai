@@ -75,3 +75,7 @@ docs/MVP_v6_1_Mind_Map_Prompt.docx
 outputs/experiments/*/blind/images/
 outputs/edits/_pytest_*/
 data/heritage/sources/originals/
+
+# Dữ liệu VietFashion tải về (CC BY-NC 4.0), không commit dữ liệu thô
+data/vietfashion/
+data/lora/

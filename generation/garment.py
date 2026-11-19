@@ -149,13 +149,13 @@ def _feather(mask: np.ndarray, px: float) -> np.ndarray:
     return cv2.GaussianBlur(mask.astype(np.float32), (0, 0), max(px, 0.1))
 
 
-def _layout_mask(template: Image.Image, layout: dict) -> np.ndarray:
+def _layout_mask(template: Image.Image, layout: dict, mask: np.ndarray | None = None) -> np.ndarray:
     """Hợp các vùng của layout, GIAO với vùng áo — hoa văn không tràn ra ngoài áo.
 
     Toạ độ tính theo tỉ lệ hộp bao của ÁO, không phải của cả ảnh: đổi ảnh mẫu
     (đổi seed, đổi nền, đổi khung hình) thì layout vẫn còn đúng.
     """
-    g = garment_mask(template)
+    g = garment_mask(template) if mask is None else mask   # mask: vùng áo tính sẵn (ví dụ bằng SAM)
     ys, xs = np.where(g > 0)
     if len(xs) == 0:
         raise RuntimeError("Khong tach duoc vung ao trong anh mau — kiem tra lai anh.")
@@ -187,7 +187,8 @@ def _layout_mask(template: Image.Image, layout: dict) -> np.ndarray:
 
 def apply(pattern: Image.Image, layout: str | None = None, opacity: float = 0.92,
           template_path: Path = TEMPLATE, grade: bool = True,
-          displace: float | None = None, shading: bool = True) -> Image.Image:
+          displace: float | None = None, shading: bool = True,
+          garment_region: np.ndarray | None = None) -> Image.Image:
     """Đắp hoa văn lên áo dài theo một cách bố trí (layout).
 
     Dùng phép nhân chứ không dán đè: nếp gấp và bóng đổ của vải vẫn hiện qua hoa
@@ -200,7 +201,7 @@ def apply(pattern: Image.Image, layout: str | None = None, opacity: float = 0.92
     lay = get_layout(layout)
     tpl = Image.open(template_path).convert("RGB")
     W, H = tpl.size
-    mask = _layout_mask(tpl, lay)
+    mask = _layout_mask(tpl, lay, garment_region)   # garment_region: vùng áo tính sẵn, mặc định tách theo màu
 
     # Hoa văn nay LIỀN MẠCH sẵn (sinh với circular padding), nên lát thẳng là đủ.
     # Không còn lát gương — cách đó tạo đối xứng kaleidoscope, xa nét vẽ men gốm.
