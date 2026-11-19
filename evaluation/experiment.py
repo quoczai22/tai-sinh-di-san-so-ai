@@ -37,6 +37,7 @@ BASE_CONFIG = {
     "controlnet_weight": 0.65, "seed": 42, "prompt_modifier": "", "palette_mode": "free",
     "layout": "front_panel", "polish_strength": 0.40, "polish_seed": "same_as_seed",
     "steps": 25, "guidance": 7.5, "composite_mode": "full", "stage2_finish": "img2img_0.40",
+    "garment_source": "fixed",   # "fixed" là áo mẫu cố định, "lora" là áo do LoRA sinh (EXP-D)
 }
 
 
@@ -189,8 +190,35 @@ def parse_finish(finish: str) -> tuple[str, float, bool]:
     return kind, strength, lock == "pattern_lock"
 
 
+def lora_garment_seeds(rows: list[dict]) -> list[int]:
+    """Các seed cần sinh áo LoRA: seed của những lượt có garment_source = lora, không trùng, đã sắp xếp."""
+    return sorted({int(r["cfg.seed"]) for r in rows if r.get("cfg.garment_source") == "lora"})
+
+
+def pregenerate_garments(seeds: list[int], out_dir: Path, generate=None) -> dict[int, dict]:
+    """Sinh sẵn một áo LoRA cho mỗi seed, lưu ở out_dir/garments/seed_<seed>/.
+
+    Chạy TRƯỚC khi nạp bộ sinh hoa văn để hai mô hình không chiếm VRAM cùng lúc, và để 6 hiện vật cùng seed
+    dùng chung một áo. Trả về {seed: {"ok": True, "info": ...}} hoặc {"ok": False, "error": ...} khi
+    không có áo hợp lệ. Cố ý KHÔNG quay về áo mẫu: quay về sẽ làm hai mức của thí nghiệm lẫn vào nhau.
+
+    generate: hàm (out_dir, seed) -> dict của garment_lora.generate_garment; mặc định gọi hàm thật (để test thay bằng giả).
+    """
+    if generate is None:
+        from generation import garment_lora                          # noqa: PLC0415
+        generate = lambda d, s: garment_lora.generate_garment(d, seed=s)  # noqa: E731
+    from generation.garment_lora import GarmentError                 # noqa: PLC0415
+    out: dict[int, dict] = {}
+    for s in seeds:
+        try:
+            out[s] = {"ok": True, "info": generate(out_dir / "garments" / f"seed_{s}", s)}
+        except GarmentError as exc:
+            out[s] = {"ok": False, "error": str(exc)}
+    return out
+
+
 def run_gpu(spec: dict, rows: list[dict], out_dir: Path) -> list[dict]:  # pragma: no cover - cần GPU
-    """EXP-A / EXP-B: cần GPU CUDA. Nạp model một lần cho cả kế hoạch."""
+    """EXP-A / EXP-B / EXP-D: cần GPU CUDA. Nạp model một lần cho cả kế hoạch."""
     from PIL import Image                                          # noqa: PLC0415
     from generation import controlnet as cn, garment, pattern     # noqa: PLC0415
     from generation.stable_diffusion import Generator             # noqa: PLC0415
@@ -201,20 +229,31 @@ def run_gpu(spec: dict, rows: list[dict], out_dir: Path) -> list[dict]:  # pragm
 
     img_dir = out_dir / "images"
     img_dir.mkdir(parents=True, exist_ok=True)
+    # Áo LoRA sinh trước khi nạp bộ sinh hoa văn (xem pregenerate_garments)
+    garments = pregenerate_garments(lora_garment_seeds(rows), out_dir)
     gen = Generator()
     results, prepared = [], {}
     try:
         for r in rows:
             hid = r["heritage_id"]
-            prep = prepared.setdefault(hid, cn.prepare(hid, ornament_only=True, trim=True))
             seed = int(r["cfg.seed"] if r["cfg.seed"] is not None else 42)
+            # Áo nền của lượt này: mặc định áo mẫu cố định; mức "lora" dùng áo đã sinh cho seed này
+            tpl_path, region, g_info = garment.TEMPLATE, None, {}
+            if r.get("cfg.garment_source") == "lora":
+                g = garments[seed]
+                if not g["ok"]:
+                    results.append({**r, "status": "garment_failed", "garment_error": g["error"]})
+                    continue
+                g_info = g["info"]
+                tpl_path, region = g_info["path"], g_info["mask"]
+            prep = prepared.setdefault(hid, cn.prepare(hid, ornament_only=True, trim=True))
             pattern_seed = int(r.get("cfg.pattern_seed") or seed)
             res = pattern.generate_custom(gen, hid, float(r["cfg.controlnet_weight"]), pattern_seed,
                                           r["cfg.prompt_modifier"] or "", prepared=prep)
             key = r["run_key"].replace("|", "__").replace("=", "-")
             pat_path = img_dir / f"{key}__pattern.png"
             res["image"].save(pat_path)
-            raw = garment.apply(res["image"], layout=r["cfg.layout"])
+            raw = garment.apply(res["image"], layout=r["cfg.layout"], template_path=tpl_path, garment_region=region)
             raw_path = img_dir / f"{key}__raw.png"
             raw.save(raw_path)
             finish = r.get("cfg.stage2_finish", "img2img_0.40")
@@ -223,12 +262,13 @@ def run_gpu(spec: dict, rows: list[dict], out_dir: Path) -> list[dict]:  # pragm
             if kind == "none":
                 final = raw
             else:
-                polish_fn = garment.polish_masked if kind == "masked" else garment.polish
-                final = polish_fn(raw, strength=strength, seed=polish_seed)
+                if kind == "masked":
+                    final = garment.polish_masked(raw, strength=strength, seed=polish_seed, mask=region)
+                else:
+                    final = garment.polish(raw, strength=strength, seed=polish_seed)
                 if lock:
-                    from generation import garment as G                # noqa: PLC0415
-                    tpl = Image.open(G.TEMPLATE).convert("RGB")
-                    lm = G._layout_mask(tpl, G.get_layout(r["cfg.layout"]))
+                    tpl = Image.open(tpl_path).convert("RGB")
+                    lm = garment._layout_mask(tpl, garment.get_layout(r["cfg.layout"]), region)
                     locked, _ = pattern_lock(np.asarray(raw), np.asarray(final.convert("RGB")), lm)
                     final = Image.fromarray(locked)
             fin_path = img_dir / f"{key}__final.png"
@@ -237,9 +277,10 @@ def run_gpu(spec: dict, rows: list[dict], out_dir: Path) -> list[dict]:  # pragm
             if not ref_path.exists():
                 prep["reference"].save(ref_path)
             qa = assess_design(reference=ref_path, pattern=pat_path, raw=raw_path, final=fin_path,
-                               layout=r["cfg.layout"])
+                               layout=r["cfg.layout"], template_path=tpl_path, garment_region=region)
             results.append({**r, "status": "completed", "image": f"images/{fin_path.name}",
                             "sha256": sha256_file(fin_path), "duration_s": round(res["duration_s"], 2),
+                            "garment_tries": len(g_info.get("tried", [])) if g_info else "",
                             **{k: v["value"] for k, v in qa["G2_pattern"]["metrics"].items()},
                             **{k: v["value"] for k, v in qa["G3_final"]["metrics"].items()}})
     finally:
@@ -273,7 +314,8 @@ def build_blind_packet(out_dir: Path, raters: list[str], seed: int = 20261118) -
     spec = json.loads((out_dir / "spec.json").read_text(encoding="utf-8"))
     wanted = spec["metrics"]["human"]
     crit = [c for c in rubric["criteria"] if c["key"] in wanted]
-    results = list(csv.DictReader((out_dir / "results.csv").open(encoding="utf-8")))
+    results = [r for r in csv.DictReader((out_dir / "results.csv").open(encoding="utf-8"))
+               if r.get("status", "completed") == "completed"]       # lượt không ra ảnh (garment_failed) không đưa đi chấm
     rng = random.Random(seed)
     codes = rng.sample(range(1000, 9999), len(results))
     blind = out_dir / "blind"
@@ -391,6 +433,12 @@ def analyze(out_dir: Path) -> dict:
     summary: dict = {"experiment_id": spec["id"], "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                      "automatic": {}, "human": {}, "agreement": {}}
     levels = [str(x) for x in spec["independent_variable"]["levels"]]
+    # Số lượt theo trạng thái ở từng mức: cho biết tỉ lệ lượt không ra ảnh (ví dụ LoRA không sinh được áo)
+    summary["status_counts"] = {lv: {} for lv in levels}
+    for r in results:
+        counts = summary["status_counts"].setdefault(str(r["iv_level"]), {})
+        st = r.get("status") or "completed"
+        counts[st] = counts.get(st, 0) + 1
     for m in auto:
         summary["automatic"][m] = {lv: describe([float(r[m]) for r in results if r["iv_level"] == lv and r.get(m)])
                                    for lv in levels}

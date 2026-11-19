@@ -16,7 +16,8 @@ SPECS = sorted((ROOT / "evaluation" / "experiments").glob("EXP-*.json"))
 
 
 @pytest.mark.parametrize("path,n", [("EXP-A_controlnet_weight.json", 120), ("EXP-B_stage2_finish.json", 126),
-                                    ("EXP-C_composite_ablation.json", 48)])
+                                    ("EXP-C_composite_ablation.json", 48),
+                                    ("EXP-D_garment_source.json", 60)])
 def test_specs_expand_and_pass_validation(path, n):
     spec = E.load_spec(ROOT / "evaluation" / "experiments" / path)
     rows = E.expand_plan(spec)
@@ -136,3 +137,60 @@ def test_exp_b_co_muc_polish_co_mat_na_va_moi_muc_deu_doc_duoc():
     assert "masked_0.30" in levels
     for lv in levels:
         E.parse_finish(lv)
+
+
+# ---------------------------------------------------------------- EXP-D: nền áo ----
+
+def _spec_d():
+    return E.load_spec(ROOT / "evaluation" / "experiments" / "EXP-D_garment_source.json")
+
+
+def test_exp_d_chi_doi_nen_ao_va_cung_hoa_van_giua_hai_muc():
+    rows = E.expand_plan(_spec_d())
+    assert {r["iv_level"] for r in rows} == {"fixed", "lora"}
+    assert {r["replicate"] for r in rows} == {42, 43, 44, 45, 46}
+    assert len({r["heritage_id"] for r in rows}) == 6
+    # Cùng hiện vật và seed: hai mức chỉ khác garment_source
+    a = next(r for r in rows if r["iv_level"] == "fixed" and r["heritage_id"] == rows[0]["heritage_id"] and r["replicate"] == 44)
+    b = next(r for r in rows if r["iv_level"] == "lora" and r["heritage_id"] == a["heritage_id"] and r["replicate"] == 44)
+    diff = {k for k in a if k.startswith("cfg.") and a[k] != b[k]}
+    assert diff == {"cfg.garment_source"}
+
+
+def test_lora_garment_seeds_chi_lay_muc_lora_va_khong_trung():
+    rows = E.expand_plan(_spec_d())
+    assert E.lora_garment_seeds(rows) == [42, 43, 44, 45, 46]
+    assert E.lora_garment_seeds([r for r in rows if r["iv_level"] == "fixed"]) == []
+
+
+def test_pregenerate_garments_ghi_loi_khong_quay_ve_ao_mau(tmp_path):
+    from generation.garment_lora import GarmentError
+
+    def gia(d, seed):
+        if seed == 43:
+            raise GarmentError("mọi ứng viên bị loại")
+        return {"path": d / "garment.png", "seed": seed}
+
+    out = E.pregenerate_garments([42, 43], tmp_path, generate=gia)
+    assert out[42]["ok"] and out[42]["info"]["path"] == tmp_path / "garments" / "seed_42" / "garment.png"
+    assert not out[43]["ok"] and "bị loại" in out[43]["error"]
+
+
+def test_gach_cham_mu_bo_luot_khong_ra_anh_va_analyze_dem_trang_thai(tmp_path):
+    from PIL import Image
+    (tmp_path / "images").mkdir()
+    Image.new("RGB", (8, 8)).save(tmp_path / "images" / "a.png")
+    spec = _spec_d()
+    (tmp_path / "spec.json").write_text(__import__("json").dumps(spec), encoding="utf-8")
+    rows = [
+        {"run_key": "k1", "heritage_id": "H1", "iv_level": "fixed", "replicate": "42", "status": "completed",
+         "image": "images/a.png", "garment_shape_iou": "0.99"},
+        {"run_key": "k2", "heritage_id": "H1", "iv_level": "lora", "replicate": "43", "status": "garment_failed",
+         "image": "", "garment_shape_iou": ""},
+    ]
+    E.write_results(rows, tmp_path)
+    E.build_blind_packet(tmp_path, ["CG01"])
+    key = list(csv.DictReader((tmp_path / "blind" / "key.csv").open(encoding="utf-8")))
+    assert len(key) == 1 and key[0]["iv_level"] == "fixed"
+    summary = E.analyze(tmp_path)
+    assert summary["status_counts"] == {"fixed": {"completed": 1}, "lora": {"garment_failed": 1}}

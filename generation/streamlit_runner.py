@@ -53,7 +53,7 @@ def generate_design_set(
     variants: tuple[dict, ...] = DEFAULT_VARIANTS,
     run_id: str | None = None,
     source: str = "render",
-    garment_source: str = "fixed",
+    garment_source: str = "lora",
     garment_lora_dir: Path | None = None,
 ) -> list[dict]:
     """Sinh bộ thiết kế cho một hiện vật.
@@ -64,9 +64,9 @@ def generate_design_set(
     - "elements": mỗi biến thể một phần tử trong kho data/elements/.
 
     garment_source chọn áo dài nền:
-    - "fixed" (mặc định): ảnh áo mẫu cố định data/garment/aodai_template.png.
-    - "lora": sinh áo mới mỗi lần chạy bằng SD 1.5 + LoRA dáng áo dài, tách vùng áo bằng SAM (generation/garment_lora.py).
-      Không sinh được áo hợp lệ thì quay về áo mẫu cố định và ghi lý do vào manifest.
+    - "lora" (mặc định): sinh áo mới mỗi lần chạy bằng SD 1.5 + LoRA dáng áo dài, tách vùng áo bằng SAM (generation/garment_lora.py).
+      Không sinh được áo hợp lệ (hoặc máy chưa có LoRA) thì quay về áo mẫu, ghi lý do vào manifest và Passport.
+    - "fixed": ảnh áo mẫu cố định data/garment/aodai_template.png, chỉ còn dùng làm dự phòng và để đối chứng trong thí nghiệm.
     """
     from provenance import passport as P                          # noqa: PLC0415
     from provenance.builder import build_design_passport          # noqa: PLC0415
