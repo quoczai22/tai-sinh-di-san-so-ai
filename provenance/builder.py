@@ -16,6 +16,9 @@ from . import passport as P
 from .registry import rights_gate
 
 ROOT = Path(__file__).resolve().parent.parent
+LORA_LICENSE = "VietFashion CC BY-NC 4.0: chỉ dùng phi thương mại"
+LORA_CITATION = ("Cao, Bui, Vo, Tran, Le. VietFashion: Benchmarking Sketch-Text Composed Image Retrieval for "
+                 "Cultural Outfits. ICMR 2026. doi:10.1145/3805622.3810590")
 
 
 def _terms(heritage_id: str, root: Path) -> dict:
@@ -23,11 +26,32 @@ def _terms(heritage_id: str, root: Path) -> dict:
     return data["terms"].get(heritage_id, {})
 
 
+def _garment_block(garment: dict | None, rec: dict) -> dict:
+    """Khối `generation.garment` của Passport: áo nền lấy từ đâu và nếu là áo do LoRA sinh thì sinh thế nào."""
+    if not garment or garment.get("source") != "lora":
+        return {"source": "fixed", "template": "data/garment/aodai_template.png",
+                "fallback_reason": (garment or {}).get("fallback_reason")}
+    lora = garment.get("lora") or ""
+    try:
+        lora = Path(lora).relative_to(ROOT).as_posix()
+    except ValueError:
+        pass                                    # đường dẫn ngoài repo: giữ nguyên
+    return {"source": "lora", "seed": garment.get("seed"), "candidates": garment.get("tried") or [],
+            "lora": {"path": lora, "base_model": rec["sd_model_id"], "training_data": "VietFashion (226 ảnh đã lọc)",
+                     "license": LORA_LICENSE, "citation": LORA_CITATION},
+            "mask_method": "SAM facebook/sam-vit-base, điểm gợi ý ở trục giữa thân áo",
+            "prompt_negative_extra": ", orange, red, colored trim, patterned"}
+
+
 def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict, paths: dict,
                           assessment: dict | None, now: str, root: Path = ROOT,
-                          polish_prompt: str = "", polish_negative: str = "") -> dict:
+                          polish_prompt: str = "", polish_negative: str = "",
+                          garment: dict | None = None) -> dict:
     """`rec`: bản ghi chuẩn hoá (khoá giống variants.csv). `paths`: Path tuyệt đối
-    của source/reference/canny/pattern/raw/final."""
+    của source/reference/canny/pattern/raw/final.
+
+    `garment`: thông tin áo nền (khóa `garment` trong manifest của runner): source "lora" hay "fixed",
+    seed, LoRA, các ứng viên đã thử, đường dẫn ảnh áo và mặt nạ. None nghĩa là áo mẫu cố định."""
     i = int(rec["variant_index"])
     design_id = f"{run_id}.V{i}"
     pid = P.passport_id_for(item["code"], run_stamp, i)
@@ -41,6 +65,12 @@ def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict,
     extra = {"legacy_sha256_prefix": rec["sha256_design"]} if rec.get("sha256_design") else {}
     fin = P.file_record(paths["final"], "final_img2img", root, **extra)
     pp["artifacts"] = [src, ref, canny, pat, raw, fin]
+    use_lora = bool(garment and garment.get("source") == "lora")
+    gar = gmask = None
+    if use_lora:
+        gar = P.file_record(root / garment["image"], "garment", root)
+        gmask = P.file_record(root / garment["mask"], "garment_mask", root)
+        pp["artifacts"] += [gar, gmask]
     terms = _terms(item["heritage_id"], root)
     pp["generation"] = {
         "pipeline": rec.get("pipeline", "two-stage v6"),
@@ -64,7 +94,11 @@ def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict,
         "reference_metrics": {"clip_similarity_pattern_vs_ceramic": float(rec["similarity_pattern_vs_ceramic"]),
                               "note": "CLIP đo trên hoa văn GIAI ĐOẠN 1, trước ghép và img2img — chỉ để tham khảo."},
         "duration_s": float(rec.get("duration_s") or 0),
+        "garment": _garment_block(garment, rec),
     }
+    pp["generation"]["polish_img2img"].update({
+        "masked": bool(rec.get("polish_mask", False)), "status": rec.get("polish_status", "single_pass"),
+        "attempts": int(rec.get("polish_attempts", 1))})
     prov = item.get("provenance") or {}
     ts = rec["timestamp"]
     P.add_step(pp, step="collect_image",
@@ -93,10 +127,19 @@ def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict,
                actor_type="ai" if rec.get("layout_selected_by", "clip_auto") == "clip_auto" else "human",
                actor="CLIP ViT-B/32" if rec.get("layout_selected_by", "clip_auto") == "clip_auto" else "Nhà thiết kế",
                tool="generation/layout_select.py", at=ts)
-    P.add_step(pp, step="composite", label="Ghép tất định lên áo mẫu (mask mềm, displacement, shading)",
+    if use_lora:
+        tried = garment.get("tried") or []
+        P.add_step(pp, step="generate_garment",
+                   label=f"Sinh áo dài nền bằng LoRA, SAM tách vùng áo (seed {garment.get('seed')}, thử {len(tried)} ứng viên)",
+                   actor_type="ai", actor="Stable Diffusion 1.5 + LoRA dáng áo dài", tool="generation/garment_lora.py",
+                   at=ts, outputs=[gar["sha256"], gmask["sha256"]],
+                   note=f"LoRA huấn luyện từ {LORA_LICENSE}. {LORA_CITATION}")
+    base = "áo do LoRA sinh" if use_lora else "áo mẫu"
+    P.add_step(pp, step="composite", label=f"Ghép tất định lên {base} (mask mềm, displacement, shading)",
                actor_type="system", actor="generation/garment.py", tool="OpenCV/NumPy", at=ts,
-               inputs=[pat["sha256"]], outputs=[raw["sha256"]])
-    P.add_step(pp, step="polish", label=f"Hoàn thiện img2img (strength {rec['polish_strength']})",
+               inputs=[pat["sha256"]] + ([gar["sha256"]] if use_lora else []), outputs=[raw["sha256"]])
+    kind = "chỉ vùng áo" if rec.get("polish_mask") else "toàn ảnh"
+    P.add_step(pp, step="polish", label=f"Hoàn thiện img2img {kind} (strength {rec['polish_strength']})",
                actor_type="ai", actor="Stable Diffusion 1.5 img2img", tool="generation/garment.py",
                at=ts, inputs=[raw["sha256"]], outputs=[fin["sha256"]])
     P.add_version(pp, kind="ai_generated", artifact=fin, created_by="pipeline", actor_type="ai", at=ts,

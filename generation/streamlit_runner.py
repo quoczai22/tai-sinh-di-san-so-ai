@@ -233,7 +233,8 @@ def generate_design_set(
             assessment = None
         pp = build_design_passport(item=item, run_id=run_id, run_stamp=run_stamp, rec=rec, paths=paths,
                                    assessment=assessment, now=now, root=ROOT,
-                                   polish_prompt=garment.POLISH_PROMPT, polish_negative=garment.POLISH_NEG)
+                                   polish_prompt=garment.POLISH_PROMPT, polish_negative=garment.POLISH_NEG,
+                                   garment=garment_info)
         P.save(pp, PASSPORT_DIR)
         rel = rec["design_path_abs"].relative_to(ROOT).as_posix()
         results.append({
