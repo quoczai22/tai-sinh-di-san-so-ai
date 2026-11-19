@@ -9,24 +9,28 @@ Nguyên tắc: máy đo những gì đo được bằng kỹ thuật (họa ti�
 | Cổng | Đo gì | Ai | Không đạt thì |
 |---|---|---|---|
 | G0. Tuyển ảnh (C1–C4) và cổng quyền | Độ phân giải, mật độ nét, quyền, tính xác thực di sản | Hệ thống (C1–C3), người xác nhận (C4) | Không đưa hiện vật vào thư viện / không chạy ([07](07_PROVENANCE_COPYRIGHT.md)) |
-| G2. Hoa văn | Rò dáng vật chứa (VLS), đường nối khi lát | Hệ thống | Sinh lại: đổi seed hoặc giảm trọng số một mức, giữ prompt và bảng màu; tối đa 3 lần |
-| G3. Thiết kế cuối | Giữ họa tiết (PPS), giữ dáng áo (IoU), độ nét, lệch màu | Hệ thống | Sửa: khoá họa tiết hoặc giảm strength img2img |
+| Kiểm tra áo nền | Áo do LoRA sinh: mặt nạ áo hợp lệ (không chạm mép khung, diện tích 8% đến 55%, cao ít nhất 60% khung) | Hệ thống | Sinh ứng viên khác (tối đa 6); cả 6 bị loại thì báo lỗi, không sinh thiết kế |
+| G2. Hoa văn | Rò dáng vật chứa (VLS), đường nối khi lát | Hệ thống | Đánh dấu "không đạt", gợi ý đổi seed hoặc giảm trọng số một mức. **Hệ thống chưa tự sinh lại hoa văn** |
+| Hoàn thiện ảnh (polish) | PPS và IoU của ảnh vừa polish | Hệ thống | Vòng thử lại tự động (mục dưới): đổi seed, hạ độ nhiễu, cuối cùng trả bản ghép thô kèm nhãn |
+| G3. Thiết kế cuối | Giữ họa tiết (PPS), giữ dáng áo (IoU), độ nét, giữ chi tiết mịn, lệch màu | Hệ thống | Đánh dấu "không đạt" kèm bước gợi ý; có ứng viên sửa bằng khoá họa tiết nếu G2 không lỗi |
 | QC | Thiết kế có cảnh báo (WARN) | QC Officer | Chuyển chuyên gia kèm ghi chú, hoặc trả về sửa |
 | Thẩm định | 5 tiêu chí văn hoá, thẩm mỹ, toàn vẹn | Chuyên gia (chấm mù) | Yêu cầu sửa (ghi lý do) hoặc loại |
 | Xuất bản | Đã phê duyệt và quyền cho phép | Hệ thống | Chỉ cho tải xuống kèm nhãn phi thương mại |
 
 ## Định nghĩa phép đo
 
-Tất cả nằm trong `quality/metrics.py`. Ảnh được chuyển sang không gian màu CIELAB.
+Tất cả nằm trong `quality/metrics.py`. Ảnh được chuyển sang không gian màu CIELAB. "Bản ghép" là ảnh ghép tất định hoa văn lên áo, trước polish.
 
 | Phép đo | Cách tính | Ý nghĩa |
 |---|---|---|
 | VLS (rò dáng vật chứa) | Tỉ lệ viền ảnh hoa văn là nền trơn × IoU giữa hình bóng vật thể trong hoa văn và hình bóng hiện vật | Cao nghĩa là "hoa văn" thực chất là ảnh cái bình đặt trên nền |
 | Tỉ lệ đường nối | Chênh lệch giữa mép trái và mép phải (và giữa mép trên và mép dưới) khi lát, chia cho chênh lệch trung bình giữa hai cột (hàng) kề nhau bên trong ảnh; lấy chiều lớn hơn | > 2 nghĩa là mắt thấy đường kẻ khi lát hoa văn lên vải |
-| PPS (giữ họa tiết) | Căn chỉnh bản cuối với bản ghép (ECC, affine). Trong vùng có họa tiết, tính tương quan chuẩn hoá (NCC) của dải tần trung (hiệu hai Gaussian σ=1,2 và σ=4) trên kênh L*, và NCC của kênh a*, b*. PPS = trung bình của tương quan nét và tương quan sắc độ | 1 là giữ nguyên; dưới 0,4 nghĩa là dưới 16% phương sai nét vẽ còn lại — họa tiết đã bị vẽ lại |
-| IoU dáng áo | Tách hình áo bằng GrabCut (khởi tạo từ mặt nạ áo mẫu) trên bản ghép và bản cuối, tính IoU | Dưới 0,92 tương đương lệch ≥ 8% diện tích áo |
-| Tỉ lệ độ nét | Phương sai Laplacian của bản cuối chia cho của bản ghép, trong vùng áo | img2img làm mềm vải là chủ ý; dưới 0,25 thì họa tiết nhoè |
+| PPS (giữ họa tiết) | Căn chỉnh bản cuối với bản ghép (ECC, affine). Trong vùng có họa tiết, tính tương quan chuẩn hoá (NCC) của dải tần trung (hiệu hai Gaussian σ=1,2 và σ=4) trên kênh L*, và NCC của kênh a*, b*. PPS = trung bình của tương quan nét và tương quan sắc độ | 1 là giữ nguyên; dưới 0,4 nghĩa là dưới 16% phương sai nét vẽ còn lại, họa tiết đã bị vẽ lại |
+| IoU dáng áo | Tách hình áo bằng GrabCut (khởi tạo từ mặt nạ áo SAM của chính thiết kế) trên bản ghép và bản cuối, tính IoU | Dưới 0,92 tương đương lệch ≥ 8% diện tích áo. Với polish chỉ vùng áo, giá trị luôn gần 1 |
+| Tỉ lệ độ nét | Phương sai Laplacian của bản cuối chia cho của bản ghép, trong vùng áo | Dưới 0,25 thì họa tiết nhoè |
+| Giữ chi tiết mịn (`detail_ratio`) | Phương sai Laplacian của bản cuối chia cho của bản ghép, **chỉ trong vùng họa tiết** | Bắt được nét mảnh bị nhoè mà PPS (chỉ đo dải tần trung) và độ nét (đo cả vùng áo, phần lớn là vải trơn) bỏ sót. Dưới 0,6 là lỗi |
 | Lệch màu | ΔE76 giữa màu Lab trung bình vùng họa tiết của bản ghép và bản cuối | ΔE ≈ 10 là khác màu thấy rõ khi đặt cạnh nhau |
+| Trôi ngoài áo (M2) | Sai khác tuyệt đối trung bình giữa bản ghép và bản cuối ở ngoài mặt nạ áo, thang 0 đến 255 | Polish chỉ vùng áo cho đúng 0. Chỉ đo và ghi, chưa dùng làm ngưỡng |
 
 CLIP vẫn được tính và lưu trong Passport (`reference_metrics`) nhưng **không tham gia quyết định**, vì nó đo hoa văn giai đoạn 1 so với ảnh gốm, không đo áo.
 
@@ -41,51 +45,72 @@ Tệp `config/quality_gate.json`. Mỗi ngưỡng có cột "vì sao" trong tệ
 | G3 | PPS (cao tốt) | < 0,60 | < 0,40 |
 | G3 | IoU dáng áo (cao tốt) | < 0,95 | < 0,92 |
 | G3 | Tỉ lệ độ nét (cao tốt) | < 0,45 | < 0,25 |
+| G3 | Giữ chi tiết mịn (cao tốt) | < 0,85 | < 0,60 |
 | G3 | Lệch màu ΔE (thấp tốt) | > 10 | > 20 |
 
 Quyết định của một cổng là mức tệ nhất trong các phép đo của cổng đó. Quyết định chung là mức tệ hơn giữa G2 và G3.
 
-**Vì sao gọi là tạm thời**: ngưỡng được đặt theo ý nghĩa của từng phép đo và quan sát trên 24 thiết kế ngày 06/09/2026, chưa đối chiếu với phiếu chuyên gia. Nhóm không trình bày ngưỡng này như đã được kiểm chứng.
+**Vì sao gọi là tạm thời**: ngưỡng được đặt theo ý nghĩa của từng phép đo và quan sát trên các thiết kế đã sinh, chưa đối chiếu với phiếu chuyên gia. Chỉ số `detail_ratio` được thêm vào QG-1.0 ngày 19/11/2026 sau khi phát hiện khoá họa tiết cũ làm mất nét mảnh; Passport sinh trước ngày đó không có chỉ số này. Nhóm không trình bày ngưỡng như đã được kiểm chứng.
 
-## Sửa tự động: khoá họa tiết
+## Hoàn thiện ảnh: polish chỉ vùng áo, khoá họa tiết, vòng thử lại
 
-`quality/repair.py`, phương pháp `pattern_lock_v1`. Đo trên 24 thiết kế cho thấy img2img giữ dáng áo gần như tuyệt đối (lệch căn chỉnh < 1 px) nhưng vẽ lại họa tiết. Vì hình học không lệch, có thể tách tần số:
+Bước hoàn thiện (`generation/garment.py::polish_locked`) gồm ba việc nối tiếp:
 
-- Kênh sáng: giữ phần tần thấp của bản img2img (bóng nếp vải, ánh sáng) và trả lại dải tần trung (nét vẽ) của bản ghép, chỉ trong vùng họa tiết (mặt nạ làm mềm 3 px).
-- Kênh màu: kéo sắc độ về bản ghép với trọng số 0,85.
-- Không nội suy lại ảnh khi lệch ≤ 1 px và co giãn ≤ 0,5%, vì nội suy làm mờ vi chi tiết vải (đo được: độ nét bản sửa tụt còn 0,17–0,39 khi luôn nội suy).
+1. **Polish chỉ vùng áo** (Stable Diffusion 1.5 img2img, độ nhiễu 0,20): ảnh polish chỉ được dùng trong mặt nạ áo; ngoài áo giữ nguyên từng pixel của bản ghép (trôi ngoài áo bằng 0). Mặc định cũ là polish toàn ảnh độ nhiễu 0,40; EXP-B cho thấy cách này làm PPS tụt còn 0,30 và làm lệch dáng áo (IoU 0,956 so với 0,993 ở polish chỉ vùng áo), vì nền và tay cũng bị vẽ lại.
+2. **Khoá họa tiết** (`quality/repair.py`, `pattern_lock_v1`): giữ phần tần thấp của ảnh polish (bóng nếp vải, ánh sáng) và trả lại nét vẽ và màu của họa tiết từ bản ghép, chỉ trong vùng họa tiết (mặt nạ làm mềm 3 px). Kênh sáng trả lại mọi tần số mịn hơn σ = 4 px của bản ghép (`dog_sigma_low` = 0,3, `dog_sigma_high` = 4,0); kênh màu kéo về bản ghép với trọng số 0,85. Sau cùng ép phần ngoài áo về đúng bản ghép.
+3. **Vòng thử lại** (`quality/retry.py`): đo cổng G3 trên ảnh vừa hoàn thiện. Nếu **PPS dưới 0,40 hoặc IoU dưới 0,92** (hai chỉ số ở mức lỗi) thì thử lại theo thứ tự: seed gốc, rồi 3 seed kế tiếp cùng độ nhiễu 0,20, rồi hạ độ nhiễu xuống 0,12 một lần; vẫn lỗi thì **trả bản ghép thô** kèm nhãn "chưa qua bước hoàn thiện". Tối đa 5 lần polish. Mọi lần bị loại ghi vào `outputs/qc/rejects.csv` kèm ảnh. Các chỉ số khác (độ nét, chi tiết mịn, lệch màu) chỉ cảnh báo, không kích hoạt thử lại.
 
-**Lưu ý quan trọng**: PPS của bản khoá họa tiết cao *do cách làm* (nét vẽ được chép lại từ bản ghép). PPS cao vì vậy **không chứng minh** bản khoá đẹp hơn hay giống vải in hơn. Bản khoá chỉ là ứng viên; nó được lưu thành phiên bản riêng (`system_repair`) cạnh bản img2img, và câu hỏi "bản nào tốt hơn" được giao cho chuyên gia chấm mù trong thí nghiệm EXP-B.
+Căn cứ chọn cấu hình là `evaluation/polish_finish_trial.csv` (xem [06](06_EXPERIMENTS.md)): trên 12 thiết kế, khoá họa tiết cũ (`dog_sigma_low` 1,2) cho PPS cao (0,91) nhưng chi tiết mịn thấp (0,61); `dog_sigma_low` 0,3 giữ chi tiết mịn 0,83 và không thiết kế nào bị loại.
 
-## Kết quả trên 24 thiết kế ngày 06/09/2026
+**Lưu ý quan trọng**: PPS của bản có khoá họa tiết cao *do cách làm* (nét vẽ được chép lại từ bản ghép). PPS cao vì vậy **không chứng minh** bản khoá đẹp hơn hay giống vải in hơn. Với khoá họa tiết, bản cuối rất gần bản ghép thô; phần polish còn lại chủ yếu chỉnh ánh sáng. Câu hỏi "bản nào đẹp hơn" được giao cho chuyên gia chấm mù.
 
-Tệp: `evaluation/quality_gate_legacy.csv`. Ảnh đối chiếu (hiện vật, hoa văn, bản ghép, bản cuối, bản sửa) cho từng thiết kế: `docs/evidence/quality_gate/DP-*.jpg`. Dựng lại bằng `python scripts/10_build_legacy_runs.py`.
+## Kết quả bộ demo hiện tại (19/11/2026)
+
+Bộ 24 thiết kế (6 hiện vật LR3D-CULT2 × 4 mức sáng tạo) sinh bằng `scripts/14_generate_demo_set.py`: mỗi hiện vật một áo LoRA riêng, ảnh nạp là mảng hoa văn phẳng, polish chỉ vùng áo 0,20 kèm khoá họa tiết. Kết quả đọc từ Passport (`GET /quality/designs`).
 
 | | PASS | WARN | FAIL |
 |---|---|---|---|
-| G2 hoa văn | 21 | 1 | 2 |
-| G3 thiết kế cuối (bản img2img) | 0 | 4 | 20 |
-| G3 sau khoá họa tiết (19 thiết kế được sửa) | 10 | 9 | 0 |
+| G2 hoa văn | 16 | 5 | 3 |
+| G3 thiết kế cuối | 14 | 10 | 0 |
+| Tổng thể (mức tệ hơn của G2 và G3) | 9 | 12 | 3 |
 
-- PPS bản img2img: trung vị 0,36 (thấp nhất 0,16, cao nhất 0,51). Đây là bằng chứng chính cho nhận xét của BTC rằng img2img toàn ảnh làm biến dạng hoa văn.
-- IoU dáng áo: thấp nhất 0,93, không thiết kế nào dưới 0,92; 11 thiết kế ở mức cảnh báo (< 0,95). Dáng áo không phải vấn đề chính.
-- Lệch màu: lớn nhất ΔE 8,1; không thiết kế nào vượt ngưỡng cảnh báo.
-- Trạng thái Passport sau cổng: 10 chờ chuyên gia, 12 chờ QC, 2 không đạt.
+| Phép đo (n = 24) | Trung bình | Thấp nhất | Cao nhất |
+|---|---|---|---|
+| PPS | 0,943 | 0,891 | 0,980 |
+| IoU dáng áo | 0,995 | 0,977 | 0,999 |
+| Độ nét | 0,846 | 0,684 | 0,941 |
+| Giữ chi tiết mịn | 0,855 (trung vị 0,869) | 0,716 | 0,947 |
+| Lệch màu ΔE | 1,21 | 0,22 | 1,96 |
+| VLS | 0,038 | 0,000 | 0,221 |
+
+- Cả 24 thiết kế qua polish ngay lần đầu; vòng thử lại không chạy lần nào.
+- Cả 10 cảnh báo G3 đến từ chỉ số giữ chi tiết mịn (dưới 0,85). Các chỉ số khác của G3 đều đạt ở cả 24 thiết kế. Nghĩa là bản cuối vẫn mất trung bình khoảng 14% chi tiết mịn so với bản ghép thô.
+- G2: 3 thiết kế bị loại đều của hiện vật HV12 (LR3D_124) do đường nối (2,41 đến 3,04); 3 thiết kế cảnh báo VLS (0,201 đến 0,221) và 2 cảnh báo đường nối (1,59 và 1,92).
+- Trạng thái Passport sau cổng: 9 chờ chuyên gia, 12 chờ QC, 3 không đạt (3 thiết kế này bị ẩn khỏi trang Bộ sưu tập).
+
+### Mốc so sánh: bản 06/09/2026 (số liệu lịch sử)
+
+Trên 24 thiết kế cũ (6 hiện vật × 4, áo mẫu cố định, polish toàn ảnh 0,40): G2 đạt 21, cảnh báo 1, lỗi 2; G3 đạt 0, cảnh báo 4, lỗi 20; PPS trung vị 0,36 (thấp nhất 0,16); IoU thấp nhất 0,93; lệch màu lớn nhất ΔE 8,1; sau khoá họa tiết (σ 1,2) 19 thiết kế được sửa: đạt 10, cảnh báo 9. Đó là bằng chứng chính cho nhận xét của BTC rằng polish toàn ảnh làm biến dạng hoa văn. Ảnh, Passport và bảng đo của bộ này đã xoá khỏi cây làm việc ngày 19/11/2026 (nhóm chỉ dùng ảnh do LoRA sinh); khôi phục từ commit `b1192b0` (`evaluation/quality_gate_legacy.csv`, `docs/evidence/quality_gate/`).
 
 ### Ví dụ bị loại và được sửa
 
-| Thiết kế | Chuyện gì xảy ra | Cổng | Xử lý |
+| Trường hợp | Chuyện gì xảy ra | Xử lý | Bằng chứng |
 |---|---|---|---|
-| DP-HV01-20260906-V1, V2 | Hoa văn là ảnh nguyên chiếc bình (VLS 0,56 và 0,67) | G2 FAIL | Không sửa được ở giai đoạn 2; phải sinh lại hoa văn |
-| DP-HV03-20260906-V2 | img2img vẽ lại họa tiết (PPS 0,37) | G3 FAIL | Khoá họa tiết → PPS 0,80, G3 PASS; chờ chuyên gia so mù hai bản |
-| DP-HV04-20260906-V2 | PPS 0,46, IoU 0,94 | G3 WARN | Chuyển QC Officer xem |
-| DP-HV02-20260906-V3 | PPS 0,16 (hiện vật ảnh 300×300) | G3 FAIL | Sau sửa PPS 0,58, vẫn WARN; hiện vật đã ngừng dùng |
+| `DP-HV12-20261119T162748-V1`, `V2`, `V3` | Hoa văn có đường nối lớn khi lát (2,71, 3,04 và 2,41); mảng phẳng của LR3D_124 có rìa lệch | G2 loại, trạng thái `qa_failed`, ẩn khỏi Bộ sưu tập; cần sinh lại hoa văn (chưa tự động) | Passport hiện tại |
+| `DP-HV10-20261119T162255-V1`, `V2` và `DP-HV07-20261119T161630-V1` | VLS 0,221, 0,203 và 0,201, lọt nhẹ hình vật chứa | G2 cảnh báo, chờ QC xem | Passport hiện tại |
+| Bộ demo trước (polish 0,30, chưa khoá họa tiết): HV07 V3 | PPS 0,36, 0,3995, 0,3983, 0,3756 ở 4 seed (seed 42 đến 45) đều dưới 0,40 | Hạ độ nhiễu xuống 0,22 và thử lần 5: đạt | `outputs/qc/rejects.csv` và ảnh bị loại trong commit `900ee09` |
+| Bộ demo trước: HV11 V3 và V4 | PPS 0,23 đến 0,37 ở cả 5 lần thử | Trả bản ghép thô kèm nhãn "chưa qua bước hoàn thiện" | như trên |
+| Bộ demo trước: HV12 V1 | PPS 0,3997 và 0,3976 ở seed 42 và 43 | Đạt ở seed 44 | như trên |
+| Khoá họa tiết cũ (σ 1,2) | PPS cao (0,91) nhưng mất nét mảnh, giữ chi tiết mịn 0,61; 6/12 thiết kế loại theo chỉ số mới | Đổi `dog_sigma_low` 0,3, thêm chỉ số `detail_ratio` | `evaluation/polish_finish_trial.csv` |
+| Bản 06/09/2026: HV01 V1, V2 | Hoa văn là ảnh nguyên chiếc bình (VLS 0,56 và 0,67) | G2 loại (lịch sử); nay mặc định nạp mảng phẳng nên VLS lớn nhất chỉ 0,22 | commit `b1192b0` |
 
 ### Giới hạn đã biết
 
-- VLS bắt được trường hợp cả chiếc bình nằm trong hoa văn, nhưng **bỏ sót** trường hợp hoa văn là *mảnh* thân bình (HV06 V1, V2: VLS 0,10 và 0,04 dù nhìn bằng mắt thấy mảnh thân bình).
-- HV06 V3 bị cảnh báo VLS 0,24 dù hoa văn không có dáng bình (cảnh báo nhầm).
+- VLS bắt được trường hợp cả chiếc bình nằm trong hoa văn, nhưng **bỏ sót** trường hợp hoa văn là *mảnh* thân bình hoặc mảng nền (đã thấy ở bản 06/09/2026).
 - PPS đo mức giữ họa tiết **so với bản ghép**, không so với hiện vật gốc. Hoa văn giai đoạn 1 có giống hiện vật hay không vẫn là việc của chuyên gia (tiêu chí "Nhận ra họa tiết gốc").
+- Với khoá họa tiết, PPS gần 0,94 do cách làm; không dùng để so độ đẹp.
+- IoU dáng áo gần 1 vì polish chỉ vùng áo; nó không đo áo LoRA có giống áo dài truyền thống hay không. Áo LoRA vẫn thường tay loe và thắt eo; nhóm chấp nhận tay loe. Việc này chỉ chấm mù mới trả lời.
+- Ngưỡng `detail_ratio` (0,85 và 0,6) đặt theo quan sát trên bộ demo, chưa đối chiếu với người xem.
 - Chưa có phiếu chuyên gia thật nên chưa đo được mức đồng thuận giữa cổng tự động và người.
 
 ## Bộ tiêu chí chuyên gia (ER-1.0)
@@ -104,6 +129,8 @@ Quy tắc đạt: không tiêu chí nào dưới 3 **và** "Phù hợp văn hoá
 
 Chấm mù: người chấm không thấy mã biến thể, trọng số, điểm của máy, hay quyết định của người khác; thứ tự hiển thị được xáo riêng cho từng người chấm.
 
+Việc xem xét của chuyên gia là một bước **ngoài hệ thống**: nhóm mời người am hiểu xem mẫu, thu phiếu, rồi đưa kết quả vào báo cáo. Giao diện web cho người xem không còn trang thẩm định; API ghi phiếu (`POST /passports/{id}/reviews`) vẫn có và phiếu được ghi vào Passport.
+
 ## Hiệu chỉnh ngưỡng khi có phiếu chuyên gia
 
 1. Thu tối thiểu 30 phiếu thẩm định trên các thiết kế có đủ kết quả G2/G3.
@@ -115,6 +142,6 @@ Chấm mù: người chấm không thấy mã biến thể, trọng số, điể
 
 | Bằng chứng BTC yêu cầu | Ở đâu |
 |---|---|
-| Bộ hiện vật – hoa văn – thiết kế cuối kèm phiếu đánh giá | `docs/evidence/quality_gate/DP-*.jpg` + `outputs/passports/DP-*.json` (mục `quality`, `reviews`) |
-| Ví dụ bị loại và được sửa | Bảng "Ví dụ bị loại và được sửa" ở trên; phiên bản `system_repair` trong Passport |
-| Phiếu chấm chuyên gia | Khu vực "Thẩm định chuyên gia" trên giao diện; gói chấm mù `outputs/experiments/EXP-C/blind/` |
+| Bộ hiện vật, hoa văn, thiết kế cuối | `outputs/runs/R<thời điểm>-<mã>/`: `00_reference.png` (ảnh nạp), `V<n>_pattern.png`, `V<n>_aodai_raw.png`, `V<n>_aodai.png`, `garment.png`; Passport `outputs/passports/DP-*.json` (mục `quality`) |
+| Phiếu nhận xét của người am hiểu | **Chưa có phiếu thật.** Phiếu mẫu và gói chấm mù: `outputs/experiments/EXP-D/blind/` (ảnh không đưa vào repo) |
+| Ví dụ bị loại và được sửa | Bảng "Ví dụ bị loại và được sửa" ở trên; `outputs/qc/rejects.csv` và ảnh bị loại trong commit `900ee09`; `evaluation/polish_finish_trial.csv` |

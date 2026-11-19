@@ -39,7 +39,7 @@ APQC PCF chỉ dùng làm **khung phân loại** để gọi tên và xếp nhó
 | Nguyên tắc | Nội dung | Vì sao | Mục tiêu |
 |---|---|---|---|
 | Phân luồng ngay từ đầu vào | Mỗi yêu cầu thuộc đúng một luồng (hiện vật có sẵn, hiện vật mới tải lên, thí nghiệm, biên tập thủ công, xuất bản), xác định bằng nguồn ảnh và mục đích. | Hiện vật mới phải qua thêm cổng nguồn gốc; thí nghiệm không được lẫn với sản phẩm. | M3, M6 |
-| Một mã định danh đi suốt chuỗi | `HV03` → `R20260906T082042-HV03` → `DP-HV03-20260906-V2` → phiên bản `v1`, `v2` (mỗi bản có mã băm và mã băm bản cha). | Từ một ảnh xuất ra, lần ngược được hiện vật, tham số, người sửa. | M4 |
+| Một mã định danh đi suốt chuỗi | `HV08` → `R20261119T161848-HV08` → `DP-HV08-20261119T161848-V2` → phiên bản `v1`, `v2` (mỗi bản có mã băm và mã băm bản cha). | Từ một ảnh xuất ra, lần ngược được hiện vật, tham số, người sửa. | M4 |
 | Kiểm soát tại cổng, do hệ thống thực thi | Tiêu chí tuyển ảnh C1–C4, cổng quyền, G2, G3, cổng xuất bản đều là mã chạy được, không phải danh sách kiểm tra trên giấy. | Ngăn lỗi từ đầu vào, không phụ thuộc trí nhớ của người làm. | M1, M3 |
 | Điểm số quyết định chuyển tiếp, không quyết định phê duyệt | Kết quả cổng chỉ chọn đường đi tiếp: sinh lại, sửa, QC xem, chuyển chuyên gia. Phê duyệt chỉ đến từ phiếu chuyên gia. | Tách câu hỏi "đủ điều kiện kỹ thuật chưa" khỏi câu hỏi "có đúng văn hoá, có đẹp không". | M5 |
 | Mỗi bước và mỗi điểm bàn giao có chủ rõ | Nhà thiết kế, Hệ thống AI, QC Officer, Chuyên gia di sản, Quản trị dữ liệu; điểm bàn giao giữa hai lane là một trạng thái phê duyệt cụ thể trong Passport. | Không bỏ trống, không chồng chéo trách nhiệm. | M4, M5 |
@@ -47,7 +47,7 @@ APQC PCF chỉ dùng làm **khung phân loại** để gọi tên và xếp nhó
 ## Lớp B. Cách thực hiện
 
 1. **Khảo sát hiện trạng**: đọc mã nguồn, dữ liệu 06/09/2026 và góp ý của BTC → [01_AUDIT.md](01_AUDIT.md).
-2. **Phân tích vấn đề và rủi ro**: đo lại 24 thiết kế bằng cổng mới để có số liệu nền (mục "Số liệu nền" bên dưới).
+2. **Phân tích vấn đề và rủi ro**: đo 24 thiết kế của bản 06/09/2026 bằng cổng mới để có số liệu nền, rồi đo lại bằng bộ demo ngày 19/11/2026 (mục "Số liệu nền" bên dưới).
 3. **Thiết kế hệ luồng vận hành**: năm luồng end-to-end, cây phân luồng ở đầu vào → BPMN [03_BPMN.md](03_BPMN.md).
 4. **Kiến trúc quy trình**: danh mục L3 có chủ, rủi ro, điểm kiểm soát, KPI (mục Lớp C).
 5. **Kiến trúc bằng chứng**: mỗi điểm kiểm soát sinh ra một bằng chứng có thể mở được (CSV, JSON, ảnh, sổ cái băm).
@@ -55,16 +55,17 @@ APQC PCF chỉ dùng làm **khung phân loại** để gọi tên và xếp nhó
 
 ### Số liệu nền (đo trên dữ liệu thật trong repo)
 
-| Chỉ số | Giá trị | Nguồn |
+| Chỉ số | Bản 06/09/2026 (lịch sử, commit `b1192b0`) | Bộ demo 19/11/2026 |
 |---|---|---|
-| Thiết kế đo lại | 24 (6 hiện vật × 4 biến thể, ngày 06/09/2026) | `evaluation/quality_gate_legacy.csv` |
-| G2 hoa văn: PASS / WARN / FAIL | 21 / 1 / 2 | như trên |
-| G3 thiết kế cuối: PASS / WARN / FAIL | 0 / 4 / 20 | như trên |
-| PPS (giữ họa tiết) trung vị trước sửa | 0,36 | như trên |
-| Thiết kế được sửa tự động (khoá họa tiết) | 19; G3 sau sửa: 10 PASS, 9 WARN | như trên |
-| Hiện vật có quyền sử dụng đã xác minh | 0/6 | `data/heritage/metadata.json` |
-| Trường nguồn gốc điền được | 7/10 trường ở cả 6 hiện vật (thiếu tác giả, giấy phép, ngày thu thập) | như trên |
-| Passport xác minh toàn vẹn chuỗi băm | 24/24 | `outputs/passports/` |
+| Thiết kế đo | 24 (6 hiện vật cũ × 4 biến thể) | 24 (6 hiện vật LR3D-CULT2 × 4 mức sáng tạo) |
+| G2 hoa văn: PASS / WARN / FAIL | 21 / 1 / 2 | 16 / 5 / 3 |
+| G3 thiết kế cuối: PASS / WARN / FAIL | 0 / 4 / 20 | 14 / 10 / 0 |
+| PPS (giữ họa tiết) | trung vị 0,36 trước sửa | trung bình 0,943 (khoá họa tiết là bước mặc định) |
+| Thiết kế được sửa tự động | 19; G3 sau sửa: 10 PASS, 9 WARN | không còn thiết kế G3 FAIL để sửa |
+| Hiện vật có quyền sử dụng đã xác minh | 0/6 | 0/6 |
+| Trường nguồn gốc điền được | 7/10 ở cả 6 hiện vật | 8/10 ở cả 6 hiện vật (thiếu giấy phép từng vật và ngày thu thập) |
+
+Nguồn của bộ demo: Passport trong `outputs/passports/` (`GET /quality/designs`); nguồn của bản 06/09/2026: `evaluation/quality_gate_legacy.csv` ở commit `b1192b0`.
 
 ## Lớp C. Sản phẩm bàn giao
 
@@ -72,7 +73,7 @@ APQC PCF chỉ dùng làm **khung phân loại** để gọi tên và xếp nhó
 
 | Luồng | Đặc điểm | Điểm yếu chính ở AS-IS | Điểm kiểm soát ở TO-BE | Trạng thái |
 |---|---|---|---|---|
-| L-1. Thiết kế từ hiện vật có sẵn | Người dùng chọn hiện vật trong thư viện, hệ thống sinh 4 phương án | Không đo thiết kế cuối; ghi đè ảnh cũ; không có thẩm định | 10: cổng quyền theo mục đích, G2, giới hạn 3 lần sinh lại, G3, QC xem cảnh báo, chấm mù chuyên gia, kiểm tra điểm mâu thuẫn quyết định, cổng xuất bản, nhãn AI khi xuất, sổ cái băm | Đã chạy (sinh ảnh cần máy có GPU) |
+| L-1. Thiết kế từ hiện vật có sẵn | Người dùng chọn hiện vật trong thư viện, hệ thống sinh 4 phương án | Không đo thiết kế cuối; ghi đè ảnh cũ; không có thẩm định | 10: cổng quyền theo mục đích, G2, vòng thử lại polish, G3, QC xem cảnh báo, chấm mù chuyên gia, kiểm tra điểm mâu thuẫn quyết định, cổng xuất bản, nhãn AI khi xuất, sổ cái băm | Đã chạy (sinh ảnh cần máy có GPU) |
 | L-2. Thiết kế từ hiện vật mới | Đưa ảnh hiện vật mới vào thư viện rồi đi tiếp như L-1 | Không có tiêu chí tuyển ảnh; ảnh 300×300 vẫn được dùng | 6 điểm thêm trước L-1: C1 độ phân giải, C2 mật độ nét, C3 quyền, C4 tính xác thực di sản, đủ 10 trường nguồn gốc, SHA-256 ảnh gốc | Một phần: chạy bằng dòng lệnh, chưa có nút tải lên trên giao diện |
 | L-3. Thí nghiệm có kiểm soát | So sánh cấu hình để ra quyết định cải tiến | Bốn yếu tố đổi cùng lúc, một seed | 7: kiểm tra kế hoạch đơn biến, ghi kế hoạch trước khi chạy, ghi cấu hình và SHA-256 từng lượt, che danh tính biến thể, xáo thứ tự theo người chấm, tối thiểu 3 người chấm, đo độ đồng thuận trước khi kết luận | EXP-C đã chạy, chờ phiếu; EXP-A, EXP-B đã lập kế hoạch, chờ GPU |
 | L-4. Biên tập thủ công | Nhà thiết kế sửa ảnh ngoài hệ thống rồi tải lên | Không ghi nhận | 6: chỉ nhận ảnh hợp lệ ≤ 8 MB, khai báo người sửa và nội dung sửa, phiên bản mới mang mã băm bản cha, chạy lại G3, thẩm định lại, sổ cái băm | Đã chạy qua API |
@@ -101,8 +102,8 @@ APQC PCF chỉ dùng làm **khung phân loại** để gọi tên và xếp nhó
 | 2.1 | Tiếp nhận hiện vật | Tự tìm ảnh trên web bán gốm | Ảnh nhỏ, nén nặng, không rõ quyền | Tuyển ảnh theo C1–C4; ưu tiên ảnh bảo tàng có giấy phép mở | Hoa văn sinh từ ảnh đủ chi tiết |
 | 2.2 | Kiểm tra nguồn gốc và quyền sử dụng | Ghi chú "chưa xác minh" | Dùng ảnh vào mục đích chưa được phép | Danh mục nguồn 10 trường; cổng quyền theo 4 mục đích (thử nghiệm, trình diễn, xuất bản, thương mại) | Hệ thống tự chặn, có lý do rõ |
 | 2.3 | Phân tích đặc trưng họa tiết | Canny + bảng màu | Không biết ảnh có đủ nét không | Đo mật độ nét (C2) so với mốc; lưu ảnh Canny và mã băm | Có ngưỡng loại ảnh nghèo chi tiết |
-| 2.4 | Sinh họa tiết AI | 4 biến thể, seed 42 | Hoa văn có thể là ảnh nguyên chiếc bình | Cổng G2 (VLS, đường nối); FAIL thì sinh lại, tối đa 3 lần | Chặn lỗi "áo in hình cái bình" |
-| 2.5 | Ghép họa tiết vào áo dài | Ghép tất định + img2img 0,40 toàn ảnh | img2img vẽ lại họa tiết | Cổng G3; sửa bằng khoá họa tiết hoặc giảm strength | Họa tiết sống sót đến thiết kế cuối |
+| 2.4 | Sinh họa tiết AI | 4 biến thể, seed 42 | Hoa văn có thể là ảnh nguyên chiếc bình | Cổng G2 (VLS, đường nối); FAIL thì đánh dấu và gợi ý sinh lại (chưa tự động); nạp mảng hoa văn phẳng | Chặn lỗi "áo in hình cái bình" |
+| 2.5 | Ghép họa tiết vào áo dài | Ghép tất định + img2img 0,40 toàn ảnh | img2img vẽ lại họa tiết | Áo dài do LoRA sinh, ghép tất định, polish chỉ vùng áo 0,20, khoá họa tiết, vòng thử lại, cổng G3 | Họa tiết sống sót đến thiết kế cuối |
 | 2.6 | Bàn giao sang kiểm soát chất lượng | Không có | – | Passport sinh ngay sau lần chạy với trạng thái từ cổng kỹ thuật | Không thiết kế nào lọt qua mà không đo |
 
 | Mã | Chủ | Đầu vào → Đầu ra | Điểm kiểm soát | KPI | Triển khai |
@@ -110,8 +111,8 @@ APQC PCF chỉ dùng làm **khung phân loại** để gọi tên và xếp nhó
 | 2.1 | Quản trị dữ liệu | Ảnh ứng viên → mục hiện vật `active` hoặc bị từ chối | C1, C2 tự động; C4 do người xác nhận | K09 | Đã chạy (dòng lệnh) |
 | 2.2 | Quản trị dữ liệu | Hồ sơ nguồn → `rights_status`, kết quả cổng quyền | Cổng quyền chạy trong API trước khi sinh và trước khi xuất bản | K10 | Đã chạy |
 | 2.3 | Hệ thống AI | Ảnh 512 → Canny, bảng màu | Ngưỡng C2 = 60% mốc | K09 | Đã chạy |
-| 2.4 | Hệ thống AI | Canny + prompt → hoa văn phẳng | G2, giới hạn 3 lần | K04 | Đã chạy |
-| 2.5 | Hệ thống AI | Hoa văn + áo mẫu → bản ghép, bản cuối | G3 | K01, K02, K03 | Đã chạy |
+| 2.4 | Hệ thống AI | Canny + prompt → hoa văn phẳng | G2 | K04 | Đã chạy |
+| 2.5 | Hệ thống AI | Hoa văn + áo LoRA → bản ghép, bản cuối | G3 | K01, K02, K03 | Đã chạy |
 | 2.6 | Hệ thống | Kết quả lần chạy → Passport | Trạng thái do cổng đặt, không bao giờ là "đã phê duyệt" | K11 | Đã chạy |
 
 #### Nhóm 3. Quản lý chất lượng (PCF 13.3)

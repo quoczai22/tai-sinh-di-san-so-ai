@@ -2,14 +2,20 @@
 
 | Hạng mục | Bản 09/2026 | Bản chung kết | Tệp chính |
 |---|---|---|---|
-| Đánh giá chất lượng | CLIP giữa hoa văn giai đoạn 1 và ảnh gốm | Cổng G2 (hoa văn) và G3 (thiết kế cuối: giữ họa tiết, giữ dáng áo, độ nét, lệch màu), ngưỡng có phiên bản, QC Officer cho cảnh báo | `quality/`, `config/quality_gate.json` |
-| Xử lý thiết kế lỗi | Không có | Định tuyến: sinh lại (tối đa 3 lần) hoặc sửa; khoá họa tiết tạo ứng viên sửa, lưu thành phiên bản riêng | `quality/repair.py`, `quality/assess.py` |
+| Đánh giá chất lượng | CLIP giữa hoa văn giai đoạn 1 và ảnh gốm | Cổng G2 (hoa văn) và G3 (thiết kế cuối: giữ họa tiết, giữ dáng áo, độ nét, giữ chi tiết mịn, lệch màu), ngưỡng có phiên bản, QC Officer cho cảnh báo | `quality/`, `config/quality_gate.json` |
+| Xử lý thiết kế lỗi | Không có | Vòng thử lại polish (đổi seed, hạ độ nhiễu, cuối cùng trả bản ghép thô kèm nhãn) và nhật ký ví dụ bị loại; khoá họa tiết là bước mặc định của luồng; G2 lỗi chỉ được phân loại, hệ thống chưa tự sinh lại hoa văn | `quality/retry.py`, `quality/repair.py`, `quality/assess.py` |
 | Thẩm định | Không có | Bộ tiêu chí 5 mục, chấm mù, quy tắc đạt, cờ mâu thuẫn, đồng ý lưu tên | `config/expert_rubric.json`, `POST /passports/{id}/reviews`, khu vực "Thẩm định chuyên gia" |
 | Thử nghiệm | 4 biến thể đổi 4 yếu tố cùng lúc, 1 seed | Module thí nghiệm đơn biến có kiểm tra tự động, nhiều seed, gói chấm mù, alpha, KTC, Wilcoxon, Friedman; EXP-C đã chạy | `evaluation/experiment.py`, `evaluation/experiments/` |
-| Tái lập | Ghi đè ảnh mỗi lần chạy, băm 16 ký tự | Thư mục riêng mỗi lần chạy, manifest, SHA-256 đầy đủ; 24 thiết kế cũ được dựng lại thành lần chạy có manifest | `generation/streamlit_runner.py`, `scripts/10_build_legacy_runs.py`, `outputs/runs/` |
+| Tái lập | Ghi đè ảnh mỗi lần chạy, băm 16 ký tự | Thư mục riêng mỗi lần chạy, manifest, SHA-256 đầy đủ | `generation/streamlit_runner.py`, `outputs/runs/` |
+| Áo dài nền (19/11/2026) | Một ảnh áo mẫu cố định cho mọi thiết kế | Áo do Stable Diffusion 1.5 cộng LoRA dáng áo dài (huấn luyện từ 226 ảnh VietFashion đã lọc, CC BY-NC 4.0) sinh mới mỗi lần chạy với seed áo ngẫu nhiên (ghi vào Passport); vùng áo tách bằng SAM; kiểm tra áo hợp lệ, tối đa 6 ứng viên; thiếu LoRA hoặc không có áo hợp lệ thì báo lỗi, không quay về áo mẫu. Ảnh áo mẫu và các hàm dùng nó chỉ còn để chạy lại thí nghiệm cũ | `generation/garment_lora.py`, `generation/garment_sam.py`, `scripts/11_filter_vietfashion.py`, `scripts/12_export_lora_set.py`, `scripts/13_train_lora.py`, `data/lora/` |
+| Ảnh nạp cho ControlNet (19/11/2026) | Ảnh render cả chiếc bình (hoa văn sinh ra có cả bình, chân đế, nền) | Mảng hoa văn phẳng đã trải từ mô hình 3D (EXP-E); thiếu mảng phẳng thì quay về ảnh bình | `generation/streamlit_runner.py`, `generation/element_library.py`, `data/heritage/panels/` |
+| Hoàn thiện ảnh (19/11/2026) | Polish toàn ảnh độ nhiễu 0,40, nền bị vẽ lại | Polish chỉ vùng áo độ nhiễu 0,20, ngoài áo giữ nguyên từng pixel; khoá họa tiết với `dog_sigma_low` 0,3 để giữ nét mảnh; chỉ số giữ chi tiết mịn mới trong G3 | `generation/garment.py`, `quality/repair.py`, `quality/metrics.py`, `config/quality_gate.json` |
+| Ghép hoa văn lên áo (19/11/2026) | Hoa văn có thể tràn ra nền; mảng nền hoa văn bị in thành khối kem | Vùng in luôn nằm trong áo (ngoài áo bằng 0); chỉ in phần mực, nền hoa văn để lộ vải | `generation/garment.py` |
+| Bộ demo (19/11/2026) | 24 thiết kế sinh ngày 06/09/2026 trên áo mẫu cố định | 24 thiết kế mới (6 hiện vật × 4 mức) sinh bằng `scripts/14_generate_demo_set.py`, mỗi hiện vật một áo LoRA; dữ liệu giao diện xuất lại từ Passport mới | `outputs/runs/`, `outputs/passports/`, `web_ui/data/` |
+| Thí nghiệm bổ sung (19/11/2026) | EXP-A, B, C | Thêm EXP-D (nguồn áo nền) và EXP-E (nguồn ảnh nạp); EXP-B mở rộng thành 7 cách hoàn thiện, 126 lượt, đã chạy; thử cách hoàn thiện trên bộ demo hiện tại | `evaluation/experiments/`, `evaluation/polish_finish_trial.py` |
 | Design Passport | Cửa sổ 4 trường | Hồ sơ đầy đủ: tệp và băm, tham số, bước AI/hệ thống/người, phiên bản có băm cha, chỉnh sửa, cổng, phiếu, quyền, sổ cái băm nối chuỗi, kiểm tra toàn vẹn | `provenance/passport.py`, `provenance/builder.py`, `outputs/passports/` |
 | Nguồn và bản quyền | Ghi chú "chưa xác minh" | Danh mục 10 trường, cổng quyền theo 4 mục đích, thư xin phép, nhãn AI khi xuất, mô tả trích nguồn được đánh dấu | `provenance/registry.py`, `provenance/labeling.py`, `data/heritage/metadata.json` |
-| Dữ liệu hiện vật | 6 ảnh, 2 tệp siêu dữ liệu lệch nhau | Tiêu chí C1–C4; 3 ảnh đạt được giữ, 3 ảnh ngừng dùng có lý do; ứng viên thay thế CC0 từ bảo tàng và công cụ nạp ảnh có kiểm SHA-1; một tệp danh mục schema 2.0, bản cũ lưu trữ | `config/heritage_selection.json`, `data/archive/`, `data/heritage/sources/`, `scripts/09_ingest_heritage_image.py` |
+| Dữ liệu hiện vật | 6 ảnh, 2 tệp siêu dữ liệu lệch nhau | Tiêu chí C1–C4; 6 ảnh lấy từ website bán gốm ngừng dùng có lý do (giữ trong danh mục); 6 hiện vật LR3D-CULT2 (ảnh render và mảng hoa văn phẳng từ mô hình 3D) là dữ liệu chính từ 19/11/2026; công cụ nạp ảnh có kiểm SHA-1; một tệp danh mục schema 2.0, bản cũ lưu trữ | `config/heritage_selection.json`, `data/archive/`, `data/heritage/sources/`, `scripts/09_ingest_heritage_image.py` |
 | Quy trình nghiệp vụ | Không có tài liệu | APQC AS-IS/TO-BE, BPMN 2.0 XML (TO-BE, AS-IS), Use Case, KPI | `docs/finals/` |
 | Giao diện | Một trang trình diễn, số Similarity viết cứng | 9 khu vực, hai chế độ trực tiếp/trình diễn, mọi số đọc từ dữ liệu, trạng thái tải/trống/lỗi, responsive | `web_ui/` (giao diện cũ lưu ở `archive/web_ui_2026-09/`) |
 | Giao diện — bản 4 (18/11/2026) | Nhiều chú thích lặp (chế độ trình diễn, chú thích ảnh nền, nhãn "AI hỗ trợ tạo" dài trên mọi thẻ, thông số kỹ thuật trên thẻ hiện vật), chip màu bo tròn | Bỏ chú thích thừa, rút gọn lời dẫn; nhãn AI rút thành ký hiệu "AI" (vẫn đọc đủ câu cho trình đọc màn hình); chú thích dưới ảnh theo lối tạp chí Heritage: mã hiện vật vàng giãn chữ, tên bằng Cormorant Garamond, dòng quyền nhỏ; góc vuông, nút và nhãn viền mảnh; ảnh hiện dần kiểu kéo màn, chuyển trang mờ chéo (View Transitions); import map gắn phiên bản để trình duyệt không trộn module cũ/mới | `web_ui/` |
@@ -23,7 +29,7 @@
 | Gỡ trang nghiệp vụ khỏi web (19/11/2026) | Menu ☰ còn mục "Khu chuyên môn" với 7 trang (Thẩm định, Kiểm định, Thử nghiệm, Passport, Nguồn & bản quyền, Tổng quan, BPMN); khung chi tiết đầy bảng kỹ thuật | Web chỉ còn Trang chủ · Studio · Bộ sưu tập; 7 trang nghiệp vụ gỡ khỏi web (chức năng vẫn ở API, dữ liệu và docs/finals); khung chi tiết hiện vật và tà áo chỉ còn ảnh, tên, mô tả, nguồn ảnh, nhãn AI; đổi trang thì tự đóng khung chi tiết; 2 kiểm thử đọc số hiện vật và hiện vật đang dùng từ dữ liệu thay vì ghi cứng | `web_ui/assets/js/app.js`, `web_ui/assets/js/lib/detail.js`, `tests/test_frontend.py`, `tests/test_api.py` |
 | Tinh chỉnh trang chủ (19/11/2026) | Nhãn "Bộ sưu tập" bị đuôi phượng dìm; ở màn rộng đuôi phượng bị cắt ngang | Quầng nền ngà sau tiêu đề các phần trang chủ; khung chim phượng cao theo tỉ lệ hình | `web_ui/assets/css/exhibit.css` |
 | API | 8 endpoint, nạp PyTorch ngay khi khởi động | Giữ 8 endpoint cũ và các trường cũ; thêm 15 endpoint; nạp PyTorch khi cần (API chạy được trên máy không GPU); khoá ghi, giới hạn tần suất, chống vượt thư mục | `api/` |
-| Kiểm thử | Không có | 130 ca pytest, gồm hồi quy endpoint cũ và hồi quy số đo | `tests/` |
+| Kiểm thử | Không có | 249 ca pytest (248 đạt, 1 bỏ qua), gồm hồi quy endpoint cũ, kiểm thử áo LoRA, polish có mặt nạ, khoá họa tiết, vòng thử lại, thí nghiệm | `tests/` |
 | Sửa lỗi có sẵn | `make_template` dùng hằng chưa khai báo | Đã sửa, hành vi mặc định không đổi | `generation/garment.py` |
 | Tách nền khi nạp ảnh (18/11/2026) | `grabcut_rect_v1` trừ thẳng vùng "giống nền": chum men trắng ngà trước tường be (DSC05640) chỉ còn nửa dưới, C2 trượt | `grabcut_mask_v2`: gợi ý nền trong CIELAB (mịn + nối liền mép ảnh) chỉ là "có thể là nền", hạt giống tâm khung, cắt cầu nối gờ kệ/nhãn, ngoài `--rect` chắc chắn là nền; cố định seed và biểu quyết 3 lần GrabCut nên chạy lại cho cùng mặt nạ. Chạy thử 4 ảnh CC0: mặt nạ đúng tự động với DSC05328, DSC05637, DSC05640 (hụt nhẹ mép phải và quai phải); DSC05641 (đĩa treo, bóng đổ và nhãn sát dưới) cần `--rect 150,30,3470,3240`. C2 vẫn trượt sát ngưỡng ở DSC05640 (10 575/12 055) và DSC05328 (11 825/12 055) — tiêu chí, không phải tách nền. Chưa nạp ảnh nào | `scripts/09_ingest_heritage_image.py` |
 | Bố cục và chuyển động giao diện (18/11/2026) | Thanh bên trái, trang tĩnh | Bố cục "triển lãm số": điều hướng trên cùng, menu toàn màn hình 4 chương, ảnh bìa có quạt thẻ Hiện vật → Hoa văn → Áo dài, băng thẻ cuộn ngang, hiện dần khi cuộn, số đếm, biểu đồ mọc dần; tắt hết khi bật giảm chuyển động | `web_ui/assets/css/exhibit.css`, `web_ui/assets/js/lib/motion.js`, `web_ui/assets/js/lib/hero.js`, `web_ui/assets/js/app.js`, `web_ui/assets/js/views/library.js` |
@@ -31,13 +37,20 @@
 
 ## Không thay đổi
 
-- Mô hình và tham số mặc định của pipeline (SD 1.5, ControlNet Canny v1.1, seed 42, 4 mức trọng số, img2img 0,40). Các thay đổi tham số chỉ được đề xuất sau khi EXP-A và EXP-B có kết quả.
-- Không xoá dữ liệu: ảnh hiện vật ngừng dùng, 24 thiết kế cũ, `evaluation/variants.csv` vẫn ở nguyên chỗ.
+- Kiến trúc hai giai đoạn: Stable Diffusion 1.5 và ControlNet Canny v1.1 sinh hoa văn phẳng (giai đoạn 1), ghép tất định rồi hoàn thiện (giai đoạn 2). Seed hoa văn mặc định 42 và bốn mức trọng số ControlNet (0,85, 0,65, 0,45, 0,25) của bốn thiết kế.
+- Các endpoint cũ giữ nguyên đường dẫn, trừ `/media/variant/{f}` đã bỏ (thư mục `outputs/variants/` không còn) và `/quality/legacy` đổi thành `/quality/designs`.
+
+## Dữ liệu đã xoá
+
+Ngày 19/11/2026 nhóm quyết định chỉ dùng ảnh do LoRA sinh nên xoá mọi ảnh và dữ liệu dựng trên áo mẫu cố định: 24 thiết kế của bản 06/09/2026 và 24 Passport của chúng, ảnh thí nghiệm EXP-B, EXP-C, EXP-E và mức `fixed` của EXP-D, ảnh đối chiếu `docs/evidence/quality_gate/`, ảnh demo giao diện cũ, bảng `evaluation/quality_gate_legacy.csv` và script dựng lại `scripts/10_build_legacy_runs.py`. Phần đã commit khôi phục được từ commit `b1192b0`. Phần chưa từng commit (ảnh EXP-B và EXP-E) **không khôi phục được**. Các số liệu của bản 06/09/2026 trong tài liệu là số liệu lịch sử, kèm tham chiếu commit này.
 
 ## Việc còn lại (theo thứ tự ưu tiên)
 
-1. Gửi thư xin phép cho 3 hiện vật đang dùng; tải 4 ảnh CC0 từ Wikimedia Commons và nạp bằng `scripts/09_ingest_heritage_image.py` (công cụ đã có, kiểm SHA-1 và tách nền tự động).
-2. Chạy EXP-A và EXP-B trên máy GPU của nhóm (một lệnh mỗi thí nghiệm).
-3. Mời ít nhất 3 chuyên gia chấm gói EXP-C và hàng đợi thẩm định; hiệu chỉnh ngưỡng khi đủ 30 phiếu.
-4. Xác nhận loài chim trên HV01 (chim công hay bạch hạc).
-5. Tài khoản theo vai trò (UC01, UC17) và nút tải lên hiện vật trên giao diện (UC03).
+1. Mời ít nhất một người am hiểu di sản và một người am hiểu thiết kế xem mẫu và điền phiếu; gửi gói chấm mù EXP-D cho ít nhất 3 người. Hiệu chỉnh ngưỡng khi đủ 30 phiếu.
+2. Gửi thư xin phép cho 6 hiện vật đang dùng (bộ LR3D-CULT2: bộ dữ liệu công bố CC BY 4.0 nhưng từng vật có thể lấy từ nguồn giấy phép học thuật); điền ngày thu thập.
+3. Đo tiêu chí tuyển ảnh C1 và C2 cho mảng hoa văn phẳng (hiện C1, C2 chỉ đo trên ảnh render cả bình và cả 6 hiện vật trượt C1, xem [07](07_PROVENANCE_COPYRIGHT.md)).
+4. Thêm vòng sinh lại hoa văn khi G2 lỗi (hiện 3/24 thiết kế bị loại do đường nối, chưa tự xử lý).
+5. Chạy EXP-A trên máy GPU của nhóm (một lệnh, 120 lượt).
+6. Xem lại giao diện rút gọn bằng trình duyệt sau khi gộp nhánh; cân nhắc đưa chuỗi truy vết và Passport trở lại giao diện hoặc đưa vào báo cáo, vì đường liên kết thử nghiệm không còn hiển thị chúng.
+7. Chuẩn bị phân phối trọng số LoRA (giấy phép chỉ dùng phi thương mại, phải ghi công bài VietFashion).
+8. Tài khoản theo vai trò (UC01, UC17) và nút tải lên hiện vật trên giao diện (UC03).

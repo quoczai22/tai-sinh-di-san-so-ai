@@ -25,7 +25,7 @@
         "sharpness_ratio": {"label": "Độ nét so với bản ghép", "direction": "higher_is_better", "warn": 0.45, "fail": 0.25,
                              "why": "img2img làm mềm vải là chủ ý, nhưng dưới 1/4 độ nét thì họa tiết nhoè."},
         "detail_ratio": {"label": "Giữ chi tiết mịn họa tiết", "direction": "higher_is_better", "warn": 0.85, "fail": 0.60,
-                          "why": "Phương sai Laplacian trong vùng họa tiết so với bản ghép. Polish làm nhoè nét mảnh thì tụt (đo 0,74 ở cấu hình cũ); PPS không bắt được vì chỉ đo dải tần trung."},
+                          "why": "Phương sai Laplacian trong vùng họa tiết so với bản ghép. Polish làm nhoè nét mảnh thì tụt (khoá họa tiết cũ đo 0,56 đến 0,61, xem evaluation/polish_finish_trial.csv); PPS không bắt được vì chỉ đo dải tần trung."},
         "palette_shift_de": {"label": "Lệch bảng màu họa tiết (ΔE)", "direction": "lower_is_better", "warn": 10.0, "fail": 20.0,
                               "why": "ΔE76 giữa màu trung bình vùng họa tiết. ΔE ≈ 10 là khác màu thấy rõ khi đặt cạnh nhau."}
       },

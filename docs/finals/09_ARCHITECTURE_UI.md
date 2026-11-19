@@ -5,7 +5,7 @@
 Giữ nguyên lựa chọn công nghệ của bản 09/2026: Python + FastAPI, pipeline Diffusers, giao diện HTML/CSS/JS tĩnh, dữ liệu dạng tệp JSON/CSV (không cơ sở dữ liệu). Phần mới là ba gói Python và một bộ chạy thí nghiệm.
 
 ```
-generation/         (có sẵn) sinh hoa văn, ghép áo, img2img — chạy trên GPU
+generation/         sinh hoa văn, sinh áo dài nền bằng LoRA, tách vùng áo bằng SAM, ghép áo, polish, khoá họa tiết (chạy trên GPU)
   streamlit_runner  viết lại: mỗi lần chạy một thư mục riêng, gọi cổng quyền, chất lượng, Passport
 quality/            (mới) metrics.py · gate.py · repair.py · assess.py — chỉ cần CPU
 provenance/         (mới) registry.py · passport.py · builder.py · labeling.py · hashing.py
@@ -15,8 +15,8 @@ evaluation/
 api/                main.py (v1.1.0) · store.py · audit.py
 config/             heritage_selection.json · quality_gate.json · expert_rubric.json
 web_ui/             giao diện cho người xem: Trang chủ, Studio, Bộ sưu tập (giao diện 09/2026 lưu ở archive/web_ui_2026-09/)
-scripts/            08 chuyển schema · 09 nạp ảnh hiện vật · 10 dựng lại 24 thiết kế · 11 xuất dữ liệu trình diễn · 12 dựng sơ đồ
-tests/              130 ca pytest
+scripts/            08 chuyển schema, trích LR3D · 09 nạp ảnh hiện vật · 10 tạo hiện vật từ LR3D · 11 xuất dữ liệu trình diễn, lọc VietFashion · 12 dựng sơ đồ, xuất tập LoRA · 13 huấn luyện LoRA · 14 sinh bộ demo
+tests/              249 ca pytest
 ```
 
 Luồng dữ liệu một lần chạy:
@@ -51,7 +51,7 @@ Endpoint cũ giữ nguyên đường dẫn và các trường trả về (có ca
 | Lần chạy | `GET /runs`, `GET /runs/{id}`, `GET /media/run/{id}/{tệp}`, `GET /media/artifact?path=` (chỉ trong `outputs/`, `data/heritage/`, `web_ui/assets/images/`) |
 | Passport | `GET /passports`, `GET /passports/{id}` (kèm dòng thời gian, kết quả kiểm tra toàn vẹn), `GET /passports/{id}/export` |
 | Ghi (cần `X-API-Key` khi đặt `TSDS_WRITE_KEY`) | `POST /passports/{id}/qc`, `/reviews`, `/edits`, `/publish` |
-| Chất lượng, thí nghiệm | `GET /quality/legacy`, `GET /experiments` |
+| Chất lượng, thí nghiệm | `GET /quality/designs`, `GET /experiments` |
 
 Bảo vệ: giới hạn 6 lần sinh/giờ/IP (`TSDS_GENERATE_PER_HOUR`), danh sách sự kiện audit được phép, kiểm tra mã định danh bằng biểu thức chính quy, chặn đường dẫn ra ngoài thư mục cho phép, ảnh chỉnh sửa ≤ 8 MB và phải là ảnh hợp lệ. Khi máy chủ không có PyTorch/GPU, `/generate` trả 503 với thông báo rõ thay vì lỗi 500.
 
@@ -82,9 +82,9 @@ Web chỉ dành cho người xem: **Trang chủ · Studio · Bộ sưu tập**. 
 
 | Chức năng | Nằm ở |
 |---|---|
-| Kiểm định chất lượng G2/G3 | `quality/`, `evaluation/quality_gate_legacy.csv`, `GET /quality/legacy` |
+| Kiểm định chất lượng G2/G3 | `quality/`, `config/quality_gate.json`, `GET /quality/designs` |
 | Thí nghiệm EXP-A/B/C | `evaluation/experiment.py`, `outputs/experiments/`, `GET /experiments` |
-| Thẩm định chuyên gia | `config/expert_rubric.json`, `POST /passports/{id}/reviews`, gói chấm mù `outputs/experiments/EXP-C/blind/` |
+| Thẩm định chuyên gia | `config/expert_rubric.json`, `POST /passports/{id}/reviews`, gói chấm mù `outputs/experiments/EXP-D/blind/` |
 | Design Passport | `outputs/passports/`, `GET /passports/{id}`, `GET /passports/{id}/export` |
 | Nguồn và bản quyền | `data/heritage/metadata.json`, `GET /provenance/catalog`, [07](07_PROVENANCE_COPYRIGHT.md) |
 | KPI, BPMN, Use Case | [08](08_KPI.md), [03](03_BPMN.md), [04](04_USE_CASE.md), `docs/finals/diagrams/` |
