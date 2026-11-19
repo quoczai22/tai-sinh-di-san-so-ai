@@ -24,6 +24,8 @@
                                "why": "IoU dáng áo trước/sau img2img. Dưới 0,92 tương đương lệch ≥ 8% diện tích áo."},
         "sharpness_ratio": {"label": "Độ nét so với bản ghép", "direction": "higher_is_better", "warn": 0.45, "fail": 0.25,
                              "why": "img2img làm mềm vải là chủ ý, nhưng dưới 1/4 độ nét thì họa tiết nhoè."},
+        "detail_ratio": {"label": "Giữ chi tiết mịn họa tiết", "direction": "higher_is_better", "warn": 0.85, "fail": 0.60,
+                          "why": "Phương sai Laplacian trong vùng họa tiết so với bản ghép. Polish làm nhoè nét mảnh thì tụt (đo 0,74 ở cấu hình cũ); PPS không bắt được vì chỉ đo dải tần trung."},
         "palette_shift_de": {"label": "Lệch bảng màu họa tiết (ΔE)", "direction": "lower_is_better", "warn": 10.0, "fail": 20.0,
                               "why": "ΔE76 giữa màu trung bình vùng họa tiết. ΔE ≈ 10 là khác màu thấy rõ khi đặt cạnh nhau."}
       },
@@ -31,6 +33,7 @@
         "pattern_preservation": {"route_to": "stage2_repair", "action": "Khoá họa tiết (pattern-lock) hoặc giảm strength img2img 0,40 → 0,25; nếu vẫn không đạt, dùng bản ghép tất định."},
         "garment_shape_iou": {"route_to": "stage2_repair", "action": "Giảm strength img2img hoặc dùng bản ghép tất định (dáng áo đúng tuyệt đối)."},
         "sharpness_ratio": {"route_to": "stage2_repair", "action": "Giảm strength img2img hoặc tăng số bước."},
+        "detail_ratio": {"route_to": "stage2_repair", "action": "Khoá họa tiết với dog_sigma_low nhỏ (0,3) hoặc giảm strength polish."},
         "palette_shift_de": {"route_to": "stage2_repair", "action": "Khoá họa tiết (giữ sắc độ bản ghép)."}
       }
     }

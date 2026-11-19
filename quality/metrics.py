@@ -163,6 +163,19 @@ def visual_quality(raw: np.ndarray, final: np.ndarray, region: np.ndarray) -> di
             "clipping_pct": round(clip, 3)}
 
 
+def detail_preservation(raw: np.ndarray, final: np.ndarray, region: np.ndarray) -> dict:
+    """Giữ chi tiết mịn (detail_ratio): phương sai Laplacian của final / raw TRONG VÙNG HỌA TIẾT, cao là tốt.
+
+    Khác sharpness_ratio (đo trên cả vùng áo, phần lớn là vải trơn nên pha loãng): chỉ số này đo ngay chỗ có họa tiết,
+    nên bắt được việc nét mảnh bị nhòe sau polish. PPS chỉ đo dải tần trung (sigma 1,2 đến 4 px) nên không bắt được.
+    """
+    if region.sum() < 200:
+        return {"detail_ratio": float("nan")}
+    lap = lambda a: cv2.Laplacian(cv2.cvtColor(a, cv2.COLOR_RGB2GRAY).astype(np.float64), cv2.CV_64F)[region].var()
+    var_r = float(lap(raw))
+    return {"detail_ratio": round(float(lap(final)) / var_r, 4) if var_r > 1e-9 else float("nan")}
+
+
 def vessel_leakage(pattern: np.ndarray, reference: np.ndarray, border: int = 24) -> dict:
     """Vessel Leakage Score (VLS) cho hoa văn giai đoạn 1, thang [0, 1], THẤP là tốt.
 

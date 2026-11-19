@@ -22,29 +22,43 @@ def _ids(api_client) -> list[str]:
     return ids
 
 
-def _warn_id(api_client) -> str:
-    """Một thiết kế đang ở trạng thái cảnh báo QC (chưa được chuyển chuyên gia)."""
-    pid = _ids(api_client)[0]
-    assert api_client.get(f"/passports/{pid}").json()["approval"]["status"] == "qa_warning"
+def _theo_trang_thai(api_client, status: str) -> str | None:
+    for p in sorted(api_client.get("/passports").json(), key=lambda x: x["passport_id"]):
+        if p["approval"]["status"] == status:
+            return p["passport_id"]
+    return None
+
+
+def _ep_trang_thai(api_client, status: str) -> str:
+    """Passport ở đúng trạng thái `status`: lấy cái có sẵn trong dữ liệu thật, không có thì ép trên bản sao."""
+    from api import store
+    from provenance import passport as P
+    pid = _theo_trang_thai(api_client, status)
+    if pid is None:
+        pid = _ids(api_client)[0]
+        store.mutate_passport(pid, lambda p: P.set_approval(p, status, by="quality_gate", actor_type="system",
+                                                            reason="Kiểm thử"))
     return pid
 
 
+def _warn_id(api_client) -> str:
+    """Một thiết kế đang ở trạng thái cảnh báo QC (chưa được chuyển chuyên gia)."""
+    return _ep_trang_thai(api_client, "qa_warning")
+
+
 def _expert_id(api_client) -> str:
-    """Một thiết kế đã được QC Officer chuyển chuyên gia (chờ thẩm định)."""
-    pid = _ids(api_client)[1]
-    r = api_client.post(f"/passports/{pid}/qc", json={"officer_id": "QC01", "decision": "forward_to_expert"})
-    assert r.status_code == 200 and r.json()["status"] == "pending_expert_review", r.text
+    """Một thiết kế đang chờ chuyên gia thẩm định (đạt cổng, hoặc đã được QC Officer chuyển)."""
+    pid = _theo_trang_thai(api_client, "pending_expert_review")
+    if pid is None:
+        pid = _warn_id(api_client)
+        r = api_client.post(f"/passports/{pid}/qc", json={"officer_id": "QC01", "decision": "forward_to_expert"})
+        assert r.status_code == 200 and r.json()["status"] == "pending_expert_review", r.text
     return pid
 
 
 def _failed_id(api_client) -> str:
-    """Một thiết kế không qua cổng chất lượng (đặt trạng thái trên bản sao Passport)."""
-    from api import store
-    from provenance import passport as P
-    pid = _ids(api_client)[2]
-    store.mutate_passport(pid, lambda p: P.set_approval(p, "qa_failed", by="quality_gate", actor_type="system",
-                                                        reason="Kiểm thử"))
-    return pid
+    """Một thiết kế không qua cổng chất lượng."""
+    return _ep_trang_thai(api_client, "qa_failed")
 
 
 # ---------------------------------------------------- hồi quy bản 09/2026 ---

@@ -120,3 +120,42 @@ def test_sharpness_ratio_detects_blur(rng):
     blurred = cv2.GaussianBlur(raw, (0, 0), 3)
     r = M.visual_quality(raw, blurred, mask > 0)
     assert r["sharpness_ratio"] < CFG["gates"]["G3_final"]["metrics"]["sharpness_ratio"]["fail"]
+
+
+# --------------------------------------------- chi tiết mịn họa tiết ---
+
+def _anh_net_manh(size=128):
+    """Ảnh có các đường mảnh 1 px thưa: chi tiết mịn mà dải tần trung không thấy hết."""
+    a = np.full((size, size, 3), 235, np.uint8)
+    a[::6, :, :] = (30, 60, 170)
+    a[:, ::9, :] = (30, 60, 170)
+    return a
+
+
+def test_detail_ratio_bat_duoc_net_manh_bi_nhoe():
+    raw = _anh_net_manh()
+    vung = np.zeros(raw.shape[:2], bool)
+    vung[16:112, 16:112] = True
+    giu = M.detail_preservation(raw, raw.copy(), vung)["detail_ratio"]
+    nhoe = M.detail_preservation(raw, cv2.GaussianBlur(raw, (0, 0), 1.5), vung)["detail_ratio"]
+    rule = CFG["gates"]["G3_final"]["metrics"]["detail_ratio"]
+    assert giu == pytest.approx(1.0)
+    assert QG.classify(giu, rule) == "PASS" and QG.classify(nhoe, rule) == "FAIL"
+
+
+def test_detail_ratio_vung_qua_nho_tra_nan():
+    raw = _anh_net_manh()
+    vung = np.zeros(raw.shape[:2], bool)
+    vung[:5, :5] = True
+    assert np.isnan(M.detail_preservation(raw, raw, vung)["detail_ratio"])
+
+
+def test_khoa_hoa_tiet_mac_dinh_khoi_phuc_net_manh():
+    from quality.repair import pattern_lock
+    raw = _anh_net_manh()
+    polish = cv2.GaussianBlur(raw, (0, 0), 1.5)         # polish giả làm nhòe nét mảnh
+    mask = np.ones(raw.shape[:2], np.float32)
+    khoa, _ = pattern_lock(raw, polish, mask)
+    vung = np.zeros(raw.shape[:2], bool)
+    vung[16:112, 16:112] = True
+    assert M.detail_preservation(raw, khoa, vung)["detail_ratio"] > 0.9

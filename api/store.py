@@ -86,7 +86,7 @@ def quality_rows() -> list[dict]:
             "G2": (q.get("G2_pattern") or {}).get("decision"),
             "pattern_preservation": g3("pattern_preservation"), "structure_ncc": g3("structure_ncc"),
             "chroma_ncc": g3("chroma_ncc"), "garment_shape_iou": g3("garment_shape_iou"),
-            "sharpness_ratio": g3("sharpness_ratio"), "palette_shift_de": g3("palette_shift_de"),
+            "sharpness_ratio": g3("sharpness_ratio"), "detail_ratio": g3("detail_ratio"), "palette_shift_de": g3("palette_shift_de"),
             "align_shift_px": g3("align_shift_px"), "G3": (q.get("G3_final") or {}).get("decision"),
             "overall": (q.get("overall") or {}).get("decision"), "route_to": (q.get("overall") or {}).get("route_to"),
             "repair_pps": _metric(rep, "G3_final", "pattern_preservation"),
