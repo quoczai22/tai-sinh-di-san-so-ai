@@ -164,6 +164,31 @@ def run_cpu_composite(spec: dict, rows: list[dict], out_dir: Path) -> list[dict]
     return results
 
 
+def parse_finish(finish: str) -> tuple[str, float, bool]:
+    """Đọc giá trị của biến `stage2_finish` thành (kiểu, độ nhiễu, có khóa họa tiết).
+
+    Các giá trị hợp lệ:
+      "none"                     bản ghép tất định, không polish (đối chứng)
+      "img2img_0.40"             polish toàn ảnh (cách cũ)
+      "img2img_0.40+pattern_lock"  polish toàn ảnh rồi khóa họa tiết
+      "masked_0.30"              polish chỉ vùng áo, ngoài áo giữ nguyên từng pixel
+      "masked_0.30+pattern_lock" polish vùng áo rồi khóa họa tiết
+    """
+    if finish == "none":
+        return "none", 0.0, False
+    body, _, lock = finish.partition("+")
+    kind, _, num = body.partition("_")
+    if kind not in ("img2img", "masked") or lock not in ("", "pattern_lock"):
+        raise ValueError(f"stage2_finish không hợp lệ: {finish!r}")
+    try:
+        strength = float(num)
+    except ValueError:
+        raise ValueError(f"stage2_finish thiếu độ nhiễu: {finish!r}") from None
+    if not 0.0 < strength <= 1.0:
+        raise ValueError(f"Độ nhiễu ngoài khoảng (0, 1]: {finish!r}")
+    return kind, strength, lock == "pattern_lock"
+
+
 def run_gpu(spec: dict, rows: list[dict], out_dir: Path) -> list[dict]:  # pragma: no cover - cần GPU
     """EXP-A / EXP-B: cần GPU CUDA. Nạp model một lần cho cả kế hoạch."""
     from PIL import Image                                          # noqa: PLC0415
@@ -194,12 +219,13 @@ def run_gpu(spec: dict, rows: list[dict], out_dir: Path) -> list[dict]:  # pragm
             raw.save(raw_path)
             finish = r.get("cfg.stage2_finish", "img2img_0.40")
             polish_seed = int(r.get("cfg.polish_seed") if str(r.get("cfg.polish_seed")).isdigit() else seed)
-            if finish == "none":
+            kind, strength, lock = parse_finish(finish)
+            if kind == "none":
                 final = raw
             else:
-                strength = float(finish.split("_")[1].split("+")[0])
-                final = garment.polish(raw, strength=strength, seed=polish_seed)
-                if finish.endswith("+pattern_lock"):
+                polish_fn = garment.polish_masked if kind == "masked" else garment.polish
+                final = polish_fn(raw, strength=strength, seed=polish_seed)
+                if lock:
                     from generation import garment as G                # noqa: PLC0415
                     tpl = Image.open(G.TEMPLATE).convert("RGB")
                     lm = G._layout_mask(tpl, G.get_layout(r["cfg.layout"]))

@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SPECS = sorted((ROOT / "evaluation" / "experiments").glob("EXP-*.json"))
 
 
-@pytest.mark.parametrize("path,n", [("EXP-A_controlnet_weight.json", 120), ("EXP-B_stage2_finish.json", 72),
+@pytest.mark.parametrize("path,n", [("EXP-A_controlnet_weight.json", 120), ("EXP-B_stage2_finish.json", 126),
                                     ("EXP-C_composite_ablation.json", 48)])
 def test_specs_expand_and_pass_validation(path, n):
     spec = E.load_spec(ROOT / "evaluation" / "experiments" / path)
@@ -110,3 +110,29 @@ def test_blind_packet_is_reproducible(tmp_path):
     shutil.copytree(src / "images", dst / "images")
     E.build_blind_packet(dst, ["CG01", "CG02", "CG03"])
     assert (dst / "blind" / "key.csv").read_text(encoding="utf-8") == (src / "blind" / "key.csv").read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("finish,expected", [
+    ("none", ("none", 0.0, False)),
+    ("img2img_0.40", ("img2img", 0.40, False)),
+    ("img2img_0.40+pattern_lock", ("img2img", 0.40, True)),
+    ("masked_0.30", ("masked", 0.30, False)),
+    ("masked_0.25+pattern_lock", ("masked", 0.25, True)),
+])
+def test_parse_finish_hop_le(finish, expected):
+    assert E.parse_finish(finish) == expected
+
+
+@pytest.mark.parametrize("finish", ["", "img2img", "img2img_abc", "masked_0", "masked_1.5", "inpaint_0.3",
+                                    "masked_0.30+khoa", "masked_0.30+pattern_lock+x"])
+def test_parse_finish_khong_hop_le(finish):
+    with pytest.raises(ValueError):
+        E.parse_finish(finish)
+
+
+def test_exp_b_co_muc_polish_co_mat_na_va_moi_muc_deu_doc_duoc():
+    spec = E.load_spec(ROOT / "evaluation" / "experiments" / "EXP-B_stage2_finish.json")
+    levels = spec["independent_variable"]["levels"]
+    assert "masked_0.30" in levels
+    for lv in levels:
+        E.parse_finish(lv)
