@@ -73,3 +73,26 @@ def test_mat_na_ao_trang_goc_hop_ly():
     ti_le = float(m.mean())
     assert m.shape == (tpl.height, tpl.width)
     assert 0.02 < ti_le < 0.7, ti_le
+
+
+def test_polish_locked_tra_lai_net_ve_va_giu_nguyen_ngoai_ao(monkeypatch):
+    import cv2
+    y, x = np.mgrid[0:96, 0:96]
+    nen = (128 + 60 * np.sin(x / 2.3) * np.cos(y / 3.1)).clip(0, 255).astype(np.uint8)
+    comp = Image.fromarray(np.stack([nen, nen // 2 + 40, 255 - nen], axis=-1))
+    # polish giả làm mờ toàn bộ: mất nét vẽ của họa tiết
+    monkeypatch.setattr(garment, "polish", lambda im, strength, seed, steps: Image.fromarray(
+        cv2.GaussianBlur(np.asarray(im), (0, 0), 3)))
+    m = mat_na_hinh_chu_nhat(size=96, y0=20, y1=76, x0=20, x1=76)
+    mo = garment.polish_masked(comp, mask=m, feather_px=2.0)
+    khoa = garment.polish_locked(comp, m.astype(np.float32), mask=m)
+
+    def bien_do_net_ve(im):                            # độ mạnh nét vẽ: độ lệch chuẩn dải tần trung của kênh sáng, trong vùng áo
+        g = cv2.cvtColor(np.asarray(im), cv2.COLOR_RGB2GRAY).astype(np.float32)
+        return float((cv2.GaussianBlur(g, (0, 0), 1.2) - cv2.GaussianBlur(g, (0, 0), 4.0))[30:66, 30:66].std())
+
+    goc = bien_do_net_ve(comp)
+    assert bien_do_net_ve(mo) < 0.5 * goc                # polish giả làm mất hơn nửa nét vẽ
+    assert bien_do_net_ve(khoa) > 0.7 * goc              # khóa trả lại phần lớn (đo thực tế khoảng 0,78)
+    ngoai = m == 0
+    assert np.abs(np.asarray(khoa).astype(int) - np.asarray(comp).astype(int))[ngoai].max() == 0   # ngoài áo giữ nguyên tuyệt đối

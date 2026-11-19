@@ -18,6 +18,8 @@ from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
 
+from PIL import Image
+
 from generation import controlnet as cn, element_library, garment, layout_select, palette, pattern
 from generation.stable_diffusion import Generator
 
@@ -157,9 +159,16 @@ def generate_design_set(
                 # polish_mask: chỉ polish vùng áo, ngoài áo giữ nguyên từng pixel (mặc định bật; False là polish toàn ảnh,
                 # làm nền bị vẽ lại: đo được 14 đến 17% pixel ngoài áo đổi hơn 12 mức xám)
                 masked = bool(variant.get("polish_mask", True))
+                # polish_lock: khóa họa tiết sau polish (mặc định bật; chỉ dùng kèm polish_mask), trả lại nét vẽ và màu từ bản thô
+                lock = masked and bool(variant.get("polish_lock", True))
                 strength = float(variant.get(
                     "polish_strength", garment.POLISH_MASKED_STRENGTH if masked else POLISH_STRENGTH))
-                if masked:
+                if lock:
+                    tpl_img = Image.open(tpl_path).convert("RGB")
+                    layout_mask = garment._layout_mask(tpl_img, garment.get_layout(chosen["layout"]), region)
+                    polish_fn = lambda im, strength, seed: garment.polish_locked(    # noqa: E731
+                        im, layout_mask, strength=strength, seed=seed, mask=region)
+                elif masked:
                     polish_fn = lambda im, strength, seed: garment.polish_masked(    # noqa: E731
                         im, strength=strength, seed=seed, mask=region)
                 else:
@@ -171,7 +180,8 @@ def generate_design_set(
                     retry_info = QR.polish_with_retry(
                         chosen["image"], lambda im, st, sd: polish_fn(im, strength=st, seed=sd),
                         QR.make_g3_evaluator(chosen["image"], chosen["layout"], template_path=tpl_path, garment_region=region),
-                        seed=seed, strength=strength, tag=f"{run_id}_V{index}")
+                        seed=seed, strength=strength, fallback_strength=garment.POLISH_FALLBACK_STRENGTH,
+                        tag=f"{run_id}_V{index}")
                     design, strength = retry_info["image"], retry_info["strength"] or 0.0
                 else:
                     design = polish_fn(chosen["image"], strength=strength, seed=seed) if strength > 0 else chosen["image"]
@@ -186,7 +196,7 @@ def generate_design_set(
                     "layout": chosen["layout"], "layout_label": chosen["label"], "layout_scale": chosen["scale"],
                     "layout_score": chosen["score"], "layout_selected_by": selected_by,
                     "layout_ranking": ";".join(f"{x['layout']}:{x['score']}" for x in ranked),
-                    "polish_strength": strength, "polish_mask": masked,
+                    "polish_strength": strength, "polish_mask": masked, "polish_lock": lock,
                     "polish_status": retry_info["status"] if retry_info else "single_pass",
                     "polish_attempts": len(retry_info["attempts"]) if retry_info else 1,
                     "polish_label": retry_info["label"] if retry_info else None,

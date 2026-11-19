@@ -328,7 +328,8 @@ def polish(composite: Image.Image, strength: float = 0.40, seed: int = 42,
 
 
 POLISH_STRENGTH = 0.40          # polish toàn ảnh (cách cũ, giữ để đối chiếu)
-POLISH_MASKED_STRENGTH = 0.30   # polish có mặt nạ: thấp hơn vì chỉ cần hòa họa tiết vào vải
+POLISH_MASKED_STRENGTH = 0.20   # polish có mặt nạ: thấp để giữ chi tiết họa tiết (thử trên 12 bản ghép: PPS 0,46 ở 0,30 lên 0,54 ở 0,20)
+POLISH_FALLBACK_STRENGTH = 0.12  # mức nhiễu của lần thử cuối trong vòng thử lại, phải thấp hơn mức chính
 
 
 def blend_with_mask(polished: Image.Image, composite: Image.Image, mask: np.ndarray,
@@ -368,6 +369,26 @@ def polish_masked(composite: Image.Image, strength: float = POLISH_MASKED_STRENG
         mask = cv2.resize(mask.astype(np.uint8), composite.size, interpolation=cv2.INTER_NEAREST)
     polished = polish(composite, strength=strength, seed=seed, steps=steps)
     return blend_with_mask(polished, composite, mask, feather_px)
+
+
+def polish_locked(composite: Image.Image, layout_mask: np.ndarray, strength: float = POLISH_MASKED_STRENGTH,
+                  seed: int = 42, steps: int = 30, mask: np.ndarray | None = None) -> Image.Image:
+    """Polish có mặt nạ rồi KHÓA HỌA TIẾT: trả lại nét vẽ và màu của họa tiết từ bản ghép thô.
+
+    Polish làm hoa văn hòa vào vải nhưng vẽ lại cả họa tiết (mất đầu rồng, đổi màu lá). Khóa họa tiết giữ phần
+    ánh sáng và bóng vải của polish, còn nét vẽ và sắc độ lấy lại từ `composite` trong `layout_mask`
+    (xem quality/repair.py). Ngoài vùng áo vẫn giữ nguyên từng pixel như polish có mặt nạ.
+    """
+    from quality.repair import pattern_lock                          # noqa: PLC0415  (tránh import vòng với quality.assess)
+    if mask is None:
+        mask = garment_mask(Image.open(TEMPLATE).convert("RGB"))
+    if mask.shape[:2] != (composite.height, composite.width):
+        mask = cv2.resize(mask.astype(np.uint8), composite.size, interpolation=cv2.INTER_NEAREST)
+    polished = polish_masked(composite, strength=strength, seed=seed, steps=steps, mask=mask)
+    raw = np.asarray(composite.convert("RGB"))
+    locked, _ = pattern_lock(raw, np.asarray(polished.convert("RGB")), layout_mask)
+    # pattern_lock tự làm mờ mặt nạ vài pixel và đổi màu qua LAB nên có thể lệch nhẹ ra ngoài áo: ép ngoài áo về đúng bản ghép thô
+    return Image.fromarray(np.where((mask > 0)[:, :, None], locked, raw))
 
 
 def make_template(seed: int = 43) -> Path:

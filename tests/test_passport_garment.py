@@ -100,3 +100,12 @@ def test_polish_co_mat_na_duoc_ghi_vao_passport(work):
     assert "chỉ vùng áo" in {s["step"]: s for s in pp["process_steps"]}["polish"]["label"]
     cu = tao_passport(work, None)
     assert cu["generation"]["polish_img2img"]["masked"] is False and cu["generation"]["polish_img2img"]["attempts"] == 1
+
+
+def test_khoa_hoa_tiet_duoc_ghi_vao_passport(work):
+    pp = tao_passport(work, None, polish_mask=True, polish_lock=True)
+    p = pp["generation"]["polish_img2img"]
+    assert p["pattern_lock"]["method"] == "pattern_lock_v1" and "dog_sigma_low" in p["pattern_lock"]["params"]
+    buoc = {s["step"]: s for s in pp["process_steps"]}["polish"]
+    assert "khóa họa tiết" in buoc["label"] and "pattern_lock_v1" in buoc["note"]
+    assert "pattern_lock" not in tao_passport(work, None, polish_mask=True)["generation"]["polish_img2img"]
