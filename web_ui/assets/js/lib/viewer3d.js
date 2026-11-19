@@ -8,7 +8,7 @@
 //                                          thẻ thì bình tự xoay, rê ra thì đứng yên đúng tại góc đang xoay.
 // ---------------------------------------------------------------------------------------------
 const MODEL_DIR = './assets/models/';
-const MODEL_VERSION = 'finals-68';       // đổi cùng số phiên bản trong index.html để trình duyệt không dùng file GLB cũ
+const MODEL_VERSION = 'finals-71';       // đổi cùng số phiên bản trong index.html để trình duyệt không dùng file GLB cũ
 const AUTO_ROTATE_SPEED = 1.4;      // độ/giây nhân với 6, theo OrbitControls
 const RESUME_AFTER_MS = 3500;       // sau khi thả chuột bao lâu thì tự xoay lại
 const live = new Set();             // các khung đang tồn tại, để dọn khung của trang đã bị gỡ
