@@ -147,6 +147,16 @@ Chấm mù: người chấm không thấy mã biến thể, trọng số, điể
 
 Việc xem xét của chuyên gia là một bước **ngoài hệ thống**: nhóm mời người am hiểu xem mẫu, thu phiếu, rồi đưa kết quả vào báo cáo. Giao diện web cho người xem không còn trang thẩm định; API ghi phiếu (`POST /passports/{id}/reviews`) vẫn có và phiếu được ghi vào Passport.
 
+## Gói đánh giá mù cho chuyên gia
+
+`scripts/18_build_blind_review.py` dựng gói chấm mù cho cả 24 thiết kế của bộ demo, kể cả 3 thiết kế mà cổng chất lượng đã loại (để đo mức đồng thuận giữa cổng tự động và chuyên gia). Kết quả nằm trong `outputs/blind_review/` (ảnh, không đưa lên git).
+
+- `GOI_GUI/` (và `GOI_GUI.zip`) gửi người chấm. Gồm một trang `index.html` mở offline bằng trình duyệt, ảnh thiết kế đã đổi tên mã ngẫu nhiên và ảnh hiện vật đối chiếu. Không có mã Passport, mức sáng tạo, điểm hay quyết định của cổng.
+- `GIU_RIENG/` nhóm giữ: `key.csv` (mã trỏ về Passport, hiện vật, mức sáng tạo, kết quả G2 và G3, trạng thái duyệt) và `HUONG_DAN_NOI_BO.md` (cách gửi, thu, giải mã).
+- Người chấm nhập mã riêng (ví dụ CG01) và chọn vai: chuyên gia di sản chấm 2 tiêu chí, chuyên gia thiết kế chấm 3 tiêu chí, người am hiểu cả hai chấm đủ 5, theo trường `owner` của bộ tiêu chí ER-1.0. Mỗi thiết kế còn có quyết định Đạt, Cần chỉnh sửa hoặc Loại và ô nhận xét.
+- Thứ tự thiết kế được xáo riêng theo mã người chấm. Trang tự lưu nháp trong trình duyệt và xuất `ratings_<mã>.csv`.
+- Cần ít nhất 1 chuyên gia di sản và 1 chuyên gia thiết kế; 24 thiết kế do 2 người chấm là 48 phiếu, đủ mốc 30 phiếu để hiệu chỉnh ngưỡng. Chưa có công cụ tự động tổng hợp phiếu và so với cổng.
+
 ## Hiệu chỉnh ngưỡng khi có phiếu chuyên gia
 
 1. Thu tối thiểu 30 phiếu thẩm định trên các thiết kế có đủ kết quả G2/G3.

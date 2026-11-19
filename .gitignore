@@ -81,3 +81,6 @@ data/heritage/sources/originals/
 
 # Dữ liệu VietFashion tải về (CC BY-NC 4.0), không commit dữ liệu thô
 data/vietfashion/
+
+# Gói đánh giá mù (ảnh thiết kế đã đổi tên mã, không đưa lên git)
+outputs/blind_review/
