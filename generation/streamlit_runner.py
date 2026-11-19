@@ -142,7 +142,17 @@ def generate_design_set(
                 strength = float(variant.get(
                     "polish_strength", garment.POLISH_MASKED_STRENGTH if masked else POLISH_STRENGTH))
                 polish_fn = garment.polish_masked if masked else garment.polish
-                design = polish_fn(chosen["image"], strength=strength, seed=seed) if strength > 0 else chosen["image"]
+                retry_info = None
+                if strength > 0 and variant.get("polish_retry", False):
+                    # Vòng loại và thử lại: lỗi M1/M3 thì đổi seed, hạ độ nhiễu, cuối cùng trả ảnh ghép thô (quality/retry.py)
+                    from quality import retry as QR                    # noqa: PLC0415
+                    retry_info = QR.polish_with_retry(
+                        chosen["image"], lambda im, st, sd: polish_fn(im, strength=st, seed=sd),
+                        QR.make_g3_evaluator(chosen["image"], chosen["layout"]),
+                        seed=seed, strength=strength, tag=f"{run_id}_V{index}")
+                    design, strength = retry_info["image"], retry_info["strength"] or 0.0
+                else:
+                    design = polish_fn(chosen["image"], strength=strength, seed=seed) if strength > 0 else chosen["image"]
                 design_path = run_dir / f"V{index}_aodai.png"
                 design.save(design_path)
                 similarity = scorer.similarity(prepared["reference"], design_pattern)
@@ -155,6 +165,9 @@ def generate_design_set(
                     "layout_score": chosen["score"], "layout_selected_by": selected_by,
                     "layout_ranking": ";".join(f"{x['layout']}:{x['score']}" for x in ranked),
                     "polish_strength": strength, "polish_mask": masked,
+                    "polish_status": retry_info["status"] if retry_info else "single_pass",
+                    "polish_attempts": len(retry_info["attempts"]) if retry_info else 1,
+                    "polish_label": retry_info["label"] if retry_info else None,
                     "positive_prompt": result["positive_prompt"], "negative_prompt": result["negative_prompt"],
                     "steps": versions["steps"], "guidance": versions["guidance"],
                     "sd_model_id": versions["sd_model_id"], "controlnet_id": versions["controlnet_id"],
@@ -201,6 +214,7 @@ def generate_design_set(
             "design_id": pp["design_id"], "passport_id": pp["passport_id"],
             "layout_label": rec["layout_label"], "seed": seed,
             "controlnet_weight": rec["controlnet_weight"], "polish_strength": rec["polish_strength"],
+            "polish_status": rec["polish_status"], "polish_label": rec["polish_label"],
             "similarity_pattern_vs_ceramic": rec["similarity_pattern_vs_ceramic"],
             "source_palette": rec["source_palette"], "design_path": rel,
             "quality_decision": assessment["overall"]["decision"] if assessment else None,
