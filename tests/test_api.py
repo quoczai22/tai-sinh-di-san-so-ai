@@ -86,18 +86,21 @@ def test_heritage_detail_and_media(api_client):
 
 
 def test_generate_without_gpu_is_explicit(api_client, monkeypatch):
-    import api.main as main
-    main._rate.clear()
     import json
     from pathlib import Path
+
+    import api.main as main
+    try:
+        import torch  # noqa: F401
+        # Phải bỏ qua TRƯỚC khi gửi /generate: máy có torch sẽ bắt đầu một lượt sinh ảnh thật ở nền
+        pytest.skip("máy có torch — ca này dành cho máy không có GPU")
+    except ImportError:
+        pass
+    main._rate.clear()
     items = json.loads((Path(__file__).resolve().parent.parent / "data" / "heritage" / "metadata.json").read_text(encoding="utf-8"))["items"]
     active = next(k for k, v in items.items() if v.get("status") == "active")
     r = api_client.post("/generate", json={"heritage_id": active})
-    try:
-        import torch  # noqa: F401
-        pytest.skip("máy có torch — ca này dành cho máy không có GPU")
-    except ImportError:
-        assert r.status_code == 503 and "PyTorch" in r.json()["detail"]
+    assert r.status_code == 503 and "PyTorch" in r.json()["detail"]
     assert api_client.post("/generate", json={"heritage_id": "HSBT_XP-300x300"}).status_code == 404
     assert api_client.post("/generate", json={"heritage_id": "khong-co"}).status_code == 404
     assert api_client.get("/generate/khong-co").status_code == 404
