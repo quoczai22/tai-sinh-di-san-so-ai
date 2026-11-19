@@ -123,6 +123,7 @@ pip install -r requirements-dev.txt && pytest   # kiểm thử, không cần GPU
 ## Trang Kết quả: cửa sổ xem và tải thiết kế
 
 - Bấm vào một trong 4 ảnh (hoặc Enter, phím cách khi đang chọn ảnh) thì mở cửa sổ phóng to ảnh đó, có nhãn AI.
+- Phóng to thu nhỏ từ 100% đến 400%: kéo thanh trượt dưới ảnh, bấm nút − hoặc + ở hai đầu thanh (mỗi lần 25%), hoặc lăn chuột trên ảnh (phóng về phía con trỏ, nhanh hơn thanh trượt). Bấm đúp để phóng 2 lần, bấm đúp lần nữa để về 100%. Khi đã phóng thì kéo chuột để xê dịch ảnh, ảnh không rời khỏi khung. Thanh trượt cũng dùng được bằng bàn phím.
 - Nút TẢI XUỐNG (vàng, có biểu tượng tải bên trái) lấy ảnh dạng blob rồi lưu về máy với tên `thiet-ke-<mã hiện vật>-<số thứ tự>`. File tải về luôn là PNG (hoặc JPEG), không bao giờ là WebP. Chế độ trực tiếp: bản PNG gốc từ máy chủ. Chế độ trình diễn: bản PNG gốc do `scripts/11_export_demo_data.py` chép vào `web_ui/assets/images/variants/`. Nếu chỉ có bản WebP (thiết kế đã được hệ thống sửa) thì trình duyệt đổi sang PNG trước khi lưu. Nếu trình duyệt không cho lấy ảnh thì mở ảnh ở thẻ mới để lưu tay.
 - Nút QUAY LẠI (viền) và dấu X ở góc trên bên phải đều đóng cửa sổ và trở về 4 mẫu. Esc và bấm ra ngoài cũng đóng. Tiêu điểm bàn phím nằm trong cửa sổ khi mở và trở về ảnh đã bấm khi đóng.
 
