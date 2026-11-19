@@ -29,7 +29,7 @@ Bộ tài liệu này chỉ phục vụ vòng chung kết và tập trung vào b
 |---|---|---|
 | Đo mức giữ hoa văn và hình dáng áo sau img2img | Cổng G3: PPS (giữ họa tiết), IoU dáng áo, độ nét, lệch màu, đo trên thiết kế cuối | `quality/`, `evaluation/quality_gate_legacy.csv` |
 | Tiêu chí loại hoặc sinh lại | Ngưỡng PASS/WARN/FAIL có giải thích; định tuyến sinh lại (tối đa 3 lần) hoặc sửa | `config/quality_gate.json` |
-| Chuyên gia di sản và thiết kế đánh giá | Bộ tiêu chí 5 mục, chấm mù, giao diện và API ghi phiếu | `config/expert_rubric.json`, khu vực "Thẩm định chuyên gia" |
+| Chuyên gia di sản và thiết kế đánh giá | Bộ tiêu chí 5 mục, chấm mù, API ghi phiếu | `config/expert_rubric.json`, khu vực "Thẩm định chuyên gia" |
 | Bộ hiện vật – hoa văn – thiết kế cuối kèm phiếu | 24 ảnh đối chiếu, 24 Passport | `docs/evidence/quality_gate/`, `outputs/passports/` |
 | Ví dụ bị loại và được sửa | HV01 V1, V2 bị G2 loại; 19 thiết kế được khoá họa tiết, 10 đạt sau sửa | [05](05_QUALITY_ASSURANCE.md) mục "Ví dụ" |
 
@@ -58,7 +58,7 @@ Bộ tài liệu này chỉ phục vụ vòng chung kết và tập trung vào b
 
 | Tiêu chí | Mức đạt | Còn thiếu |
 |---|---|---|
-| UI/UX | 9 khu vực, hai chế độ, trạng thái tải/trống/lỗi, kiểm tra ở 1440 px và 390 px | Chưa thử với người dùng thật |
+| UI/UX | 3 trang cho người xem (Trang chủ, Studio đầu vào → đầu ra, Bộ sưu tập), kiểm tra ở 1440 px và 390 px | Chưa thử với người dùng thật |
 | Quy trình nghiệp vụ | 18 bước đều có phần tử BPMN; mỗi gateway gắn với mã | – |
 | BPMN | XML chuẩn BPMN 2.0, đọc được bằng bpmn-moddle không cảnh báo; có kiểm thử ngữ nghĩa | – |
 | UML | 7 tác nhân, 19 ca, include/extend có lý do | 3 ca mới là kế hoạch hoặc chạy một phần |

@@ -1149,3 +1149,23 @@ html.motion-off .thread-path { stroke-dashoffset: 0; }
 /* Thẻ là liên kết: không để màu "liên kết khi rê chuột" làm chữ chìm vào ảnh */
 .journey-card:hover, .journey-card:focus-visible { color: #fff; }
 .journey-card:has(.jc-img.contain):hover, .journey-card:has(.jc-img.contain):focus-visible { color: var(--cobalt-800); }
+
+/* ---------- Khung chi tiết gọn cho người xem (hiện vật / tà áo) ---------- */
+.dt { display: flex; flex-direction: column; gap: 6px; }
+.dt-hero { position: relative; margin-bottom: 14px; background: var(--line-2); }
+.dt-hero img { width: 100%; max-height: 62vh; object-fit: contain; }
+.dt-hero.vitrine { background: var(--vitrine); aspect-ratio: 4 / 3.6; display: grid; place-items: center; }
+.dt-hero.vitrine img { max-height: 82%; max-width: 70%; filter: drop-shadow(0 14px 14px rgba(40, 28, 10, .2)); }
+.dt-hero .ai-tag { position: absolute; left: 12px; bottom: 12px; }
+.dt-label { margin: 10px 0 0; font-size: 11.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--dat); }
+.dt-title { margin: 0; font-family: var(--font-display); font-size: 28px; line-height: 1.2; }
+.dt-text { margin: 4px 0 0; font-size: 16px; line-height: 1.65; }
+.dt-muted { margin: 0; font-size: 14.5px; font-style: italic; color: var(--ink-3); }
+.dt-note { margin: 10px 0 0; font-size: 14px; font-style: italic; color: var(--ink-2); }
+.dt-source { margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--line); }
+.dt-source p { margin: 2px 0; font-size: 14.5px; }
+.dt-thumbs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 8px; }
+.dt-thumb { padding: 0; border: 0; background: none; cursor: pointer; aspect-ratio: 3 / 4; overflow: hidden; }
+.dt-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease-out); }
+.dt-thumb:hover img { transform: scale(1.05); }
+.dt-cta { align-self: flex-start; margin-top: 18px; }

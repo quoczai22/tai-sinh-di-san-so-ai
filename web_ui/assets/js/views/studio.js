@@ -1,46 +1,7 @@
-import { clear, fmt, h, icon, toast } from '../lib/dom.js';
+import { h, icon, toast } from '../lib/dom.js';
 import * as data from '../lib/data.js';
-import { aiMark, approvalChip, artifactNodes, chain, decisionChip, drawer, metricLine, section, stateBox } from '../lib/ui.js';
-
-export function gateTable(gate, title) {
-    if (!gate) return null;
-    return h('div', {},
-        h('div', { class: 'row spread' }, h('h3', {}, title), decisionChip(gate.decision)),
-        h('div', { class: 'table-wrap' }, h('table', { class: 'data' },
-            h('thead', {}, h('tr', {}, h('th', {}, 'Chỉ số'), h('th', { class: 'num' }, 'Giá trị'),
-                h('th', { class: 'num' }, 'Cảnh báo'), h('th', { class: 'num' }, 'Không đạt'), h('th', {}, 'Kết quả'))),
-            h('tbody', {}, Object.entries(gate.metrics).map(([, m]) => h('tr', {},
-                h('td', {}, m.label), h('td', { class: 'num' }, fmt.num(m.value, 3)),
-                h('td', { class: 'num' }, fmt.num(m.warn, 2)), h('td', { class: 'num' }, fmt.num(m.fail, 2)),
-                h('td', {}, decisionChip(m.status))))))));
-}
-
-export async function openDesign(pid) {
-    data.audit('design_viewed', { step: 4, passport_id: pid });
-    const p = await data.passport(pid);
-    const q = p.quality || {};
-    const g = p.generation || {};
-    const body = h('div', { class: 'stack' },
-        h('div', { class: 'row' }, approvalChip(p.approval.status), h('span', { class: 'muted small' }, p.approval.reason || '')),
-        section('Chuỗi truy vết', 'Mỗi bước ghi rõ do AI, hệ thống tất định hay con người thực hiện, kèm mã băm tệp đầu ra.', chain(artifactNodes(p))),
-        h('div', { class: 'grid cols-2' },
-            h('div', { class: 'panel' }, h('h3', {}, 'Cấu hình sinh'),
-                metricLine('Trọng số ControlNet', fmt.num(g.controlnet?.conditioning_scale, 2)),
-                metricLine('Seed', g.seed),
-                metricLine('Bảng màu', g.palette?.mode === 'original' ? 'Giữ màu hiện vật' : 'Tự do'),
-                metricLine('Bố cục', g.layout?.label),
-                metricLine('img2img strength', fmt.num(g.polish_img2img?.strength, 2)),
-                metricLine('CLIP hoa văn so với hiện vật (tham khảo)', fmt.num(g.reference_metrics?.clip_similarity_pattern_vs_ceramic, 3))),
-            h('div', { class: 'panel' }, h('h3', {}, 'Quyết định của cổng'),
-                h('p', {}, decisionChip(q.overall?.decision)), h('p', { class: 'small' }, q.overall?.message || ''),
-                q.repair ? h('p', { class: 'note' }, `Bản sửa khoá họa tiết: ${(({ PASS: 'Đạt', WARN: 'Cảnh báo', FAIL: 'Không đạt' })[q.repair.overall.decision])}. `,
-                    'Điểm giữ họa tiết của bản sửa cao do cấu tạo (chép lại nét bản ghép), nên chuyên gia phải so mù hai bản trước khi chọn.') : null)),
-        gateTable(q.G2_pattern, 'Cổng G2: hoa văn'),
-        gateTable(q.G3_final, 'Cổng G3: thiết kế cuối (img2img)'),
-        q.repair ? gateTable(q.repair.G3_final, 'Cổng G3 sau khi khoá họa tiết') : null,
-        h('a', { class: 'btn primary', href: `#/passport/${p.passport_id}` }, icon('passport'), 'Mở Design Passport'));
-    drawer(`${p.passport_id}`, body);
-}
+import { aiMark, section, stateBox } from '../lib/ui.js';
+import { openDesign } from '../lib/detail.js';
 
 // ---------------------------------------------------------------------------------------------
 // Studio cho người xem: ĐẦU VÀO (hiện vật) → nút Tạo thiết kế → ĐẦU RA (4 tà áo).
