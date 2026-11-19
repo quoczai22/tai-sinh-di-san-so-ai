@@ -10,7 +10,7 @@ Nguyên tắc: máy đo những gì đo được bằng kỹ thuật (họa ti�
 |---|---|---|---|
 | G0. Tuyển ảnh (C1–C4) và cổng quyền | Độ phân giải, mật độ nét, quyền, tính xác thực di sản | Hệ thống (C1–C3), người xác nhận (C4) | Không đưa hiện vật vào thư viện / không chạy ([07](07_PROVENANCE_COPYRIGHT.md)) |
 | Kiểm tra áo nền | Áo do LoRA sinh: mặt nạ áo hợp lệ (không chạm mép khung, diện tích 8% đến 55%, cao ít nhất 60% khung) | Hệ thống | Sinh ứng viên khác (tối đa 6); cả 6 bị loại thì báo lỗi, không sinh thiết kế |
-| G2. Hoa văn | Rò dáng vật chứa (VLS), đường nối khi lát | Hệ thống | Đánh dấu "không đạt", gợi ý đổi seed hoặc giảm trọng số một mức. **Hệ thống chưa tự sinh lại hoa văn** |
+| G2. Hoa văn | Rò dáng vật chứa (VLS), đường nối khi lát | Hệ thống | Vòng sinh lại hoa văn (mục dưới): đổi seed tối đa 3 lần; vẫn lỗi thì giữ bản ít lỗi nhất và đánh dấu "không đạt". Chưa thử giảm trọng số ControlNet |
 | Hoàn thiện ảnh (polish) | PPS và IoU của ảnh vừa polish | Hệ thống | Vòng thử lại tự động (mục dưới): đổi seed, hạ độ nhiễu, cuối cùng trả bản ghép thô kèm nhãn |
 | G3. Thiết kế cuối | Giữ họa tiết (PPS), giữ dáng áo (IoU), độ nét, giữ chi tiết mịn, lệch màu | Hệ thống | Đánh dấu "không đạt" kèm bước gợi ý; có ứng viên sửa bằng khoá họa tiết nếu G2 không lỗi |
 | QC | Thiết kế có cảnh báo (WARN) | QC Officer | Chuyển chuyên gia kèm ghi chú, hoặc trả về sửa |
@@ -63,6 +63,22 @@ Bước hoàn thiện (`generation/garment.py::polish_locked`) gồm ba việc n
 Căn cứ chọn cấu hình là `evaluation/polish_finish_trial.csv` (xem [06](06_EXPERIMENTS.md)): trên 12 thiết kế, khoá họa tiết cũ (`dog_sigma_low` 1,2) cho PPS cao (0,91) nhưng chi tiết mịn thấp (0,61); `dog_sigma_low` 0,3 giữ chi tiết mịn 0,83 và không thiết kế nào bị loại.
 
 **Lưu ý quan trọng**: PPS của bản có khoá họa tiết cao *do cách làm* (nét vẽ được chép lại từ bản ghép). PPS cao vì vậy **không chứng minh** bản khoá đẹp hơn hay giống vải in hơn. Với khoá họa tiết, bản cuối rất gần bản ghép thô; phần polish còn lại chủ yếu chỉnh ánh sáng. Câu hỏi "bản nào đẹp hơn" được giao cho chuyên gia chấm mù.
+
+## Sinh lại hoa văn khi G2 lỗi
+
+Vòng này (`quality/pattern_retry.py`, gọi từ `generation/streamlit_runner.py`) đo G2 ngay sau khi sinh hoa văn, trước khi ghép lên áo, để không phí công polish và cổng G3 cho một hoa văn chắc chắn bị loại.
+
+1. Sinh hoa văn với seed gốc rồi đo G2 (trên đúng ảnh sẽ dùng, sau khi khớp bảng màu).
+2. Chỉ **LỖI** mới kích hoạt: VLS từ 0,40 hoặc đường nối từ 2,0. Cảnh báo (WARN) dùng luôn, giống vòng polish.
+3. Sinh lại với seed gốc cộng 1, cộng 2, cộng 3 (tối đa `max_retries` = 3 lần sinh lại, giữ nguyên prompt, trọng số ControlNet và bảng màu). Seed polish vẫn là seed gốc.
+4. Vẫn lỗi sau mọi lần: giữ bản ít lỗi nhất (chỉ số tệ nhất so với ngưỡng lỗi thấp nhất), trạng thái `best_of_failed`. G2 vẫn báo LỖI nên Passport ghi `qa_failed` và thiết kế bị ẩn khỏi giao diện, không có gì bị che giấu.
+5. Lỗi ở bước đo (không phải bước sinh) không làm mất ảnh và không sinh lại; ảnh được dùng với trạng thái `unmeasured`.
+
+Mọi lần bị loại ghi vào `outputs/qc/pattern_rejects.csv` và `outputs/qc/pattern_rejects/`. Passport ghi `generation.pattern_seed` (seed hoa văn thực dùng) và `generation.pattern_retry` (trạng thái và từng lần thử, kèm giá trị VLS và đường nối). Tắt cho một biến thể bằng `pattern_retry: false`.
+
+**Thử thật trên LR3D_124** (hiện vật có 3 thiết kế bị loại ở bộ demo, seed 42, 20/11/2026, RTX 4060 Laptop): thiết kế 1 được cứu ở lần thử thứ 4 (seed 45, đường nối từ 2,71 xuống 1,54, còn cảnh báo). Thiết kế 2 và 3 cả 4 lần đều lỗi (đường nối 2,17 đến 5,94), giữ bản ít lỗi nhất và vẫn `qa_failed`. Thiết kế 4 đạt ngay. Mỗi lần sinh lại thêm khoảng 10 đến 12 giây, nên lượt chạy này mất 263 giây thay vì khoảng 100 đến 150 giây.
+
+**Kết luận và giới hạn**: đổi seed chỉ cứu được một phần. Trong 4 thiết kế của LR3D_124, chỉ thiết kế mức 4 (trọng số ControlNet 0,25, thấp nhất) đạt ngay, ba mức có trọng số cao hơn (0,85, 0,65, 0,45) đều lỗi đường nối. Nghi ngờ nguyên nhân do mảng phẳng của LR3D_124 có rìa lệch nên đường nét điều khiển dính vào mép, trọng số càng cao càng lộ. Chưa làm bước giảm trọng số ControlNet ở lần thử cuối (cấu hình G2 có nêu hướng này) vì nó đổi ý nghĩa của mức sáng tạo, cần nhóm quyết định.
 
 ## Kết quả bộ demo hiện tại (19/11/2026)
 

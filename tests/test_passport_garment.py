@@ -109,3 +109,19 @@ def test_khoa_hoa_tiet_duoc_ghi_vao_passport(work):
     buoc = {s["step"]: s for s in pp["process_steps"]}["polish"]
     assert "khóa họa tiết" in buoc["label"] and "pattern_lock_v1" in buoc["note"]
     assert "pattern_lock" not in tao_passport(work, None, polish_mask=True)["generation"]["polish_img2img"]
+
+
+def test_passport_ghi_seed_hoa_van_thuc_dung_va_cac_lan_sinh_lai(work):
+    """Hoa văn sinh lại ở seed khác seed gốc: Passport ghi seed thực dùng và các lần thử để tái lập."""
+    log = [{"attempt": 1, "seed": 42, "status": "failed", "failed_metrics": ["seam_ratio"], "values": {"seam_ratio": 2.4}},
+           {"attempt": 2, "seed": 43, "status": "ok", "failed_metrics": [], "values": {"seam_ratio": 1.1}}]
+    pp = tao_passport(work, None, pattern_seed=43, pattern_status="retried_seed", pattern_attempt_log=log)
+    g = pp["generation"]
+    assert g["seed"] == 42 and g["pattern_seed"] == 43            # seed gốc (dùng cho polish) khác seed hoa văn thực dùng
+    assert g["pattern_retry"]["status"] == "retried_seed" and g["pattern_retry"]["attempts"] == log
+    assert any("seed 43" in s["label"] for s in pp["process_steps"] if s["step"] == "generate_pattern")
+
+
+def test_passport_khong_sinh_lai_pattern_seed_bang_seed_goc(work):
+    pp = tao_passport(work, None)
+    assert pp["generation"]["pattern_seed"] == 42 and pp["generation"]["pattern_retry"] == {"status": "single_pass", "attempts": []}

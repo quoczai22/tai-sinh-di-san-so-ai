@@ -29,7 +29,7 @@ from evaluation import intensity_sweep                              # noqa: E402
 from generation import controlnet, garment, garment_lora, layout_select, pattern, streamlit_runner  # noqa: E402
 from generation.stable_diffusion import Generator                   # noqa: E402
 from provenance import builder, passport                            # noqa: E402
-from quality import assess, retry                                   # noqa: E402
+from quality import assess, pattern_retry, retry                                   # noqa: E402
 
 # (nhãn, đối tượng, tên hàm, có phải bước con của dòng trước không)
 STEPS = [
@@ -101,6 +101,7 @@ def main() -> int:
     tmp = Path(tempfile.mkdtemp(prefix="profile_gen_", dir=base))
     streamlit_runner.PASSPORT_DIR = tmp / "passports"             # Passport và nhật ký ghi vào thư mục tạm
     retry.QC_DIR = tmp / "qc"
+    pattern_retry.QC_DIR = tmp / "qc"
     for label, obj, name, _ in STEPS:
         instrument(obj, name, label)
 

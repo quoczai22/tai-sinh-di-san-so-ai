@@ -18,6 +18,7 @@ from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
 
+import numpy as np
 from PIL import Image
 
 from generation import controlnet as cn, element_library, garment, layout_select, palette, pattern
@@ -132,6 +133,12 @@ def generate_design_set(
         from evaluation.intensity_sweep import Scorer             # noqa: PLC0415
 
         scorer = Scorer()
+        # Cổng G2 đo hoa văn ngay sau khi sinh (để sinh lại khi LỖI). Đo trên đúng ảnh tham chiếu đã lưu, giống bước
+        # kiểm tra chất lượng cuối lượt chạy, nên kết quả hai lần đo khớp nhau.
+        from quality import gate as QG, pattern_retry as PR            # noqa: PLC0415
+
+        qg_cfg = QG.load_config()
+        ref_arr = np.asarray(Image.open(ref_path).convert("RGB"))
         used_layouts: set[str] = set()
         total = len(variants)
         for index, variant in enumerate(variants, start=1):
@@ -139,11 +146,26 @@ def generate_design_set(
             try:
                 prepared = prepared_list[(index - 1) % len(prepared_list)]
                 source_colors = palette.dominant_colors(prepared["reference"], prepared["reference_mask"])
-                result = pattern.generate(generator, heritage_id, variant["level"], seed, prepared=prepared)
-                design_pattern = result["image"]
-                if variant["palette"] == "original":
-                    design_pattern = palette.match_palette(
-                        design_pattern, prepared["reference"], prepared["reference_mask"])
+
+                def make_pattern(s: int, prepared=prepared, variant=variant) -> tuple[Image.Image, dict]:
+                    res = pattern.generate(generator, heritage_id, variant["level"], s, prepared=prepared)
+                    img = res["image"]
+                    if variant["palette"] == "original":
+                        img = palette.match_palette(img, prepared["reference"], prepared["reference_mask"])
+                    return img, res
+
+                # Sinh lại hoa văn khi G2 LỖI (mặc định bật): đổi seed, tối đa max_retries lần (quality/pattern_retry.py)
+                pattern_retry = None
+                if variant.get("pattern_retry", True):
+                    pattern_retry = PR.generate_with_retry(
+                        make_pattern,
+                        lambda im: QG.evaluate_pattern(np.asarray(im.convert("RGB")), ref_arr, qg_cfg),
+                        seed=seed, tag=f"{run_id}_V{index}",
+                        on_retry=lambda n, s, i=index: report(
+                            10 + (i - 1) * (80 // total), f"Đang sinh lại hoa văn thiết kế {i}/{total} (lần {n})..."))
+                    design_pattern, result = pattern_retry["image"], pattern_retry["result"]
+                else:
+                    design_pattern, result = make_pattern(seed)
                 pat_path = run_dir / f"V{index}_pattern.png"
                 design_pattern.save(pat_path)
                 ranked = layout_select.rank(design_pattern, template_path=tpl_path, garment_region=region)
@@ -196,6 +218,10 @@ def generate_design_set(
                     "layout": chosen["layout"], "layout_label": chosen["label"], "layout_scale": chosen["scale"],
                     "layout_score": chosen["score"], "layout_selected_by": selected_by,
                     "layout_ranking": ";".join(f"{x['layout']}:{x['score']}" for x in ranked),
+                    "pattern_seed": pattern_retry["seed"] if pattern_retry else seed,
+                    "pattern_status": pattern_retry["status"] if pattern_retry else "single_pass",
+                    "pattern_attempts": len(pattern_retry["attempts"]) if pattern_retry else 1,
+                    "pattern_attempt_log": pattern_retry["attempts"] if pattern_retry else [],
                     "polish_strength": strength, "polish_mask": masked, "polish_lock": lock,
                     "polish_status": retry_info["status"] if retry_info else "single_pass",
                     "polish_attempts": len(retry_info["attempts"]) if retry_info else 1,
