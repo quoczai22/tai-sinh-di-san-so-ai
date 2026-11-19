@@ -27,6 +27,7 @@ outputs/audit/
 cache/
 *.ckpt
 *.safetensors
+!data/lora/**/*.safetensors
 *.pt
 *.pth
 
