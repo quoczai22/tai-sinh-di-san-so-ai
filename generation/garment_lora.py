@@ -8,6 +8,7 @@ LoRA do scripts/13_train_lora.py huấn luyện từ VietFashion (CC BY-NC 4.0, 
 from __future__ import annotations
 
 import os
+import secrets
 from pathlib import Path
 
 import numpy as np
@@ -40,6 +41,13 @@ def mask_ok(mask: np.ndarray) -> tuple[bool, str]:
     if (ys.max() - ys.min() + 1) / h < MIN_HEIGHT_FRAC:
         return False, "áo thấp hơn 60% chiều cao khung"
     return True, ""
+
+
+def pick_seed(seed: int | None = None) -> int:
+    """Seed sinh áo: dùng seed được chỉ định, không có thì chọn ngẫu nhiên để mỗi lần chạy ra một áo khác.
+
+    Seed thực dùng được ghi vào Design Passport (generation.garment.seed) nên vẫn tái lập được."""
+    return secrets.randbelow(2**31) if seed is None else int(seed)
 
 
 def generate_garment(out_dir: Path, seed: int = 42, lora_dir: Path | None = None, tries: int = 6) -> dict:

@@ -48,3 +48,10 @@ def test_bo_do_g3_dung_ao_va_vung_ao_tinh_san(tmp_path):
     g3 = ev(raw.copy())                                         # ảnh cuối giống hệt ảnh ghép thô
     assert g3["details"]["outside_drift"] == 0.0
     assert "garment_shape_iou" in g3["metrics"]
+
+
+def test_pick_seed_ngau_nhien_khi_khong_chi_dinh_va_giu_nguyen_khi_co():
+    from generation import garment_lora as gl
+    assert gl.pick_seed(7) == 7 and gl.pick_seed(0) == 0          # seed 0 vẫn là seed hợp lệ
+    seeds = {gl.pick_seed() for _ in range(20)}
+    assert len(seeds) > 1 and all(0 <= s < 2**31 for s in seeds)  # không còn mặc định cố định 42

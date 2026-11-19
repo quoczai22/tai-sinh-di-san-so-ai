@@ -54,6 +54,7 @@ def generate_design_set(
     run_id: str | None = None,
     source: str = "panel",
     garment_lora_dir: Path | None = None,
+    garment_seed: int | None = None,
 ) -> list[dict]:
     """Sinh bộ thiết kế cho một hiện vật.
 
@@ -65,6 +66,8 @@ def generate_design_set(
     Áo dài nền luôn do SD 1.5 + LoRA dáng áo dài sinh mới mỗi lần chạy, vùng áo tách bằng SAM
     (generation/garment_lora.py). Không còn áo mẫu cố định: thiếu LoRA hoặc không sinh được áo hợp lệ thì
     ném GarmentError, không quay về áo khác. garment_lora_dir chọn thư mục LoRA (mặc định data/lora/aodai_r16_512).
+    garment_seed: seed sinh áo, độc lập với `seed` (hoa văn và polish). Mặc định None là ngẫu nhiên mỗi lần chạy nên
+    mỗi lần ra một áo khác; seed áo thực dùng được ghi vào manifest và Passport để tái lập.
     """
     from provenance import passport as P                          # noqa: PLC0415
     from provenance.builder import build_design_passport          # noqa: PLC0415
@@ -114,7 +117,7 @@ def generate_design_set(
     # Áo nền: sinh mới bằng LoRA. Sinh áo xong mới nạp bộ sinh hoa văn để hai mô hình không chiếm VRAM cùng lúc.
     report(8, "Đang sinh áo dài nền bằng LoRA...")
     from generation import garment_lora                                 # noqa: PLC0415
-    g = garment_lora.generate_garment(run_dir, seed=seed, lora_dir=garment_lora_dir)
+    g = garment_lora.generate_garment(run_dir, seed=garment_lora.pick_seed(garment_seed), lora_dir=garment_lora_dir)
     tpl_path, region = g["path"], g["mask"]
     garment_info = {"source": "lora", "seed": g["seed"], "lora": g["lora"], "tried": g["tried"],
                     "image": g["path"].relative_to(ROOT).as_posix(),
