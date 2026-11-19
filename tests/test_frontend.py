@@ -19,7 +19,7 @@ JS = sorted((WEB / "assets" / "js").rglob("*.js"))
 @pytest.mark.parametrize("path", JS, ids=lambda p: p.name)
 def test_js_module_syntax(path):
     r = subprocess.run(["node", "--input-type=module", "--check"], input=path.read_text(encoding="utf-8"),
-                       capture_output=True, text=True)
+                       capture_output=True, text=True, encoding="utf-8")
     assert r.returncode == 0, r.stderr
 
 
@@ -38,6 +38,7 @@ def test_demo_data_matches_repo():
     heritage = json.loads((WEB / "data" / "heritage.json").read_text(encoding="utf-8"))
     registry = json.loads((ROOT / "data" / "heritage" / "metadata.json").read_text(encoding="utf-8"))
     assert len(heritage["items"]) == len(registry["items"])
+    assert sum(it["status"] == "active" for it in heritage["items"]) == 6   # 6 hiện vật LR3D; 6 hiện vật cũ đã ngừng dùng
     for d in ("bpmn_to_be.svg", "bpmn_as_is.svg", "use_case.svg"):
         assert (WEB / "data" / "diagrams" / d).exists()
 
@@ -53,3 +54,15 @@ def test_no_hardcoded_similarity_in_new_ui():
 def test_no_inner_html_with_data():
     for p in JS:
         assert ".innerHTML" not in p.read_text(encoding="utf-8"), p.name
+
+
+def test_every_active_heritage_has_a_valid_glb_model():
+    """Mỗi hiện vật đang dùng có mô hình 3D GLB hợp lệ (đầu file 'glTF') và đủ nhẹ để tải trên web."""
+    heritage = json.loads((WEB / "data" / "heritage.json").read_text(encoding="utf-8"))
+    for it in heritage["items"]:
+        if it["status"] != "active":
+            continue
+        glb = WEB / "assets" / "models" / f"{it['id']}.glb"
+        assert glb.exists(), it["id"]
+        assert glb.read_bytes()[:4] == b"glTF", it["id"]
+        assert glb.stat().st_size < 8_000_000, it["id"]

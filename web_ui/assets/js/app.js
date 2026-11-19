@@ -4,7 +4,7 @@ import { renderHero } from './lib/hero.js';
 import { applyMotionClass, enhance, reduced, scenes, setMotion } from './lib/motion.js';
 import { stateBox } from './lib/ui.js';
 
-// Web chỉ dành cho người xem: 3 trang. Hồ sơ nghiệp vụ (kiểm định, thí nghiệm, thẩm định, Passport,
+// Web chỉ dành cho người xem: Trang chủ, Studio (chọn hiện vật) và Kết quả (4 tà áo). Hồ sơ nghiệp vụ (kiểm định, thí nghiệm, thẩm định, Passport,
 // BPMN, KPI) nằm trong dữ liệu, API và docs/finals — không đưa lên web.
 const CHAPTER = { 'Khám phá': '01' };
 const CHAPTER_NOTE = {};
@@ -14,26 +14,28 @@ const ROUTES = [
       title: 'Thư viện di sản', lede: 'Hoa văn trên gốm Bát Tràng, chọn lọc và ghi nguồn, làm chất liệu cho tà áo dài.' },
     { group: 'Khám phá', id: 'studio', label: 'Studio thiết kế', short: 'Studio', icon: 'studio', primary: true, load: () => import('./views/studio.js'),
       title: 'Studio thiết kế', lede: 'Chọn một hiện vật, bấm tạo, nhận bốn thiết kế áo dài dệt từ hoa văn của nó.' },
-    { group: 'Khám phá', id: 'collection', label: 'Bộ sưu tập', short: 'Bộ sưu tập', icon: 'library', primary: true, load: () => import('./views/collection.js'),
-      title: 'Bộ sưu tập', lede: 'Những tà áo dài đã được dệt từ hoa văn gốm Bát Tràng.' },
+    // Trang Kết quả chỉ vào qua nút Tạo thiết kế, không nằm trong menu
+    { group: 'Khám phá', id: 'result', label: 'Kết quả', short: 'Kết quả', icon: 'studio', hidden: true, load: () => import('./views/result.js'),
+      title: 'Kết quả thiết kế', lede: 'Bốn thiết kế áo dài dệt từ hoa văn của hiện vật bạn chọn.' },
 ].map((r) => ({ ...r, chapter: CHAPTER[r.group] }));
 
 let info = { mode: 'demo' };
 
 /* ---------- Điều hướng trên cùng + menu toàn màn hình ---------- */
 function renderNav(active) {
-    // Logo ở giữa: 2 mục trái, 1 mục phải + nút menu (cân thị giác).
+    // Logo ở giữa: các mục chính bên trái, nút menu bên phải.
     const primaries = ROUTES.filter((x) => x.primary);
     const link = (r) => h('a', { href: `#/${r.id}`, 'aria-current': r.id === active ? 'page' : null }, r.short);
     clear(document.getElementById('nav-left')).append(...primaries.slice(0, 2).map(link));
     clear(document.getElementById('nav')).append(...primaries.slice(2).map(link));
     const menu = clear(document.getElementById('menu-chapters'));
-    const groups = [...new Set(ROUTES.map((r) => r.group))];
+    const shown = ROUTES.filter((r) => !r.hidden);
+    const groups = [...new Set(shown.map((r) => r.group))];
     groups.forEach((g, gi) => {
         menu.append(h('section', { class: 'menu-chapter', style: { '--i': String(gi) } },
             h('h2', { class: 'menu-group' }, g),
             CHAPTER_NOTE[g] ? h('p', { class: 'menu-note' }, CHAPTER_NOTE[g]) : null,
-            h('ul', {}, ROUTES.filter((r) => r.group === g).map((r) => h('li', {},
+            h('ul', {}, shown.filter((r) => r.group === g).map((r) => h('li', {},
                 h('a', { href: `#/${r.id}`, 'aria-current': r.id === active ? 'page' : null, onclick: () => closeMenu() },
                     icon(r.icon), h('span', {}, r.label), icon('arrow', 'go')))))));
     });
@@ -46,7 +48,7 @@ function renderNav(active) {
     menu.after(toggle);
     const foot = clear(document.getElementById('foot-links'));
     groups.forEach((g) => foot.append(h('div', {}, h('p', { class: 'foot-group' }, g),
-        ROUTES.filter((r) => r.group === g).map((r) => h('a', { href: `#/${r.id}` }, r.label)))));
+        shown.filter((r) => r.group === g).map((r) => h('a', { href: `#/${r.id}` }, r.label)))));
 }
 
 const menuBtn = document.getElementById('menu-btn');
@@ -90,9 +92,6 @@ async function route() {
     const [, id = 'library', ...params] = (location.hash || '#/library').split('/');
     const r = ROUTES.find((x) => x.id === id) || ROUTES[0];
     closeMenu();
-    // Đổi trang thì đóng khung chi tiết đang mở (vd. bấm "Thử với hiện vật này" trong khung)
-    document.getElementById('overlay-root')?.replaceChildren();
-    document.body.classList.remove('drawer-open');
     renderNav(r.id);
     document.title = `${r.title} — Tái Sinh Di Sản Số`;
     const main = document.getElementById('main');

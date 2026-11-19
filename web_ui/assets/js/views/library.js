@@ -4,17 +4,17 @@ import { litWords } from '../lib/motion.js';
 import { phoenix } from '../lib/phoenix.js';
 import { cloud, drum, thread } from '../lib/drum.js';
 import { aiMark } from '../lib/ui.js';
-import { openArtifact, openDesign } from '../lib/detail.js';
+import { hoverSpin } from '../lib/viewer3d.js';
 
-// Trang chủ dành cho người xem: chỉ ảnh, tên và câu chuyện. Mã hiệu, chỉ số, tiêu chí kỹ thuật
-// nằm trong phần chi tiết (bấm vào hiện vật / thiết kế) và các khu vực chuyên môn trong menu.
+// Trang chủ dành cho người xem: chỉ ảnh, tên và câu chuyện. Bấm hiện vật thì sang Studio của hiện vật đó;
+// bấm tà áo thì sang trang Kết quả của hiện vật tạo ra nó.
 const PREF = ['pending_expert_review', 'qa_warning', 'revision_requested', 'approved', 'qa_failed'];
 const latestOf = (d) => (d.latest_version_kind === 'system_repair' && d.repair_thumb ? d.repair_thumb : d.thumb);
 const byPref = (a, b) => (PREF.indexOf(a.approval.status) - PREF.indexOf(b.approval.status)) || a.passport_id.localeCompare(b.passport_id);
 
 function chapterHead(kicker, title, lede) {
     return h('div', { class: 'chapter-intro' },
-        h('p', { class: 'kicker' }, kicker),
+        kicker ? h('p', { class: 'kicker' }, kicker) : null,
         h('h2', { class: 'display' }, title),
         lede ? h('p', { class: 'lede' }, lede) : null);
 }
@@ -34,12 +34,13 @@ export async function render() {
     const sampleItem = sample ? items.find((i) => i.id === sample.heritage_id) : active[0];
     const dir = sample ? sample.thumb.replace(/final_img2img\.webp$/, '') : '';
     // Ba chặng người xem nhìn thấy được: hiện vật → hoa văn → tà áo
+    // Chỉ để xem: ba thẻ này không phải nút bấm, không dẫn tới trang nào
     const journey = [
-        ['Hiện vật', 'Một chiếc bình gốm Bát Tràng có nguồn gốc rõ ràng.', sampleItem ? `#/studio/${encodeURIComponent(sampleItem.id)}` : '#/studio', sampleItem?.image, false, true],
-        ['Hoa văn', 'Nét vẽ trên men được dệt thành tấm hoa văn liền mạch.', sampleItem ? `#/studio/${encodeURIComponent(sampleItem.id)}` : '#/studio', dir && `./${dir}pattern.webp`, true],
-        ['Tà áo dài', 'Hoa văn khoác lên dáng áo dài, giữ trọn nét gốc.', '#/collection', sample && `./${latestOf(sample)}`, true],
+        ['Hiện vật', 'Một chiếc bình gốm Bát Tràng có nguồn gốc rõ ràng.', sampleItem?.image, false, true],
+        ['Hoa văn', 'Nét vẽ trên men được dệt thành tấm hoa văn liền mạch.', dir && `./${dir}pattern.webp`, true],
+        ['Tà áo dài', 'Hoa văn khoác lên dáng áo dài, giữ trọn nét gốc.', sample && `./${latestOf(sample)}`, true],
     ];
-    const journeyCards = journey.map(([title, sub, href, img, ai, contain], i) => h('a', { class: 'journey-card', href },
+    const journeyCards = journey.map(([title, sub, img, ai, contain], i) => h('div', { class: 'journey-card' },
         h('div', { class: `jc-img ${contain ? 'contain' : ''}` }, img ? h('img', { src: img, alt: '', loading: 'lazy' }) : null),
         h('span', { class: 'jc-num' }, String(i + 1).padStart(2, '0')),
         ai ? aiMark() : null,
@@ -53,26 +54,28 @@ export async function render() {
             h('div', { class: 'pin-progress', 'aria-hidden': 'true' }, h('span'))));
 
     // ---- 3. Hiện vật: lưới ảnh, bình nổi lên theo nhịp cuộn ----
-    const artifactCard = (it, k) => h('button', { class: 'artifact-card', type: 'button', 'data-scene': '', style: { '--k': String(k % 3) },
-        onclick: () => openArtifact(it), 'aria-label': `${it.name} — xem chi tiết` },
-    h('div', { class: 'ac-stage' }, h('div', { class: 'ac-halo', 'aria-hidden': 'true' }), h('img', { src: it.image, alt: '', loading: 'lazy' })),
-    h('div', { class: 'ac-body' },
-        h('div', { class: 'code' }, it.dating || 'Gốm Bát Tràng'),
-        h('div', { class: 'name' }, it.name),
-        h('span', { class: 'more' }, 'Xem chi tiết', h('i', { class: 'arr', 'aria-hidden': 'true' }))));
+    const artifactCard = (it, k) => {
+        const stage = h('div', { class: 'ac-stage' }, h('div', { class: 'ac-halo', 'aria-hidden': 'true' }), h('img', { src: it.image, alt: '', loading: 'lazy' }));
+        const card = h('a', { class: 'artifact-card', href: `#/studio/${encodeURIComponent(it.id)}`, 'data-scene': '', style: { '--k': String(k % 3) },
+            'aria-label': `${it.name}, tạo thiết kế` },
+        stage,
+        h('div', { class: 'ac-body' },
+            h('div', { class: 'code' }, it.dating || 'Gốm Bát Tràng'),
+            h('div', { class: 'name' }, it.name)));
+        hoverSpin(card, stage, it.id);                              // rê chuột vào thẻ: bình xoay 3D, rê ra: đứng yên
+        return card;
+    };
     const collection = h('section', { class: 'section chapter', id: 'hien-vat', tabindex: '-1' },
         chapterHead('Bộ sưu tập', 'Hiện vật', 'Những chiếc bình gốm làm nguồn hoa văn.'),
         h('div', { class: 'artifact-grid-v2' }, active.map(artifactCard)));
 
     // ---- 4. Tà áo: ba cột trôi với tốc độ khác nhau ----
     const picks = [];
-    for (const it of active) picks.push(...passports.filter((d) => d.heritage_id === it.id).sort(byPref).slice(0, 2));
+    for (const it of active) picks.push(...passports.filter((d) => d.heritage_id === it.id).sort(byPref).slice(0, 1));
     const nameOf = Object.fromEntries(items.map((i) => [i.id, i.name]));
-    const designItem = (d) => h('a', { class: 'gallery-item', href: '#/collection', 'data-scene': '', onclick: (e) => { e.preventDefault(); openDesign(d.passport_id); } },
-        h('div', { class: 'gi-img' }, h('img', { src: `./${latestOf(d)}`, alt: `Áo dài hoa văn ${nameOf[d.heritage_id] || ''}`, loading: 'lazy' }), aiMark()),
-        h('div', { class: 'gi-cap' },
-            h('span', { class: 'gi-from' }, nameOf[d.heritage_id] || ''),
-            h('span', { class: 'gi-title' }, d.layout || 'Thiết kế áo dài', h('i', { class: 'arr', 'aria-hidden': 'true' }))));
+    // Chỉ để xem: ảnh áo dài không phải nút bấm, không dẫn tới trang nào
+    const designItem = (d) => h('div', { class: 'gallery-item', 'data-scene': '' },
+        h('div', { class: 'gi-img' }, h('img', { src: `./${latestOf(d)}`, alt: `Áo dài hoa văn ${nameOf[d.heritage_id] || ''}`, loading: 'lazy' }), aiMark()));
     const cols = [[], [], []];
     picks.forEach((d, i) => cols[i % 3].push(designItem(d)));
     const gallery = picks.length ? h('section', { class: 'section chapter gallery', 'data-scene': '' },
@@ -85,10 +88,8 @@ export async function render() {
             h('div', { class: 'finale-drum' }, drum()),
             h('div', { class: 'finale-copy' },
                 cloud('finale-cloud'),
-                h('p', { class: 'kicker' }, 'Đích đến'),
                 h('h2', { class: 'display' }, 'Di sản được khoác lên người'),
-                h('p', { class: 'finale-text' }, 'Mỗi tà áo mang theo tên hiện vật, nơi lưu giữ và trọn hành trình của nó, để vẻ đẹp ngàn năm của gốm Bát Tràng được trao tiếp một cách trân trọng.'),
-                h('div', { class: 'finale-ctas' }, h('a', { class: 'btn hero-btn primary', href: '#/studio' }, 'Bắt đầu thiết kế', icon('arrow')), h('a', { class: 'btn hero-btn ghost', href: '#/collection' }, 'Xem bộ sưu tập')))));
+                h('div', { class: 'finale-ctas' }, h('a', { class: 'btn hero-btn primary', href: '#/studio' }, 'Bắt đầu thiết kế', icon('arrow'))))));
 
     return h('div', { class: 'exhibit home' }, phoenix(), statement, journeySection, thread(), collection, thread(), gallery, thread(), finale);
 }

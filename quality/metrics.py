@@ -163,6 +163,19 @@ def visual_quality(raw: np.ndarray, final: np.ndarray, region: np.ndarray) -> di
             "clipping_pct": round(clip, 3)}
 
 
+def detail_preservation(raw: np.ndarray, final: np.ndarray, region: np.ndarray) -> dict:
+    """Giữ chi tiết mịn (detail_ratio): phương sai Laplacian của final / raw TRONG VÙNG HỌA TIẾT, cao là tốt.
+
+    Khác sharpness_ratio (đo trên cả vùng áo, phần lớn là vải trơn nên pha loãng): chỉ số này đo ngay chỗ có họa tiết,
+    nên bắt được việc nét mảnh bị nhòe sau polish. PPS chỉ đo dải tần trung (sigma 1,2 đến 4 px) nên không bắt được.
+    """
+    if region.sum() < 200:
+        return {"detail_ratio": float("nan")}
+    lap = lambda a: cv2.Laplacian(cv2.cvtColor(a, cv2.COLOR_RGB2GRAY).astype(np.float64), cv2.CV_64F)[region].var()
+    var_r = float(lap(raw))
+    return {"detail_ratio": round(float(lap(final)) / var_r, 4) if var_r > 1e-9 else float("nan")}
+
+
 def vessel_leakage(pattern: np.ndarray, reference: np.ndarray, border: int = 24) -> dict:
     """Vessel Leakage Score (VLS) cho hoa văn giai đoạn 1, thang [0, 1], THẤP là tốt.
 
@@ -194,6 +207,21 @@ def vessel_leakage(pattern: np.ndarray, reference: np.ndarray, border: int = 24)
     iou = float((m_pat & m_ref).sum() / union) if union else 0.0
     return {"vessel_leakage": round(border_bg * iou, 4), "border_background": round(border_bg, 4),
             "silhouette_iou_vs_artifact": round(iou, 4)}
+
+
+def outside_drift(raw: np.ndarray, final: np.ndarray, garment_mask: np.ndarray) -> dict:
+    """Trôi ngoài vùng áo (M2): sai khác tuyệt đối giữa bản ghép thô và thiết kế cuối ở
+    NGOÀI mặt nạ áo, thang 0 đến 255 (trung bình trên mọi pixel và kênh màu).
+
+    Polish có mặt nạ giữ nguyên từng pixel ngoài áo nên kỳ vọng đúng 0. Polish toàn ảnh
+    vẽ lại cả nền, tay, mặt nên cho giá trị lớn. Chỉ đo và ghi vào chi tiết, chưa dùng làm
+    ngưỡng loại: ngưỡng cần hiệu chỉnh sau.
+    """
+    outside = garment_mask == 0
+    if not outside.any():
+        return {"outside_drift": float("nan"), "outside_drift_max": float("nan")}
+    d = np.abs(raw.astype(np.int16) - final.astype(np.int16))[outside]
+    return {"outside_drift": round(float(d.mean()), 3), "outside_drift_max": int(d.max())}
 
 
 def seam_ratio(pattern: np.ndarray) -> dict:

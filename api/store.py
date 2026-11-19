@@ -65,6 +65,38 @@ def list_passports() -> list[dict]:
     return out
 
 
+def quality_rows() -> list[dict]:
+    """Bảng kết quả Cổng chất lượng của mọi thiết kế, mỗi dòng một Passport (cột giống bảng cũ quality_gate_legacy.csv).
+
+    Lấy trực tiếp từ Passport nên luôn khớp với dữ liệu thật; thiết kế chưa qua cổng thì các cột chất lượng để trống.
+    """
+    rows = []
+    for f in sorted(PASSPORTS.glob("DP-*.json")):
+        p = P.load(f)
+        q = p.get("quality") or {}
+        gen = p.get("generation") or {}
+        rep = q.get("repair") or {}
+        g3 = lambda k: _metric(q, "G3_final", k)                                  # noqa: E731
+        rows.append({
+            "passport_id": p["passport_id"], "design_id": p["design_id"], "heritage_id": p["heritage"]["heritage_id"],
+            "heritage_status": p["heritage"].get("status"), "variant": p["passport_id"].rsplit("-V", 1)[-1],
+            "controlnet_weight": (gen.get("controlnet") or {}).get("conditioning_scale"),
+            "layout": (gen.get("layout") or {}).get("name"),
+            "vessel_leakage": _metric(q, "G2_pattern", "vessel_leakage"), "seam_ratio": _metric(q, "G2_pattern", "seam_ratio"),
+            "G2": (q.get("G2_pattern") or {}).get("decision"),
+            "pattern_preservation": g3("pattern_preservation"), "structure_ncc": g3("structure_ncc"),
+            "chroma_ncc": g3("chroma_ncc"), "garment_shape_iou": g3("garment_shape_iou"),
+            "sharpness_ratio": g3("sharpness_ratio"), "detail_ratio": g3("detail_ratio"), "palette_shift_de": g3("palette_shift_de"),
+            "align_shift_px": g3("align_shift_px"), "G3": (q.get("G3_final") or {}).get("decision"),
+            "overall": (q.get("overall") or {}).get("decision"), "route_to": (q.get("overall") or {}).get("route_to"),
+            "repair_pps": _metric(rep, "G3_final", "pattern_preservation"),
+            "repair_G3": (rep.get("G3_final") or {}).get("decision"),
+            "approval_status": p["approval"]["status"],
+            "clip_similarity_ref": (gen.get("reference_metrics") or {}).get("clip_similarity_pattern_vs_ceramic"),
+        })
+    return rows
+
+
 def get_passport(passport_id: str) -> dict | None:
     if not PASSPORT_ID.match(passport_id):
         return None

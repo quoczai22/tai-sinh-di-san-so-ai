@@ -4,7 +4,7 @@ Trả lời yêu cầu cải tiến 2 của BTC: **đối chứng có kiểm so�
 
 ## Vấn đề của bộ 4 biến thể cũ
 
-Bốn biến thể V1–V4 ngày 06/09/2026 khác nhau ở **bốn** yếu tố cùng lúc (`evaluation/variants.csv`):
+Bốn biến thể V1 đến V4 của bản 06/09/2026 khác nhau ở **bốn** yếu tố cùng lúc (`evaluation/variants.csv`). Luồng sản phẩm hiện nay vẫn giữ cách đặt này (bốn mức sáng tạo đổi nhiều yếu tố cùng lúc):
 
 | Yếu tố | V1 | V2 | V3 | V4 |
 |---|---|---|---|---|
@@ -34,7 +34,7 @@ Quy trình chạy:
 
 ```bash
 python -m evaluation.experiment plan    evaluation/experiments/EXP-A_controlnet_weight.json   # sinh kế hoạch, KIỂM TRA đơn biến
-python -m evaluation.experiment run     evaluation/experiments/EXP-A_controlnet_weight.json   # chạy (EXP-A, EXP-B cần GPU)
+python -m evaluation.experiment run     evaluation/experiments/EXP-A_controlnet_weight.json   # chạy (EXP-A, B, D, E cần GPU; EXP-C chạy trên CPU)
 python -m evaluation.experiment blind   outputs/experiments/EXP-A --raters CG01,CG02,CG03     # gói chấm mù
 python -m evaluation.experiment analyze outputs/experiments/EXP-A                            # thống kê
 ```
@@ -48,24 +48,74 @@ python -m evaluation.experiment analyze outputs/experiments/EXP-A               
 5. **Đồng thuận trước khi kết luận**: tính Krippendorff's alpha (dữ liệu khoảng) giữa người chấm. Mục tiêu α ≥ 0,667 mới dùng điểm trung bình để kết luận.
 6. **Thống kê**: trung bình, độ lệch chuẩn, khoảng tin cậy 95% (phân phối t), hệ số biến thiên theo mức; so sánh cặp với mức đối chứng trên cùng hiện vật và seed (Wilcoxon có dấu, chỉ báo p khi có ≥ 6 cặp); so sánh tất cả các mức (Friedman, khi có ≥ 3 khối đủ mức).
 
-## Ba thí nghiệm
+## Năm thí nghiệm
 
-| | EXP-A | EXP-B | EXP-C |
-|---|---|---|---|
-| Câu hỏi | Trọng số ControlNet ảnh hưởng **riêng** thế nào đến hoa văn và thiết kế cuối, và dao động giữa các seed lớn đến đâu? | img2img làm thiết kế giống vải in hơn đến mức nào, đổi lại mất bao nhiêu họa tiết? Khoá họa tiết có giữ được cả hai không? | Mỗi bước ghép tất định (displacement, shading, color grade) đóng góp gì? |
-| Biến độc lập | Trọng số: 0,85 / 0,65 / 0,45 / 0,25 | Bước hoàn thiện: không img2img / img2img 0,25 / img2img 0,40 / img2img 0,40 + khoá họa tiết | Chế độ ghép: đầy đủ / bỏ displacement / bỏ shading / bỏ color grade |
-| Lặp | 5 seed: 42, 7, 123, 2024, 31415 | 3 seed img2img: 42, 7, 123 | Không (tất định) |
-| Cố định | Prompt không thêm cụm từ, bảng màu tự do, bố cục "Dải thân trước", img2img 0,40 | Trọng số 0,65, seed hoa văn 42, bảng màu tự do, bố cục "Dải thân trước" | Hoa văn V2 ngày 06/09/2026, bố cục "Dải thân trước", không img2img |
-| Hiện vật | 3 hiện vật đang dùng | 3 hiện vật đang dùng | Cả 6 (chỉ ghép trên CPU) |
-| Số lượt | 60 | 36 | 24 |
-| Chấm mù | ≥ 3 người, 4 tiêu chí | ≥ 3 người, 4 tiêu chí | ≥ 3 người, 2 tiêu chí |
-| Trạng thái | Đã lập và kiểm tra kế hoạch; chờ máy GPU | Đã lập và kiểm tra kế hoạch; chờ máy GPU | **Đã chạy**; gói chấm mù sẵn sàng, chờ phiếu |
+| | EXP-A | EXP-B | EXP-C | EXP-D | EXP-E |
+|---|---|---|---|---|---|
+| Câu hỏi | Trọng số ControlNet ảnh hưởng **riêng** thế nào đến hoa văn và thiết kế cuối? | Bước hoàn thiện (polish) làm mất bao nhiêu họa tiết, và khoá họa tiết giữ lại được bao nhiêu? | Mỗi bước ghép tất định (displacement, shading, color grade) đóng góp gì? | Áo dài nền do LoRA sinh so với áo mẫu cố định | Ảnh nạp cho ControlNet: ảnh render cả bình so với mảng hoa văn phẳng |
+| Biến độc lập | Trọng số: 0,85 / 0,65 / 0,45 / 0,25 | Cách hoàn thiện: không polish; polish toàn ảnh 0,25 và 0,40; polish toàn ảnh 0,40 + khoá; polish chỉ vùng áo 0,25 và 0,30; polish chỉ vùng áo 0,30 + khoá | Chế độ ghép: đầy đủ / bỏ displacement / bỏ shading / bỏ color grade | Nguồn áo nền: cố định / LoRA | Nguồn ảnh nạp: render / mảng phẳng |
+| Lặp | 5 seed: 42, 7, 123, 2024, 31415 | 3 seed polish: 42, 7, 123 | Không (tất định) | 5 seed: 42 đến 46 (cũng là seed hoa văn và seed áo LoRA) | 3 seed: 42, 43, 44 |
+| Hiện vật | 6 hiện vật đang dùng | 6 hiện vật đang dùng | 6 hiện vật cũ (chỉ ghép trên CPU) | 6 hiện vật đang dùng | 6 hiện vật đang dùng |
+| Số lượt | 120 | 126 | 24 | 60 | 36 |
+| Trạng thái | Đã lập và kiểm tra kế hoạch; **chưa chạy** | **Đã chạy 126/126** | **Đã chạy 24/24** (trên 6 hiện vật cũ) | **Đã chạy 60/60** | **Đã chạy 36/36** |
+| Chấm mù | Chưa | Chưa | Gói đã dựng, **chưa có phiếu** | Gói đã dựng (60 ảnh, 3 phiếu trống), **chưa có phiếu** | Chưa |
 
-Ba thí nghiệm chia đúng chỗ BTC hỏi: EXP-C chỉ đổi bước ghép, EXP-B chỉ đổi bước hoàn thiện, EXP-A chỉ đổi ControlNet; prompt và bảng màu cố định trong cả ba.
+Mỗi thí nghiệm chỉ đổi một yếu tố. Kế hoạch đổi hơn một yếu tố bị mã từ chối (kiểm thử `test_experiment.py`).
 
-## Kết quả EXP-C (tự động)
+Ghi chú về việc áo mẫu cố định đã bỏ: luồng sản phẩm hiện chỉ dùng áo do LoRA sinh. Quyết định này là lựa chọn thiết kế của nhóm (không phụ thuộc dáng áo có sẵn), **không** phải kết luận của EXP-D, vì EXP-D không thấy khác biệt có ý nghĩa (xem dưới) và chưa có chấm mù. Mức `fixed` còn trong mã chỉ để chạy lại các thí nghiệm cũ.
 
-Chỉ số: PPS của mỗi chế độ so với bản ghép đầy đủ (bản đầy đủ = 1). Chỉ số này cho biết **mỗi bước làm ảnh thay đổi bao nhiêu**, không cho biết bước đó làm ảnh đẹp hơn hay giống vải hơn; câu hỏi đó chờ phiếu chuyên gia.
+## Kết quả EXP-B: bước hoàn thiện (126 lượt)
+
+Chỉ số so với bản ghép thô (bản không polish bằng 1). Mỗi mức 18 cặp (6 hiện vật × 3 seed). Cấu hình lúc chạy: áo mẫu cố định, ảnh nạp là ảnh bình render, hoa văn seed 42.
+
+| Cách hoàn thiện | Giữ họa tiết (PPS) | Giữ dáng áo (IoU) | Độ nét | Lệch màu (ΔE) |
+|---|---|---|---|---|
+| Không polish | 1,000 | 1,000 | 1,00 | 0,0 |
+| Polish toàn ảnh 0,25 | 0,494 | 0,963 | 0,84 | 2,8 |
+| Polish toàn ảnh 0,40 (cách cũ) | **0,303** | 0,956 | 0,88 | 5,5 |
+| Polish toàn ảnh 0,40 + khoá họa tiết | 0,809 | 0,954 | 0,68 | 3,0 |
+| Polish chỉ vùng áo 0,25 | 0,494 | 0,993 | 0,85 | 2,8 |
+| Polish chỉ vùng áo 0,30 | 0,429 | 0,993 | 0,87 | 3,7 |
+| Polish chỉ vùng áo 0,30 + khoá họa tiết | 0,862 | 0,993 | 0,79 | 2,1 |
+
+- Polish toàn ảnh 0,40 (cách của bản 09/2026) làm PPS tụt còn 0,30, thấp nhất trong các cách có polish. Friedman trên 18 khối: χ² = 106,6; p < 0,001. Mọi mức so với không polish đều có p ≤ 0,0002 (Wilcoxon).
+- Polish chỉ vùng áo giữ dáng áo tốt hơn rõ (IoU 0,993 so với 0,956) và giữ nguyên từng pixel ngoài áo. Đây là lý do luồng sản phẩm chuyển sang polish chỉ vùng áo.
+- Độ nhiễu thấp hơn giữ họa tiết tốt hơn (0,25 cao hơn 0,30). Khoá họa tiết đưa PPS lên 0,81 đến 0,86, nhưng PPS này cao **do cách làm** (chép nét từ bản ghép), nên không chứng minh bản khoá đẹp hơn. Câu hỏi đó cần chấm mù.
+- Chưa có chấm mù, nên chưa biết lợi ích "giống vải in hơn" của polish có bù được phần họa tiết bị đổi hay không.
+
+Tệp: `outputs/experiments/EXP-B/` (`plan.csv`, `results.csv`, `summary.json`). Ảnh của EXP-B (chưa từng commit) đã xoá ngày 19/11/2026 cùng toàn bộ ảnh dựng trên áo mẫu cố định và không khôi phục được; số liệu giữ nguyên trong `results.csv`.
+
+## Kết quả EXP-D: nguồn áo nền (60 lượt)
+
+Mỗi mức 30 cặp (6 hiện vật × 5 seed). Cấu hình cố định: ảnh nạp là mảng hoa văn phẳng, polish chỉ vùng áo 0,30, bố cục "Dải thân trước". Giữ dáng áo đo so với chính áo nền của lượt đó.
+
+| Chỉ số | Áo cố định | Áo LoRA | Hiệu trung vị | p (Wilcoxon) |
+|---|---|---|---|---|
+| Giữ họa tiết (PPS) | 0,452 | 0,475 | +0,007 | 0,37 |
+| Giữ dáng áo (IoU) | 0,990 | 0,988 | +0,002 | 0,58 |
+| Độ nét | 0,92 | 0,96 | +0,07 | 0,44 |
+| Lệch màu (ΔE) | 5,22 | 5,12 | +0,07 | 1,00 |
+
+**Không có khác biệt có ý nghĩa ở chỉ số nào.** Cả 30 lượt LoRA đều có áo hợp lệ ngay lần thử đầu. Lưu ý: chỉ có 5 áo LoRA khác nhau (mỗi seed một áo dùng chung cho 6 hiện vật), nên các lượt cùng seed không độc lập. Độ đẹp và độ đúng dáng áo dài chỉ chấm mù mới trả lời được; gói chấm mù (`outputs/experiments/EXP-D/blind/`: `key.csv`, 3 phiếu trống, hướng dẫn chấm) đã dựng nhưng chưa gửi người chấm.
+
+Ghi chú về lịch sử: lần chạy đầu của EXP-D cho áo LoRA "tốt hơn" ở PPS và lệch màu. Sau khi sửa hai lỗi (hoa văn bị ghép tràn ra ngoài áo, và mảng nền hoa văn bị in thành khối kem) rồi đổi nguồn ảnh nạp sang mảng phẳng, lợi thế đó biến mất. Nghĩa là nó là hệ quả của các lỗi, không phải của áo LoRA (số liệu lần chạy đầu không được lưu).
+
+## Kết quả EXP-E: nguồn ảnh nạp cho ControlNet (36 lượt)
+
+Mỗi mức 18 cặp (6 hiện vật × 3 seed). Áo mẫu cố định, polish chỉ vùng áo 0,30.
+
+| Chỉ số | Ảnh bình render | Mảng phẳng | Hiệu trung vị | p (Wilcoxon) |
+|---|---|---|---|---|
+| Lọt hình bình (VLS, thấp là tốt) | 0,133 | **0,076** | −0,012 | 0,25 |
+| Giữ họa tiết (PPS) | 0,447 | 0,442 | −0,009 | 0,87 |
+| Giữ dáng áo (IoU) | 0,992 | 0,992 | +0,001 | 0,40 |
+| Lệch màu (ΔE) | 6,41 | **5,67** | −0,81 | 0,044 |
+
+Chỉ số VLS nghiêng về mảng phẳng nhưng **chưa đạt ý nghĩa thống kê** (p = 0,25). Trên ảnh, khác biệt rõ hơn chỉ số: nạp ảnh bình render cho ra hình bình đặt trên kệ, hình bình có nền hoặc cổ bình (hiện vật 33, 50, 124), còn nạp mảng phẳng cho hoa văn phẳng ở cả 6 hiện vật. VLS có thể kém nhạy với kiểu lỗi này. Dựa vào đó, mặc định của luồng sản phẩm chuyển sang mảng phẳng; chấm mù sẽ xác nhận.
+
+## Kết quả EXP-C: từng bước ghép (chạy trên 6 hiện vật cũ)
+
+Chỉ số: PPS của mỗi chế độ so với bản ghép đầy đủ (bản đầy đủ bằng 1). Chỉ số này cho biết **mỗi bước làm ảnh thay đổi bao nhiêu**, không cho biết bước đó làm ảnh đẹp hơn hay giống vải hơn.
 
 | Chế độ | n | Trung bình | Độ lệch chuẩn | KTC 95% | Hiệu trung vị so với đầy đủ |
 |---|---|---|---|---|---|
@@ -74,13 +124,34 @@ Chỉ số: PPS của mỗi chế độ so với bản ghép đầy đủ (bản
 | Bỏ shading | 6 | 0,965 | 0,016 | 0,948 – 0,981 | −0,035 |
 | Bỏ color grade | 6 | 0,958 | 0,039 | 0,918 – 0,999 | −0,026 |
 
-Friedman trên 6 hiện vật: χ² = 16,2; p = 0,001. Wilcoxon từng chế độ so với đầy đủ: p = 0,031 cho cả ba — với 6 cặp, đây là giá trị p nhỏ nhất có thể đạt, nghĩa là cả 6 hiện vật đều thay đổi cùng chiều.
+Friedman trên 6 hiện vật: χ² = 16,2; p = 0,001. Wilcoxon từng chế độ so với đầy đủ: p = 0,031 cho cả ba (với 6 cặp, đây là giá trị nhỏ nhất có thể đạt: cả 6 hiện vật đổi cùng chiều). Displacement (uốn họa tiết theo nếp vải) là bước làm thay đổi hình ảnh nhiều nhất. Có thay đổi không có nghĩa là có lợi.
 
-Đọc kết quả: displacement (uốn họa tiết theo nếp vải) là bước làm thay đổi hình ảnh nhiều nhất trong ba bước; shading và color grade thay đổi ít. Có thay đổi không có nghĩa là có lợi; giả thuyết "displacement giúp họa tiết trông như in trên vải" chỉ được kết luận khi phiếu tiêu chí "Giống vải in thật" có đồng thuận đủ.
+EXP-C ghép trên áo mẫu cố định của 6 hiện vật cũ nên **không chạy lại được** sau khi áo mẫu bị bỏ khỏi luồng. Ảnh và gói chấm mù của EXP-C đã xoá ngày 19/11/2026; còn `plan.csv`, `results.csv`, `summary.json`. Muốn xem ảnh, quay lại commit `b1192b0`.
 
-Tệp: `outputs/experiments/EXP-C/` (`plan.csv`, `results.csv`, `images/`, `summary.json`, `blind/`).
+## Thử hoàn thiện ảnh trên bộ demo hiện tại
 
-## Những gì chưa làm được và vì sao
+Ngoài EXP-B, nhóm thử riêng cách hoàn thiện trên bản ghép thô của bộ demo ngày 19/11/2026: `evaluation/polish_finish_trial.py` (cần GPU), kết quả ở `evaluation/polish_finish_trial.csv`. Với mỗi bản ghép thô, polish chỉ vùng áo ở 2 độ nhiễu rồi (a) giữ nguyên, (b) khoá họa tiết với `dog_sigma_low` = 1,2 (cũ), (c) khoá họa tiết với `dog_sigma_low` = 0,3 (hiện tại).
 
-- EXP-A, EXP-B cần máy có GPU NVIDIA và mô hình SD 1.5 đã tải. Môi trường dựng bản này không có GPU nên không chạy; kế hoạch, bộ chạy GPU và bộ phân tích đã có, chạy bằng một lệnh trên máy của nhóm.
-- Chưa có phiếu chuyên gia thật. Ba tệp `ratings_CG01.csv`… trong gói chấm là mẫu trống; nhóm **không** điền điểm giả.
+12 thiết kế (6 hiện vật × 2 mức sáng tạo), cùng seed polish 42, không có vòng thử lại. Cột "Giữ chi tiết mịn" là chỉ số `detail_ratio` (bản cuối so với bản ghép thô, cao là tốt, ngưỡng lỗi 0,6).
+
+| Độ nhiễu | Cách hoàn thiện | PPS | IoU | Độ nét | Giữ chi tiết mịn (trung bình, thấp nhất) | ΔE | G3: đạt / cảnh báo / lỗi |
+|---|---|---|---|---|---|---|---|
+| 0,30 | Polish thuần | 0,466 | 0,993 | 0,71 | 0,69 (0,42) | 5,9 | 0 / 3 / 9 |
+| 0,30 | Khoá họa tiết, `dog_sigma_low` 1,2 (cũ) | 0,888 | 0,994 | 0,64 | 0,56 (0,33) | 3,9 | 0 / 4 / 8 |
+| 0,30 | Khoá họa tiết, `dog_sigma_low` 0,3 | 0,932 | 0,995 | 0,84 | 0,83 (0,71) | 2,1 | 5 / 7 / 0 |
+| 0,20 | Polish thuần | 0,541 | 0,996 | 0,72 | 0,75 (0,51) | 4,8 | 1 / 8 / 3 |
+| 0,20 | Khoá họa tiết, `dog_sigma_low` 1,2 (cũ) | 0,908 | 0,996 | 0,66 | 0,61 (0,41) | 3,1 | 0 / 6 / 6 |
+| **0,20** | **Khoá họa tiết, `dog_sigma_low` 0,3 (mặc định hiện nay)** | **0,944** | 0,996 | 0,83 | **0,83 (0,72)** | **1,5** | **5 / 7 / 0** |
+
+- **Khoá họa tiết cũ (σ = 1,2) làm PPS tăng mạnh nhưng làm mất nét mảnh:** chi tiết mịn còn 0,56 đến 0,61, thấp hơn cả polish thuần (0,69 đến 0,75). PPS không phát hiện được vì chỉ đo dải tần trung. Đây là lý do nhóm thêm chỉ số `detail_ratio` vào G3: với chỉ số này, 8/12 và 6/12 thiết kế của cấu hình cũ bị loại.
+- **Khoá họa tiết `dog_sigma_low` 0,3** giữ chi tiết mịn ở mức 0,83 ở cả hai độ nhiễu, không thiết kế nào bị loại, lệch màu thấp nhất.
+- **Độ nhiễu 0,20 tốt hơn 0,30** ở mọi chỉ số, nên được chọn làm mặc định.
+- Vẫn còn mất khoảng 17% chi tiết mịn so với bản ghép thô; bộ demo 24 thiết kế cho trung vị 0,87 (mất 13%). Bản cuối chưa bằng bản ghép thô về nét mảnh.
+- Các số này đo bằng máy; chưa có chấm mù về việc bản nào đẹp hơn.
+
+
+## Những gì chưa làm được
+
+- **EXP-A chưa chạy:** 120 lượt GPU, kế hoạch đã kiểm tra. Chạy bằng một lệnh trên máy của nhóm.
+- **Chưa có phiếu chuyên gia thật.** Các tệp `ratings_CG01.csv` đến `CG03.csv` trong gói chấm là mẫu trống; nhóm **không** điền điểm giả. Vì vậy mọi kết luận về "đẹp hơn" hay "giống vải in hơn" ở trên đều chưa có.
+- Các kết quả trên dùng cấu hình lúc chạy (xem từng mục). Cấu hình mặc định hiện nay của luồng sản phẩm (polish 0,20 và khoá họa tiết 0,3) khác EXP-B, D, E; phần "Thử hoàn thiện ảnh" đo trực tiếp cấu hình hiện nay.

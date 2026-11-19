@@ -24,7 +24,9 @@ from skimage.color import lab2rgb, rgb2lab
 from .metrics import align_to
 
 METHOD = "pattern_lock_v1"
-PARAMS = {"dog_sigma_low": 1.2, "dog_sigma_high": 4.0, "chroma_weight": 0.85, "mask_feather_px": 3.0}
+# dog_sigma_low 0,3 (trước là 1,2): khôi phục cả nét mảnh dưới 1,2 px. Thử trên 12 thiết kế: chi tiết mịn so với bản thô
+# 0,81 (sigma 1,2) lên 0,98 (sigma 0,3). Với 1,2 ảnh cuối bị nhòe nét mảnh dù PPS cao.
+PARAMS = {"dog_sigma_low": 0.3, "dog_sigma_high": 4.0, "chroma_weight": 0.85, "mask_feather_px": 3.0}
 
 
 def pattern_lock(raw: np.ndarray, final: np.ndarray, layout_mask: np.ndarray,

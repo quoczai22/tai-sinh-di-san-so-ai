@@ -213,7 +213,9 @@ def heritage_image(heritage_id: str) -> FileResponse:
     item = next((item for item in heritage_items(True) if item["heritage_id"] == heritage_id), None)
     if item is None:
         raise HTTPException(status_code=404, detail="Không tìm thấy ảnh hiện vật.")
-    return FileResponse(PROJECT_ROOT / item["image_path"])
+    # Ảnh hiển thị: ưu tiên ảnh đã tách nền (nền trong suốt) nếu có
+    cut = PROJECT_ROOT / "data" / "heritage" / "cutouts" / f"{heritage_id}.png"
+    return FileResponse(cut if cut.exists() else PROJECT_ROOT / item["image_path"])
 
 
 @app.post("/generate", status_code=202, dependencies=[Depends(rate_limit)])
@@ -289,14 +291,6 @@ def generate_status(job_id: str) -> dict:
         if job is None:
             raise HTTPException(status_code=404, detail="Không tìm thấy job.")
         return dict(job)
-
-
-@app.get("/media/variant/{filename}")
-def variant_image(filename: str) -> FileResponse:
-    path = PROJECT_ROOT / "outputs" / "variants" / filename
-    if not path.is_file() or path.parent != (PROJECT_ROOT / "outputs" / "variants"):
-        raise HTTPException(status_code=404, detail="Không tìm thấy ảnh thiết kế.")
-    return FileResponse(path)
 
 
 @app.get("/media/run/{run_id}/{filename}")
@@ -496,12 +490,9 @@ def export_design(passport_id: str, version: int | None = None) -> Response:
 
 # --------------------------------------------------- quality & experiments --
 
-@app.get("/quality/legacy")
-def quality_legacy() -> list[dict]:
-    path = PROJECT_ROOT / "evaluation" / "quality_gate_legacy.csv"
-    if not path.exists():
-        return []
-    return list(csv.DictReader(path.open(encoding="utf-8")))
+@app.get("/quality/designs")
+def quality_designs() -> list[dict]:
+    return store.quality_rows()
 
 
 @app.get("/experiments")

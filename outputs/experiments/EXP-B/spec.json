@@ -10,7 +10,10 @@
       "none",
       "img2img_0.25",
       "img2img_0.40",
-      "img2img_0.40+pattern_lock"
+      "img2img_0.40+pattern_lock",
+      "masked_0.30",
+      "masked_0.25",
+      "masked_0.30+pattern_lock"
     ]
   },
   "replicates": {

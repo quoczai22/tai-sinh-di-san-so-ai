@@ -22,19 +22,19 @@ Hồ sơ đầy đủ cho Ban tổ chức (BTC) nằm ở [`docs/finals/`](docs/
 
 | # | BTC yêu cầu | Đã làm | Xem ở |
 |---|---|---|---|
-| 1 | Đánh giá **thiết kế cuối**, không chỉ hoa văn trung gian | Cổng **G2** (hoa văn: rò dáng bình, đường nối) và **G3** (thiết kế cuối: giữ họa tiết PPS, IoU dáng áo, độ nét, lệch màu ΔE); định tuyến sinh lại / sửa / QC xem / chuyển chuyên gia; khoá họa tiết `pattern_lock_v1`; bộ tiêu chí chuyên gia 5 mục chấm mù. Không chỉ số nào tự phê duyệt thiết kế. | `quality/`, `config/quality_gate.json`, `config/expert_rubric.json`, [05](docs/finals/05_QUALITY_ASSURANCE.md) |
-| 2 | **Đối chứng có kiểm soát**, nhiều seed, chấm mù | Module thí nghiệm từ chối kế hoạch đổi hơn một yếu tố; EXP-A (trọng số ControlNet), EXP-B (bước hoàn thiện), EXP-C (từng bước ghép, đã chạy); gói chấm mù; thống kê KTC 95%, hệ số biến thiên, Krippendorff α, Wilcoxon, Friedman | `evaluation/experiment.py`, `evaluation/experiments/`, [06](docs/finals/06_EXPERIMENTS.md) |
+| 1 | Đánh giá **thiết kế cuối**, không chỉ hoa văn trung gian | Cổng **G2** (hoa văn: rò dáng bình, đường nối) và **G3** (thiết kế cuối: giữ họa tiết PPS, IoU dáng áo, độ nét, giữ chi tiết mịn, lệch màu ΔE); vòng thử lại polish (đổi seed, hạ độ nhiễu, trả bản ghép thô); khoá họa tiết `pattern_lock_v1`; bộ tiêu chí chuyên gia 5 mục chấm mù. Không chỉ số nào tự phê duyệt thiết kế. | `quality/`, `config/quality_gate.json`, `config/expert_rubric.json`, [05](docs/finals/05_QUALITY_ASSURANCE.md) |
+| 2 | **Đối chứng có kiểm soát**, nhiều seed, chấm mù | Module thí nghiệm từ chối kế hoạch đổi hơn một yếu tố; EXP-A (trọng số ControlNet, chưa chạy), EXP-B (bước hoàn thiện, 126 lượt), EXP-C (từng bước ghép), EXP-D (nguồn áo nền, 60 lượt), EXP-E (nguồn ảnh nạp, 36 lượt); gói chấm mù; thống kê KTC 95%, hệ số biến thiên, Krippendorff α, Wilcoxon, Friedman | `evaluation/experiment.py`, `evaluation/experiments/`, [06](docs/finals/06_EXPERIMENTS.md) |
 | 3 | **Bản quyền, nguồn gốc, truy vết** | Danh mục nguồn schema 2.0; cổng quyền theo 4 mục đích sử dụng; Design Passport có sổ cái băm nối chuỗi, phiên bản có băm cha, chỉnh sửa tay chạy lại G3; nhãn "Thiết kế hỗ trợ bởi AI" trên ảnh xuất | `provenance/`, `data/heritage/metadata.json`, `outputs/passports/`, [07](docs/finals/07_PROVENANCE_COPYRIGHT.md) |
 
-Kết quả trên 24 thiết kế ngày 06/09/2026 (`evaluation/quality_gate_legacy.csv`): G2 đạt 21 · cảnh báo 1 · loại 2; G3 đạt 0 · cảnh báo 4 · loại 20; sau khi khoá họa tiết 19 thiết kế: đạt 10 · cảnh báo 9. Điểm PPS sau sửa cao một phần do chính cách sửa (chép lại nét gốc), nên phải chờ chuyên gia chấm mù mới kết luận được bản sửa có đẹp hơn.
+Kết quả bộ demo hiện tại (24 thiết kế, 6 hiện vật × 4 mức sáng tạo, ngày 19/11/2026, đọc từ Passport): G2 đạt 16, cảnh báo 5, loại 3 (cả 3 do đường nối, hiện vật LR3D_124); G3 đạt 14, cảnh báo 10, loại 0; PPS trung bình 0,943; giữ chi tiết mịn trung vị 0,87. Cả 10 cảnh báo G3 do chi tiết mịn dưới 0,85: bản cuối vẫn mất khoảng 13 đến 14% nét mảnh so với bản ghép thô. PPS cao một phần do chính cách làm (khoá họa tiết chép lại nét bản ghép), nên phải chờ chuyên gia chấm mù mới kết luận được bản nào đẹp hơn. Mốc so sánh bản 06/09/2026: G3 đạt 0/24, PPS trung vị 0,36 (số liệu lịch sử, xem [05](docs/finals/05_QUALITY_ASSURANCE.md)).
 
 ## 2. Xem nhanh (không cần GPU)
 
 ```powershell
-python -m http.server 5500 --directory web_ui
+uv run python -m http.server 5500 --directory web_ui
 ```
 
-Mở `http://127.0.0.1:5500`. Không có API thì giao diện tự chạy **chế độ ngoại tuyến**, đọc dữ liệu thật đã xuất sẵn trong `web_ui/data/`.
+Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang chủ, Studio (chọn hiện vật) và Kết quả (4 tà áo). Không có API thì giao diện tự chạy **chế độ ngoại tuyến**, đọc dữ liệu thật đã xuất sẵn trong `web_ui/data/` (bộ demo 24 thiết kế).
 
 ## 3. Kiến trúc
 
@@ -42,9 +42,14 @@ Mở `http://127.0.0.1:5500`. Không có API thì giao diện tự chạy **ch�
  Hiện vật (data/heritage, có nguồn & quyền)
         │  tiêu chí tuyển ảnh C1–C4 · cổng quyền
         ▼
+ Mảng hoa văn phẳng đã trải từ mô hình 3D (data/heritage/panels)
+        ▼
  GIAI ĐOẠN 1  SD 1.5 + ControlNet Canny (chỉ nét hoa văn) ──► hoa văn phẳng lát liền ──► Cổng G2
         ▼
- GIAI ĐOẠN 2  CLIP chọn bố cục ─► ghép tất định lên áo mẫu ─► img2img ──► Cổng G3 ─► (sửa: khoá họa tiết)
+ Áo dài nền   SD 1.5 + LoRA dáng áo dài sinh mỗi lần chạy, SAM tách vùng áo, kiểm tra áo hợp lệ
+        ▼
+ GIAI ĐOẠN 2  CLIP chọn bố cục ─► ghép tất định lên áo (chỉ in phần mực, trong vùng áo) ─►
+              polish chỉ vùng áo 0,20 + khoá họa tiết ─► vòng thử lại ──► Cổng G3
         ▼
  QC Officer (cảnh báo) ─► Chuyên gia chấm mù ─► Phê duyệt / yêu cầu sửa / loại
         ▼
@@ -53,43 +58,43 @@ Mở `http://127.0.0.1:5500`. Không có API thì giao diện tự chạy **ch�
 
 | Thành phần | Công nghệ |
 |---|---|
-| Sinh ảnh | Stable Diffusion 1.5 + ControlNet v1.1 Canny (`diffusers`, PyTorch CUDA), CLIP (`transformers`) |
+| Sinh ảnh | Stable Diffusion 1.5 + ControlNet v1.1 Canny + LoRA dáng áo dài (`diffusers`, `peft`, PyTorch CUDA), SAM (tách vùng áo), CLIP (`transformers`) |
 | Xử lý ảnh, phép đo | OpenCV, Pillow, NumPy, scikit-image, SciPy |
 | API | FastAPI + Uvicorn (`api/main.py`); PyTorch chỉ nạp khi cần, máy không GPU thì `/generate` trả 503 |
-| Giao diện | HTML/CSS/JS thuần (ES modules), không framework; một họ chữ Noto Serif |
+| Giao diện | HTML/CSS/JS thuần (ES modules), không framework; 3 trang cho người xem (Trang chủ, Studio, Kết quả) |
 | Dữ liệu | Tệp JSON/CSV trong repo, không dùng cơ sở dữ liệu |
-| Kiểm thử | pytest (131 ca, không cần GPU) |
+| Kiểm thử | pytest (249 ca, không cần GPU) |
 
 ## 4. Cấu trúc thư mục
 
 ```text
 .
 ├── api/                  FastAPI: hiện vật, sinh thiết kế, Passport, QC, thẩm định, chỉnh sửa, xuất bản, thí nghiệm
-├── generation/           Pipeline hai giai đoạn (controlnet, pattern, palette, layout_select, garment, streamlit_runner)
+├── generation/           Pipeline hai giai đoạn (controlnet, pattern, palette, layout_select, garment, garment_lora, garment_sam, streamlit_runner)
 ├── quality/              Cổng G2/G3, phép đo, khoá họa tiết
 ├── provenance/           Danh mục nguồn, cổng quyền, Design Passport, băm, nhãn AI
-├── evaluation/           Thí nghiệm có kiểm soát (experiment.py, experiments/), kết quả cổng trên 24 thiết kế
+├── evaluation/           Thí nghiệm có kiểm soát (experiment.py, experiments/), thử cách hoàn thiện ảnh (polish_finish_trial)
 ├── config/               Ngưỡng cổng QG-1.0, tiêu chí tuyển ảnh, bộ tiêu chí chuyên gia (có phiên bản)
 ├── data/
 │   ├── heritage/         Ảnh hiện vật, metadata.json (schema 2.0), sources/ (ứng viên ảnh CC0 thay thế)
-│   ├── garment/          Áo dài mẫu và các bố cục
+│   ├── garment/          Bố cục hoa văn (layouts.json); ảnh áo mẫu cũ chỉ dùng để chạy lại thí nghiệm cũ
+│   ├── lora/             Trọng số LoRA dáng áo dài (CC BY-NC 4.0, chỉ dùng phi thương mại)
 │   ├── archive/          Siêu dữ liệu schema 1 (đầu vào của bước chuyển đổi)
 │   └── prompt_terms.json
 ├── outputs/
-│   ├── runs/             Mỗi lần chạy một thư mục + manifest SHA-256
+│   ├── runs/             Mỗi lần chạy một thư mục + manifest SHA-256 (bộ demo 24 thiết kế)
 │   ├── passports/        24 Design Passport
-│   ├── experiments/      Kế hoạch, kết quả, gói chấm mù
-│   └── variants/         Ảnh 24 thiết kế gốc (Passport tham chiếu, không di chuyển)
-├── web_ui/               Giao diện: index.html, assets/ (css, js/lib, js/views), data/ (dữ liệu chế độ ngoại tuyến)
-├── scripts/              01–04 cài đặt & kiểm GPU · 07 mô tả hoa văn · 08 chuyển schema · 09 nạp ảnh hiện vật
-│                         · 10 dựng lại lần chạy cũ · 11 xuất dữ liệu giao diện · 12 sinh sơ đồ BPMN/Use Case
+│   └── experiments/      Kế hoạch và kết quả EXP-A đến EXP-E, gói chấm mù (ảnh thô không đưa vào repo)
+├── web_ui/               Giao diện 3 trang: index.html, assets/ (css, js/lib, js/views), data/ (dữ liệu chế độ ngoại tuyến)
+├── scripts/              01–04 cài đặt & kiểm GPU · 07 mô tả hoa văn · 08 chuyển schema, trích LR3D · 09 nạp ảnh hiện vật, tạo phần tử
+│                         · 10 tạo hiện vật từ LR3D · 11 xuất dữ liệu giao diện, lọc VietFashion · 12 sơ đồ BPMN/Use Case, xuất tập LoRA
+│                         · 13 huấn luyện LoRA · 14 sinh bộ demo
 ├── streamlit_ui/, app.py Công cụ kiểm chứng pipeline nội bộ (Streamlit)
-├── tests/                131 ca pytest
+├── tests/                249 ca pytest
 ├── docs/
 │   ├── finals/           Hồ sơ vòng chung kết 01–11 + diagrams/ (BPMN 2.0, Use Case)
-│   ├── evidence/         Ảnh đối chiếu hiện vật – hoa văn – bản ghép – bản cuối – bản sửa (quality_gate/)
 │   └── SETUP_AI_LOCAL.md Cài môi trường GPU
-├── archive/              Lưu trữ bản 09/2026 (giao diện, đặc tả MVP, smoke test) — không thuộc bản chung kết
+├── archive/              Lưu trữ bản 09/2026 (giao diện, đặc tả MVP, smoke test), không thuộc bản chung kết
 ├── requirements.txt · requirements-dev.txt · pytest.ini · vercel.json
 └── README.md
 ```
@@ -98,41 +103,41 @@ Mở `http://127.0.0.1:5500`. Không có API thì giao diện tự chạy **ch�
 
 Lệnh chạy bằng PowerShell tại thư mục gốc.
 
-**A. Giao diện + API (không cần GPU)**
+**A. Giao diện + API**
 
 ```powershell
-python -m venv .venv; .\.venv\Scripts\Activate.ps1
-$env:PYTHONUTF8 = "1"                       # các tệp requirements có chú thích tiếng Việt
-pip install -r requirements-dev.txt; pip install uvicorn
-python -m uvicorn api.main:app --host 127.0.0.1 --port 8000     # cửa sổ 1
-python -m http.server 5500 --directory web_ui                    # cửa sổ 2
+uv run python -m uvicorn api.main:app --host 127.0.0.1 --port 8000     # cửa sổ 1 (sinh ảnh thật cần GPU)
+uv run python -m http.server 5500 --directory web_ui                    # cửa sổ 2
 ```
 
-Có API ở `127.0.0.1:8000` thì giao diện chạy chế độ trực tiếp (ghi phiếu thẩm định, QC, chỉnh sửa qua API).
+Có API ở `127.0.0.1:8000` thì giao diện chạy chế độ trực tiếp; không có thì chạy ngoại tuyến. Môi trường Python do `uv` quản lý ở thư mục `.venv`; mọi lệnh Python chạy qua `uv run`.
 
 **B. Kiểm thử**
 
 ```powershell
-pytest            # 131 ca; 20 ca kiểm tra cú pháp JS cần Node.js, máy không có Node thì được bỏ qua
+uv run pytest     # 249 ca; không cần GPU (1 ca dành cho máy không có PyTorch nên bị bỏ qua trên máy có GPU)
 ```
 
 **C. Sinh ảnh và thí nghiệm (cần GPU NVIDIA ≥ 6 GB, xem [`docs/SETUP_AI_LOCAL.md`](docs/SETUP_AI_LOCAL.md))**
 
 ```powershell
-pip install -r requirements.txt             # cài PyTorch CUDA theo hướng dẫn SETUP_AI_LOCAL
-python scripts/03_download_models.py
-python -m evaluation.experiment run evaluation/experiments/EXP-A_controlnet_weight.json
-python -m evaluation.experiment run evaluation/experiments/EXP-B_stage2_finish.json
-python scripts/11_export_demo_data.py       # cập nhật web_ui/data cho chế độ ngoại tuyến
+uv run python scripts/03_download_models.py                                  # tải SD 1.5 và ControlNet; CLIP và SAM tự tải lần đầu khi chạy
+uv run python scripts/14_generate_demo_set.py                                # sinh bộ demo (khoảng 15 phút); thêm mã hiện vật để chạy riêng một vật
+uv run python scripts/15_cutout_heritage.py                                  # tách nền ảnh 6 hiện vật (SAM) thành PNG trong suốt, chỉ dùng để hiển thị
+uv run python scripts/16_export_heritage_glb.py                              # nén mô hình 3D 6 hiện vật thành GLB nhẹ cho khung xoay 360 độ ở trang Studio
+uv run python scripts/11_export_demo_data.py                                 # cập nhật web_ui/data cho chế độ ngoại tuyến
+uv run python -m evaluation.experiment run evaluation/experiments/EXP-A_controlnet_weight.json   # chưa chạy, 120 lượt
 ```
+
+Trọng số LoRA có sẵn ở `data/lora/aodai_r16_512/`; huấn luyện lại bằng `scripts/13_train_lora.py`.
 
 **D. Nạp ảnh hiện vật mới** (kiểm SHA-1, tách nền, chấm C1–C4, ghi ở trạng thái chờ rà soát)
 
 ```powershell
-python scripts/09_ingest_heritage_image.py --file <ảnh> --candidate <mã Commons> --heritage-id <mã> --name "<tên>" --dry-run
+uv run python scripts/09_ingest_heritage_image.py --file <ảnh> --candidate <mã Commons> --heritage-id <mã> --name "<tên>" --dry-run
 ```
 
-**E. Công cụ kiểm chứng nội bộ:** `streamlit run app.py`
+**E. Công cụ kiểm chứng nội bộ:** `uv run streamlit run app.py`
 
 **Triển khai giao diện:** `vercel.json` chuyển `/` tới `web_ui/index.html`. Khi có API GPU công khai, đặt `window.DH_API_BASE` trong `web_ui/assets/js/config.js`. Mỗi lần phát hành giao diện, đổi chuỗi phiên bản `finals-N` trong `web_ui/index.html` (thẻ link, script và import map) để trình duyệt không dùng lại tệp cũ.
 
@@ -162,8 +167,10 @@ python scripts/09_ingest_heritage_image.py --file <ảnh> --candidate <mã Commo
 
 Chỉ ghi số đã đo; phần chưa có dữ liệu ghi là "mục tiêu cần đo" (xem [08_KPI](docs/finals/08_KPI.md)).
 
-- EXP-C đã chạy; **EXP-A, EXP-B chờ máy GPU**.
-- **Chưa có phiếu chấm của chuyên gia**: cần ít nhất 3 chuyên gia chấm gói mù EXP-C và hàng đợi thẩm định; đủ ≥ 30 phiếu thì hiệu chỉnh ngưỡng thành QG-1.1 (không sửa đè QG-1.0).
-- **Chưa hiện vật nào có giấy phép**: hệ thống đang chặn xuất bản công khai; đã có mẫu thư xin phép.
-- 3 ảnh hiện vật bị ngừng dùng; 4 ảnh CC0 thay thế (Wikimedia Commons) đã tải và khớp SHA-1 nhưng **chưa nạp vào danh mục**.
-- Cần xác nhận loài chim trên HV01 (chim công hay bạch hạc).
+- Đã chạy: EXP-B (126 lượt), EXP-C (24), EXP-D (60), EXP-E (36). **EXP-A (120 lượt) chưa chạy.**
+- **Chưa có phiếu chấm của người thật:** cần ít nhất một người am hiểu di sản và một người am hiểu thiết kế xem mẫu và điền phiếu; gói chấm mù EXP-D cần ít nhất 3 người chấm; đủ ≥ 30 phiếu thì hiệu chỉnh ngưỡng thành QG-1.1 (không sửa đè QG-1.0).
+- **Chưa hiện vật nào có giấy phép từng vật (0/6):** 6 hiện vật LR3D-CULT2 thuộc bộ dữ liệu công bố CC BY 4.0 nhưng từng vật có thể lấy từ nguồn giấy phép học thuật; hệ thống đang chặn xuất bản công khai; đã có mẫu thư xin phép, chưa gửi.
+- **LoRA học từ VietFashion (CC BY-NC 4.0):** chỉ dùng phi thương mại, phải ghi công bài ICMR 2026 (xem `data/lora/README.md`).
+- 3 thiết kế của hiện vật LR3D_124 bị G2 loại (đường nối), hệ thống chưa tự sinh lại hoa văn.
+- Giao diện web chỉ còn 3 trang; Passport và chỉ số chất lượng đọc qua API và tệp dữ liệu, không hiện trên web.
+- Bản cuối vẫn mất khoảng 13 đến 14% chi tiết mịn so với bản ghép thô; nếu cần giữ tuyệt đối có thể bỏ polish và dùng bản ghép.

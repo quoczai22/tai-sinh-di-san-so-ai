@@ -1,0 +1,209 @@
+{
+  "experiment_id": "EXP-D",
+  "generated_at": "2026-11-19T12:24:42+00:00",
+  "automatic": {
+    "pattern_preservation": {
+      "fixed": {
+        "n": 30,
+        "mean": 0.4524,
+        "sd": 0.0928,
+        "ci95": [
+          0.4178,
+          0.487
+        ],
+        "min": 0.3083,
+        "max": 0.677,
+        "cv": 0.2051
+      },
+      "lora": {
+        "n": 30,
+        "mean": 0.4748,
+        "sd": 0.0846,
+        "ci95": [
+          0.4432,
+          0.5063
+        ],
+        "min": 0.2978,
+        "max": 0.6255,
+        "cv": 0.1782
+      }
+    },
+    "garment_shape_iou": {
+      "fixed": {
+        "n": 30,
+        "mean": 0.9904,
+        "sd": 0.0045,
+        "ci95": [
+          0.9887,
+          0.9921
+        ],
+        "min": 0.9805,
+        "max": 0.9953,
+        "cv": 0.0046
+      },
+      "lora": {
+        "n": 30,
+        "mean": 0.9883,
+        "sd": 0.0114,
+        "ci95": [
+          0.984,
+          0.9926
+        ],
+        "min": 0.9622,
+        "max": 0.9987,
+        "cv": 0.0116
+      }
+    },
+    "sharpness_ratio": {
+      "fixed": {
+        "n": 30,
+        "mean": 0.9195,
+        "sd": 0.2291,
+        "ci95": [
+          0.8341,
+          1.005
+        ],
+        "min": 0.6107,
+        "max": 1.5353,
+        "cv": 0.2492
+      },
+      "lora": {
+        "n": 30,
+        "mean": 0.9579,
+        "sd": 0.2013,
+        "ci95": [
+          0.8829,
+          1.033
+        ],
+        "min": 0.6193,
+        "max": 1.5004,
+        "cv": 0.2102
+      }
+    },
+    "palette_shift_de": {
+      "fixed": {
+        "n": 30,
+        "mean": 5.2227,
+        "sd": 1.6527,
+        "ci95": [
+          4.6065,
+          5.8388
+        ],
+        "min": 1.94,
+        "max": 7.6,
+        "cv": 0.3164
+      },
+      "lora": {
+        "n": 30,
+        "mean": 5.121,
+        "sd": 1.7115,
+        "ci95": [
+          4.4829,
+          5.7591
+        ],
+        "min": 1.81,
+        "max": 8.13,
+        "cv": 0.3342
+      }
+    }
+  },
+  "human": {
+    "garment_integrity": {
+      "fixed": {
+        "n": 0
+      },
+      "lora": {
+        "n": 0
+      }
+    },
+    "looks_like_printed_fabric": {
+      "fixed": {
+        "n": 0
+      },
+      "lora": {
+        "n": 0
+      }
+    },
+    "motif_recognizability": {
+      "fixed": {
+        "n": 0
+      },
+      "lora": {
+        "n": 0
+      }
+    },
+    "aesthetic": {
+      "fixed": {
+        "n": 0
+      },
+      "lora": {
+        "n": 0
+      }
+    }
+  },
+  "agreement": {
+    "garment_integrity": null,
+    "looks_like_printed_fabric": null,
+    "motif_recognizability": null,
+    "aesthetic": null
+  },
+  "status_counts": {
+    "fixed": {
+      "completed": 30
+    },
+    "lora": {
+      "completed": 30
+    }
+  },
+  "automatic_tests": {
+    "pattern_preservation": {
+      "control": "fixed",
+      "vs_control": {
+        "lora": {
+          "n_pairs": 30,
+          "median_diff": 0.0066,
+          "wilcoxon_p": 0.3707
+        }
+      },
+      "friedman": null
+    },
+    "garment_shape_iou": {
+      "control": "fixed",
+      "vs_control": {
+        "lora": {
+          "n_pairs": 30,
+          "median_diff": 0.002,
+          "wilcoxon_p": 0.5786
+        }
+      },
+      "friedman": null
+    },
+    "sharpness_ratio": {
+      "control": "fixed",
+      "vs_control": {
+        "lora": {
+          "n_pairs": 30,
+          "median_diff": 0.0705,
+          "wilcoxon_p": 0.44
+        }
+      },
+      "friedman": null
+    },
+    "palette_shift_de": {
+      "control": "fixed",
+      "vs_control": {
+        "lora": {
+          "n_pairs": 30,
+          "median_diff": 0.07,
+          "wilcoxon_p": 1.0
+        }
+      },
+      "friedman": null
+    }
+  },
+  "raters": [
+    "CG01",
+    "CG02",
+    "CG03"
+  ]
+}

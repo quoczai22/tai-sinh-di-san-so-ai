@@ -2,7 +2,7 @@
 """Xuất dữ liệu THẬT đã sinh sẵn thành JSON tĩnh cho chế độ trình diễn của web_ui.
 
 Chế độ trình diễn chạy khi trình duyệt không gọi được API GPU (ví dụ trang tĩnh
-trên Vercel). Mọi con số trong đó lấy từ tệp thật: variants.csv, Passport, kết
+trên Vercel). Mọi con số trong đó lấy từ tệp thật: Passport, kết
 quả Cổng chất lượng, kế hoạch/kết quả thí nghiệm. Không có số nào viết tay.
 
 Ảnh hiển thị được nén WebP để trang nhẹ; mã băm SHA-256 trong Passport luôn tính
@@ -60,7 +60,10 @@ def main() -> int:
     selection_cfg = load_selection_config(ROOT)["criteria"]
     raw_items = {it["heritage_id"]: it for it in all_items(ROOT)}
     for h in heritage:
-        h["image"] = webp(ROOT / raw_items[h["id"]]["image_path"], MEDIA / "heritage" / f"{h['id']}.webp", 720)
+        # Ảnh hiển thị: ưu tiên ảnh đã tách nền (scripts/15_cutout_heritage.py), nếu chưa có thì dùng ảnh render gốc
+        cut = ROOT / "data" / "heritage" / "cutouts" / f"{h['id']}.png"
+        src = cut if cut.exists() else ROOT / raw_items[h["id"]]["image_path"]
+        h["image"] = webp(src, MEDIA / "heritage" / f"{h['id']}.webp", 720)
         h["selection"] = assess_selection(raw_items[h["id"]], ROOT)
         h["rights"] = {a: rights_gate(raw_items[h["id"]], a, ROOT).as_dict()
                        for a in ("experiment", "demo_display", "publish_public", "commercial_use")}
@@ -85,8 +88,19 @@ def main() -> int:
         dump(f"passports/{p['passport_id']}.json", {**p, "timeline": P.timeline(p), "integrity": integ})
     dump("passports.json", index)
 
+    # Ảnh thiết kế mới nhất của từng hiện vật cho màn Studio (heritage.variantImageBase trỏ tới thư mục này)
+    variants_dir = ROOT / "web_ui" / "assets" / "images" / "variants"
+    shutil.rmtree(variants_dir, ignore_errors=True)
+    variants_dir.mkdir(parents=True)
+    newest: dict[tuple[str, str], dict] = {}
+    for entry in sorted(index, key=lambda e: e["created_at"]):
+        newest[(entry["heritage_id"], entry["passport_id"].rsplit("-V", 1)[-1])] = entry
+    for (hid, variant), entry in newest.items():
+        if entry["final_path"]:
+            shutil.copy2(ROOT / entry["final_path"], variants_dir / f"{hid}_V{variant}_aodai.png")
+
     # ---- Quality ------------------------------------------------------------
-    qrows = list(csv.DictReader((ROOT / "evaluation" / "quality_gate_legacy.csv").open(encoding="utf-8")))
+    qrows = [{k: ("" if v is None else v) for k, v in r.items()} for r in store.quality_rows()]
     qcfg = json.loads((ROOT / "config" / "quality_gate.json").read_text(encoding="utf-8"))
     dump("quality.json", {"rows": qrows, "config": qcfg})
 
@@ -102,7 +116,10 @@ def main() -> int:
         if (d / "results.csv").exists():
             res = list(csv.DictReader((d / "results.csv").open(encoding="utf-8")))
             for r in res:
-                r["display"] = webp(d / r["image"], MEDIA / "experiments" / e["id"] / Path(r["image"]).with_suffix(".webp").name, 480)
+                # Ảnh thí nghiệm dựng trên áo cố định đã bị xóa; chỉ nén ảnh còn tồn tại, còn lại để trống
+                img = d / r["image"] if r.get("image") else None
+                r["display"] = (webp(img, MEDIA / "experiments" / e["id"] / Path(r["image"]).with_suffix(".webp").name, 480)
+                                if img is not None and img.is_file() else None)
             e["results"] = res
     dump("experiments.json", exps)
 
@@ -115,8 +132,9 @@ def main() -> int:
     g3 = Counter(r["G3"] for r in qrows)
     rep = Counter(r["repair_G3"] for r in qrows if r["repair_G3"])
     approvals = Counter(e["approval"]["status"] for e in index)
-    durations = sorted(float(r["duration_s"]) for r in csv.DictReader(
-        (ROOT / "evaluation" / "variants.csv").open(encoding="utf-8")) if r.get("duration_s"))
+    durations = sorted(float(p["generation"]["duration_s"]) for p in
+                       (store.get_passport(e["passport_id"]) for e in index)
+                       if p and p["generation"].get("duration_s"))
     mid = len(durations) // 2
     dur_median = (durations[mid] if len(durations) % 2 else (durations[mid - 1] + durations[mid]) / 2) if durations else None
     reviews = sum(e["reviews"] for e in index)
@@ -129,15 +147,15 @@ def main() -> int:
                     "approval": approvals, "reviews": reviews, "manual_edits": edits,
                     "integrity": {"ok": integrity_ok, "total": len(index)}},
         "generation_duration_s": {"median": round(dur_median, 2) if dur_median else None, "n": len(durations),
-                                  "source": "evaluation/variants.csv, cột duration_s, ngày 06/09/2026, RTX 4060 Laptop 8 GB"},
+                                  "source": "trường generation.duration_s trong Design Passport (thời gian sinh hoa văn giai đoạn 1), RTX 4060 Laptop 8 GB"},
         "experiments": [{"id": e["id"], "status": e["status"], "planned": e["planned_runs"],
                          "completed": e["completed_runs"]} for e in exps],
     })
     dump("rubric.json", json.loads((ROOT / "config" / "expert_rubric.json").read_text(encoding="utf-8")))
     dump("meta.json", {
         "generated_at": generated_at,
-        "source": "Lần chạy pipeline ngày 06/09/2026 trên RTX 4060 Laptop 8 GB (evaluation/variants.csv); "
-                  "Cổng chất lượng, Passport và EXP-C chạy lại trên CPU ngày 18/11/2026.",
+        "source": "Bộ thiết kế demo sinh bằng scripts/14_generate_demo_set.py trên RTX 4060 Laptop 8 GB: áo dài nền do LoRA sinh, "
+                  "Cổng chất lượng và Design Passport ghi cho từng thiết kế.",
         "hash_note": "Ảnh hiển thị đã nén WebP; SHA-256 trong Passport tính trên tệp PNG gốc trong repo.",
     })
     for diagram in (ROOT / "docs" / "finals" / "diagrams").glob("*.svg"):

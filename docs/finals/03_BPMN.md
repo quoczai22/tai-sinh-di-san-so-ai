@@ -17,7 +17,7 @@ Kiểm tra: cả hai tệp `.bpmn` được nạp bằng `bpmn-moddle` (thư vi�
 |---|---|---|
 | Nền tảng Tái Sinh Di Sản Số | Pool có quy trình | Mọi việc do nhóm và hệ thống của nhóm kiểm soát |
 | → Nhà thiết kế | Lane | Người dùng chính: chọn hiện vật, điều chỉnh, chọn phương án, sửa tay |
-| → Hệ thống AI (GPU) | Lane | Việc do mô hình chạy: trích đặc trưng, sinh hoa văn, ghép, img2img, sửa tự động |
+| → Hệ thống AI (GPU) | Lane | Việc do mô hình chạy: trích đặc trưng, sinh hoa văn, sinh áo dài nền (LoRA), ghép, polish, khoá họa tiết |
 | → Kiểm soát chất lượng | Lane | Cổng G2, G3 (hệ thống) và QC Officer (người) cùng một lane vì cùng chịu trách nhiệm "đủ điều kiện kỹ thuật chưa" |
 | → Dữ liệu và Passport | Lane | Kiểm tra nguồn gốc, quyền, lưu phiên bản, cổng xuất bản |
 | Hội đồng chuyên gia | Pool riêng | Chuyên gia di sản và thiết kế **không thuộc** nhóm; tách pool để thể hiện tính độc lập. Giữa hai pool chỉ có message flow, đúng ngữ nghĩa BPMN |
@@ -33,9 +33,9 @@ Kiểm tra: cả hai tệp `.bpmn` được nạp bằng `bpmn-moddle` (thư vi�
 | 4. Trích xuất đặc trưng | Trích xuất đặc trưng: tách nền, Canny, bảng màu | Service Task | AI |
 | 5. Sinh họa tiết | Sinh họa tiết SD1.5 + ControlNet, có boundary error event "Lỗi GPU" | Service Task | AI |
 | 6. Kiểm tra chất lượng họa tiết | Cổng G2 → "Hoa văn đạt?" | Service Task + Exclusive Gateway | QC |
-| 7–8. Chuyển sang thiết kế, ghép vào áo | Chọn bố cục, ghép tất định lên áo mẫu → Hoàn thiện img2img | Service Task | AI |
+| 7–8. Chuyển sang thiết kế, ghép vào áo | Chọn bố cục, ghép tất định lên áo do LoRA sinh → Hoàn thiện (polish chỉ vùng áo, khoá họa tiết) | Service Task | AI |
 | 9–10. Kiểm tra thiết kế cuối, đo giữ họa tiết và dáng áo | Cổng G3 → "Kết quả G3?" (Đạt / Cảnh báo / Không đạt) | Service Task + Exclusive Gateway | QC |
-| 11. Không đạt thì quay lại bước phù hợp | G2 không đạt → sinh lại (dưới 3 lần) hoặc Nhà thiết kế điều chỉnh (đủ 3 lần); G3 không đạt → Sửa: khoá họa tiết hoặc giảm strength | Vòng lặp | AI, Nhà thiết kế |
+| 11. Không đạt thì quay lại bước phù hợp | G2 không đạt → sinh lại (dưới 3 lần) hoặc Nhà thiết kế điều chỉnh (đủ 3 lần); G3 không đạt → Sửa. Trạng thái triển khai: vòng thử lại tự động mới có ở bước polish (đổi seed, hạ độ nhiễu, trả bản ghép thô); vòng sinh lại hoa văn khi G2 lỗi mới chỉ là thiết kế trong BPMN, hệ thống hiện chỉ đánh dấu thiết kế `qa_failed` | Vòng lặp | AI, Nhà thiết kế |
 | 12. Đạt thì chuyển chuyên gia | Xem bộ thiết kế, chọn phương án đề cử → Gửi yêu cầu thẩm định ẩn danh | User Task + Send Task, message flow | Nhà thiết kế, QC |
 | 13. Chuyên gia đánh giá | Nhận yêu cầu → Chấm mù 5 tiêu chí → Ghi quyết định và lý do → Gửi phiếu | Message Start, User Task, Message End | Pool chuyên gia |
 | 14. Không đạt thì ghi lý do, sửa, thẩm định lại | "Kết quả thẩm định?" → Cần sửa → Ghi lý do vào Passport → Chỉnh sửa thủ công → Tải bản sửa lên → quay lại cổng G3 | Service Task, **Manual Task**, User Task | QC, Nhà thiết kế |
@@ -65,7 +65,7 @@ Hai gateway không nhãn trong sơ đồ là **gateway hợp nhất** (merge): n
 
 - **Boundary error event** trên "Sinh họa tiết": máy hết bộ nhớ GPU hoặc mô hình lỗi → kết thúc lỗi, job ghi trạng thái `failed` và loại lỗi vào nhật ký. Mã: `generation/streamlit_runner.py` bắt lỗi theo từng biến thể, một biến thể lỗi không làm hỏng ba biến thể còn lại.
 - **Vòng G2**: sinh lại tối đa 3 lần với seed khác hoặc trọng số thấp hơn một mức; quá 3 lần thì Nhà thiết kế quyết định.
-- **Vòng G3**: sửa tự động (khoá họa tiết hoặc giảm strength) rồi đo lại.
+- **Vòng G3**: khoá họa tiết nay là bước mặc định của luồng; vòng thử lại polish (đổi seed, hạ độ nhiễu) rồi đo lại.
 - **Vòng thẩm định**: chuyên gia yêu cầu sửa → sửa tay → **quay lại G3** → thẩm định lại. API thực hiện đúng vòng này: tải bản sửa lên thì hệ thống chạy G3 trên bản sửa trước khi đưa về hàng đợi.
 
 ## Sequence flow và message flow

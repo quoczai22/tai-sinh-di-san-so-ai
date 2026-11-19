@@ -59,7 +59,8 @@ def evaluate_final(raw_img: np.ndarray, final: np.ndarray, template: np.ndarray,
     pres = M.pattern_preservation(raw_img, final, template, layout_mask)
     shape = M.garment_shape_consistency(raw_img, final, garment_prior)
     vq = M.visual_quality(raw_img, final, garment_prior > 0)
-    values = {**pres, **shape, **vq}
+    detail = M.detail_preservation(raw_img, final, M.pattern_region(raw_img, template, layout_mask))
+    values = {**pres, **shape, **vq, **detail, **M.outside_drift(raw_img, final, garment_prior)}
     results = {k: {"value": values[k], "status": classify(values[k], rule), "warn": rule["warn"],
                    "fail": rule["fail"], "label": rule["label"]}
                for k, rule in gate["metrics"].items()}

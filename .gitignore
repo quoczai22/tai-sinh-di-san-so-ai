@@ -19,6 +19,8 @@ htmlcov/
 
 # Local AI models, caches, generated media, and logs
 models/
+# Mô hình 3D hiện vật cho web (GLB nhẹ) phải được commit để trang chạy được
+!web_ui/assets/models/
 .model-cache/
 checkpoints/
 generated/
@@ -27,6 +29,7 @@ outputs/audit/
 cache/
 *.ckpt
 *.safetensors
+!data/lora/**/*.safetensors
 *.pt
 *.pth
 
@@ -75,3 +78,6 @@ docs/MVP_v6_1_Mind_Map_Prompt.docx
 outputs/experiments/*/blind/images/
 outputs/edits/_pytest_*/
 data/heritage/sources/originals/
+
+# Dữ liệu VietFashion tải về (CC BY-NC 4.0), không commit dữ liệu thô
+data/vietfashion/
