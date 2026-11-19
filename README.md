@@ -123,6 +123,7 @@ uv run pytest     # 249 ca; không cần GPU (1 ca dành cho máy không có PyT
 ```powershell
 uv run python scripts/03_download_models.py                                  # tải SD 1.5 và ControlNet; CLIP và SAM tự tải lần đầu khi chạy
 uv run python scripts/14_generate_demo_set.py                                # sinh bộ demo (khoảng 15 phút); thêm mã hiện vật để chạy riêng một vật
+uv run python scripts/18_build_blind_review.py                              # dựng gói đánh giá mù 24 thiết kế (trang HTML phiếu chấm + khóa giải mã riêng) vào outputs/blind_review/
 uv run python scripts/15_cutout_heritage.py                                  # tách nền ảnh 6 hiện vật (SAM) thành PNG trong suốt, chỉ dùng để hiển thị
 uv run python scripts/16_export_heritage_glb.py                              # nén mô hình 3D 6 hiện vật thành GLB nhẹ cho khung xoay 360 độ ở trang Studio
 uv run python scripts/11_export_demo_data.py                                 # cập nhật web_ui/data cho chế độ ngoại tuyến
