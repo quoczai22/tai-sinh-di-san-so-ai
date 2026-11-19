@@ -1089,7 +1089,7 @@ html.motion-off .thread-path { stroke-dashoffset: 0; }
 .result-artifact img { max-height: 84%; max-width: 70%; object-fit: contain; }
 .result-head .io-name { margin: 0; text-align: left; }
 .result-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
-.result-actions .hero-btn.ghost { color: var(--ink); border-color: var(--ink-3); }
+.result-actions .hero-btn.ghost, .lb-actions .hero-btn.ghost { color: var(--ink); border-color: var(--ink-3); }
 .artifact-card { text-decoration: none; }
 
 /* Lời kết trang chủ: hai nút */
@@ -1144,3 +1144,33 @@ html.motion-off .thread-path { stroke-dashoffset: 0; }
 .ac-stage .viewer3d, .artifact .pic .viewer3d { position: absolute; inset: 0; width: 100%; height: 100%; cursor: pointer; transition: transform 1s var(--ease-out); }
 .ac-stage.has-3d img, .artifact .pic.has-3d img { display: none; }
 .artifact-card:hover .ac-stage .viewer3d { transform: translateY(-6px) scale(1.03); }
+
+/* Hành trình và Áo dài từ hoa văn gốm ở trang chủ: vẫn có hiệu ứng rê chuột nhưng không dẫn tới trang nào (là div, không phải liên kết) */
+.journey-card, .gallery-item { cursor: default; }
+
+/* Cửa sổ phóng to thiết kế (trang Kết quả): nền tối mờ, khung giấy be, hai nút cùng kiểu với TẠO LẠI và CHỌN HIỆN VẬT KHÁC */
+.out-card { cursor: pointer; }
+.out-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+body.lb-open { overflow: hidden; }
+.lightbox {
+    position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 20px;
+    background: rgba(8, 21, 42, .78); backdrop-filter: blur(6px); animation: lb-in .25s ease both;
+}
+.lb-panel {
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 20px;
+    width: min(94vw, 560px); max-height: 94vh; padding: 52px 24px 24px; background: var(--paper);
+    box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .6); animation: lb-up .35s var(--ease-out) both;
+}
+.lb-close {
+    position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; display: grid; place-items: center;
+    border: 0; background: transparent; color: var(--ink); cursor: pointer; border-radius: 2px;
+}
+.lb-close:hover { background: rgba(29, 42, 54, .08); }
+.lb-close svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+.lb-pic { position: relative; min-height: 0; display: grid; }
+.lb-pic img { display: block; max-width: 100%; max-height: calc(94vh - 190px); object-fit: contain; }
+.lb-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.lb-actions .hero-btn:hover svg { transform: translateY(2px); }
+@keyframes lb-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lb-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.lb-pic .ai-tag { position: absolute; left: 12px; bottom: 12px; }

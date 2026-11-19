@@ -34,12 +34,13 @@ export async function render() {
     const sampleItem = sample ? items.find((i) => i.id === sample.heritage_id) : active[0];
     const dir = sample ? sample.thumb.replace(/final_img2img\.webp$/, '') : '';
     // Ba chặng người xem nhìn thấy được: hiện vật → hoa văn → tà áo
+    // Chỉ để xem: ba thẻ này không phải nút bấm, không dẫn tới trang nào
     const journey = [
-        ['Hiện vật', 'Một chiếc bình gốm Bát Tràng có nguồn gốc rõ ràng.', sampleItem ? `#/studio/${encodeURIComponent(sampleItem.id)}` : '#/studio', sampleItem?.image, false, true],
-        ['Hoa văn', 'Nét vẽ trên men được dệt thành tấm hoa văn liền mạch.', sampleItem ? `#/studio/${encodeURIComponent(sampleItem.id)}` : '#/studio', dir && `./${dir}pattern.webp`, true],
-        ['Tà áo dài', 'Hoa văn khoác lên dáng áo dài, giữ trọn nét gốc.', sampleItem ? `#/result/${encodeURIComponent(sampleItem.id)}` : '#/studio', sample && `./${latestOf(sample)}`, true],
+        ['Hiện vật', 'Một chiếc bình gốm Bát Tràng có nguồn gốc rõ ràng.', sampleItem?.image, false, true],
+        ['Hoa văn', 'Nét vẽ trên men được dệt thành tấm hoa văn liền mạch.', dir && `./${dir}pattern.webp`, true],
+        ['Tà áo dài', 'Hoa văn khoác lên dáng áo dài, giữ trọn nét gốc.', sample && `./${latestOf(sample)}`, true],
     ];
-    const journeyCards = journey.map(([title, sub, href, img, ai, contain], i) => h('a', { class: 'journey-card', href },
+    const journeyCards = journey.map(([title, sub, img, ai, contain], i) => h('div', { class: 'journey-card' },
         h('div', { class: `jc-img ${contain ? 'contain' : ''}` }, img ? h('img', { src: img, alt: '', loading: 'lazy' }) : null),
         h('span', { class: 'jc-num' }, String(i + 1).padStart(2, '0')),
         ai ? aiMark() : null,
@@ -72,7 +73,8 @@ export async function render() {
     const picks = [];
     for (const it of active) picks.push(...passports.filter((d) => d.heritage_id === it.id).sort(byPref).slice(0, 1));
     const nameOf = Object.fromEntries(items.map((i) => [i.id, i.name]));
-    const designItem = (d) => h('a', { class: 'gallery-item', href: `#/result/${encodeURIComponent(d.heritage_id)}`, 'data-scene': '' },
+    // Chỉ để xem: ảnh áo dài không phải nút bấm, không dẫn tới trang nào
+    const designItem = (d) => h('div', { class: 'gallery-item', 'data-scene': '' },
         h('div', { class: 'gi-img' }, h('img', { src: `./${latestOf(d)}`, alt: `Áo dài hoa văn ${nameOf[d.heritage_id] || ''}`, loading: 'lazy' }), aiMark()));
     const cols = [[], [], []];
     picks.forEach((d, i) => cols[i % 3].push(designItem(d)));

@@ -119,3 +119,10 @@ pip install -r requirements-dev.txt && pytest   # kiểm thử, không cần GPU
 - Thao tác: kéo chuột để xoay, lăn chuột để thu phóng, tự xoay nhẹ và dừng khi đang kéo. Nền canvas trong suốt nên khung nền be của trang hiện phía sau.
 - Thẻ trong lưới (Thư viện và lưới chọn của Studio): `hoverSpin()` dựng bình 3D đứng yên khi thẻ sắp vào màn hình (trong lúc chờ vẫn hiện ảnh phẳng). Bình tự xoay cùng tốc độ như trang riêng khi rê chuột hoặc focus bàn phím vào thẻ, rê ra thì dừng vòng vẽ và canvas giữ nguyên góc đang xoay. Thẻ không kéo xoay được để bấm vào vẫn mở Studio. Bật "giảm chuyển động" thì bình vẫn hiện 3D nhưng không xoay khi rê chuột.
 - Dự phòng: không có WebGL hoặc không có file GLB thì giữ ảnh phẳng đã tách nền. Ảnh bìa, thẻ Hành trình và trang Kết quả không dùng 3D.
+
+## Trang Kết quả: cửa sổ xem và tải thiết kế
+
+- Bấm vào một trong 4 ảnh (hoặc Enter, phím cách khi đang chọn ảnh) thì mở cửa sổ phóng to ảnh đó, có nhãn AI.
+- Nút TẢI XUỐNG (vàng, có biểu tượng tải bên trái) lấy ảnh dạng blob rồi lưu về máy với tên `thiet-ke-<mã hiện vật>-<số thứ tự>`. Ở chế độ trực tiếp ảnh là bản gốc từ máy chủ, ở chế độ trình diễn là bản WebP đã nén. Nếu trình duyệt không cho lấy ảnh thì mở ảnh ở thẻ mới để lưu tay.
+- Nút QUAY LẠI (viền) và dấu X ở góc trên bên phải đều đóng cửa sổ và trở về 4 mẫu. Esc và bấm ra ngoài cũng đóng. Tiêu điểm bàn phím nằm trong cửa sổ khi mở và trở về ảnh đã bấm khi đóng.
+
