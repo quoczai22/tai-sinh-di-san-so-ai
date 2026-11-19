@@ -36,7 +36,8 @@ def test_demo_data_matches_repo():
     stored = sorted(p.stem for p in (ROOT / "outputs" / "passports").glob("DP-*.json"))
     assert sorted(p["passport_id"] for p in passports) == stored
     heritage = json.loads((WEB / "data" / "heritage.json").read_text(encoding="utf-8"))
-    assert len(heritage["items"]) == 6
+    registry = json.loads((ROOT / "data" / "heritage" / "metadata.json").read_text(encoding="utf-8"))
+    assert len(heritage["items"]) == len(registry["items"])
     for d in ("bpmn_to_be.svg", "bpmn_as_is.svg", "use_case.svg"):
         assert (WEB / "data" / "diagrams" / d).exists()
 

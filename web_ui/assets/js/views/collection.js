@@ -1,8 +1,9 @@
 // Bộ sưu tập cho người xem: chỉ ảnh áo dài, tên hiện vật nguồn và cách đặt hoa văn.
-// Bấm vào một tà áo để mở hồ sơ chi tiết (Design Passport). Không hiện chỉ số kỹ thuật ở đây.
+// Bấm vào một tà áo để xem chi tiết (ảnh lớn, hiện vật nguồn, ghi công). Không hiện chỉ số kỹ thuật.
 import { h } from '../lib/dom.js';
 import * as data from '../lib/data.js';
 import { aiMark, stateBox } from '../lib/ui.js';
+import { openDesign } from '../lib/detail.js';
 
 const latestOf = (d) => (d.latest_version_kind === 'system_repair' && d.repair_thumb ? d.repair_thumb : d.thumb);
 
@@ -22,8 +23,8 @@ export async function render() {
                     h('div', {},
                         h('p', { class: 'kicker' }, it.dating || 'Gốm Bát Tràng'),
                         h('h2', { class: 'display coll-name' }, it.name),
-                        h('a', { class: 'coll-try', href: `#/studio/${encodeURIComponent(it.id)}` }, 'Thử tạo trong Studio', h('i', { class: 'arr', 'aria-hidden': 'true' })))),
-                h('div', { class: 'coll-grid' }, list.map((d, k) => h('a', { class: 'gallery-item', href: `#/passport/${d.passport_id}` },
+                        it.status === 'active' ? h('a', { class: 'coll-try', href: `#/studio/${encodeURIComponent(it.id)}` }, 'Thử tạo trong Studio', h('i', { class: 'arr', 'aria-hidden': 'true' })) : null)),
+                h('div', { class: 'coll-grid' }, list.map((d, k) => h('a', { class: 'gallery-item', href: '#/collection', onclick: (e) => { e.preventDefault(); openDesign(d.passport_id); } },
                     h('div', { class: 'gi-img' }, h('img', { src: `./${latestOf(d)}`, alt: `Áo dài hoa văn ${it.name}`, loading: 'lazy' }), aiMark()),
                     h('div', { class: 'gi-cap' },
                         h('span', { class: 'gi-from' }, `Thiết kế ${k + 1}`),

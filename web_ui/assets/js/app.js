@@ -4,10 +4,10 @@ import { renderHero } from './lib/hero.js';
 import { applyMotionClass, enhance, reduced, scenes, setMotion } from './lib/motion.js';
 import { stateBox } from './lib/ui.js';
 
-// Người xem chỉ thấy 3 trang (Khám phá). Các trang nghiệp vụ cho chuyên gia và Ban giám khảo vẫn giữ nguyên,
-// nằm trong menu ☰ mục "Khu chuyên môn".
-const CHAPTER = { 'Khám phá': '01', 'Khu chuyên môn': '02' };
-const CHAPTER_NOTE = { 'Khu chuyên môn': 'Dành cho chuyên gia thẩm định và Ban giám khảo.' };
+// Web chỉ dành cho người xem: 3 trang. Hồ sơ nghiệp vụ (kiểm định, thí nghiệm, thẩm định, Passport,
+// BPMN, KPI) nằm trong dữ liệu, API và docs/finals — không đưa lên web.
+const CHAPTER = { 'Khám phá': '01' };
+const CHAPTER_NOTE = {};
 
 const ROUTES = [
     { group: 'Khám phá', id: 'library', label: 'Trang chủ', short: 'Trang chủ', icon: 'library', primary: true, load: () => import('./views/library.js'),
@@ -16,20 +16,6 @@ const ROUTES = [
       title: 'Studio thiết kế', lede: 'Chọn một hiện vật, bấm tạo, nhận bốn thiết kế áo dài dệt từ hoa văn của nó.' },
     { group: 'Khám phá', id: 'collection', label: 'Bộ sưu tập', short: 'Bộ sưu tập', icon: 'library', primary: true, load: () => import('./views/collection.js'),
       title: 'Bộ sưu tập', lede: 'Những tà áo dài đã được dệt từ hoa văn gốm Bát Tràng.' },
-    { group: 'Khu chuyên môn', id: 'review', label: 'Thẩm định chuyên gia', short: 'Thẩm định', icon: 'review', load: () => import('./views/review.js'),
-      title: 'Thẩm định chuyên gia', lede: 'Chuyên gia di sản và thiết kế chấm mù trước khi một thiết kế được phê duyệt.' },
-    { group: 'Khu chuyên môn', id: 'quality', label: 'Kiểm định chất lượng', short: 'Kiểm định', icon: 'quality', load: () => import('./views/quality.js'),
-      title: 'Kiểm định chất lượng', lede: 'Đo trên thiết kế cuối: hoa văn còn giữ được không, dáng áo có đúng không. Thẩm mỹ do chuyên gia quyết định.' },
-    { group: 'Khu chuyên môn', id: 'lab', label: 'Phòng thử nghiệm', short: 'Thử nghiệm', icon: 'lab', load: () => import('./views/lab.js'),
-      title: 'Phòng thử nghiệm', lede: 'Mỗi lần chỉ đổi một biến, lặp nhiều seed, chấm mù.' },
-    { group: 'Khu chuyên môn', id: 'passport', label: 'Design Passport', short: 'Passport', icon: 'passport', load: () => import('./views/passport.js'),
-      title: 'Design Passport', lede: 'Hồ sơ của từng thiết kế, từ hiện vật gốc tới bản xuất cuối.' },
-    { group: 'Khu chuyên môn', id: 'sources', label: 'Nguồn và bản quyền', short: 'Bản quyền', icon: 'sources', load: () => import('./views/sources.js'),
-      title: 'Nguồn và bản quyền', lede: 'Nguồn, giấy phép và cách ghi công của từng hiện vật.' },
-    { group: 'Khu chuyên môn', id: 'dashboard', label: 'Tổng quan chỉ số', short: 'Tổng quan', icon: 'dashboard', load: () => import('./views/dashboard.js'),
-      title: 'Tổng quan', lede: 'Chỉ số tính từ dữ liệu thật. Chỉ số chưa đo được ghi là mục tiêu cần đo.' },
-    { group: 'Khu chuyên môn', id: 'process', label: 'Quy trình nghiệp vụ', short: 'Quy trình', icon: 'process', load: () => import('./views/process.js'),
-      title: 'Quy trình nghiệp vụ', lede: 'Sơ đồ BPMN 2.0 và Use Case của nền tảng.' },
 ].map((r) => ({ ...r, chapter: CHAPTER[r.group] }));
 
 let info = { mode: 'demo' };
@@ -104,6 +90,9 @@ async function route() {
     const [, id = 'library', ...params] = (location.hash || '#/library').split('/');
     const r = ROUTES.find((x) => x.id === id) || ROUTES[0];
     closeMenu();
+    // Đổi trang thì đóng khung chi tiết đang mở (vd. bấm "Thử với hiện vật này" trong khung)
+    document.getElementById('overlay-root')?.replaceChildren();
+    document.body.classList.remove('drawer-open');
     renderNav(r.id);
     document.title = `${r.title} — Tái Sinh Di Sản Số`;
     const main = document.getElementById('main');
