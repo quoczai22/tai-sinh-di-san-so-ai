@@ -76,33 +76,50 @@ Vòng này (`quality/pattern_retry.py`, gọi từ `generation/streamlit_runner.
 
 Mọi lần bị loại ghi vào `outputs/qc/pattern_rejects.csv` và `outputs/qc/pattern_rejects/`. Passport ghi `generation.pattern_seed` (seed hoa văn thực dùng) và `generation.pattern_retry` (trạng thái và từng lần thử, kèm giá trị VLS và đường nối). Tắt cho một biến thể bằng `pattern_retry: false`.
 
-**Thử thật trên LR3D_124** (hiện vật có 3 thiết kế bị loại ở bộ demo, seed 42, 20/11/2026, RTX 4060 Laptop): thiết kế 1 được cứu ở lần thử thứ 4 (seed 45, đường nối từ 2,71 xuống 1,54, còn cảnh báo). Thiết kế 2 và 3 cả 4 lần đều lỗi (đường nối 2,17 đến 5,94), giữ bản ít lỗi nhất và vẫn `qa_failed`. Thiết kế 4 đạt ngay. Mỗi lần sinh lại thêm khoảng 10 đến 12 giây, nên lượt chạy này mất 263 giây thay vì khoảng 100 đến 150 giây.
+**Thử thật trên LR3D_124** (bộ demo trước đó cùng ngày, hiện vật có 3 thiết kế bị loại, seed 42, 20/11/2026, RTX 4060 Laptop): thiết kế 1 được cứu ở lần thử thứ 4 (seed 45, đường nối từ 2,71 xuống 1,54, còn cảnh báo). Thiết kế 2 và 3 cả 4 lần đều lỗi (đường nối 2,17 đến 5,94), giữ bản ít lỗi nhất và vẫn `qa_failed`. Thiết kế 4 đạt ngay. Mỗi lần sinh lại thêm khoảng 10 đến 12 giây, nên lượt chạy này mất 263 giây thay vì khoảng 100 đến 150 giây.
 
 **Kết luận và giới hạn**: đổi seed chỉ cứu được một phần. Trong 4 thiết kế của LR3D_124, chỉ thiết kế mức 4 (trọng số ControlNet 0,25, thấp nhất) đạt ngay, ba mức có trọng số cao hơn (0,85, 0,65, 0,45) đều lỗi đường nối. Nghi ngờ nguyên nhân do mảng phẳng của LR3D_124 có rìa lệch nên đường nét điều khiển dính vào mép, trọng số càng cao càng lộ. Chưa làm bước giảm trọng số ControlNet ở lần thử cuối (cấu hình G2 có nêu hướng này) vì nó đổi ý nghĩa của mức sáng tạo, cần nhóm quyết định.
 
-## Kết quả bộ demo hiện tại (19/11/2026)
+## Kết quả bộ demo hiện tại (20/11/2026, seed 42)
 
-Bộ 24 thiết kế (6 hiện vật LR3D-CULT2 × 4 mức sáng tạo) sinh bằng `scripts/14_generate_demo_set.py`: mỗi hiện vật một áo LoRA riêng, ảnh nạp là mảng hoa văn phẳng, polish chỉ vùng áo 0,20 kèm khoá họa tiết. Kết quả đọc từ Passport (`GET /quality/designs`).
+Bộ 24 thiết kế (6 hiện vật LR3D-CULT2 × 4 mức sáng tạo) sinh bằng `scripts/14_generate_demo_set.py`. Cả bộ dùng **một seed duy nhất (42)** cho hoa văn, polish và áo LoRA, nên chạy lại ra đúng bộ này và cả 6 hiện vật dùng chung một áo trắng. Ảnh nạp là mảng hoa văn phẳng, bố cục cố định `front_panel` cho cả 4 mức (chỉ ô hoa văn đổi theo mức), polish chỉ vùng áo 0,20 kèm khoá họa tiết. Áo LoRA phải trắng trơn (`color_ok`: loại ứng viên có hơn 5% vùng áo bão hòa cao; áo trắng đo được 0 đến 3%, áo đỏ của LR3D_124 là 27%, áo cam của LR3D_38 là 16%). Kết quả đọc từ Passport (`GET /quality/designs`).
 
 | | PASS | WARN | FAIL |
 |---|---|---|---|
-| G2 hoa văn | 16 | 5 | 3 |
-| G3 thiết kế cuối | 14 | 10 | 0 |
-| Tổng thể (mức tệ hơn của G2 và G3) | 9 | 12 | 3 |
+| G2 hoa văn | 16 | 6 | 2 |
+| G3 thiết kế cuối | 24 | 0 | 0 |
+| Tổng thể (mức tệ hơn của G2 và G3) | 16 | 6 | 2 |
 
 | Phép đo (n = 24) | Trung bình | Thấp nhất | Cao nhất |
 |---|---|---|---|
-| PPS | 0,943 | 0,891 | 0,980 |
-| IoU dáng áo | 0,995 | 0,977 | 0,999 |
-| Độ nét | 0,846 | 0,684 | 0,941 |
-| Giữ chi tiết mịn | 0,855 (trung vị 0,869) | 0,716 | 0,947 |
-| Lệch màu ΔE | 1,21 | 0,22 | 1,96 |
-| VLS | 0,038 | 0,000 | 0,221 |
+| PPS | 0,945 | 0,891 | 0,967 |
+| IoU dáng áo | 0,998 | 0,998 | 0,999 |
+| Độ nét | 0,853 | 0,830 | 0,902 |
+| Giữ chi tiết mịn | 0,888 (trung vị 0,881) | 0,854 | 0,947 |
+| Lệch màu ΔE | 1,06 | 0,48 | 1,77 |
+| VLS | 0,039 | 0,000 | 0,221 |
+| Đường nối | 1,34 (trung vị 1,26) | 0,72 | 2,90 |
 
-- Cả 24 thiết kế qua polish ngay lần đầu; vòng thử lại không chạy lần nào.
-- Cả 10 cảnh báo G3 đến từ chỉ số giữ chi tiết mịn (dưới 0,85). Các chỉ số khác của G3 đều đạt ở cả 24 thiết kế. Nghĩa là bản cuối vẫn mất trung bình khoảng 14% chi tiết mịn so với bản ghép thô.
-- G2: 3 thiết kế bị loại đều của hiện vật HV12 (LR3D_124) do đường nối (2,41 đến 3,04); 3 thiết kế cảnh báo VLS (0,201 đến 0,221) và 2 cảnh báo đường nối (1,59 và 1,92).
-- Trạng thái Passport sau cổng: 9 chờ chuyên gia, 12 chờ QC, 3 không đạt (3 thiết kế này bị ẩn khỏi trang chủ và trang Kết quả).
+- Cả 24 thiết kế có trạng thái polish `passed`; G3 đạt cả 24 (bộ 19/11/2026 chỉ đạt 14/24, 10 cảnh báo đều do giữ chi tiết mịn dưới 0,85). Chi tiết mịn thấp nhất của bộ này là 0,854, **sát ngưỡng cảnh báo 0,85**; bản cuối vẫn mất trung bình khoảng 11% chi tiết mịn so với bản ghép thô.
+- G2: 2 thiết kế LỖI đều của LR3D_124 (mức 2 và 3) do đường nối (2,90 và 2,17 sau 4 lần sinh lại). 6 thiết kế cảnh báo: 3 do VLS (0,201, 0,203, 0,221) và 3 do đường nối (1,54, 1,60, 1,92).
+- Vòng sinh lại hoa văn: 21 thiết kế đạt ngay, 1 được cứu (LR3D_124 mức 1, seed 45), 2 hết lượt vẫn lỗi (`best_of_failed`).
+- Trạng thái Passport sau cổng: 16 chờ chuyên gia, 6 chờ QC, 2 không đạt (`qa_failed`, 2 thiết kế này bị ẩn khỏi trang Kết quả).
+
+### Bộ nhiều seed (42, 43, 44)
+
+Bộ seed 43 và 44 sinh bằng `scripts/14_generate_demo_set.py --seed N --out outputs/multiseed` (cùng cấu hình, seed áo bằng seed hoa văn) để làm gói chấm mù nhiều seed. Dữ liệu thô ở `outputs/multiseed/` (không đưa lên git); giao diện web chỉ dùng bộ seed 42.
+
+| Seed | G2 đạt | G2 cảnh báo | G2 lỗi | G3 |
+|---|---|---|---|---|
+| 42 | 16 | 6 | 2 | 24/24 đạt |
+| 43 | 20 | 3 | 1 | 24/24 đạt |
+| 44 | 16 | 7 | 1 | 24/24 đạt |
+| Cả ba | 52 | 16 | 4 | 72/72 đạt |
+
+- Theo mức sáng tạo (mỗi mức 18 thiết kế): mức 1 có 7 đạt, 11 cảnh báo; mức 2 có 11, 4, 3; mức 3 có 16, 1, 1; mức 4 có 18, 0, 0. Trọng số ControlNet càng cao thì càng hay cảnh báo hoặc lỗi.
+- Theo hiện vật (mỗi hiện vật 12 thiết kế): cả 4 thiết kế LỖI đều của LR3D_124 (5 đạt, 3 cảnh báo, 4 lỗi); 5 hiện vật còn lại không có thiết kế nào LỖI.
+- Trung vị cả 72: PPS 0,958, giữ chi tiết mịn 0,883, IoU dáng áo 0,992 (thấp nhất 0,965), VLS 0,038 (cao nhất 0,362, ở seed 44, dưới ngưỡng lỗi 0,40).
+- G3 đạt 72/72 nên **không phân biệt được thiết kế với nhau**; việc xếp hạng cần chuyên gia chấm mù.
 
 ### Mốc so sánh: bản 06/09/2026 (số liệu lịch sử)
 
@@ -112,21 +129,24 @@ Trên 24 thiết kế cũ (6 hiện vật × 4, áo mẫu cố định, polish t
 
 | Trường hợp | Chuyện gì xảy ra | Xử lý | Bằng chứng |
 |---|---|---|---|
-| `DP-HV12-20261119T162748-V1`, `V2`, `V3` | Hoa văn có đường nối lớn khi lát (2,71, 3,04 và 2,41); mảng phẳng của LR3D_124 có rìa lệch | G2 loại, trạng thái `qa_failed`, ẩn khỏi Bộ sưu tập; cần sinh lại hoa văn (chưa tự động) | Passport hiện tại |
-| `DP-HV10-20261119T162255-V1`, `V2` và `DP-HV07-20261119T161630-V1` | VLS 0,221, 0,203 và 0,201, lọt nhẹ hình vật chứa | G2 cảnh báo, chờ QC xem | Passport hiện tại |
+| `DP-HV12-20261120T100243-V2`, `V3` | Hoa văn có đường nối lớn khi lát (bản ít lỗi nhất sau 4 lần: 2,90 và 2,17; các lần khác 2,38 đến 4,89); mảng phẳng của LR3D_124 có rìa lệch, ô có khoảng trống lớn giữa dải lông vũ và huy hiệu rồng | G2 loại sau 4 lần sinh lại (seed 42 đến 45), trạng thái `qa_failed`, ẩn khỏi trang Kết quả; giữ bản ít lỗi nhất | Passport hiện tại, `outputs/qc/pattern_rejects.csv` |
+| `DP-HV12-20261120T100243-V1` | Đường nối 2,71, 5,94 và 5,90 ở seed 42, 43, 44 | Sinh lại: đạt ở lần thử thứ 4 (seed 45, đường nối 1,54, còn cảnh báo) | như trên |
+| `DP-HV10-20261120T095836-V1`, `V2` và `DP-HV07-20261120T095214-V1` | VLS 0,221, 0,203 và 0,201, lọt nhẹ hình vật chứa | G2 cảnh báo, chờ QC xem | Passport hiện tại |
+| Áo LoRA có mảng đỏ hoặc cam (bộ demo trước: LR3D_124 đỏ 27% vùng áo, LR3D_38 cam 16%) | Hoa văn xanh lam mất nổi bật, áo không còn trắng trơn | `color_ok` loại ứng viên có trên 5% vùng áo bão hòa cao; bộ hiện tại cả 6 áo đều đạt ở lần thử đầu | `generation/garment_lora.py`, `tests/test_garment_lora.py` |
+| Hoa văn mang dáng cả chiếc bình khi nạp ảnh render (LR3D_33, 50, 97, 124 ở mức 1 và 2; LR3D_124 ra ba vật rời) | G2 **không bắt được**: LR3D_33 đo VLS 0,0001 vì bình choán đầy khung | Quay về nguồn mảng phẳng làm mặc định; EXP-F, EXP-G ghi lại | [06](06_EXPERIMENTS.md), `docs/KET_QUA_EXP_G.md` |
 | Bộ demo trước (polish 0,30, chưa khoá họa tiết): HV07 V3 | PPS 0,36, 0,3995, 0,3983, 0,3756 ở 4 seed (seed 42 đến 45) đều dưới 0,40 | Hạ độ nhiễu xuống 0,22 và thử lần 5: đạt | `outputs/qc/rejects.csv` và ảnh bị loại trong commit `900ee09` |
 | Bộ demo trước: HV11 V3 và V4 | PPS 0,23 đến 0,37 ở cả 5 lần thử | Trả bản ghép thô kèm nhãn "chưa qua bước hoàn thiện" | như trên |
 | Bộ demo trước: HV12 V1 | PPS 0,3997 và 0,3976 ở seed 42 và 43 | Đạt ở seed 44 | như trên |
 | Khoá họa tiết cũ (σ 1,2) | PPS cao (0,91) nhưng mất nét mảnh, giữ chi tiết mịn 0,61; 6/12 thiết kế loại theo chỉ số mới | Đổi `dog_sigma_low` 0,3, thêm chỉ số `detail_ratio` | `evaluation/polish_finish_trial.csv` |
-| Bản 06/09/2026: HV01 V1, V2 | Hoa văn là ảnh nguyên chiếc bình (VLS 0,56 và 0,67) | G2 loại (lịch sử); nay mặc định nạp mảng phẳng nên VLS lớn nhất chỉ 0,22 | commit `b1192b0` |
+| Bản 06/09/2026: HV01 V1, V2 | Hoa văn là ảnh nguyên chiếc bình (VLS 0,56 và 0,67) | G2 loại (lịch sử); nay mặc định nạp mảng phẳng nên VLS lớn nhất của bộ seed 42 chỉ 0,22 | commit `b1192b0` |
 
 ### Giới hạn đã biết
 
-- VLS bắt được trường hợp cả chiếc bình nằm trong hoa văn, nhưng **bỏ sót** trường hợp hoa văn là *mảnh* thân bình hoặc mảng nền (đã thấy ở bản 06/09/2026).
+- VLS bắt được trường hợp cả chiếc bình nằm trên nền trơn, nhưng **bỏ sót** hai trường hợp: hoa văn là *mảnh* thân bình hoặc mảng nền (đã thấy ở bản 06/09/2026), và **bình choán đầy khung ô** (VLS nhân tỉ lệ viền nền trơn với độ trùng bóng nên ra gần 0; LR3D_33 nạp ảnh render đo 0,0001 dù ô là cả chiếc bình). Chưa có chỉ số bắt được lỗi này, nên việc xem mắt vẫn cần.
 - PPS đo mức giữ họa tiết **so với bản ghép**, không so với hiện vật gốc. Hoa văn giai đoạn 1 có giống hiện vật hay không vẫn là việc của chuyên gia (tiêu chí "Nhận ra họa tiết gốc").
 - Với khoá họa tiết, PPS gần 0,94 do cách làm; không dùng để so độ đẹp.
 - IoU dáng áo gần 1 vì polish chỉ vùng áo; nó không đo áo LoRA có giống áo dài truyền thống hay không. Áo LoRA vẫn thường tay loe và thắt eo; nhóm chấp nhận tay loe. Việc này chỉ chấm mù mới trả lời.
-- Ngưỡng `detail_ratio` (0,85 và 0,6) đặt theo quan sát trên bộ demo, chưa đối chiếu với người xem.
+- Ngưỡng `detail_ratio` (0,85 và 0,6) đặt theo quan sát trên bộ demo, chưa đối chiếu với người xem. Bộ hiện tại có chi tiết mịn thấp nhất 0,854, chỉ hơn ngưỡng 0,01.
 - Chưa có phiếu chuyên gia thật nên chưa đo được mức đồng thuận giữa cổng tự động và người.
 
 ## Bộ tiêu chí chuyên gia (ER-1.0)
@@ -149,13 +169,14 @@ Việc xem xét của chuyên gia là một bước **ngoài hệ thống**: nh�
 
 ## Gói đánh giá mù cho chuyên gia
 
-`scripts/18_build_blind_review.py` dựng gói chấm mù cho cả 24 thiết kế của bộ demo, kể cả 3 thiết kế mà cổng chất lượng đã loại (để đo mức đồng thuận giữa cổng tự động và chuyên gia). Kết quả nằm trong `outputs/blind_review/` (ảnh, không đưa lên git).
+`scripts/18_build_blind_review.py` dựng gói chấm mù nhiều seed: 72 thiết kế = 24 **ô** (một ô là cặp hiện vật và mức sáng tạo) × 3 seed (42, 43, 44), kể cả 4 thiết kế mà cổng chất lượng đã loại (để đo mức đồng thuận giữa cổng tự động và chuyên gia). Nguồn: Passport ở `outputs/passports/` (seed 42) và `outputs/multiseed/passports/` (seed 43, 44). Kết quả nằm trong `outputs/blind_review/` (ảnh, không đưa lên git).
 
-- `GOI_GUI/` (và `GOI_GUI.zip`) gửi người chấm. Gồm một trang `index.html` mở offline bằng trình duyệt, ảnh thiết kế đã đổi tên mã ngẫu nhiên và ảnh hiện vật đối chiếu. Không có mã Passport, mức sáng tạo, điểm hay quyết định của cổng.
-- `GIU_RIENG/` nhóm giữ: `key.csv` (mã trỏ về Passport, hiện vật, mức sáng tạo, kết quả G2 và G3, trạng thái duyệt) và `HUONG_DAN_NOI_BO.md` (cách gửi, thu, giải mã).
-- Người chấm nhập mã riêng (ví dụ CG01) và chọn vai: chuyên gia di sản chấm 2 tiêu chí, chuyên gia thiết kế chấm 3 tiêu chí, người am hiểu cả hai chấm đủ 5, theo trường `owner` của bộ tiêu chí ER-1.0. Mỗi thiết kế còn có quyết định Đạt, Cần chỉnh sửa hoặc Loại và ô nhận xét.
+- `GOI_GUI/` (và `GOI_GUI.zip`, 26 MB) gửi người chấm. Gồm một trang `index.html` mở offline bằng trình duyệt, ảnh thiết kế đã đổi tên mã ngẫu nhiên và ảnh hiện vật đối chiếu. Không có mã Passport, mức sáng tạo, seed, điểm hay quyết định của cổng.
+- `GIU_RIENG/` nhóm giữ: `key.csv` (mã trỏ về Passport, `run_id`, hiện vật, mức sáng tạo, seed, ô, kết quả G2 và G3, trạng thái duyệt) và `HUONG_DAN_NOI_BO.md` (cách gửi, thu, giải mã).
+- **Mỗi người chấm chỉ thấy 24 thiết kế: một thiết kế của mỗi ô** (khoảng 25 đến 35 phút). Seed nào thì trang xoay theo số cuối của mã người chấm: `CG01`, `CG02`, `CG03` liên tiếp phủ đúng 72 thiết kế, không trùng. Muốn mỗi thiết kế có ít nhất 2 phiếu cần ít nhất 6 người chấm.
+- Người chấm nhập mã riêng và chọn vai: chuyên gia di sản chấm 2 tiêu chí, chuyên gia thiết kế chấm 3 tiêu chí, người am hiểu cả hai chấm đủ 5, theo trường `owner` của bộ tiêu chí ER-1.0. Mỗi thiết kế còn có quyết định Đạt, Cần chỉnh sửa hoặc Loại và ô nhận xét.
 - Thứ tự thiết kế được xáo riêng theo mã người chấm. Trang tự lưu nháp trong trình duyệt và xuất `ratings_<mã>.csv`.
-- Cần ít nhất 1 chuyên gia di sản và 1 chuyên gia thiết kế; 24 thiết kế do 2 người chấm là 48 phiếu, đủ mốc 30 phiếu để hiệu chỉnh ngưỡng. Chưa có công cụ tự động tổng hợp phiếu và so với cổng.
+- Cần ít nhất 1 chuyên gia di sản và 1 chuyên gia thiết kế cho mỗi nhóm seed, tổng từ 30 phiếu trở lên (một người cho 24 phiếu). Mỗi người chỉ chấm một seed của mỗi ô nên chênh lệch giữa seed lẫn với chênh lệch giữa người chấm; chỉ kết luận về độ ổn định theo seed khi có nhiều người chấm cho mỗi seed. Chưa có công cụ tự động tổng hợp phiếu và so với cổng.
 
 ## Hiệu chỉnh ngưỡng khi có phiếu chuyên gia
 
@@ -169,5 +190,5 @@ Việc xem xét của chuyên gia là một bước **ngoài hệ thống**: nh�
 | Bằng chứng BTC yêu cầu | Ở đâu |
 |---|---|
 | Bộ hiện vật, hoa văn, thiết kế cuối | `outputs/runs/R<thời điểm>-<mã>/`: `00_reference.png` (ảnh nạp), `V<n>_pattern.png`, `V<n>_aodai_raw.png`, `V<n>_aodai.png`, `garment.png`; Passport `outputs/passports/DP-*.json` (mục `quality`) |
-| Phiếu nhận xét của người am hiểu | **Chưa có phiếu thật.** Phiếu mẫu và gói chấm mù: `outputs/experiments/EXP-D/blind/` (ảnh không đưa vào repo) |
+| Phiếu nhận xét của người am hiểu | **Chưa có phiếu thật.** Gói chấm mù nhiều seed: `outputs/blind_review/` (72 thiết kế, ảnh không đưa vào repo); gói EXP-D cũ không còn dùng được |
 | Ví dụ bị loại và được sửa | Bảng "Ví dụ bị loại và được sửa" ở trên; `outputs/qc/rejects.csv` và ảnh bị loại trong commit `900ee09`; `evaluation/polish_finish_trial.csv` |

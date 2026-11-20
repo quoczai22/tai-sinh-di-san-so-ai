@@ -11,12 +11,12 @@ quality/            (mới) metrics.py · gate.py · repair.py · assess.py — 
 provenance/         (mới) registry.py · passport.py · builder.py · labeling.py · hashing.py
 evaluation/
   experiment.py     (mới) kế hoạch, kiểm tra đơn biến, chạy, chấm mù, thống kê
-  experiments/*.json  đặc tả EXP-A, EXP-B, EXP-C
+  experiments/*.json  đặc tả EXP-A đến EXP-G
 api/                main.py (v1.1.0) · store.py · audit.py
 config/             heritage_selection.json · quality_gate.json · expert_rubric.json
 web_ui/             giao diện cho người xem: Trang chủ, Studio, Kết quả (giao diện 09/2026 lưu ở archive/web_ui_2026-09/)
 scripts/            08 chuyển schema, trích LR3D · 09 nạp ảnh hiện vật · 10 tạo hiện vật từ LR3D · 11 xuất dữ liệu trình diễn, lọc VietFashion · 12 dựng sơ đồ, xuất tập LoRA · 13 huấn luyện LoRA · 14 sinh bộ demo
-tests/              249 ca pytest
+tests/              313 ca pytest
 ```
 
 Luồng dữ liệu một lần chạy:
@@ -82,8 +82,8 @@ Web chỉ dành cho người xem: **Trang chủ · Studio · Kết quả**. Các
 | Chức năng | Nằm ở |
 |---|---|
 | Kiểm định chất lượng G2/G3 | `quality/`, `config/quality_gate.json`, `GET /quality/designs` |
-| Thí nghiệm EXP-A/B/C | `evaluation/experiment.py`, `outputs/experiments/`, `GET /experiments` |
-| Thẩm định chuyên gia | `config/expert_rubric.json`, `POST /passports/{id}/reviews`, gói chấm mù `outputs/experiments/EXP-D/blind/` |
+| Thí nghiệm EXP-A đến EXP-G | `evaluation/experiment.py`, `evaluation/exp_g.py`, `outputs/experiments/`, `GET /experiments` |
+| Thẩm định chuyên gia | `config/expert_rubric.json`, `POST /passports/{id}/reviews`, gói chấm mù nhiều seed `outputs/blind_review/` (`scripts/18_build_blind_review.py`) |
 | Design Passport | `outputs/passports/`, `GET /passports/{id}`, `GET /passports/{id}/export` |
 | Nguồn và bản quyền | `data/heritage/metadata.json`, `GET /provenance/catalog`, [07](07_PROVENANCE_COPYRIGHT.md) |
 | KPI, BPMN, Use Case | [08](08_KPI.md), [03](03_BPMN.md), [04](04_USE_CASE.md), `docs/finals/diagrams/` |
@@ -91,7 +91,7 @@ Web chỉ dành cho người xem: **Trang chủ · Studio · Kết quả**. Các
 ### Hai chế độ
 
 - **Trực tiếp**: có API chạy cùng máy (`localhost`) → đọc và ghi qua API. Nhãn góc phải cho biết có GPU hay không.
-- **Trình diễn**: không có API (ví dụ bản đưa lên Vercel) → đọc dữ liệu đã xuất trong `web_ui/data/` bằng `scripts/11_export_demo_data.py` từ dữ liệu thật. Các nút ghi (phiếu thẩm định, quyết định QC) không giả vờ ghi: chúng xuất tệp JSON để nhóm nhập sau, và giao diện nói rõ điều đó.
+- **Trình diễn**: không có API (ví dụ bản đưa lên Vercel) → đọc dữ liệu đã xuất trong `web_ui/data/` bằng `scripts/11_export_demo_data.py` từ dữ liệu thật. Riêng trang Kết quả đọc bộ riêng `web_ui/data/result/` và `web_ui/assets/images/result/` (xuất bằng `--only-result`, qua `data.resultPassports()`), nên bộ demo seed 42 mới chỉ đổi ở trang này; trang chủ, Thư viện, Studio và bảng chất lượng giữ dữ liệu cũ. Chạy lệnh không có cờ sẽ ghi lại toàn bộ `web_ui/data/`. Các nút ghi (phiếu thẩm định, quyết định QC) không giả vờ ghi: chúng xuất tệp JSON để nhóm nhập sau, và giao diện nói rõ điều đó.
 
 Không có nút nào bấm mà không làm gì. Chức năng chưa có máy chủ (sinh ảnh, ghi chỉnh sửa) hiện lý do bị khoá.
 

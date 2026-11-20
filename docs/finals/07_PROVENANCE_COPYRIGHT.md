@@ -137,7 +137,7 @@ Trang "Nguồn và bản quyền" của giao diện từng tạo sẵn thư cho 
 
 ### Sổ cái băm nối chuỗi
 
-Mỗi sự kiện ghi `seq`, thời điểm, loại sự kiện, người/hệ thống thực hiện, băm của nội dung sự kiện và băm của sự kiện trước; băm của sự kiện là SHA-256 của các trường đó ở dạng JSON chuẩn hoá. Hàm `verify` kiểm tra: chuỗi băm liền mạch, nội dung từng sự kiện chưa bị sửa, các trường tóm tắt (trạng thái phê duyệt, danh sách phiên bản, số phiếu thẩm định) khớp với sổ cái, và băm của từng tệp trên đĩa khớp với băm đã ghi. Kết quả hiện tại: 24/24 Passport của bộ demo đạt.
+Mỗi sự kiện ghi `seq`, thời điểm, loại sự kiện, người/hệ thống thực hiện, băm của nội dung sự kiện và băm của sự kiện trước; băm của sự kiện là SHA-256 của các trường đó ở dạng JSON chuẩn hoá. Hàm `verify` kiểm tra: chuỗi băm liền mạch, nội dung từng sự kiện chưa bị sửa, các trường tóm tắt (trạng thái phê duyệt, danh sách phiên bản, số phiếu thẩm định) khớp với sổ cái, và băm của từng tệp trên đĩa khớp với băm đã ghi. Kết quả hiện tại: 24/24 Passport của bộ demo đạt (72/72 kể cả 48 Passport của bộ seed 43, 44).
 
 Giới hạn cần nói rõ: sổ cái giúp **phát hiện** sửa đổi khi đã biết băm đầu chuỗi; người có quyền ghi tệp vẫn có thể viết lại cả chuỗi. Để chống việc đó, cần neo băm đầu chuỗi ra ngoài (ví dụ ghi vào commit Git đã đẩy lên, hoặc in vào hồ sơ nộp BTC). Bộ kiểm thử có ca sửa một sự kiện và xác nhận `verify` báo lỗi.
 
