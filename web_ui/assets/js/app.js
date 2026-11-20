@@ -1,7 +1,7 @@
 import { clear, h, icon } from './lib/dom.js';
 import * as data from './lib/data.js';
 import { renderHero } from './lib/hero.js';
-import { applyMotionClass, enhance, reduced, scenes, setMotion } from './lib/motion.js';
+import { applyMotionClass, detectSlowMotion, enhance, reduced, scenes, setMotion } from './lib/motion.js';
 import { stateBox } from './lib/ui.js';
 
 // Web chỉ dành cho người xem: Trang chủ, Studio (chọn hiện vật) và Kết quả (4 tà áo). Hồ sơ nghiệp vụ (kiểm định, thí nghiệm, thẩm định, Passport,
@@ -153,6 +153,7 @@ window.addEventListener('click', (e) => {
 });
 
 applyMotionClass();
+detectSlowMotion();
 (async () => {
     info = await data.init();
     window.addEventListener('hashchange', route);
