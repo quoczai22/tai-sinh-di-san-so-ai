@@ -40,8 +40,7 @@ export function aiMark() {
 export const DEMO_LABEL = 'Kết quả đã sinh sẵn — không phải sinh trực tiếp';
 export function demoNotice() {
     return h('p', { class: 'demo-notice', role: 'note' },
-        h('strong', {}, DEMO_LABEL),
-        ' · Máy GPU hiện không trực tuyến, trang hiển thị bộ thiết kế thật đã tạo trước trên GPU.');
+        h('strong', {}, DEMO_LABEL));
 }
 
 /** Dòng chú thích quyền sử dụng dưới ảnh (chữ nghiêng, không dùng thẻ màu). */

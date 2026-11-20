@@ -1,5 +1,5 @@
 const MODEL_DIR = './assets/models/';
-const MODEL_VERSION = 'finals-75';
+const MODEL_VERSION = 'finals-79';
 const AUTO_ROTATE_SPEED = 1.4;
 const RESUME_AFTER_MS = 3500;
 const live = new Set(), models = new Map(), queue = [];
@@ -25,13 +25,15 @@ function modelFor(id, GLTFLoader) {
 }
 function shadowTexture(THREE) {
     const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = 128;
+    canvas.width = canvas.height = 256;
     const g = canvas.getContext('2d');
-    const gradient = g.createRadialGradient(64, 64, 0, 64, 64, 64);
-    gradient.addColorStop(0, 'rgba(40,28,10,.5)');
+    const gradient = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+    gradient.addColorStop(0, 'rgba(40,28,10,.55)');
+    gradient.addColorStop(0.28, 'rgba(40,28,10,.30)');
+    gradient.addColorStop(0.65, 'rgba(40,28,10,.08)');
     gradient.addColorStop(1, 'rgba(40,28,10,0)');
     g.fillStyle = gradient;
-    g.fillRect(0, 0, 128, 128);
+    g.fillRect(0, 0, 256, 256);
     const texture = new THREE.CanvasTexture(canvas);
     texture.colorSpace = THREE.SRGBColorSpace;
     return texture;
@@ -74,9 +76,11 @@ function makeScene(gltf, THREE, env) {
     shadow.rotation.x = -Math.PI / 2;
     shadow.position.y = -0.002;
     scene.add(shadow);
-    return { scene, model, radius, dispose() {
-        shadow.geometry.dispose(); shadow.material.map.dispose(); shadow.material.dispose();
-    } };
+    return {
+        scene, model, radius, dispose() {
+            shadow.geometry.dispose(); shadow.material.map.dispose(); shadow.material.dispose();
+        }
+    };
 }
 async function build(box, id, hover) {
     cleanupDetached();
@@ -106,13 +110,15 @@ async function build(box, id, hover) {
         canvas.className = 'viewer3d';
         canvas.setAttribute('aria-label', 'Mô hình 3D của hiện vật, kéo chuột để xoay');
         if (hover) canvas.style.touchAction = 'auto';
+        let autoRotateActive = !reducedMotion();
         controls = hover ? null : new OrbitControls(camera, canvas);
         if (controls) {
-            controls.target.set(0, 0.5, 0);
+            controls.target.set(0, 0.46, 0);
             controls.enablePan = false;
+            controls.enableZoom = false;
             controls.enableDamping = true;
             controls.dampingFactor = 0.08;
-            controls.autoRotate = !reducedMotion();
+            controls.autoRotate = autoRotateActive;
             controls.autoRotateSpeed = AUTO_ROTATE_SPEED;
             controls.minPolarAngle = Math.PI * 0.18;
             controls.maxPolarAngle = Math.PI * 0.62;
@@ -148,9 +154,10 @@ async function build(box, id, hover) {
             }
             camera.aspect = w / h;
             const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-            const d = Math.max(0.5 / t, radius / (t * camera.aspect)) * (hover ? 1.12 : 1.35);
+            const d = Math.max(0.5 / t, radius / (t * camera.aspect)) * (hover ? 1.25 : 1.35);
             if (controls) { controls.minDistance = d * 0.55; controls.maxDistance = d * 1.6; }
-            if (!fit.done) { camera.position.set(0, 0.55 + d * 0.12, d); fit.done = true; }
+            if (!fit.done) { camera.position.set(0, 0.5 + d * 0.08, d); fit.done = true; }
+            if (hover) camera.lookAt(0, 0.46, 0);
             camera.updateProjectionMatrix();
             if (hover && !raf) draw();
         };
@@ -166,23 +173,27 @@ async function build(box, id, hover) {
         };
         const run = () => { if (!raf && visible && !document.hidden && !entry.dead) { last = 0; raf = requestAnimationFrame(frame); } };
         const onVisibility = () => { if (document.hidden) halt(); else if (!hover || spinning) run(); };
-        entry = { box, hover, dead: false, stop() {
-            if (entry.dead) return;
-            entry.dead = true;
-            halt();
-            io?.disconnect(); ro?.disconnect();
-            document.removeEventListener('visibilitychange', onVisibility);
-            clearTimeout(resume);
-            controls?.dispose(); data?.dispose();
-            canvas?.remove();
-            box.classList.remove('has-3d');
-            if (own) { env?.dispose(); renderer.dispose(); renderer.forceContextLoss(); }
-            live.delete(entry);
-        } };
+        entry = {
+            box, hover, dead: false, stop() {
+                if (entry.dead) return;
+                entry.dead = true;
+                halt();
+                io?.disconnect(); ro?.disconnect();
+                document.removeEventListener('visibilitychange', onVisibility);
+                clearTimeout(resume);
+                controls?.dispose(); data?.dispose();
+                canvas?.remove();
+                box.classList.remove('has-3d');
+                if (own) { env?.dispose(); renderer.dispose(); renderer.forceContextLoss(); }
+                live.delete(entry);
+            }
+        };
         if (controls) {
             controls.addEventListener('start', () => { clearTimeout(resume); controls.autoRotate = false; });
             controls.addEventListener('end', () => {
-                resume = setTimeout(() => { controls.autoRotate = !reducedMotion(); }, RESUME_AFTER_MS);
+                if (autoRotateActive) {
+                    resume = setTimeout(() => { controls.autoRotate = !reducedMotion() && autoRotateActive; }, RESUME_AFTER_MS);
+                }
             });
         }
         if (renderer.compileAsync) await renderer.compileAsync(scene, camera);
@@ -198,7 +209,34 @@ async function build(box, id, hover) {
         fit();
         if (hover) draw(); else run();
         box.classList.add('has-3d');
-        return { spin(on) { spinning = on && !reducedMotion(); if (spinning) run(); else halt(); }, stop: entry.stop };
+
+        const setZoom = (factor) => {
+            const z = Math.max(0.7, Math.min(1.8, Number(factor) || 1));
+            camera.zoom = z;
+            camera.updateProjectionMatrix();
+            if (!raf && visible) draw();
+            return z;
+        };
+
+        const toggleSpin = (force) => {
+            autoRotateActive = typeof force === 'boolean' ? force : !autoRotateActive;
+            if (controls) {
+                controls.autoRotate = autoRotateActive && !reducedMotion();
+                if (autoRotateActive) run();
+            } else {
+                spinning = autoRotateActive && !reducedMotion();
+                if (spinning) run(); else halt();
+            }
+            return autoRotateActive;
+        };
+
+        return {
+            spin(on) { spinning = on && !reducedMotion(); if (spinning) run(); else halt(); },
+            stop: entry.stop,
+            setZoom,
+            toggleSpin,
+            isSpinning() { return autoRotateActive; }
+        };
     } catch {
         if (entry) entry.stop();
         else {
