@@ -127,7 +127,11 @@ async function build(box, id, hover) {
                 }
             } else controls.update(delta);
             renderer.render(scene, camera);
-            if (hover) ctx.drawImage(renderer.domElement, 0, 0, canvas.width, canvas.height);
+            if (hover) {
+                // Renderer nền trong suốt: phải xoá khung cũ, nếu không bình xoay để lại vệt chồng hình
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(renderer.domElement, 0, 0, canvas.width, canvas.height);
+            }
         };
         const fit = () => {
             const w = box.clientWidth, h = box.clientHeight;
