@@ -23,7 +23,7 @@ from api.audit import AUDIT_EVENTS, append_audit_event
 from provenance import passport as P
 from provenance.registry import (all_items, assess_selection, completeness, get_item,
                                  load_selection_config, rights_gate)
-from streamlit_ui.heritage_data import load_heritage_metadata
+from provenance.heritage import load_heritage_metadata
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 log = logging.getLogger("tsds.api")

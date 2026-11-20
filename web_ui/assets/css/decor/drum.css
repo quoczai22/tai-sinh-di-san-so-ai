@@ -1,0 +1,146 @@
+/* decor/drum.css — MẶT TRỐNG ĐỒNG, MÂY, SỢI CHỈ nối các phần trang chủ (.drum, .cloud, .thread). JS: decor/drum.js. */
+
+/* =====================================================================
+   Con đường dẫn tới giá trị cuối: sợi chỉ vàng + mây cát tường + mặt trống đồng
+   ===================================================================== */
+/* Sợi chỉ: vẽ dần theo --e của chính đoạn chỉ; mây hiện và trôi nhẹ khi sợi chỉ đi qua */
+.thread {
+    position: relative;
+    height: clamp(150px, 18vw, 220px);
+    margin: clamp(30px, 5vw, 64px) auto;
+    width: 40px;
+}
+
+.thread-line {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.thread-path {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 1.4;
+    vector-effect: non-scaling-stroke;
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: calc(1 - min(1, var(--e, 0) * 1.15));
+}
+
+.thread-cloud {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 92px;
+    translate: -50% -50%;
+    opacity: clamp(0, calc(var(--e, 0) * 2.2 - .9), 1);
+    scale: calc(.86 + clamp(0, calc(var(--e, 0) * 2.2 - .9), 1) * .14);
+}
+
+.thread-cloud .cloud-line, .finale-cloud .cloud-line {
+    fill: var(--paper);
+    stroke: var(--dat);
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.thread-cloud .cloud-line.thin, .finale-cloud .cloud-line.thin {
+    fill: none;
+    stroke-width: 1.1;
+}
+
+.thread::before, .thread::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    margin-left: -2.5px;
+    border-radius: 50%;
+    background: var(--gold);
+    opacity: clamp(0, calc(var(--e, 0) * 3 - 1), 1);
+}
+
+.thread::before {
+    top: -3px;
+}
+
+.thread::after {
+    bottom: -3px;
+}
+
+.drum {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.drum-plate {
+    fill: rgba(212, 180, 122, .05);
+    stroke: rgba(212, 180, 122, .45);
+    stroke-width: 1.2;
+}
+
+.drum-spin {
+    transform-box: view-box;
+    transform-origin: 50% 50%;
+    rotate: calc(var(--p, .5) * 70deg - 35deg);
+}
+
+.drum .ring {
+    opacity: clamp(0, calc(var(--e, 0) * 9 - var(--k) * 1 - .6), 1);
+    transition: opacity .4s ease;
+}
+
+.drum-line {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 1.4;
+    stroke-linejoin: round;
+}
+
+.drum-line.thin {
+    stroke-width: .9;
+    opacity: .8;
+}
+
+.drum-dot {
+    fill: var(--gold);
+}
+
+.drum-gold {
+    fill: var(--gold);
+    stroke: #E8CF9C;
+    stroke-width: .8;
+}
+
+.drum-bird {
+    fill: rgba(212, 180, 122, .9);
+    stroke: #E8CF9C;
+    stroke-width: .6;
+    stroke-linejoin: round;
+}
+
+/* đàn chim Lạc lượn ngược chiều mặt trống */
+.drum-flock {
+    transform-box: view-box;
+    transform-origin: 50% 50%;
+    rotate: calc(var(--p, .5) * -110deg + 55deg);
+}
+
+.finale-cloud .cloud-line {
+    fill: transparent;
+    stroke: var(--gold);
+}
+
+html.motion-off .drum .ring, html.motion-off .thread-cloud {
+    opacity: 1;
+    translate: none;
+}
+
+html.motion-off .thread-path {
+    stroke-dashoffset: 0;
+}

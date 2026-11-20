@@ -1,0 +1,109 @@
+/* components/buttons.css — NÚT: .btn, .btn.primary/.ghost, .hero-btn (nút vuông chữ in hoa giãn). */
+
+.btn {
+    display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--porcelain);
+    padding: 8px 14px; border-radius: var(--radius-s); cursor: pointer; font-weight: 500; text-decoration: none; color: var(--ink);
+}
+
+.btn:hover { border-color: var(--ink-3); color: var(--ink); }
+
+.btn.primary { background: var(--lam); border-color: var(--lam); color: #fff; }
+
+.btn.primary:hover { background: var(--lam-strong); }
+
+.btn[disabled], .btn[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
+
+.btn svg { width: 16px; height: 16px; flex: none; }
+
+.btn { white-space: nowrap; }
+
+.btn.hero-btn {
+    border-radius: 999px;
+    padding: 12px 22px;
+    font-size: 15px;
+    border: 1px solid transparent;
+    transition: transform .3s var(--ease-out), background-color .25s ease, color .25s ease;
+}
+
+.btn.hero-btn svg {
+    width: 18px;
+    height: 18px;
+    transition: transform .35s var(--ease-out);
+}
+
+.btn.hero-btn:hover svg {
+    transform: translateX(4px);
+}
+
+.btn.hero-btn.primary {
+    background: var(--cream);
+    color: var(--cobalt-800);
+}
+
+.btn.hero-btn.primary:hover {
+    background: #fff;
+    transform: translateY(-2px);
+}
+
+.btn.hero-btn.ghost {
+    background: transparent;
+    color: var(--cream);
+    border-color: rgba(244, 240, 230, .4);
+}
+
+.btn.hero-btn.ghost:hover {
+    border-color: var(--cream);
+    background: rgba(244, 240, 230, .08);
+}
+
+/* ---------- Nâng cấp thành phần dùng chung ---------- */
+.btn {
+    border-radius: 999px;
+    transition: background-color .2s ease, border-color .2s ease, color .2s ease, translate .3s var(--ease-out);
+}
+
+.btn.primary:hover {
+    translate: 0 -2px;
+}
+
+.btn, .btn.hero-btn {
+    border-radius: 2px;
+}
+
+/* Nút: vuông, chữ in hoa giãn */
+.btn.hero-btn {
+    border-radius: 0;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 14px 24px;
+}
+
+.btn.hero-btn.primary {
+    background: var(--gold);
+    color: var(--cobalt-950);
+}
+
+.btn.hero-btn.primary:hover {
+    background: #E2C690;
+    translate: none;
+    transform: none;
+}
+
+.btn {
+    border-radius: 0;
+}
+
+.btn {
+    font-family: var(--font-ui);
+}
+
+.result-actions .hero-btn.ghost, .lb-actions .hero-btn.ghost {
+    color: var(--ink);
+    border-color: var(--ink-3);
+}
+
+.lb-actions .hero-btn:hover svg {
+    transform: translateY(2px);
+}

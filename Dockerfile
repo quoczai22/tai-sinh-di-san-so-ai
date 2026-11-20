@@ -56,7 +56,6 @@ COPY evaluation/ /app/evaluation/
 COPY provenance/ /app/provenance/
 COPY quality/ /app/quality/
 COPY config/ /app/config/
-COPY streamlit_ui/__init__.py streamlit_ui/heritage_data.py /app/streamlit_ui/
 # data/ gồm cả trọng số LoRA dáng áo dài (data/lora/**/*.safetensors, ~37 MB)
 COPY data/ /app/data/
 

@@ -1,0 +1,181 @@
+/* components/journey-pin.css — KHỐI DÍNH 'Hành trình' trang chủ: .journey-pin, .pin-sticky, .pin-head, băng .pin-track trượt ngang theo --pp.
+   JS: views/library.js (khung) + core/scenes.js (ghi --pp). */
+
+/* ---------- 2. Hành trình: khối dính, trượt ngang ---------- */
+.journey-pin {
+    position: relative;
+    margin: 0 calc(50% - 50vw);
+}
+
+.pin-sticky {
+    padding: 0 0 8px;
+}
+
+.pin-head {
+    max-width: 1280px;
+    margin: 0 auto 28px;
+    padding: 0 var(--gutter);
+}
+
+.pin-head .kicker::after {
+    display: none;
+}
+
+.pin-track {
+    display: flex;
+    gap: 22px;
+    padding: 6px var(--gutter) 18px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    will-change: transform;
+}
+
+.pin-track::-webkit-scrollbar {
+    display: none;
+}
+
+.pin-progress {
+    max-width: 1280px;
+    margin: 14px auto 0;
+    padding: 0 var(--gutter);
+}
+
+.pin-progress span {
+    display: block;
+    height: 1px;
+    background: var(--ink);
+    transform-origin: 0 50%;
+    transform: scaleX(var(--pp, 0));
+}
+
+.pin-progress {
+    background: linear-gradient(var(--line), var(--line)) var(--gutter) 50% / calc(100% - 2 * var(--gutter)) 1px no-repeat;
+}
+
+.journey-pin.pinned .pin-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding-top: var(--nav-h);
+}
+
+.journey-pin.pinned .pin-track {
+    overflow: visible;
+    scroll-snap-type: none;
+    padding-left: max(var(--gutter), calc((100vw - 1280px) / 2 + var(--gutter)));
+    padding-right: 12vw;
+}
+
+.pin-track {
+    scroll-padding-inline: var(--gutter);
+}
+
+.pin-head {
+    text-align: left;
+}
+
+.pin-head .kicker {
+    justify-content: flex-start;
+}
+
+/* ---------- Hành trình: tiêu đề không bị đuôi phượng dìm; thẻ luôn vừa một màn hình ---------- */
+.pin-head .kicker {
+    color: var(--dat);
+    font-weight: 600;
+}
+
+.pin-head .kicker, .pin-head .display {
+    position: relative;
+    width: fit-content;
+    text-shadow: 0 0 2px var(--paper), 0 0 10px var(--paper), 0 0 22px var(--paper), 0 0 36px var(--paper);
+}
+
+.pin-head::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: 0;
+    top: -30px;
+    width: min(760px, 70vw);
+    height: calc(100% + 60px);
+    background: radial-gradient(closest-side, rgba(244, 240, 230, .92), rgba(244, 240, 230, .6) 60%, transparent);
+    pointer-events: none;
+}
+
+.pin-head {
+    position: relative;
+    isolation: isolate;
+}
+
+.journey-pin.pinned .pin-sticky {
+    justify-content: flex-start;
+    padding-top: calc(var(--nav-h) + clamp(16px, 4vh, 44px));
+    padding-bottom: clamp(18px, 4vh, 40px);
+}
+
+.journey-pin.pinned .pin-head {
+    margin-bottom: clamp(14px, 3vh, 28px);
+}
+
+.journey-pin.pinned .pin-head .display {
+    font-size: clamp(34px, 4.2vw, 56px);
+}
+
+.journey-pin.pinned .pin-track {
+    flex: 1 1 auto;
+    min-height: 0;
+    align-items: stretch;
+    padding-top: 4px;
+    padding-bottom: 6px;
+}
+
+.journey-pin.pinned .pin-progress {
+    flex: none;
+    margin-top: clamp(10px, 2vh, 18px);
+}
+
+.pin-head .kicker::after {
+    display: block;
+}
+
+.pin-head .kicker {
+    gap: 12px;
+}
+
+/* ---------- Tiêu đề Hành trình: căn giữa, quầng ngà đủ đậm để không bị đuôi phượng dìm ---------- */
+.pin-head {
+    text-align: center;
+}
+
+.pin-head .kicker {
+    justify-content: center;
+    margin-inline: auto;
+}
+
+.pin-head .display {
+    margin-inline: auto;
+}
+
+.pin-head::before {
+    left: 50%;
+    translate: -50% 0;
+    top: -44px;
+    width: min(980px, 92vw);
+    height: calc(100% + 88px);
+    background: radial-gradient(closest-side, rgba(244, 240, 230, .97) 0%, rgba(244, 240, 230, .9) 55%, rgba(244, 240, 230, .5) 78%, transparent);
+}
+
+/* Hành trình 3 chặng: căn giữa khi vừa một màn hình (chỉ trượt ngang khi thật sự tràn) */
+.pin-track {
+    justify-content: safe center;
+}
+
+.journey-pin.pinned .pin-track {
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
+}

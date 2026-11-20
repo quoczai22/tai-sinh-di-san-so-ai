@@ -1,0 +1,86 @@
+/* base/tokens.css — BIẾN THIẾT KẾ: bảng màu men Bát Tràng, cỡ chữ, bo góc, bóng, đường cong chuyển động, @property.
+   Nạp đầu tiên; mọi file khác chỉ đọc các biến ở đây, không tự đặt mã màu mới. */
+
+:root {
+    --paper: #F4F0E6;
+    --porcelain: #FCFBF7;
+    --porcelain-2: #F8F5EE;
+    --ink: #1D2A36;
+    --ink-2: #4A5866;
+    --ink-3: #6F7B87;
+    --line: #E1D9C8;
+    --line-2: #EAE4D7;
+    --lam: #24508A;
+    --lam-strong: #1B3E6C;
+    --lam-soft: #E4EAF2;
+    --ngoc: #2E7A64;
+    --ngoc-soft: #E2EFE8;
+    --dat: #8B5E3C;
+    --dat-soft: #F2E8DC;
+    --warn: #8A6400;
+    --warn-soft: #F6ECCF;
+    --fail: #A3392B;
+    --fail-soft: #F6E2DD;
+    --series-a: #B8742A;
+    --series-b: #24508A;
+    --radius-s: 6px;
+    --radius-m: 10px;
+    --radius-l: 16px;
+    --shadow: 0 1px 0 rgba(29, 42, 54, .04), 0 6px 18px -10px rgba(29, 42, 54, .18);
+    /* Một họ chữ cho toàn trang: Noto Serif Display cho cỡ lớn, Noto Serif (cùng thiết kế,
+       nét dày hơn để đọc được ở cỡ nhỏ) cho chữ thân, nhãn, bảng. */
+    --font-ui: "Noto Serif", "Noto Serif Display", Georgia, serif;
+    --font-serif: "Noto Serif Display", "Noto Serif", Georgia, serif;
+    /* Kiểu chữ tham khảo các trang di sản lớn (đo ngày 18/11/2026):
+       - The Met: serif hiển thị nét thanh-đậm, độ đậm thường, chỉ cho tiêu đề lớn; còn lại sans.
+       - British Museum, V&A: chữ thân 16–17px, khoảng dòng 1,5–1,65.
+       - Rijksmuseum: nhãn nhỏ viết hoa, giãn chữ, đậm.
+       - Phân cấp bằng cỡ chữ, không bằng độ đậm. Mọi font đều có bộ dấu tiếng Việt.
+       Khoảng dòng tiêu đề ≥ 1,2 để dấu chồng (Ầ, Ữ) không bị cắt. */
+    --font-display: "Noto Serif Display", "Noto Serif", Georgia, serif;
+    --fs-display: 38px;
+    --fs-h2: 25px;
+    --fs-body: 16px;
+    --rail-w: 248px;
+}
+
+/* Tái Sinh Di Sản Số — lớp giao diện "triển lãm số" (vòng chung kết, bản 3)
+   Cảm hứng từ cách các nền tảng di sản trực tuyến kể chuyện: ảnh bìa tràn màn hình,
+   chương đánh số, băng thẻ ảnh cuộn ngang, khoảng trắng rộng, chuyển động chậm và mềm.
+   Bảng màu vẫn lấy từ gốm Bát Tràng: lam cobalt dưới men, men ngà, nâu đất, ánh vàng kim.
+   Chuyển động chỉ dùng transform/opacity; tắt toàn bộ bằng nút trong menu (html.motion-off). */
+:root {
+    --cobalt-950: #08152A;
+    --cobalt-900: #0B1B33;
+    --cobalt-800: #0E2240;
+    --cobalt-700: #16325C;
+    --gold: #D4B47A;
+    --gold-soft: rgba(212, 180, 122, .22);
+    --cream: #F4F0E6;
+    --nav-h: 68px;
+    --gutter: clamp(16px, 4vw, 48px);
+    --ease-out: cubic-bezier(.16, 1, .3, 1);
+    --ease-io: cubic-bezier(.65, 0, .35, 1);
+    --font-caption: "Noto Serif Display", "Noto Serif", Georgia, serif;
+}
+
+@media (max-width: 640px) {
+    :root {
+            --nav-h: 60px;
+        }
+}
+
+/* =====================================================================
+   Tinh chỉnh mỹ thuật: nền thẻ hiện vật, bố cục bình, hoạ tiết gốm Bát Tràng
+   ===================================================================== */
+/* Nền "tủ kính bảo tàng": ngà sáng ở tâm, ấm dần ra mép — trắng men nổi, lam cobalt đậm.
+   Không dùng trắng tinh (lạnh, giống ảnh catalogue) và không phủ dải xám ở đáy thẻ. */
+:root {
+    --vitrine: radial-gradient(ellipse 70% 62% at var(--ox, 50%) 46%, #FFFDF8 0%, #F8F2E6 46%, #EADFC9 100%);
+}
+
+@property --ox {
+    syntax: "<percentage>";
+    inherits: true;
+    initial-value: 50%;
+}

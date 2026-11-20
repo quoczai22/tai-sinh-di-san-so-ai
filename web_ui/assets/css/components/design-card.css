@@ -1,0 +1,77 @@
+/* components/design-card.css — THẺ THIẾT KẾ ở trang Kết quả: lưới .out-grid, .design.out-card (.pic). JS: components/design-card.js. */
+
+.design { background: var(--porcelain); border: 1px solid var(--line); border-radius: var(--radius-l); overflow: hidden; display: flex; flex-direction: column; }
+
+.design {
+    border-radius: 20px;
+    transition: translate .5s var(--ease-out), box-shadow .5s ease;
+}
+
+.design:hover {
+    translate: 0 -6px;
+    box-shadow: 0 26px 46px -28px rgba(29, 42, 54, .5);
+}
+
+.design {
+    border-radius: 4px;
+}
+
+.design:hover {
+    translate: 0 -4px;
+}
+
+.design {
+    border-radius: 0;
+}
+
+.design {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.design {
+    cursor: pointer;
+}
+
+.out-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    min-height: 300px;
+}
+
+/* Thiết kế hiện ra lần lượt khi bấm Tạo */
+.out-card {
+    opacity: 0;
+    translate: 0 18px;
+    transition: opacity .7s ease, translate .9s var(--ease-out);
+    transition-delay: calc(var(--k, 0) * 120ms);
+}
+
+.out-grid.shown .out-card {
+    opacity: 1;
+    translate: 0 0;
+}
+
+@media (max-width: 1100px) {
+    .out-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+}
+
+@media (max-width: 640px) {
+    .out-grid {
+            min-height: 180px;
+        }
+}
+
+/* Cửa sổ phóng to thiết kế (trang Kết quả): nền tối mờ, khung giấy be, hai nút cùng kiểu với TẠO LẠI và CHỌN HIỆN VẬT KHÁC */
+.out-card {
+    cursor: pointer;
+}
+
+.out-card:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 4px;
+}

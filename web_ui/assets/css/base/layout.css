@@ -1,0 +1,64 @@
+/* base/layout.css — KHUNG BỐ CỤC: vùng nội dung (#main.content), .section/.section-head, .chapter/.chapter-intro, .exhibit.
+   JS: components/layout.js (section), components/chapter-head.js. */
+
+.content { padding: 28px 40px 64px; max-width: 1280px; width: 100%; }
+
+.content:focus { outline: none; }
+
+/* ---------- Building blocks ---------- */
+.section { margin-top: 36px; }
+
+.section:first-child { margin-top: 0; }
+
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+
+.section-head h2 { font-family: var(--font-display); font-weight: 500; font-size: var(--fs-h2); line-height: 1.25; letter-spacing: -.01em; margin: 0; }
+
+.section-head p { margin: 4px 0 0; color: var(--ink-2); max-width: 72ch; }
+
+@media (max-width: 860px) {
+    .section-head h2 { font-size: 21px; }
+    .content { padding: 18px 18px 48px; }
+}
+
+/* ---------- Nội dung ---------- */
+.content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: clamp(40px, 6vw, 84px) var(--gutter) clamp(72px, 9vw, 120px);
+    transition: opacity .18s ease, transform .18s ease;
+}
+
+.section-head {
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    margin-bottom: 20px;
+}
+
+.section:first-child .section-head {
+    border-top: 0;
+    padding-top: 0;
+}
+
+.section-head h2 {
+    font-size: clamp(26px, 2.6vw, 34px);
+    font-weight: 400;
+}
+
+.section {
+    margin-top: clamp(48px, 6vw, 80px);
+}
+
+.chapter {
+    margin-top: clamp(72px, 10vw, 130px);
+}
+
+.chapter:first-child {
+    margin-top: 0;
+}
+
+.chapter-intro {
+    text-align: center;
+    max-width: 780px;
+    margin: 0 auto clamp(28px, 4vw, 44px);
+}
