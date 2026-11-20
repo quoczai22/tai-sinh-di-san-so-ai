@@ -100,7 +100,9 @@ def verify_auth(
 
 
 def heritage_items() -> list[dict]:
-    return load_heritage_metadata(PROJECT_ROOT)
+    # Mock trả số liệu từ evaluation/variants.csv (bộ hiện vật cũ, nay đã "retired" trong
+    # metadata bản chung kết), nên phải chấp nhận cả hiện vật retired.
+    return load_heritage_metadata(PROJECT_ROOT, include_retired=True)
 
 
 def ui_items() -> list[dict]:

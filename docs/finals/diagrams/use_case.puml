@@ -1,0 +1,65 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+actor "Khách (Guest)" as Guest
+actor "Người dùng đã đăng ký" as RU
+actor "Nhà thiết kế" as DES
+actor "Chuyên gia di sản" as EXP
+actor "QC Officer" as QC
+actor "Quản trị viên" as ADM
+actor "Hệ thống xử lý AI (GPU)" as AI
+RU --|> Guest
+DES --|> RU
+EXP --|> RU
+QC --|> RU
+ADM --|> RU
+rectangle "Nền tảng Tái Sinh Di Sản Số (web + API)" {
+  usecase "Xem danh mục hiện vật" as UC02
+  usecase "Đăng ký và đăng nhập" as UC01
+  usecase "Xem lịch sử chỉnh sửa" as UC15
+  usecase "Tạo thiết kế áo dài" as UC08
+  usecase "Quản lý Design Passport" as UC14
+  usecase "Tải lên hiện vật" as UC03
+  usecase "Xuất thiết kế (gắn nhãn AI)" as UC16
+  usecase "Quản lý người dùng và dữ liệu" as UC17
+  usecase "So sánh các phiên bản" as UC11
+  usecase "Chỉnh sửa thiết kế" as UC09
+  usecase "Kiểm tra nguồn gốc hiện vật" as UC04
+  usecase "Kiểm tra quyền sử dụng" as UC18
+  usecase "Quản lý giấy phép và bản quyền" as UC05
+  usecase "Phân tích họa tiết" as UC06
+  usecase "Sinh họa tiết AI" as UC07
+  usecase "Đánh giá chất lượng thiết kế" as UC10
+  usecase "Thử nghiệm có kiểm soát" as UC19
+  usecase "Thẩm định chuyên gia" as UC12
+  usecase "Phê duyệt thiết kế" as UC13
+}
+Guest -- UC02
+RU -- UC01
+RU -- UC15
+DES -- UC08
+DES -- UC14
+DES -- UC03
+DES -- UC16
+EXP -- UC12
+QC -- UC10
+QC -- UC19
+QC -- UC13
+ADM -- UC05
+ADM -- UC17
+AI -- UC06
+AI -- UC07
+AI -- UC10
+AI -- UC19
+UC03 .> UC04 : <<include>>
+UC04 .> UC18 : <<include>>
+UC16 .> UC18 : <<include>>
+UC08 .> UC07 : <<include>>
+UC07 .> UC06 : <<include>>
+UC08 .> UC10 : <<include>>
+UC12 .> UC14 : <<include>>
+UC09 .> UC08 : <<extend>>
+UC05 .> UC18 : <<extend>>
+UC11 .> UC15 : <<extend>>
+UC13 .> UC12 : <<extend>>
+@enduml

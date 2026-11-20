@@ -31,6 +31,7 @@ def _boom(*_args, **_kwargs):
 
 
 fake.generate_design_set = _boom
+fake.SEED = 42  # api/main.py (bản chung kết) import SEED cùng generate_design_set
 sys.modules["generation.streamlit_runner"] = fake
 
 from fastapi.testclient import TestClient  # noqa: E402
@@ -41,20 +42,32 @@ from api.main import app  # noqa: E402
 def main() -> int:
     client = TestClient(app)
     headers = {"X-API-Key": "test_key"}
-    job_ids = [
-        client.post("/generate", json={"heritage_id": hid}, headers=headers).json()["job_id"]
-        for hid in ("BT_Hac_XP", "BT010_2")
-    ]
 
-    deadline = time.time() + 10
+    def wait_done(job_id: str) -> dict:
+        deadline = time.time() + 10
+        state: dict = {}
+        while time.time() < deadline:
+            state = client.get(f"/generate/{job_id}", headers=headers).json()
+            if state.get("status") in {"failed", "completed"}:
+                break
+            time.sleep(0.2)
+        return state
+
+    # API bản chung kết chạy MỘT job mỗi lúc (job thứ hai trong lúc bận nhận 409), nên gửi
+    # tuần tự: job lỗi phải nhả khoá, job sau vẫn được nhận và cũng báo "failed" (không kẹt).
     states: dict[str, dict] = {}
-    while time.time() < deadline:
-        states = {j: client.get(f"/generate/{j}", headers=headers).json() for j in job_ids}
-        if all(s["status"] in {"failed", "completed"} for s in states.values()):
-            break
-        time.sleep(0.2)
+    for hid in ("LR3D_33", "LR3D_61"):
+        res = client.post("/generate", json={"heritage_id": hid}, headers=headers)
+        assert res.status_code == 202, f"{hid}: HTTP {res.status_code} {res.text}"
+        job_id = res.json()["job_id"]
+        states[job_id] = wait_done(job_id)
 
-    ok = all(s["status"] == "failed" and "Giả lập lỗi GPU" in s["label"] for s in states.values())
+    # Bản chung kết ẩn chi tiết lỗi khỏi người dùng (chỉ ghi log máy chủ): job phải "failed",
+    # có nhãn thông báo, và KHÔNG lộ thông điệp exception nội bộ.
+    ok = len(states) == 2 and all(
+        s.get("status") == "failed" and s.get("label") and "Giả lập lỗi GPU" not in s["label"]
+        for s in states.values()
+    )
     for job_id, state in states.items():
         print(f"  {job_id[:8]}: {state['status']} — {state['label']}")
     print("[PASS] Worker sống sót, job lỗi được báo 'failed'." if ok else "[FAIL] Có job kẹt hoặc sai trạng thái.")

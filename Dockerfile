@@ -38,20 +38,26 @@ COPY requirements-api.txt /app/requirements-api.txt
 RUN python -m pip install --no-cache-dir --upgrade pip && \
     python -m pip install --no-cache-dir -r /app/requirements-api.txt
 
-# Tải sẵn các model (SD1.5 fp16, ControlNet Canny fp16, CLIP ViT-B/32) vào image
+# Tải sẵn các model (SD1.5 fp16, ControlNet Canny fp16, CLIP ViT-B/32, SAM ViT-B) vào image
 # để rút ngắn tối đa thời gian cold start trên cả Modal và HF Space.
+# SAM dùng trong generation/garment_sam.py (tách dáng áo của ảnh LoRA).
 RUN mkdir -p "${HF_HOME}" "${DH_OUTPUT_DIR}/variants" "${DH_OUTPUT_DIR}/audit" && \
     python -c "\
 from huggingface_hub import snapshot_download; \
 snapshot_download('stable-diffusion-v1-5/stable-diffusion-v1-5', allow_patterns=['*.json', '*.txt', '*.fp16.safetensors']); \
 snapshot_download('lllyasviel/control_v11p_sd15_canny', allow_patterns=['*.json', '*.fp16.safetensors']); \
 snapshot_download('openai/clip-vit-base-patch32', allow_patterns=['*.json', '*.txt', '*.safetensors', 'pytorch_model.bin']); \
+snapshot_download('facebook/sam-vit-base', allow_patterns=['*.json', '*.txt', '*.safetensors']); \
 " && chmod -R 777 "${HF_HOME}" "${DH_OUTPUT_DIR}"
 
 COPY api/ /app/api/
 COPY generation/ /app/generation/
 COPY evaluation/ /app/evaluation/
+COPY provenance/ /app/provenance/
+COPY quality/ /app/quality/
+COPY config/ /app/config/
 COPY streamlit_ui/__init__.py streamlit_ui/heritage_data.py /app/streamlit_ui/
+# data/ gồm cả trọng số LoRA dáng áo dài (data/lora/**/*.safetensors, ~37 MB)
 COPY data/ /app/data/
 
 EXPOSE 7860

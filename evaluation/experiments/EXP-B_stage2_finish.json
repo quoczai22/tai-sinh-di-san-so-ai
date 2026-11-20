@@ -1,0 +1,59 @@
+{
+  "id": "EXP-B",
+  "title": "Ablation bước hoàn thiện giai đoạn 2 (img2img và khoá họa tiết)",
+  "question": "Lượt img2img làm thiết kế 'giống vải in' hơn đến mức nào, và phải trả giá bao nhiêu về giữ họa tiết/dáng áo? Khoá họa tiết có giữ được lợi ích của img2img mà không mất họa tiết?",
+  "why": "Đo trên 24 thiết kế 06/09/2026: img2img 0,40 làm 20/24 thiết kế trượt ngưỡng giữ họa tiết (PPS < 0,4) dù dáng áo gần như giữ nguyên (BTC, yêu cầu 1).",
+  "design": "single_factor_with_replicates",
+  "independent_variable": {
+    "name": "stage2_finish",
+    "levels": [
+      "none",
+      "img2img_0.25",
+      "img2img_0.40",
+      "img2img_0.40+pattern_lock",
+      "masked_0.30",
+      "masked_0.25",
+      "masked_0.30+pattern_lock"
+    ]
+  },
+  "replicates": {
+    "name": "polish_seed",
+    "levels": [
+      42,
+      7,
+      123
+    ]
+  },
+  "fixed": {
+    "controlnet_weight": 0.65,
+    "pattern_seed": 42,
+    "prompt_modifier": "",
+    "palette_mode": "free",
+    "layout": "front_panel"
+  },
+  "units": {
+    "heritage": "active"
+  },
+  "requires_gpu": true,
+  "metrics": {
+    "automatic": [
+      "pattern_preservation",
+      "garment_shape_iou",
+      "sharpness_ratio",
+      "palette_shift_de"
+    ],
+    "human": [
+      "looks_like_printed_fabric",
+      "motif_recognizability",
+      "aesthetic",
+      "garment_integrity"
+    ]
+  },
+  "blind_review": {
+    "enabled": true,
+    "min_raters": 3,
+    "shown_per_item": 1
+  },
+  "analysis": "Như EXP-A. Mức 'none' là đối chứng (bản ghép tất định).",
+  "status": "planned"
+}

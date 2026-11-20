@@ -1,0 +1,54 @@
+# 10. Báo cáo kiểm thử
+
+Chạy: `uv run pytest`. Không cần PyTorch hay GPU để chạy bộ kiểm thử.
+
+Lần chạy mới nhất (20/11/2026, nhánh `cai-tien-model`): **249 ca, 248 đạt, 1 bỏ qua**, không ca nào lỗi. Ca bỏ qua là `test_generate_without_gpu_is_explicit`: ca này dành cho máy không có PyTorch, nên bị bỏ qua trên máy có GPU của nhóm (xem mục "Lỗi phát hiện").
+
+Nguyên tắc: kiểm thử **không sửa dữ liệu thật**. Các ca ghi (thẩm định, QC, chỉnh sửa, xuất bản) chạy trên bản sao Passport trong thư mục tạm; ca `test_real_passports_untouched` kiểm tra lại rằng Passport thật không đổi. Nhật ký audit được thay bằng danh sách trong bộ nhớ. Các ca API chọn Passport theo trạng thái thật trong dữ liệu (cảnh báo, chờ chuyên gia, không đạt) thay vì viết cứng mã.
+
+## Phạm vi
+
+| Tệp | Số ca | Kiểm tra gì |
+|---|---|---|
+| `test_registry.py` | 23 | Danh mục có 12 hiện vật, 6 đang dùng; báo thiếu trường nguồn một cách trung thực; ma trận cổng quyền; giấy phép NC chặn thương mại; phạm vi cấp phép; hiện vật ngừng dùng chỉ cho thử nghiệm; hành động lạ bị từ chối; tiêu chí tuyển ảnh C1 và C2 trên ảnh thật; bộ nạp Streamlit ẩn hiện vật ngừng dùng |
+| `test_passport.py` | 13 | JSON chuẩn hoá; Passport mới hợp lệ; **5 kiểu sửa trái phép đều bị phát hiện** (sửa nội dung sự kiện, đảo thứ tự, tự đổi trạng thái thành "đã phê duyệt", đổi băm phiên bản, xoá phiếu); chỉnh sửa tạo phiên bản con; trạng thái và loại tác nhân không hợp lệ bị từ chối; mọi Passport thật hợp lệ kể cả băm tệp; không Passport nào "đã phê duyệt" mà thiếu phiếu chuyên gia; mã Passport đúng dạng; nhãn AI đọc lại được từ PNG |
+| `test_passport_garment.py` | 6 | Passport ghi áo do LoRA sinh (ảnh áo, mặt nạ, seed, ứng viên đã thử, giấy phép CC BY-NC 4.0 và trích dẫn VietFashion); đổi ảnh áo sau khi lập Passport bị phát hiện; Passport cũ vẫn là "áo mẫu"; ghi polish chỉ vùng áo, trạng thái thử lại, khoá họa tiết |
+| `test_quality.py` | 20 | Phân loại ngưỡng hai chiều; NaN không thành PASS; cấu hình ghi "tạm thời" và cổng không bao giờ tự phê duyệt; định tuyến; PPS bằng 1 khi giống hệt, tụt khi họa tiết bị vẽ lại; khoá họa tiết khôi phục họa tiết; đường nối; độ nét; **chỉ số giữ chi tiết mịn bắt được nét mảnh bị nhoè**; khoá họa tiết mặc định khôi phục nét mảnh |
+| `test_seam.py` | 8 | Hàm đo đường nối (M5): ảnh phẳng cho 1, dải sáng tăng đều có đường nối lớn, đường nối trên và dưới được phát hiện, ảnh liền mạch đạt ngưỡng, cắt lệch làm hỏng ảnh liền mạch, nhận ảnh PIL, đường dẫn và ảnh xám |
+| `test_outside_drift.py` | 6 | Chỉ số trôi ngoài áo (M2) bằng 0 khi polish có mặt nạ; cổng G3 ghi M2 vào chi tiết, không dùng làm ngưỡng |
+| `test_retry.py` | 8 | Vòng thử lại polish với polish giả: đạt ngay không ghi loại; đổi seed; hạ độ nhiễu; trả bản ghép thô kèm nhãn; chỉ chỉ số M1 và M3 kích hoạt thử lại; lỗi khi polish tính là một lần thất bại; nhật ký `rejects.csv` |
+| `test_garment_polish.py` | 8 | Ghép polish vào ảnh chỉ trong vùng áo, ngoài áo trùng bản ghép thô tuyệt đối; độ nhiễu mặc định thấp hơn polish toàn ảnh; **khoá họa tiết trả lại nét vẽ bị polish làm mờ và giữ ngoài áo bằng 0**; mặt nạ áo trắng hợp lý |
+| `test_garment_sam.py` | 10 | Điểm gợi ý cho SAM; làm sạch mặt nạ; chọn mặt nạ tốt nhất; vùng áo tính sẵn thay cho tách theo màu; **hoa văn không tràn vào khe giữa tay và thân áo ở mọi bố cục**; tách nền hoa văn (nền trong suốt, mực đục, không làm biến mất hoa văn không có mực, giữ nền màu đậm); ghép để lộ vải ở chỗ nền hoa văn |
+| `test_garment_lora.py` | 5 | Kiểm tra mặt nạ áo hợp lệ và lý do loại (chạm mép, diện tích, chiều cao); áo và vùng áo tính sẵn được chuyển xuống bước ghép và bộ đo G3; seed áo ngẫu nhiên khi không chỉ định, giữ nguyên khi có |
+| `test_filter_vietfashion.py`, `test_train_lora.py` | 7 và 7 | Lọc ảnh VietFashion: giữ áo dài có cổ trụ và tay dài, loại áo không tay, dáng ngắn hoặc dài đến gối, chọn theo ba điều kiện. Huấn luyện LoRA: đọc tập dữ liệu hợp lệ, báo lỗi khi thiếu metadata, caption rỗng hoặc thiếu ảnh, tham số mặc định, độ phân giải phải chia hết cho 8 |
+| `test_elements.py`, `test_element_library.py` | 21 và 20 | Trích phần tử hoa văn từ texture UV phẳng và chọn phần tử cho biến thể; tra nguồn ảnh nạp (render, mảng phẳng, phần tử) với bậc quay về khi thiếu |
+| `test_experiment.py` | 32 | EXP-A đến EXP-E sinh đúng 120/126/24/60/36 lượt, khoá duy nhất; thí nghiệm GPU chỉ dùng hiện vật đang dùng; **dựng lại bộ V1 đến V4 cũ và xác nhận bị từ chối**; kế hoạch không đổi biến độc lập bị từ chối; EXP-D chỉ đổi nguồn áo và dùng chung hoa văn; sinh áo LoRA trước theo seed, lỗi không quay về áo mẫu; thống kê mô tả, KTC, Krippendorff alpha khớp ví dụ chuẩn (0,849), Wilcoxon theo cặp; gói chấm mù không lộ mức, thứ tự khác nhau theo người chấm, không có điểm điền sẵn, dựng lại cho ra đúng gói cũ, bỏ qua lượt không ra ảnh |
+| `test_api.py` | 27 | Hồi quy endpoint của bản 09/2026 (`/health`, `/heritage` đủ 10 trường cũ, `/generate` trả 503 khi không có GPU, giới hạn tần suất); đường dẫn vượt thư mục bị chặn; mã định danh sai bị từ chối; khoá ghi; QC không chuyển thiết kế FAIL; không thẩm định khi chưa qua cổng; cờ "mâu thuẫn quy tắc"; không lưu tên khi không đồng ý; chưa duyệt thì không xuất bản, quyền chưa rõ thì 403; ảnh xuất có nhãn AI; **chỉnh sửa thủ công chạy lại G3**; tệp không phải ảnh bị từ chối; bảng chất lượng `/quality/designs` |
+| `test_diagrams.py` | 8 | BPMN có đủ loại phần tử bắt buộc, error boundary và message flow; đủ lane; sequence flow không vượt pool; mọi gateway rẽ nhánh có điều kiện; mọi phần tử có hình trong DI; Use Case có 7 tác nhân và đủ ca |
+| `test_ingest.py` | 3 | Nạp ảnh hiện vật mới: chạy thử tách nền, **không ghi gì vào danh mục khi chạy thử**, SHA-1 sai thì dừng, không kích hoạt mục chưa rà soát |
+| `test_frontend.py` | 17 | Cú pháp các tệp JS (ES module, cần Node.js); mọi trang trong menu có tệp view; dữ liệu trình diễn khớp Passport trong repo; số hiện vật khớp danh mục; không còn số Similarity viết cứng của giao diện cũ; không dùng `innerHTML` với dữ liệu |
+
+## Lỗi phát hiện và đã sửa
+
+| Lỗi | Phát hiện bởi | Sửa |
+|---|---|---|
+| Cổng quyền hiểu phạm vi "non-commercial display" là cho phép thương mại (so chuỗi con `"commercial" in scope`) | `test_rights_gate_permission_scope` | So theo từ nguyên vẹn trong danh sách phạm vi |
+| API bỏ mất 3 trường cũ (`colors`, `colorNames`, `variantImageBase`) mà giao diện cũ dùng | so sánh trường API cũ và mới | Trả lại 3 trường |
+| Chỉnh sửa thủ công đưa thẳng về "chờ chuyên gia" mà không chạy G3, trái với BPMN | đối chiếu BPMN với API | `quality.assess.assess_edit`, API chạy G3 trên bản sửa |
+| Sửa thẳng trạng thái phê duyệt trong tệp (không qua sổ cái) không bị phát hiện | `test_tampering_is_detected[approval]` | `verify` đối chiếu trạng thái, phiên bản, số phiếu với sổ cái |
+| Hàng đợi chấm mù hiện mã Passport (chứa số biến thể) | rà soát giao diện | Ẩn mã, xếp theo mã ẩn danh khi chấm mù |
+| Trang tràn ngang 1.628 px trên màn hình 390 px | kiểm tra bằng trình duyệt tự động | Cột lưới `minmax(0, 1fr)`, giới hạn bề rộng ô nhập |
+| EXP-C ghi `stage2_finish = img2img_0.40` trong khi không chạy img2img | dựng gói chấm mù EXP-C | Cố định `stage2_finish: none`, chạy lại EXP-C |
+| **Hoa văn bị ghép tràn ra ngoài áo:** vùng in được làm mờ mép (14 px) **sau khi** đã giới hạn trong áo nên lan ra nền ở khe giữa tay và thân; trước đó test chỉ cho phép sai số 45 px | ảnh áo LoRA tay loe (tối đa 1,7% pixel ngoài áo bị đổi); ca mới `test_hoa_van_khong_tran_vao_khe_giua_tay_va_than_ao` | Làm mờ rồi mới giới hạn lại trong áo; ngoài áo bằng đúng 0; test siết thành "bằng 0" |
+| **Mảng nền hoa văn bị in thành khối kem hoặc xám** hình chữ nhật trên áo | xem ảnh thiết kế | `ground_alpha`: chỉ in phần mực (có sắc hoặc đủ tối), nền để lộ vải; có ca kiểm thử |
+| **Polish toàn ảnh là mặc định của luồng sản phẩm:** nền bị vẽ lại, 14 đến 17% pixel ngoài áo đổi hơn 12 mức xám (đo khi chạy thật ngày 19/11/2026, không lưu thành tệp) | chạy thật 4 mức sáng tạo | Mặc định chuyển sang polish chỉ vùng áo kèm vòng thử lại; ngoài áo bằng 0 |
+| `pattern_lock` làm lệch tối đa 2 mức ở pixel ngoài áo (mặt nạ làm mờ 3 px và đổi màu qua LAB) | `test_polish_locked_tra_lai_net_ve_va_giu_nguyen_ngoai_ao` | Ép ngoài áo về đúng bản ghép thô |
+| `assess_edit` chấm bản sửa tay bằng áo mẫu cố định kể cả khi thiết kế dùng áo LoRA | rà soát khi bỏ nhánh áo cố định | Dùng áo và mặt nạ lưu trong Passport |
+| **Khoá họa tiết (σ thấp = 1,2) làm mất nét mảnh** trong khi cổng báo đạt cả 24 thiết kế: cổng chỉ đo dải tần trung | nhóm so ảnh raw và bản cuối bằng mắt, rồi đo | `dog_sigma_low` = 0,3; thêm chỉ số `detail_ratio` đo ngay trong vùng họa tiết; có ca kiểm thử |
+| Ca API của nhánh `chung-ket` gửi `POST /generate` trước khi kiểm tra có PyTorch, nên trên máy có GPU nó **bắt đầu một lượt sinh ảnh thật** ở nền rồi bỏ dở | thư mục chạy lạ sau khi chạy bộ kiểm thử | Bỏ qua ca trước khi gửi yêu cầu |
+
+## Chưa kiểm thử tự động
+
+- Sinh ảnh thật trên GPU (`generation/`, `evaluation/experiment.py::run_gpu`): cần máy có GPU NVIDIA và mô hình đã tải. Kiểm thử thủ công bằng `uv run python scripts/14_generate_demo_set.py LR3D_61`, rồi kiểm tra thư mục `outputs/runs/` mới có `manifest.json` và 4 Passport hợp lệ.
+- Hiển thị trên trình duyệt: giao diện rút gọn (3 trang) ngày 19/11/2026 **chưa được xem lại bằng trình duyệt sau khi gộp nhánh** (kiểm thử chỉ kiểm cú pháp và dữ liệu).
+- Cổng chất lượng so với ý kiến người: chưa có phiếu chuyên gia nên chưa kiểm được độ đồng thuận.

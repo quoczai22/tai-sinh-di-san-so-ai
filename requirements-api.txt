@@ -11,3 +11,7 @@ numpy>=1.26.0
 fastapi>=0.115.0
 uvicorn[standard]>=0.30.0
 python-dotenv>=1.0.1
+# Pipeline bản chung kết (main): LoRA dáng áo dài cần peft; cổng chất lượng G2/G3 cần scikit-image + scipy
+peft>=0.13.0
+scikit-image>=0.22
+scipy>=1.11

@@ -1,213 +1,177 @@
 # Tái Sinh Di Sản Số
 
-> Từ hoa văn gốm Bát Tràng đến áo dài đương đại — hệ thống tự sinh một bộ 4 thiết kế mỗi lần bấm nút, kèm chỉ số đo lường và nhật ký truy vết, để con người chọn.
+> Hoa văn gốm Bát Tràng, dệt lại thành áo dài — có kiểm định chất lượng, thí nghiệm có đối chứng và hồ sơ truy vết cho từng thiết kế.
 
-Bài dự thi **Cuộc thi Sáng tạo trẻ Quốc gia về AI năm 2026** (Trung ương Đoàn TNCS Hồ Chí Minh, Bảng C, `ai.tainangviet.vn`), đội thi 3 người (AI/Data Engineer · DevOps/Software Engineer · BA).
+Bài dự thi **vòng chung kết** Cuộc thi Sáng tạo trẻ Quốc gia về Trí tuệ nhân tạo 2026, Bảng C — nhóm *3 chàng hiệp sĩ mộng mơ*.
+Hồ sơ đầy đủ cho Ban tổ chức (BTC) nằm ở [`docs/finals/`](docs/finals/README.md).
 
 ## Mục lục
 
-1. [Vấn đề và mục tiêu](#1-vấn-đề-và-mục-tiêu)
-2. [Kiến trúc hệ thống](#2-kiến-trúc-hệ-thống)
-3. [Đóng góp kỹ thuật](#3-đóng-góp-kỹ-thuật)
+1. [Ba yêu cầu cải tiến của BTC](#1-ba-yêu-cầu-cải-tiến-của-btc)
+2. [Xem nhanh (không cần GPU)](#2-xem-nhanh-không-cần-gpu)
+3. [Kiến trúc](#3-kiến-trúc)
 4. [Cấu trúc thư mục](#4-cấu-trúc-thư-mục)
-5. [Cài đặt môi trường](#5-cài-đặt-môi-trường)
-6. [Chạy dự án](#6-chạy-dự-án)
+5. [Cài đặt và chạy](#5-cài-đặt-và-chạy)
+6. [Biến môi trường](#6-biến-môi-trường)
+7. [Tài liệu](#7-tài-liệu)
+8. [Trạng thái và việc còn lại](#8-trạng-thái-và-việc-còn-lại)
 
 ---
 
-## 1. Vấn đề và mục tiêu
+## 1. Ba yêu cầu cải tiến của BTC
 
-Người trẻ muốn đưa hoa văn di sản (mở đầu bằng gốm Bát Tràng) vào thiết kế hiện đại, nhưng hai cách làm phổ biến đều có vấn đề:
+| # | BTC yêu cầu | Đã làm | Xem ở |
+|---|---|---|---|
+| 1 | Đánh giá **thiết kế cuối**, không chỉ hoa văn trung gian | Cổng **G2** (hoa văn: rò dáng bình, đường nối) và **G3** (thiết kế cuối: giữ họa tiết PPS, IoU dáng áo, độ nét, giữ chi tiết mịn, lệch màu ΔE); vòng thử lại polish (đổi seed, hạ độ nhiễu, trả bản ghép thô); khoá họa tiết `pattern_lock_v1`; bộ tiêu chí chuyên gia 5 mục chấm mù. Không chỉ số nào tự phê duyệt thiết kế. | `quality/`, `config/quality_gate.json`, `config/expert_rubric.json`, [05](docs/finals/05_QUALITY_ASSURANCE.md) |
+| 2 | **Đối chứng có kiểm soát**, nhiều seed, chấm mù | Module thí nghiệm từ chối kế hoạch đổi hơn một yếu tố; EXP-A (trọng số ControlNet, chưa chạy), EXP-B (bước hoàn thiện, 126 lượt), EXP-C (từng bước ghép), EXP-D (nguồn áo nền, 60 lượt), EXP-E (nguồn ảnh nạp, 36 lượt); gói chấm mù; thống kê KTC 95%, hệ số biến thiên, Krippendorff α, Wilcoxon, Friedman | `evaluation/experiment.py`, `evaluation/experiments/`, [06](docs/finals/06_EXPERIMENTS.md) |
+| 3 | **Bản quyền, nguồn gốc, truy vết** | Danh mục nguồn schema 2.0; cổng quyền theo 4 mục đích sử dụng; Design Passport có sổ cái băm nối chuỗi, phiên bản có băm cha, chỉnh sửa tay chạy lại G3; nhãn "Thiết kế hỗ trợ bởi AI" trên ảnh xuất | `provenance/`, `data/heritage/metadata.json`, `outputs/passports/`, [07](docs/finals/07_PROVENANCE_COPYRIGHT.md) |
 
-- Chép nguyên hoa văn lên sản phẩm → không có tính sáng tạo.
-- Để mô hình sinh ảnh tự do "diễn giải" di sản → mất kiểm soát về hình dáng sản phẩm, không đo lường và không tái lập được kết quả.
+Kết quả bộ demo hiện tại (24 thiết kế, 6 hiện vật × 4 mức sáng tạo, ngày 19/11/2026, đọc từ Passport): G2 đạt 16, cảnh báo 5, loại 3 (cả 3 do đường nối, hiện vật LR3D_124); G3 đạt 14, cảnh báo 10, loại 0; PPS trung bình 0,943; giữ chi tiết mịn trung vị 0,87. Cả 10 cảnh báo G3 do chi tiết mịn dưới 0,85: bản cuối vẫn mất khoảng 13 đến 14% nét mảnh so với bản ghép thô. PPS cao một phần do chính cách làm (khoá họa tiết chép lại nét bản ghép), nên phải chờ chuyên gia chấm mù mới kết luận được bản nào đẹp hơn. Mốc so sánh bản 06/09/2026: G3 đạt 0/24, PPS trung vị 0,36 (số liệu lịch sử, xem [05](docs/finals/05_QUALITY_ASSURANCE.md)).
 
-**Mục tiêu:** xây dựng một pipeline đưa hoa văn gốm Bát Tràng lên áo dài Việt Nam sao cho:
+## 2. Xem nhanh (không cần GPU)
 
-- **Dáng trang phục luôn đúng** — không phụ thuộc việc mô hình sinh ảnh "có vẽ đúng áo dài hay không".
-- **Độ trung thành với hoa văn gốc đo được** bằng chỉ số so sánh, không chỉ đánh giá bằng mắt.
-- **Toàn bộ tham số sinh ảnh tái lập và truy vết được** — mỗi lần sinh ảnh đều ghi lại đầy đủ để xem lại, đối chiếu.
-
-## 2. Kiến trúc hệ thống
-
-Hệ thống gồm hai lớp: **Generation Layer** (sinh thiết kế) và **Assessment Layer** (đo lường & minh bạch).
-
-```text
-┌───────────────────────────────────────────────────────────┐
-│                     GENERATION LAYER                        │
-│                                                              │
-│  GIAI ĐOẠN 1 — SINH HOA VĂN PHẲNG                            │
-│  ảnh gốm ─► tách nền, Canny CHỈ GIỮ HOA VĂN (bỏ đường bao     │
-│  món đồ) ─► SD1.5 + ControlNet (4 mức Creative Intensity     │
-│  điều tiết mức biến tấu) ─► hoa văn lặp liền mạch             │
-│                          ↓                                   │
-│  GIAI ĐOẠN 2 — ĐƯA LÊN ÁO DÀI                                │
-│  chấm điểm 7 bố cục bằng CLIP, tự chọn bố cục hợp nhất ─►     │
-│  ghép ảnh TẤT ĐỊNH lên ảnh áo dài mẫu (mask mềm +             │
-│  displacement + shading) ─► lượt hoàn thiện img2img ─►        │
-│  4 THIẾT KẾ ÁO DÀI                                            │
-└──────────────────────────┬──────────────────────────────────┘
-                           ↓
-┌───────────────────────────────────────────────────────────┐
-│                     ASSESSMENT LAYER                         │
-│  Visual Similarity (CLIP) · Design Passport (×4) · Audit Log │
-└───────────────────────────────────────────────────────────┘
+```powershell
+uv run python -m http.server 5500 --directory web_ui
 ```
 
-**Luồng dùng:** người dùng chọn một hiện vật gốm, bấm **một nút duy nhất** — hệ thống tự sinh cả 4 thiết kế (khác mức biến tấu hoa văn, bảng màu, bố cục do hệ thống tự chấm điểm chọn). Mỗi thiết kế hiển thị kèm một **Design Passport** riêng (hoa văn nguồn, bố cục, chỉ số Similarity tham khảo). Người dùng xem cả 4 và chọn thiết kế ưng ý; lựa chọn đó được ghi vào **Audit Log**.
+Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang chủ, Studio (chọn hiện vật) và Kết quả (4 tà áo). Không có API thì giao diện tự chạy **chế độ ngoại tuyến**, đọc dữ liệu thật đã xuất sẵn trong `web_ui/data/` (bộ demo 24 thiết kế).
 
-**Vì sao tách hai giai đoạn sinh:** đưa thẳng ảnh gốm vào ControlNet trong khi prompt yêu cầu vẽ áo dài tạo ra xung đột hình học — bản đồ Canny mô tả dáng vật chứa (bình, cổ hẹp, đế tròn) còn prompt mô tả trang phục (tà dài, mặc ngoài quần). Giải pháp: giai đoạn 1 chỉ sinh hoa văn phẳng, không nhắc gì tới sản phẩm đầu ra; giai đoạn 2 ghép hoa văn lên áo dài bằng phép ghép ảnh **tất định** (không dùng model sinh ảnh để vẽ lại dáng áo), nên hình dáng trang phục luôn đúng bất kể Stable Diffusion sinh ra hoa văn thế nào.
+## 3. Kiến trúc
 
-### Tech stack
+```text
+ Hiện vật (data/heritage, có nguồn & quyền)
+        │  tiêu chí tuyển ảnh C1–C4 · cổng quyền
+        ▼
+ Mảng hoa văn phẳng đã trải từ mô hình 3D (data/heritage/panels)
+        ▼
+ GIAI ĐOẠN 1  SD 1.5 + ControlNet Canny (chỉ nét hoa văn) ──► hoa văn phẳng lát liền ──► Cổng G2
+        ▼
+ Áo dài nền   SD 1.5 + LoRA dáng áo dài sinh mỗi lần chạy, SAM tách vùng áo, kiểm tra áo hợp lệ
+        ▼
+ GIAI ĐOẠN 2  CLIP chọn bố cục ─► ghép tất định lên áo (chỉ in phần mực, trong vùng áo) ─►
+              polish chỉ vùng áo 0,20 + khoá họa tiết ─► vòng thử lại ──► Cổng G3
+        ▼
+ QC Officer (cảnh báo) ─► Chuyên gia chấm mù ─► Phê duyệt / yêu cầu sửa / loại
+        ▼
+ Design Passport: tệp + SHA-256, tham số, bước AI/hệ thống/người, phiên bản, phiếu, quyền, nhãn AI
+```
 
-| Thành phần | Công nghệ | Vai trò trong hệ thống |
-|---|---|---|
-| Model sinh ảnh | Stable Diffusion 1.5 (`diffusers`) + ControlNet v1.1 Canny | Sinh hoa văn phẳng có điều kiện cấu trúc lấy từ ảnh gốm |
-| Scheduler | `UniPCMultistepScheduler` | Giữ chất lượng ảnh ở số bước suy luận thấp, chạy nhanh trên GPU laptop |
-| Runtime AI | PyTorch + CUDA (`torch`, `torchvision`) | Chạy inference trên GPU local, quản lý VRAM (attention/VAE slicing, giải phóng cache giữa các lần sinh) |
-| Đánh giá thị giác | CLIP (`transformers`) | Đo Visual Similarity giữa hoa văn sinh ra và hoa văn gốc; chấm điểm 7 bố cục để tự chọn bố cục hợp nhất |
-| Xử lý ảnh | OpenCV, Pillow, NumPy | Trích Canny edge chỉ giữ hoa văn, tách nền/alpha mask, ghép ảnh tất định (mask mềm, displacement, shading), khớp bảng màu bằng thống kê không gian LAB |
-| Backend API | FastAPI + Uvicorn | Bridge giữa Web UI tĩnh và pipeline PyTorch: liệt kê hiện vật, chạy job sinh ảnh nền, phục vụ media, ghi audit event |
-| UI kiểm chứng nội bộ | Streamlit | Giao diện chạy pipeline trực tiếp bằng dữ liệu hiện vật thật |
-| UI trình diễn công khai | HTML/CSS/JS thuần, component loader tự viết | Frontend trình diễn sản phẩm |
-| Trích xuất tư liệu | `pdfplumber` | Đọc PDF tư liệu nghiên cứu Bát Tràng |
-| Mô tả hoa văn (offline) | Google Gemini API | Sinh mô tả tiếng Anh ngắn cho hoa văn — chạy một lần offline, không nằm trong luồng runtime của pipeline sinh ảnh |
-| Lưu trữ dữ liệu | File JSON/CSV tĩnh | Không dùng database — metadata hiện vật, mô tả hoa văn, log thực nghiệm và audit log đều là file trong repo |
-| Cấu hình môi trường | `python-dotenv` + file `.env` | Quản lý model id, API key, biến môi trường theo máy |
-| Deploy frontend | Vercel | Host Web UI tĩnh |
-| Dev tooling | VS Code `launch.json`/`tasks.json`, script PowerShell | Khởi động nhanh hai chế độ chạy, tự chọn kênh CUDA phù hợp máy khi cài đặt |
-
-## 3. Đóng góp kỹ thuật
-
-1. **Tách hai giai đoạn sinh** — gỡ xung đột hình học giữa điều kiện cấu trúc (Canny của vật thể gốc) và sản phẩm đầu ra (trang phục), thay vì cố "hoà giải" bằng cách chỉnh một tham số duy nhất.
-2. **Conditioning chỉ trên hoa văn** — bóc đường bao hình dáng hiện vật (bình, lư hương...) khỏi bản đồ Canny trước khi đưa vào ControlNet, để ControlNet chỉ giữ cấu trúc hoa văn chứ không giữ luôn hình dáng vật chứa.
-3. **Sinh tile lặp liền mạch bằng circular padding** ở bước hậu xử lý ảnh sinh ra, cho phép hoa văn lặp lại tự nhiên khi phủ lên bề mặt vải.
-4. **Tự động chọn bố cục bằng CLIP** — chấm điểm 7 phương án bố trí hoa văn trên áo dài, thay vì chạy lại Stable Diffusion cho từng phương án.
-5. **Ghép ảnh tất định ở giai đoạn 2** — mask mềm, displacement, shading và color grade thay vì mô hình sinh ảnh để đặt hoa văn lên áo dài, đảm bảo dáng trang phục luôn đúng và kết quả tái lập được.
-6. **Khớp bảng màu tất định bằng thống kê LAB** — cho phép có một biến thể trung thành màu sắc với hiện vật gốc mà không cần ép màu qua prompt.
-7. **Ràng buộc ngân sách token cho prompt** — mô tả hoa văn được giới hạn theo đúng tokenizer của SD1.5, tránh bị cắt bớt nội dung ở giới hạn token của CLIP.
-8. **Audit Log + Design Passport** — mỗi lần sinh ảnh ghi lại đầy đủ tham số (mức biến tấu, bảng màu, bố cục, seed, prompt, thời gian chạy, hash ảnh đầu ra) và lựa chọn cuối cùng của người dùng, phục vụ khả năng truy vết và tái lập.
-
-Mọi mô tả hiện vật hiển thị cho người dùng là nội dung do nhóm biên soạn, không phải trích dẫn học thuật; mọi ảnh hiện vật ghi trung thực trạng thái giấy phép cho tới khi xác minh được nguồn.
+| Thành phần | Công nghệ |
+|---|---|
+| Sinh ảnh | Stable Diffusion 1.5 + ControlNet v1.1 Canny + LoRA dáng áo dài (`diffusers`, `peft`, PyTorch CUDA), SAM (tách vùng áo), CLIP (`transformers`) |
+| Xử lý ảnh, phép đo | OpenCV, Pillow, NumPy, scikit-image, SciPy |
+| API | FastAPI + Uvicorn (`api/main.py`); PyTorch chỉ nạp khi cần, máy không GPU thì `/generate` trả 503 |
+| Giao diện | HTML/CSS/JS thuần (ES modules), không framework; 3 trang cho người xem (Trang chủ, Studio, Kết quả) |
+| Dữ liệu | Tệp JSON/CSV trong repo, không dùng cơ sở dữ liệu |
+| Kiểm thử | pytest (249 ca, không cần GPU) |
 
 ## 4. Cấu trúc thư mục
 
 ```text
 .
-├── app.py                    # Điểm vào Streamlit — UI kiểm chứng pipeline nội bộ
-├── Dockerfile                # Image GPU dùng chung cho Modal và Hugging Face Space (SD1.5 + ControlNet + CLIP nạp sẵn)
-├── modal_app.py              # Cấu hình deploy ASGI + GPU T4 + Volume + Secret trên Modal
-├── mock_backend.py           # Mock GPU backend phục vụ kiểm thử failover và hàng đợi FIFO không tốn GPU
-├── requirements-api.txt      # Dependencies cho môi trường API GPU (torch==2.13.0+cu126, diffusers, fastapi...)
-├── requirements-dev.txt      # Dependencies đầy đủ cho phát triển local (Streamlit, pdfplumber...)
-├── api/
-│   ├── main.py                 # FastAPI: /health (CPU), /health/gpu, /heritage, /generate (FIFO queue), /audit, /media/*
-│   ├── audit.py                 # Ghi audit event ra <DH_OUTPUT_DIR>/audit/audit.jsonl (append-only)
-│   └── README.md                # Hướng dẫn chạy API bridge cho web_ui
-├── generation/                 # Generation Layer — lõi kỹ thuật của dự án
-│   ├── controlnet.py             # Tách nền, alpha mask, Canny CHỈ giữ hoa văn
-│   ├── prompt_template.py        # Prompt giai đoạn 1, kiểm ngân sách token
-│   ├── pattern.py                  # GIAI ĐOẠN 1 — sinh hoa văn phẳng, 4 mức Creative Intensity
-│   ├── palette.py                   # Khớp bảng màu hiện vật gốc bằng thống kê LAB (tất định)
-│   ├── layout_select.py              # Chấm điểm 7 bố cục bằng CLIP, tự chọn bố cục hợp nhất
-│   ├── garment.py                     # GIAI ĐOẠN 2 — ghép hoa văn lên áo dài (tất định) + hoàn thiện img2img
-│   ├── stable_diffusion.py             # Wrapper SD1.5 + ControlNet, quản lý VRAM
-│   └── streamlit_runner.py              # Điều phối end-to-end: generate_design_set(heritage_id) + đủ trường Passport
-├── evaluation/                  # Script đo lường/thực nghiệm dựa trên pipeline ở generation/
-│   ├── variants.py
-│   ├── variants.csv               # Kết quả thực nghiệm thật của 24 thiết kế (6 hiện vật × 4 biến thể)
-│   └── intensity_sweep.py
-├── scripts/
-│   ├── 01_setup_env.ps1          # Cài PyTorch đúng kênh CUDA + dependencies
-│   ├── 02_check_gpu.py            # Xác nhận torch.cuda.is_available()
-│   ├── 03_download_models.py       # Tải SD1.5 + ControlNet (fp16)
-│   ├── 04_test_controlnet.py        # Smoke test pipeline, sinh ảnh tham chiếu ở outputs/
-│   ├── 07_describe_heritage.py       # LLM thị giác viết mô tả hoa văn — CHẠY OFFLINE 1 LẦN
-│   ├── export_demo_data.py           # Xuất evaluation/variants.csv thành JSON tĩnh cho chế độ Demo
-│   ├── dev_gateway.js                # Máy chủ cổng Vercel cục bộ để test full-stack local
-│   └── test_acceptance_1_8.py        # Kiểm thử tự động các tiêu chí nghiệm thu 1–8
-├── streamlit_ui/                # Views/session cho app.py
-│   ├── heritage_data.py           # Đọc + kiểm tra data/heritage/metadata.json
-│   ├── session.py
-│   └── views.py
-├── web_ui/                      # Root Directory trên Vercel (HTML/CSS/JS tĩnh + Serverless Gateway /api/*)
-│   ├── index.html
-│   ├── vercel.json                # Cấu hình Vercel cho Root Directory = web_ui
-│   ├── api/                       # Cổng điều phối failover: generate.js, status.js, warmup.js, media.js...
-│   ├── components/                # layout/, sections/, overlays/ — nạp bằng component-loader.js
-│   ├── assets/                     # css/js/images/data (chứa demo_variants.json xuất từ variants.csv)
-│   └── DEPLOY.md                   # Tóm tắt cấu hình Vercel (chi tiết ở docs/DEPLOY.md)
+├── api/                  FastAPI: hiện vật, sinh thiết kế, Passport, QC, thẩm định, chỉnh sửa, xuất bản, thí nghiệm
+├── generation/           Pipeline hai giai đoạn (controlnet, pattern, palette, layout_select, garment, garment_lora, garment_sam, streamlit_runner)
+├── quality/              Cổng G2/G3, phép đo, khoá họa tiết
+├── provenance/           Danh mục nguồn, cổng quyền, Design Passport, băm, nhãn AI
+├── evaluation/           Thí nghiệm có kiểm soát (experiment.py, experiments/), thử cách hoàn thiện ảnh (polish_finish_trial)
+├── config/               Ngưỡng cổng QG-1.0, tiêu chí tuyển ảnh, bộ tiêu chí chuyên gia (có phiên bản)
 ├── data/
-│   ├── heritage/                  # Ảnh hiện vật + metadata.json (Heritage Dataset)
-│   ├── garment/                     # Ảnh áo dài mẫu + layouts.json (toạ độ vùng bố cục)
-│   ├── documents/                    # PDF tư liệu nghiên cứu (không commit nội dung, chỉ .gitkeep)
-│   └── prompt_terms.json             # Mô tả tiếng Anh ngắn cho từng hiện vật, dùng ở giai đoạn 1
+│   ├── heritage/         Ảnh hiện vật, metadata.json (schema 2.0), sources/ (ứng viên ảnh CC0 thay thế)
+│   ├── garment/          Bố cục hoa văn (layouts.json); ảnh áo mẫu cũ chỉ dùng để chạy lại thí nghiệm cũ
+│   ├── lora/             Trọng số LoRA dáng áo dài (CC BY-NC 4.0, chỉ dùng phi thương mại)
+│   ├── archive/          Siêu dữ liệu schema 1 (đầu vào của bước chuyển đổi)
+│   └── prompt_terms.json
+├── outputs/
+│   ├── runs/             Mỗi lần chạy một thư mục + manifest SHA-256 (bộ demo 24 thiết kế)
+│   ├── passports/        24 Design Passport
+│   └── experiments/      Kế hoạch và kết quả EXP-A đến EXP-E, gói chấm mù (ảnh thô không đưa vào repo)
+├── web_ui/               Giao diện 3 trang: index.html, assets/ (css, js/lib, js/views), data/ (dữ liệu chế độ ngoại tuyến)
+├── scripts/              01–04 cài đặt & kiểm GPU · 07 mô tả hoa văn · 08 chuyển schema, trích LR3D · 09 nạp ảnh hiện vật, tạo phần tử
+│                         · 10 tạo hiện vật từ LR3D · 11 xuất dữ liệu giao diện, lọc VietFashion · 12 sơ đồ BPMN/Use Case, xuất tập LoRA
+│                         · 13 huấn luyện LoRA · 14 sinh bộ demo
+├── streamlit_ui/, app.py Công cụ kiểm chứng pipeline nội bộ (Streamlit)
+├── tests/                249 ca pytest
 ├── docs/
-│   ├── DEPLOY.md                 # Tài liệu kiến trúc deploy có failover (Modal -> HF Space -> Demo)
-│   ├── mvp_spec.md               # Đặc tả kỹ thuật của pipeline
-│   ├── SETUP_AI_LOCAL.md           # Hướng dẫn cài môi trường AI local chi tiết
-│   └── evidence/                    # Ảnh minh hoạ kết quả pipeline
-├── outputs/                     # Ảnh sinh ra + audit.jsonl (gitignored)
-└── requirements.txt             # Trỏ sang requirements-dev.txt
+│   ├── finals/           Hồ sơ vòng chung kết 01–11 + diagrams/ (BPMN 2.0, Use Case)
+│   └── SETUP_AI_LOCAL.md Cài môi trường GPU
+├── archive/              Lưu trữ bản 09/2026 (giao diện, đặc tả MVP, smoke test), không thuộc bản chung kết
+├── requirements.txt · requirements-dev.txt · pytest.ini · vercel.json
+└── README.md
 ```
 
-## 5. Cài đặt môi trường
+## 5. Cài đặt và chạy
 
-Yêu cầu tối thiểu: GPU NVIDIA ≥6GB VRAM, driver hỗ trợ CUDA ≥12.1, Python 3.10/3.11, ~12GB dung lượng trống. Hướng dẫn đầy đủ (chuyển cache sang ổ khác, chọn kênh CUDA theo GPU, xử lý sự cố) nằm ở [`docs/SETUP_AI_LOCAL.md`](docs/SETUP_AI_LOCAL.md). Tóm tắt 4 bước, chạy PowerShell tại thư mục gốc:
+Lệnh chạy bằng PowerShell tại thư mục gốc.
+
+**A. Giao diện + API**
 
 ```powershell
-# 1. Cài môi trường (PyTorch đúng kênh CUDA + dependencies)
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-python -m venv venv
-.\scripts\01_setup_env.ps1
-
-# 2. Xác nhận PyTorch thấy GPU
-.\venv\Scripts\Activate.ps1
-python scripts/02_check_gpu.py
-
-# 3. Tải model (chỉ bản fp16: SD1.5 + ControlNet Canny v1.1)
-python scripts/03_download_models.py
-
-# 4. Smoke test pipeline
-python scripts/04_test_controlnet.py
+uv run python -m uvicorn api.main:app --host 127.0.0.1 --port 8000     # cửa sổ 1 (sinh ảnh thật cần GPU)
+uv run python -m http.server 5500 --directory web_ui                    # cửa sổ 2
 ```
 
-Tạo file `.env` ở thư mục gốc (không commit) với các biến sau:
+Có API ở `127.0.0.1:8000` thì giao diện chạy chế độ trực tiếp; không có thì chạy ngoại tuyến. Môi trường Python do `uv` quản lý ở thư mục `.venv`; mọi lệnh Python chạy qua `uv run`.
 
-| Biến | Bắt buộc cho | Ghi chú |
+**B. Kiểm thử**
+
+```powershell
+uv run pytest     # 249 ca; không cần GPU (1 ca dành cho máy không có PyTorch nên bị bỏ qua trên máy có GPU)
+```
+
+**C. Sinh ảnh và thí nghiệm (cần GPU NVIDIA ≥ 6 GB, xem [`docs/SETUP_AI_LOCAL.md`](docs/SETUP_AI_LOCAL.md))**
+
+```powershell
+uv run python scripts/03_download_models.py                                  # tải SD 1.5 và ControlNet; CLIP và SAM tự tải lần đầu khi chạy
+uv run python scripts/14_generate_demo_set.py                                # sinh bộ demo (khoảng 15 phút); thêm mã hiện vật để chạy riêng một vật
+uv run python scripts/18_build_blind_review.py                              # dựng gói đánh giá mù 24 thiết kế (trang HTML phiếu chấm + khóa giải mã riêng) vào outputs/blind_review/
+uv run python scripts/15_cutout_heritage.py                                  # tách nền ảnh 6 hiện vật (SAM) thành PNG trong suốt, chỉ dùng để hiển thị
+uv run python scripts/16_export_heritage_glb.py                              # nén mô hình 3D 6 hiện vật thành GLB nhẹ cho khung xoay 360 độ ở trang Studio
+uv run python scripts/11_export_demo_data.py                                 # cập nhật web_ui/data cho chế độ ngoại tuyến
+uv run python -m evaluation.experiment run evaluation/experiments/EXP-A_controlnet_weight.json   # chưa chạy, 120 lượt
+```
+
+Trọng số LoRA có sẵn ở `data/lora/aodai_r16_512/`; huấn luyện lại bằng `scripts/13_train_lora.py`.
+
+**D. Nạp ảnh hiện vật mới** (kiểm SHA-1, tách nền, chấm C1–C4, ghi ở trạng thái chờ rà soát)
+
+```powershell
+uv run python scripts/09_ingest_heritage_image.py --file <ảnh> --candidate <mã Commons> --heritage-id <mã> --name "<tên>" --dry-run
+```
+
+**E. Công cụ kiểm chứng nội bộ:** `uv run streamlit run app.py`
+
+**Triển khai giao diện:** `vercel.json` chuyển `/` tới `web_ui/index.html`. Khi có API GPU công khai, đặt `window.DH_API_BASE` trong `web_ui/assets/js/config.js`. Mỗi lần phát hành giao diện, đổi chuỗi phiên bản `finals-N` trong `web_ui/index.html` (thẻ link, script và import map) để trình duyệt không dùng lại tệp cũ.
+
+## 6. Biến môi trường
+
+Đặt trong tệp `.env` ở thư mục gốc (không commit).
+
+| Biến | Dùng cho | Ghi chú |
 |---|---|---|
-| `HF_HOME` | Tải model | Tuỳ chọn — ưu tiên biến môi trường, không set thì dùng cache mặc định |
-| `DH_OUTPUT_DIR` | `api/main.py`, `streamlit_runner.py` | Tuỳ chọn — thư mục lưu ảnh biến thể và audit log (mặc định `outputs`) |
-| `DH_API_KEY` | `api/main.py` khi deploy | Tuỳ chọn — khóa bảo vệ `/generate*` và `/audit` qua header `X-API-Key` (bỏ qua khi chạy local không đặt) |
-| `SD15_MODEL_ID` | Pipeline sinh ảnh | Id repo Stable Diffusion 1.5 dùng chung cho mọi lần chạy |
-| `CONTROLNET_CANNY_ID` | Pipeline sinh ảnh | Id repo ControlNet Canny v1.1 |
-| `GEMINI_API_KEY` | Chỉ `scripts/07_describe_heritage.py` | Chạy offline một lần, không dùng ở runtime |
-| `WEB_UI_ORIGINS` | `api/main.py` khi deploy | Danh sách domain frontend được phép gọi API, phân tách bằng dấu phẩy |
+| `HF_HOME` | Tải model | Tuỳ chọn |
+| `SD15_MODEL_ID`, `CONTROLNET_CANNY_ID` | Pipeline sinh ảnh | Id repo model |
+| `GEMINI_API_KEY` | Chỉ `scripts/07_describe_heritage.py` | Chạy offline một lần |
+| `WEB_UI_ORIGINS` | API khi triển khai | Danh sách domain giao diện, phân tách bằng dấu phẩy |
+| `TSDS_WRITE_KEY` | API khi chạy công khai | Thao tác ghi phải gửi header `X-API-Key` |
+| `TSDS_GENERATE_PER_HOUR` | API | Giới hạn số lần sinh mỗi giờ cho một IP (mặc định 6) |
 
-## 6. Chạy dự án
+## 7. Tài liệu
 
-Hai cách chạy local (tương ứng hai cấu hình trong `.vscode/launch.json`) và một kiến trúc triển khai có failover:
+| Tài liệu | Nội dung |
+|---|---|
+| [docs/finals/README.md](docs/finals/README.md) | Đối chiếu yêu cầu BTC → tính năng → bằng chứng, tự đánh giá |
+| [01_AUDIT](docs/finals/01_AUDIT.md) · [02_APQC](docs/finals/02_APQC.md) · [03_BPMN](docs/finals/03_BPMN.md) · [04_USE_CASE](docs/finals/04_USE_CASE.md) | Rà soát, quy trình AS-IS/TO-BE, BPMN 2.0, Use Case |
+| [05_QUALITY_ASSURANCE](docs/finals/05_QUALITY_ASSURANCE.md) · [06_EXPERIMENTS](docs/finals/06_EXPERIMENTS.md) · [07_PROVENANCE_COPYRIGHT](docs/finals/07_PROVENANCE_COPYRIGHT.md) | Ba yêu cầu cải tiến |
+| [08_KPI](docs/finals/08_KPI.md) · [09_ARCHITECTURE_UI](docs/finals/09_ARCHITECTURE_UI.md) · [10_TEST_REPORT](docs/finals/10_TEST_REPORT.md) · [11_CHANGELOG](docs/finals/11_CHANGELOG.md) | KPI, kiến trúc & giao diện, kiểm thử, thay đổi |
 
-**A. Streamlit — UI kiểm chứng pipeline (dành cho dev/nội bộ)**
+## 8. Trạng thái và việc còn lại
 
-```powershell
-streamlit run app.py --server.headless=true --server.port=8501
-```
+Chỉ ghi số đã đo; phần chưa có dữ liệu ghi là "mục tiêu cần đo" (xem [08_KPI](docs/finals/08_KPI.md)).
 
-**B. Web UI tĩnh + FastAPI — bản trình diễn công khai (chạy local)**
-
-```powershell
-# Terminal 1: API (hàng đợi job GPU chạy nền, audit log, media hiện vật/thiết kế)
-python -m uvicorn api.main:app --host 127.0.0.1 --port 8000
-
-# Terminal 2: frontend tĩnh (trỏ trực tiếp vào FastAPI local qua tham số ?api=)
-python -m http.server 5500 --directory web_ui
-```
-
-Sau đó mở `http://127.0.0.1:5500/?api=http://127.0.0.1:8000` (hoặc chạy cổng điều phối `node scripts/dev_gateway.js` và mở `http://127.0.0.1:3000`).
-
-**C. Triển khai Production có Failover (Vercel → Modal GPU → HF Space GPU → Demo Mode)**
-
-Xem tài liệu vận hành chi tiết tại [`docs/DEPLOY.md`](docs/DEPLOY.md):
-- Đặt **Root Directory = `web_ui`** trên Vercel để dùng cổng điều phối `web_ui/api/*`.
-- Tự động chuyển đổi dự phòng theo thứ tự **Modal GPU (T4)** → **Hugging Face Space Docker (T4)** → **Demo Mode** (sử dụng ảnh và số liệu thực nghiệm thật từ `evaluation/variants.csv` kèm nhãn *"Kết quả đã sinh sẵn — không phải sinh trực tiếp"*).
+- Đã chạy: EXP-B (126 lượt), EXP-C (24), EXP-D (60), EXP-E (36). **EXP-A (120 lượt) chưa chạy.**
+- **Chưa có phiếu chấm của người thật:** cần ít nhất một người am hiểu di sản và một người am hiểu thiết kế xem mẫu và điền phiếu; gói chấm mù EXP-D cần ít nhất 3 người chấm; đủ ≥ 30 phiếu thì hiệu chỉnh ngưỡng thành QG-1.1 (không sửa đè QG-1.0).
+- **Chưa hiện vật nào có giấy phép từng vật (0/6):** 6 hiện vật LR3D-CULT2 thuộc bộ dữ liệu công bố CC BY 4.0 nhưng từng vật có thể lấy từ nguồn giấy phép học thuật; hệ thống đang chặn xuất bản công khai; đã có mẫu thư xin phép, chưa gửi.
+- **LoRA học từ VietFashion (CC BY-NC 4.0):** chỉ dùng phi thương mại, phải ghi công bài ICMR 2026 (xem `data/lora/README.md`).
+- Hiện vật LR3D_124 hay bị G2 loại vì đường nối (3 trong 4 thiết kế ở bộ demo). Vòng sinh lại bằng đổi seed chỉ cứu được một phần (thử thật: 1 trong 3), xem `docs/finals/05_QUALITY_ASSURANCE.md`.
+- Giao diện web chỉ còn 3 trang; Passport và chỉ số chất lượng đọc qua API và tệp dữ liệu, không hiện trên web.
+- Bản cuối vẫn mất khoảng 13 đến 14% chi tiết mịn so với bản ghép thô; nếu cần giữ tuyệt đối có thể bỏ polish và dùng bản ghép.

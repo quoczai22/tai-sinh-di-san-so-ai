@@ -10,8 +10,8 @@ Biến thể 1 LUÔN giữ nguyên bảng màu hiện vật gốc — đây là 
 người dùng có mốc đối chiếu. Các biến thể sau được tự do.
 
 Chạy:
-    python -m evaluation.variants --item BT_Hac_XP
-    python -m evaluation.variants --item BT_Hac_XP --layouts       # xem cac layout
+    python -m evaluation.variants --item LR3D_61
+    python -m evaluation.variants --item LR3D_61 --layouts       # xem cac layout
 """
 from __future__ import annotations
 
@@ -58,7 +58,7 @@ def sha256(p: Path) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--item", required=False, default="BT_Hac_XP")
+    ap.add_argument("--item", required=False, default="LR3D_61")
     ap.add_argument("--layouts", action="store_true", help="liet ke layout roi thoat")
     args = ap.parse_args()
 
