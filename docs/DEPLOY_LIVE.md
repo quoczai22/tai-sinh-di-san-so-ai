@@ -1,6 +1,6 @@
 # Triển khai giao diện mới qua Vercel và Modal
 
-Ngày cập nhật: 20/11/2026. Tài liệu này mô tả nhánh deploy/live-gateway; chưa triển khai thật trên Modal hoặc Vercel.
+Ngày cập nhật: 21/11/2026. Tài liệu này mô tả nhánh deploy/live-gateway. Backend đã triển khai trên Modal workspace doandt0612; Vercel chưa triển khai.
 
 ## Quyết định
 
@@ -19,7 +19,7 @@ Ngày cập nhật: 20/11/2026. Tài liệu này mô tả nhánh deploy/live-gat
 
 ## Lưu ảnh
 
-Modal gắn Volume tại /data/outputs. Khi khởi động, modal_app.py nối /app/outputs tới Volume vì generation/streamlit_runner.py và api/store.py đều dùng /app/outputs. Theo tài liệu Modal, Volume tự commit định kỳ và khi container tắt; chưa kiểm chứng bằng GPU thật hoặc scale-down thật.
+Modal gắn Volume tại /data/outputs. Docker image phải để trống đường dẫn này trước khi mount. Khi khởi động, modal_app.py nối /app/outputs tới Volume vì generation/streamlit_runner.py và api/store.py đều dùng /app/outputs. Mount và khởi động T4 đã kiểm chứng; ảnh sau scale-down chưa kiểm chứng.
 
 Backend đặt TSDS_GENERATE_PER_HOUR=1000 mặc định để gateway kiểm soát theo IP người dùng. Giới hạn gateway là giới hạn mềm, lưu trong RAM từng Vercel Function instance.
 
@@ -38,5 +38,5 @@ Người dùng tự nhập giá trị secret trên dashboard hoặc terminal ri�
 - Python từ .venv chạy scripts/test_api_key_guard.py, scripts/test_acceptance_1_8.py, scripts/test_alert_webhook.py, scripts/test_worker_resilience.py và pytest.
 - python scripts/ui_index.py rồi kiểm tra diff của web_ui/index.html.
 
-Các bài kiểm tra mock không chứng minh GPU T4 chạy được. Cold start, thời gian sinh bốn ảnh, chi phí, và ảnh sau scale-down: chưa đo.
+Ngày 21/11: /health của Modal trả cuda=true, device=Tesla T4; /heritage trả 6 hiện vật; POST /generate không có X-API-Key trả 401. Chưa chạy một job sinh thật. Cold start, thời gian sinh bốn ảnh, chi phí, và ảnh sau scale-down: chưa đo.
 Rewrite động của Vercel chưa được chạy trong một Vercel deployment; cần kiểm chứng /api/live/health trên preview trước production.
