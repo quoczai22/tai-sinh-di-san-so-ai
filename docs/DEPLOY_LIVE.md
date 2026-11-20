@@ -1,6 +1,6 @@
 # Triển khai giao diện mới qua Vercel và Modal
 
-Ngày cập nhật: 21/11/2026. Tài liệu này mô tả nhánh deploy/live-gateway. Backend đã triển khai trên Modal workspace doandt0612; Vercel chưa triển khai.
+Ngày cập nhật: 21/11/2026. Tài liệu này mô tả nhánh deploy/live-gateway. Backend đã triển khai trên Modal workspace doandt0612; Vercel Preview đã kiểm chứng, production chưa thay đổi.
 
 ## Quyết định
 
@@ -19,7 +19,7 @@ Ngày cập nhật: 21/11/2026. Tài liệu này mô tả nhánh deploy/live-gat
 
 ## Lưu ảnh
 
-Modal gắn Volume tại /data/outputs. Docker image phải để trống đường dẫn này trước khi mount. Khi khởi động, modal_app.py nối /app/outputs tới Volume vì generation/streamlit_runner.py và api/store.py đều dùng /app/outputs. Mount và khởi động T4 đã kiểm chứng; ảnh sau scale-down chưa kiểm chứng.
+Modal gắn Volume tại /data/outputs. Docker image phải để trống đường dẫn này trước khi mount. Khi khởi động, modal_app.py nối /app/outputs tới Volume vì generation/streamlit_runner.py và api/store.py đều dùng /app/outputs. Mount và khởi động T4 đã kiểm chứng. Bốn Passport và ảnh V1 vẫn đọc được với cùng SHA-256 sau khi dừng app rồi deploy lại; chưa chờ scaledown tự động 900 giây.
 
 Backend đặt TSDS_GENERATE_PER_HOUR=1000 mặc định để gateway kiểm soát theo IP người dùng. Giới hạn gateway là giới hạn mềm, lưu trong RAM từng Vercel Function instance.
 
@@ -38,5 +38,4 @@ Người dùng tự nhập giá trị secret trên dashboard hoặc terminal ri�
 - Python từ .venv chạy scripts/test_api_key_guard.py, scripts/test_acceptance_1_8.py, scripts/test_alert_webhook.py, scripts/test_worker_resilience.py và pytest.
 - python scripts/ui_index.py rồi kiểm tra diff của web_ui/index.html.
 
-Ngày 21/11: /health của Modal trả cuda=true, device=Tesla T4; /heritage trả 6 hiện vật; POST /generate không có X-API-Key trả 401. Chưa chạy một job sinh thật. Cold start, thời gian sinh bốn ảnh, chi phí, và ảnh sau scale-down: chưa đo.
-Rewrite động của Vercel chưa được chạy trong một Vercel deployment; cần kiểm chứng /api/live/health trên preview trước production.
+Ngày 21/11: /health của Modal trả cuda=true, device=Tesla T4; /heritage trả 6 hiện vật; POST /generate không có X-API-Key trả 401. Preview Vercel xác nhận /health và rewrite /api/live/health, /api/live/heritage. Job qua gateway cho LR3D_61, seed 20261121, run R20261120T171657-HV08 hoàn tất 4/4; cả bốn PNG tải được qua /api/live/media/artifact, mỗi ảnh có SHA-256 khác nhau. Bốn Passport mới được trả về. V1 vẫn có SHA-256 tiền tố 46F2E2E8784D2B1F sau khi dừng rồi deploy lại Modal. Chưa đo chính xác cold start, thời gian sinh, chi phí; chưa xác nhận scaledown tự động hoặc kiểm tra tương tác trực quan trên Preview.
