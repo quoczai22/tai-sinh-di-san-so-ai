@@ -1,0 +1,71 @@
+/* components/feedback.css — PHẢN HỒI: hộp trạng thái .state, khung chờ .skeleton, thông báo .toast, thanh .progress, ô nhập .field, .adv. */
+
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; color: var(--ink-2); min-width: 0; }
+
+.field input, .field select, .field textarea { max-width: 100%; min-width: 0; border: 1px solid var(--line); background: var(--porcelain); border-radius: var(--radius-s); padding: 7px 10px; color: var(--ink); }
+
+.field textarea { min-height: 80px; resize: vertical; }
+
+.progress { height: 8px; background: var(--line-2); border-radius: 99px; overflow: hidden; }
+
+.progress > span { display: block; height: 100%; background: var(--lam); width: 0; transition: width .4s ease; }
+
+/* ---------- Overlays & states ---------- */
+.state { padding: 36px; text-align: center; color: var(--ink-2); border: 1px dashed var(--line); border-radius: var(--radius-l); background: var(--porcelain); }
+
+.state h3 { font-family: var(--font-serif); font-weight: 500; font-size: 19px; }
+
+.state.error { border-color: var(--fail); background: var(--fail-soft); }
+
+.skeleton { background: linear-gradient(90deg, var(--line-2), var(--porcelain), var(--line-2)); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; border-radius: var(--radius-m); min-height: 120px; }
+
+.toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 16px; border-radius: var(--radius-s); z-index: 70; font-size: 14px; }
+
+.state {
+    border-radius: 18px;
+}
+
+.toast {
+    z-index: 100;
+    border-radius: 999px;
+    padding: 11px 20px;
+    animation: toastIn .45s var(--ease-out) both;
+}
+
+.skeleton {
+    border-radius: 20px;
+}
+
+.state, .skeleton {
+    border-radius: 4px;
+}
+
+.state {
+    border-radius: 0;
+}
+
+.adv summary {
+    cursor: pointer;
+    font-family: var(--font-ui);
+    font-style: italic;
+    font-size: 14.5px;
+    color: var(--ink-3);
+}
+
+.adv[open] summary {
+    margin-bottom: 10px;
+}
+
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        translate: 0 16px;
+    }
+
+    to {
+        opacity: 1;
+        translate: 0 0;
+    }
+}

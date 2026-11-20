@@ -1,23 +1,17 @@
-import { h, icon, toast } from '../lib/dom.js';
-import * as data from '../lib/data.js';
-import { section, stateBox } from '../lib/ui.js';
-import { hoverSpin, mountViewer } from '../lib/viewer3d.js';
-
-// ---------------------------------------------------------------------------------------------
-// Studio cho người xem: chọn hiện vật (đầu vào) → bấm Tạo thiết kế → chuyển sang trang Kết quả (#/result).
-// · Có máy chủ GPU: bấm Tạo là sinh thật, có thanh tiến độ, xong chuyển sang trang Kết quả.
-// · Không có GPU: không giả lập việc sinh. Bấm Tạo mở trang Kết quả với bộ thiết kế mô hình đã tạo trước
-//   đó trên GPU (trang Kết quả ghi rõ ngày tạo).
-// ---------------------------------------------------------------------------------------------
-// Thẻ hiện vật trong lưới chọn: rê chuột vào thì bình xoay 3D, rê ra thì đứng yên
-function pickerCard(it) {
-    const pic = h('div', { class: 'pic' }, h('img', { src: it.image, alt: '', loading: 'lazy' }));
-    const card = h('a', { class: 'artifact', href: `#/studio/${encodeURIComponent(it.id)}`, style: { textDecoration: 'none' } },
-        pic,
-        h('div', { class: 'body' }, h('div', { class: 'code' }, it.dating || 'Gốm Bát Tràng'), h('div', { class: 'name' }, it.name)));
-    hoverSpin(card, pic, it.id);
-    return card;
-}
+// views/studio.js — TRANG STUDIO (#/studio, #/studio/<mã hiện vật>): bước 1–2 của pipeline GUI.
+//  · Chưa chọn hiện vật: lưới picker-card để chọn đầu vào.
+//  · Đã chọn: khung 3D + thanh điều khiển, nút Tạo thiết kế.
+//    Có máy chủ GPU (data.canGenerate): bấm Tạo là sinh thật (core/generation.js), có thanh tiến độ, xong sang #/result.
+//    Không có GPU: không giả lập việc sinh — bấm Tạo mở trang Kết quả với bộ thiết kế đã tạo trước đó trên GPU.
+// View chỉ lấy dữ liệu và ghép component; không tự định nghĩa component.
+import { h, toast } from '../core/dom.js';
+import { icon } from '../core/icons.js';
+import * as data from '../core/data.js';
+import { runGeneration } from '../core/generation.js';
+import { section, stateBox } from '../components/layout.js';
+import { pickerCard } from '../components/picker-card.js';
+import { mountViewer } from '../components/viewer3d.js';
+import { viewerControls } from '../components/viewer-controls.js';
 
 function picker(items) {
     return section('Chọn một hiện vật', 'Hoa văn của hiện vật bạn chọn sẽ được dệt lên tà áo dài.',
@@ -53,16 +47,7 @@ export async function render([heritageId]) {
         progress.hidden = false;
         note.textContent = 'Đang tạo thiết kế…';
         try {
-            data.audit('generation_requested', { step: 3, heritage_id: heritageId });
-            const { job_id: jobId } = await data.startGeneration(heritageId, seed);
-            let job;
-            do {
-                await new Promise((r) => setTimeout(r, 1200));
-                job = await data.jobStatus(jobId);
-                progressBar.style.width = `${job.progress || 0}%`;
-            } while (['queued', 'running'].includes(job.status));
-            if (job.status !== 'completed') throw new Error(job.label);
-            data.invalidate('live:passports');
+            await runGeneration(heritageId, seed, (pct) => { progressBar.style.width = `${pct}%`; });
             goToResult();
         } catch (err) {
             progress.hidden = true;
@@ -76,86 +61,10 @@ export async function render([heritageId]) {
     const artifactBox = h('div', { class: 'io-artifact' }, artifactImg);
     const viewerPromise = mountViewer(artifactBox, heritageId);
 
-    // Thanh điều khiển thu phóng hiện vật + nút khoá đứng yên / chuyển động xoay
-    let viewerInstance = null;
-    Promise.resolve(viewerPromise).then((inst) => { viewerInstance = inst; });
-
-    let isLocked = false;
-    let zoomLevel = 1.0;
-
-    const lockIcon = h('span', { class: 'ctrl-icon', 'aria-hidden': 'true' }, '🔄');
-    const updateLockUi = (spinning) => {
-        isLocked = !spinning;
-        lockBtn.setAttribute('aria-pressed', String(isLocked));
-        lockBtn.title = isLocked ? 'Đang đứng yên — Bấm để tiếp tục xoay 360°' : 'Đang tự xoay — Bấm để khoá đứng yên';
-        lockIcon.textContent = isLocked ? '🔒' : '🔄';
-    };
-
-    const lockBtn = h('button', {
-        type: 'button',
-        class: 'lb-step lock-btn',
-        title: 'Đang tự xoay — Bấm để khoá đứng yên',
-        onclick: () => {
-            if (viewerInstance?.toggleSpin) {
-                const nowSpinning = viewerInstance.toggleSpin();
-                updateLockUi(nowSpinning);
-            } else {
-                updateLockUi(isLocked);
-            }
-        }
-    }, lockIcon);
-
-    const zoomSlider = h('input', {
-        type: 'range',
-        class: 'lb-zoom',
-        min: '70',
-        max: '180',
-        step: '2',
-        value: '100',
-        'aria-label': 'Thu phóng hiện vật'
-    });
-
-    const applyZoom = (val) => {
-        zoomLevel = Math.max(0.7, Math.min(1.8, Math.round(val * 100) / 100));
-        zoomSlider.value = String(Math.round(zoomLevel * 100));
-        if (viewerInstance?.setZoom) {
-            viewerInstance.setZoom(zoomLevel);
-        } else {
-            artifactImg.style.transform = `scale(${zoomLevel})`;
-        }
-    };
-
-    zoomSlider.addEventListener('input', () => {
-        applyZoom(Number(zoomSlider.value) / 100);
-    });
-
-    const stepOut = h('button', {
-        type: 'button',
-        class: 'lb-step',
-        'aria-label': 'Thu nhỏ',
-        title: 'Thu nhỏ',
-        onclick: () => applyZoom(zoomLevel - 0.1)
-    }, '−');
-
-    const stepIn = h('button', {
-        type: 'button',
-        class: 'lb-step',
-        'aria-label': 'Phóng to',
-        title: 'Phóng to',
-        onclick: () => applyZoom(zoomLevel + 0.1)
-    }, '+');
-
-    const viewerControls = h('div', { class: 'lb-zoomrow viewer-controls', role: 'toolbar', 'aria-label': 'Điều khiển xem hiện vật 3D' },
-        lockBtn,
-        stepOut,
-        zoomSlider,
-        stepIn
-    );
-
     return h('div', { class: 'studio-io' },
         h('div', { class: 'io-input' },
             artifactBox,
-            viewerControls,
+            viewerControls(artifactImg, viewerPromise),
             h('h2', { class: 'io-name' }, item.name),
             h('a', { class: 'io-change', href: '#/studio' }, 'Đổi hiện vật')),
         h('div', { class: 'io-action' },

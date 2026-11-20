@@ -1,0 +1,237 @@
+/* components/artifact-card.css — THẺ HIỆN VẬT trang chủ: lưới .artifact-grid-v2, .artifact-card, bệ .ac-stage, chữ .ac-body. JS: components/artifact-card.js. */
+
+.artifact-card {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--porcelain);
+    color: inherit;
+    text-align: left;
+    font: inherit;
+    transition: translate .5s var(--ease-out), box-shadow .5s ease, border-color .3s ease;
+}
+
+.ac-stage {
+    position: relative;
+    aspect-ratio: 4 / 4.6;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 42%, #fff 0, #F1EADB 52%, #E1D3B6 100%);
+}
+
+.ac-halo {
+    position: absolute;
+    left: 22%;
+    right: 22%;
+    bottom: 12%;
+    height: 6%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(60, 40, 20, .35), transparent);
+    transition: transform .8s var(--ease-out), opacity .8s ease;
+}
+
+.ac-stage img {
+    position: relative;
+    max-height: 80%;
+    max-width: 78%;
+    object-fit: contain;
+    object-position: center 42%;
+    filter: drop-shadow(0 14px 14px rgba(0, 0, 0, .16));
+    transition: transform 1s var(--ease-out);
+}
+
+.ac-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 18px 20px;
+}
+
+.artifact-card:hover {
+    translate: 0 -8px;
+    border-color: var(--ink-3);
+    box-shadow: 0 26px 46px -28px rgba(29, 42, 54, .5);
+}
+
+.artifact-card:hover .ac-stage img {
+    transform: translateY(-10px) scale(1.05);
+}
+
+.artifact-card:hover .ac-halo {
+    transform: scaleX(.8);
+    opacity: .6;
+}
+
+html.motion-off .reveal .ac-stage img {
+    clip-path: none;
+    scale: 1;
+}
+
+/* Góc gần vuông, viền mảnh */
+.artifact-card {
+    border-radius: 4px;
+}
+
+/* ---------- Chú thích dưới ảnh: kiểu nhãn hiện vật ---------- */
+.ac-body {
+    gap: 6px;
+    padding: 18px 4px 4px;
+    background: transparent;
+}
+
+.artifact-card {
+    background: transparent;
+    border: 0;
+    overflow: visible;
+}
+
+.artifact-card .ac-stage {
+    border-radius: 4px;
+}
+
+.artifact-card:hover {
+    translate: 0 -4px;
+    box-shadow: none;
+}
+
+.artifact-card:hover .ac-stage {
+    box-shadow: 0 24px 40px -30px rgba(29, 42, 54, .55);
+}
+
+.artifact-card .ac-stage {
+    transition: box-shadow .8s var(--ease-out);
+}
+
+/* ---------- Chuyển động ---------- */
+/* Ảnh "kéo màn" từ dưới lên khi thẻ vào khung nhìn, rồi thu nhẹ về tỉ lệ thật */
+.reveal .ac-stage img {
+    clip-path: inset(18% 0 0 0);
+    scale: 1.08;
+    transition: clip-path 1.4s var(--ease-out), scale 1.8s var(--ease-out), transform 1s var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 90ms + 120ms);
+}
+
+.reveal.in .ac-stage img {
+    clip-path: inset(0 0 0 0);
+    scale: 1;
+}
+
+/* Sau lần hiện đầu, hover không bị trễ theo thứ tự */
+.reveal.in:hover .ac-stage img {
+    transition-delay: 0s;
+}
+
+.artifact-card:hover .ac-stage img {
+    transform: translateY(-6px) scale(1.03);
+}
+
+/* ---------- Bản 4b — học cách trình bày của tạp chí Heritage (Vietnam Airlines) ----------
+   Ảnh vuông góc, chú thích căn giữa theo thứ tự: chuyên mục (vàng, in hoa, giãn chữ) →
+   tiêu đề → dòng phụ nhỏ xám giãn chữ. Hover tinh tế: tiêu đề đổi màu, ảnh tối nhẹ,
+   mũi tên ↗ trượt chéo. Nút vuông, chữ in hoa. */
+.artifact-card .ac-stage {
+    border-radius: 0;
+}
+
+.ac-body {
+    align-items: center;
+    text-align: center;
+}
+
+/* Ảnh tối nhẹ khi hover (như lớp phủ của Heritage) */
+.ac-stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #000;
+    opacity: 0;
+    transition: opacity .5s ease;
+    pointer-events: none;
+}
+
+.artifact-card:hover .ac-stage::after {
+    opacity: .06;
+}
+
+/* Cormorant mặc định dùng số kiểu cổ ("HVo1") — dùng số thẳng hàng cho mã và ngày */
+.ac-body {
+    font-variant-numeric: lining-nums;
+}
+
+/* ---------- 3. Hiện vật: lưới, bình trồi lên và tấm nền kéo màn theo cuộn ---------- */
+.artifact-grid-v2 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(20px, 3vw, 40px);
+}
+
+.artifact-grid-v2 .artifact-card {
+    --ek: clamp(0, calc((var(--e, 1) - var(--k, 0) * .1) / .8), 1);
+}
+
+.artifact-grid-v2 .ac-stage {
+    clip-path: inset(calc((1 - var(--ek)) * 22%) 0 0 0);
+}
+
+.artifact-grid-v2 .ac-stage img {
+    translate: 0 calc((.5 - var(--p, .5)) * 40px - 10px);
+    scale: calc(.92 + var(--ek) * .08);
+    transition: transform 1s var(--ease-out);
+}
+
+.artifact-grid-v2 .ac-body {
+    opacity: var(--ek);
+    translate: 0 calc((1 - var(--ek)) * 24px);
+}
+
+.artifact-card:hover .ac-stage img {
+    transform: translateY(-8px) scale(1.03);
+}
+
+@media (max-width: 980px) {
+    .artifact-grid-v2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+}
+
+@media (max-width: 640px) {
+    .artifact-grid-v2 {
+            grid-template-columns: minmax(0, 1fr);
+        }
+}
+
+.ac-stage {
+    background: var(--vitrine);
+}
+
+/* ---------- Hoạ tiết: góc hồi văn vàng trên các khung trưng bày ---------- */
+.ac-stage::before {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    z-index: 1;
+    pointer-events: none;
+    opacity: .75;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M1 23V1h22M5 19V5h14M9 15V9h6'/%3E%3C/svg%3E") left top / 22px no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M23 23V1H1M19 19V5H5M15 15V9H9'/%3E%3C/svg%3E") right top / 22px no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M1 1v22h22M5 5v14h14M9 9v6h6'/%3E%3C/svg%3E") left bottom / 22px no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M23 1v22H1M19 5v14H5M15 9v6H9'/%3E%3C/svg%3E") right bottom / 22px no-repeat;
+}
+
+.artifact-card {
+    text-decoration: none;
+}
+
+.ac-stage.has-3d img {
+    display: none !important;
+}
+
+.ac-stage.has-3d .ac-halo {
+    display: none !important;
+}

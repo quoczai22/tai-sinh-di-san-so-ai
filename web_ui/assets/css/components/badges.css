@@ -1,0 +1,79 @@
+/* components/badges.css — NHÃN BẮT BUỘC: .ai-tag (nhãn AI trên ảnh), .demo-notice (Kết quả đã sinh sẵn). JS: components/badges.js. */
+
+.design .pic .ai-tag { position: absolute; left: 8px; bottom: 8px; font-size: 11.5px; background: rgba(252, 251, 247, .92); padding: 2px 8px; border-radius: 99px; color: var(--ink-2); }
+
+.ai-tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    line-height: 1.4;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: rgba(252, 251, 247, .92);
+    color: var(--ink-2);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.journey-card .ai-tag {
+    position: absolute;
+    top: 18px;
+    right: 16px;
+}
+
+.design .pic .ai-tag {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+}
+
+/* Nhãn AI: ký hiệu nhỏ, chữ in hoa, không chiếm chỗ của ảnh */
+.ai-tag {
+    padding: 3px 7px 2px;
+    border-radius: 2px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    background: rgba(252, 251, 247, .9);
+    color: var(--ink);
+    line-height: 1.2;
+}
+
+.journey-card .ai-tag {
+    top: auto;
+    bottom: auto;
+    top: 20px;
+    right: 18px;
+}
+
+.ai-tag {
+    font-family: var(--font-ui);
+}
+
+.gi-img .ai-tag {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+}
+
+/* Nhãn chế độ trình diễn: kết quả đã sinh sẵn (bắt buộc hiển thị khi không có GPU trực tuyến) */
+.demo-notice {
+    margin: -8px 0 24px;
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink);
+    background: var(--warn-soft);
+    border: 1px solid rgba(138, 100, 0, .35);
+    border-radius: var(--radius-s);
+}
+
+.demo-notice strong {
+    color: var(--warn);
+}
+
+.lb-pic .ai-tag {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+}

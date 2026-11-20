@@ -24,10 +24,8 @@ OUT = ROOT / "dist" / "hf_space"
 COPY_FILES = [
     "Dockerfile",
     "requirements-api.txt",
-    "streamlit_ui/__init__.py",
-    "streamlit_ui/heritage_data.py",
 ]
-COPY_DIRS = ["api", "generation", "evaluation", "data"]
+COPY_DIRS = ["api", "generation", "evaluation", "provenance", "quality", "config", "data"]   # khớp các lệnh COPY trong Dockerfile
 IGNORE = shutil.ignore_patterns("__pycache__", "*.pyc", ".gitkeep")
 
 SPACE_README = """---
