@@ -1,0 +1,707 @@
+{
+  "schema": "design-passport/1.0",
+  "passport_id": "DP-HV11-20261120T061856-V2",
+  "design_id": "R20261120T061856-HV11.V2",
+  "run_id": "R20261120T061856-HV11",
+  "created_at": "2026-11-20T06:20:04+00:00",
+  "heritage": {
+    "heritage_id": "LR3D_97",
+    "code": "HV11",
+    "name": "Hiện vật men lam: nét lam thưa trên men kem (LR3D-CULT2 #97)",
+    "status": "active",
+    "source_title": "LR3D-CULT2, vật #97 (ảnh render từ mô hình 3D)",
+    "source_url": "https://data.mendeley.com/datasets/jr23fnrvx2/1",
+    "holder": "Mendeley Data, bộ dữ liệu LR3D-CULT2 (FPT University, Hà Nội)",
+    "author": "Nguyen và cộng sự (nhóm tác giả LR3D-CULT2)",
+    "rights_status": "unverified",
+    "license": null,
+    "attribution": "Nguyen và cộng sự, LR3D-CULT2 Vietnamese Ceramic Cultural Artifacts, Mendeley Data, DOI 10.17632/jr23fnrvx2.1 (vật #97). Quyền dùng từng vật chưa xác minh; chỉ dùng nội bộ và thử nghiệm.",
+    "dating": null,
+    "registry_data_version": "orig-sha256:948ad910cd75",
+    "source_image_sha256": "948ad910cd75c0f73eeec0f5500b1e6df1f5174e6c287ffa115fe917ec049cf2"
+  },
+  "artifacts": [
+    {
+      "role": "source_image",
+      "path": "data/heritage/LR3D_97.png",
+      "sha256": "948ad910cd75c0f73eeec0f5500b1e6df1f5174e6c287ffa115fe917ec049cf2",
+      "bytes": 211685,
+      "size": [
+        512,
+        512
+      ]
+    },
+    {
+      "role": "reference_512",
+      "path": "outputs/runs/R20261120T061856-HV11/00_reference.png",
+      "sha256": "26ab5a102da0a6fa40d0dc2ac649f7ffe4e7602450b834eab7cd85c91400ad6f",
+      "bytes": 155502,
+      "size": [
+        512,
+        512
+      ]
+    },
+    {
+      "role": "control_canny",
+      "path": "outputs/runs/R20261120T061856-HV11/01_canny.png",
+      "sha256": "45563fbdddfaf261f1dd8e412e68026352a6d4ac206b66511d372e45bfd2ded9",
+      "bytes": 7699,
+      "size": [
+        512,
+        512
+      ]
+    },
+    {
+      "role": "pattern",
+      "path": "outputs/runs/R20261120T061856-HV11/V2_pattern.png",
+      "sha256": "c1bc6b0d8e8b498a7a83b08909c84c23f261f2d690af39f6279d5476aaa33547",
+      "bytes": 506844,
+      "size": [
+        512,
+        512
+      ]
+    },
+    {
+      "role": "composite_raw",
+      "path": "outputs/runs/R20261120T061856-HV11/V2_aodai_raw.png",
+      "sha256": "cd18c6b0844f60d2dfab4ebf2bec5a4c16588f983bd7fbd7c317bb740c15f881",
+      "bytes": 419885,
+      "size": [
+        512,
+        688
+      ]
+    },
+    {
+      "role": "final_img2img",
+      "path": "outputs/runs/R20261120T061856-HV11/V2_aodai.png",
+      "sha256": "475beeefbbfd0449c8955125dadd9a3dcb5048d195affe562b9c02ff84e18108",
+      "bytes": 423028,
+      "size": [
+        512,
+        688
+      ]
+    },
+    {
+      "role": "garment",
+      "path": "outputs/runs/R20261120T061856-HV11/garment.png",
+      "sha256": "ea52da06e3260ed50e68a3ceb4be673c9a0e4a54c07b8b4e8796980136795692",
+      "bytes": 352464,
+      "size": [
+        512,
+        688
+      ]
+    },
+    {
+      "role": "garment_mask",
+      "path": "outputs/runs/R20261120T061856-HV11/garment_mask.png",
+      "sha256": "39a4d6341e1a41e6d086ed7c4ded2b82c9c3df8880db5a8be9663269c527c5c1",
+      "bytes": 2240,
+      "size": [
+        512,
+        688
+      ]
+    }
+  ],
+  "generation": {
+    "pipeline": "two-stage v6",
+    "models": {
+      "sd": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+      "controlnet": "lllyasviel/control_v11p_sd15_canny",
+      "clip_layout_scorer": "openai/clip-vit-base-patch32",
+      "description_llm": "claude-sonnet-5-5"
+    },
+    "versions": {
+      "torch": "2.13.0+cu126",
+      "diffusers": "0.43.0",
+      "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU 8GB"
+    },
+    "prompt": "a flat decorative pattern inspired by Blue and white cloud scroll and lattice motif, featuring Sparse blue swirling clouds and lattice bands on cream glaze., hand-painted ceramic enamel style, bold outline linework, asymmetric composition, seamless repeating pattern.",
+    "negative_prompt": "vase, pot, jar, vessel, bottle, ceramic object, 3d render, photograph, person, mannequin, garment, kaleidoscope, mandala, mirror symmetry, radial symmetry, neon colors, oversaturated, blurry, low quality, watermark, text, distorted",
+    "seed": 42,
+    "steps": 25,
+    "guidance": 7.5,
+    "scheduler": "UniPCMultistep",
+    "controlnet": {
+      "conditioning_scale": 0.65,
+      "intensity_level": 2,
+      "intensity_name": "Gần nguyên bản",
+      "canny_low": 100,
+      "canny_high": 200,
+      "resolution": 512,
+      "control_mode": "ornament_only",
+      "outline_erode_px": 14,
+      "edge_px": 5453,
+      "conditioning_mode": "whole_object"
+    },
+    "palette": {
+      "mode": "free",
+      "source_palette": [
+        "#c5c6bd",
+        "#d4d4cc",
+        "#b1b6ad",
+        "#88999a",
+        "#50656b"
+      ]
+    },
+    "layout": {
+      "name": "side_stripe",
+      "label": "Dải dọc lệch phải",
+      "scale": 1.0,
+      "selected_by": "clip_auto",
+      "score": 0.113,
+      "ranking": "side_stripe:0.113;center_medallion:0.113;shoulder_hem:0.1075;front_panel:0.1047;full_body:0.1006;hem_band:0.0997;shoulder:0.0956"
+    },
+    "polish_img2img": {
+      "strength": 0.2,
+      "steps": 30,
+      "guidance": 7.0,
+      "seed": 42,
+      "prompt": "a woman wearing an elegant Vietnamese ao dai with a printed silk pattern, the print follows the fabric folds naturally, professional fashion photograph, soft daylight",
+      "negative_prompt": "flat pasted graphic, sticker, wallpaper, collage, cut out, tiled repeat, harsh edges, deformed hands, extra limbs, blurry, watermark, text",
+      "masked": true,
+      "status": "passed",
+      "attempts": 1,
+      "pattern_lock": {
+        "method": "pattern_lock_v1",
+        "params": {
+          "dog_sigma_low": 0.3,
+          "dog_sigma_high": 4.0,
+          "chroma_weight": 0.85,
+          "mask_feather_px": 3.0
+        }
+      }
+    },
+    "reference_metrics": {
+      "clip_similarity_pattern_vs_ceramic": 0.7434,
+      "note": "CLIP đo trên hoa văn GIAI ĐOẠN 1, trước ghép và img2img — chỉ để tham khảo."
+    },
+    "duration_s": 10.89,
+    "garment": {
+      "source": "lora",
+      "seed": 2104541885,
+      "candidates": [
+        {
+          "seed": 2104541885,
+          "status": "accepted",
+          "reason": ""
+        }
+      ],
+      "lora": {
+        "path": "data/lora/aodai_r16_512",
+        "base_model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+        "training_data": "VietFashion (226 ảnh đã lọc)",
+        "license": "VietFashion CC BY-NC 4.0: chỉ dùng phi thương mại",
+        "citation": "Cao, Bui, Vo, Tran, Le. VietFashion: Benchmarking Sketch-Text Composed Image Retrieval for Cultural Outfits. ICMR 2026. doi:10.1145/3805622.3810590"
+      },
+      "mask_method": "SAM facebook/sam-vit-base, điểm gợi ý ở trục giữa thân áo",
+      "prompt_negative_extra": ", orange, red, colored trim, patterned"
+    },
+    "pattern_seed": 42,
+    "pattern_retry": {
+      "status": "passed",
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "status": "ok",
+          "decision": "PASS",
+          "failed_metrics": [],
+          "values": {
+            "vessel_leakage": 0.0078,
+            "seam_ratio": 1.389
+          }
+        }
+      ]
+    }
+  },
+  "process_steps": [
+    {
+      "step": "collect_image",
+      "label": "Thu thập ảnh hiện vật (Mendeley Data, bộ dữ liệu LR3D-CULT2 (FPT University, Hà Nội))",
+      "actor_type": "human",
+      "actor": "Nhóm dự án",
+      "tool": "Trình duyệt web",
+      "at": null,
+      "inputs": [],
+      "outputs": [
+        "948ad910cd75c0f73eeec0f5500b1e6df1f5174e6c287ffa115fe917ec049cf2"
+      ],
+      "note": "Chưa có nhật ký ngày tải bộ dữ liệu; cần điền."
+    },
+    {
+      "step": "describe_motif",
+      "label": "Viết mô tả hoa văn tiếng Anh ≤21 token",
+      "actor_type": "ai",
+      "actor": "claude-sonnet-5-5",
+      "tool": "scripts/07_describe_heritage.py",
+      "at": "2026-11-18T00:00:00+00:00",
+      "inputs": [],
+      "outputs": [],
+      "note": null
+    },
+    {
+      "step": "preprocess",
+      "label": "Tách nền, letterbox 512, Canny chỉ giữ hoa văn",
+      "actor_type": "system",
+      "actor": "generation/controlnet.py",
+      "tool": "OpenCV",
+      "at": "2026-11-20T06:20:04+00:00",
+      "inputs": [
+        "948ad910cd75c0f73eeec0f5500b1e6df1f5174e6c287ffa115fe917ec049cf2"
+      ],
+      "outputs": [
+        "26ab5a102da0a6fa40d0dc2ac649f7ffe4e7602450b834eab7cd85c91400ad6f",
+        "45563fbdddfaf261f1dd8e412e68026352a6d4ac206b66511d372e45bfd2ded9"
+      ],
+      "note": null
+    },
+    {
+      "step": "generate_pattern",
+      "label": "Sinh hoa văn phẳng (ControlNet 0.65, seed 42)",
+      "actor_type": "ai",
+      "actor": "Stable Diffusion 1.5 + ControlNet Canny",
+      "tool": "generation/pattern.py",
+      "at": "2026-11-20T06:20:04+00:00",
+      "inputs": [
+        "45563fbdddfaf261f1dd8e412e68026352a6d4ac206b66511d372e45bfd2ded9"
+      ],
+      "outputs": [
+        "c1bc6b0d8e8b498a7a83b08909c84c23f261f2d690af39f6279d5476aaa33547"
+      ],
+      "note": null
+    },
+    {
+      "step": "layout_select",
+      "label": "Chọn bố cục 'Dải dọc lệch phải'",
+      "actor_type": "ai",
+      "actor": "CLIP ViT-B/32",
+      "tool": "generation/layout_select.py",
+      "at": "2026-11-20T06:20:04+00:00",
+      "inputs": [],
+      "outputs": [],
+      "note": null
+    },
+    {
+      "step": "generate_garment",
+      "label": "Sinh áo dài nền bằng LoRA, SAM tách vùng áo (seed 2104541885, thử 1 ứng viên)",
+      "actor_type": "ai",
+      "actor": "Stable Diffusion 1.5 + LoRA dáng áo dài",
+      "tool": "generation/garment_lora.py",
+      "at": "2026-11-20T06:20:04+00:00",
+      "inputs": [],
+      "outputs": [
+        "ea52da06e3260ed50e68a3ceb4be673c9a0e4a54c07b8b4e8796980136795692",
+        "39a4d6341e1a41e6d086ed7c4ded2b82c9c3df8880db5a8be9663269c527c5c1"
+      ],
+      "note": "LoRA huấn luyện từ VietFashion CC BY-NC 4.0: chỉ dùng phi thương mại. Cao, Bui, Vo, Tran, Le. VietFashion: Benchmarking Sketch-Text Composed Image Retrieval for Cultural Outfits. ICMR 2026. doi:10.1145/3805622.3810590"
+    },
+    {
+      "step": "composite",
+      "label": "Ghép tất định lên áo do LoRA sinh (mask mềm, displacement, shading)",
+      "actor_type": "system",
+      "actor": "generation/garment.py",
+      "tool": "OpenCV/NumPy",
+      "at": "2026-11-20T06:20:04+00:00",
+      "inputs": [
+        "c1bc6b0d8e8b498a7a83b08909c84c23f261f2d690af39f6279d5476aaa33547",
+        "ea52da06e3260ed50e68a3ceb4be673c9a0e4a54c07b8b4e8796980136795692"
+      ],
+      "outputs": [
+        "cd18c6b0844f60d2dfab4ebf2bec5a4c16588f983bd7fbd7c317bb740c15f881"
+      ],
+      "note": null
+    },
+    {
+      "step": "polish",
+      "label": "Hoàn thiện img2img chỉ vùng áo (strength 0.2), khóa họa tiết",
+      "actor_type": "ai",
+      "actor": "Stable Diffusion 1.5 img2img",
+      "tool": "generation/garment.py",
+      "at": "2026-11-20T06:20:04+00:00",
+      "inputs": [
+        "cd18c6b0844f60d2dfab4ebf2bec5a4c16588f983bd7fbd7c317bb740c15f881"
+      ],
+      "outputs": [
+        "475beeefbbfd0449c8955125dadd9a3dcb5048d195affe562b9c02ff84e18108"
+      ],
+      "note": "Sau polish, quality/repair.py (pattern_lock_v1, tất định) trả lại nét vẽ và màu họa tiết từ bản ghép thô; phần ánh sáng và bóng vải lấy từ polish."
+    },
+    {
+      "step": "quality_gate",
+      "label": "Cổng chất lượng G2+G3: WARN",
+      "actor_type": "system",
+      "actor": "quality/gate.py",
+      "tool": "QG-1.0",
+      "at": "2026-11-20T06:20:44+00:00",
+      "inputs": [],
+      "outputs": [],
+      "note": null
+    }
+  ],
+  "quality": {
+    "G2_pattern": {
+      "gate": "G2_pattern",
+      "decision": "PASS",
+      "metrics": {
+        "vessel_leakage": {
+          "value": 0.0078,
+          "status": "PASS",
+          "warn": 0.2,
+          "fail": 0.4,
+          "label": "Rò dáng vật chứa (VLS)"
+        },
+        "seam_ratio": {
+          "value": 1.389,
+          "status": "PASS",
+          "warn": 1.5,
+          "fail": 2.0,
+          "label": "Đường nối khi lát"
+        }
+      },
+      "details": {
+        "vessel_leakage": 0.0078,
+        "border_background": 0.0275,
+        "silhouette_iou_vs_artifact": 0.2832,
+        "seam_ratio": 1.389,
+        "seam_h": 1.389,
+        "seam_v": 0.92
+      },
+      "next": null
+    },
+    "G3_final": {
+      "gate": "G3_final",
+      "decision": "WARN",
+      "metrics": {
+        "pattern_preservation": {
+          "value": 0.941,
+          "status": "PASS",
+          "warn": 0.6,
+          "fail": 0.4,
+          "label": "Giữ họa tiết (PPS)"
+        },
+        "garment_shape_iou": {
+          "value": 0.9908,
+          "status": "PASS",
+          "warn": 0.95,
+          "fail": 0.92,
+          "label": "Giữ dáng áo (GSC)"
+        },
+        "sharpness_ratio": {
+          "value": 0.793,
+          "status": "PASS",
+          "warn": 0.45,
+          "fail": 0.25,
+          "label": "Độ nét so với bản ghép"
+        },
+        "detail_ratio": {
+          "value": 0.8007,
+          "status": "WARN",
+          "warn": 0.85,
+          "fail": 0.6,
+          "label": "Giữ chi tiết mịn họa tiết"
+        },
+        "palette_shift_de": {
+          "value": 2.49,
+          "status": "PASS",
+          "warn": 10.0,
+          "fail": 20.0,
+          "label": "Lệch bảng màu họa tiết (ΔE)"
+        }
+      },
+      "details": {
+        "structure_ncc": 0.9747,
+        "chroma_ncc": 0.9073,
+        "pattern_area_pct": 4.34,
+        "alignment": {
+          "ecc": 0.9992,
+          "scale": 0.9998,
+          "shift_px": 0.08,
+          "resampled": false
+        },
+        "garment_area_change_pct": 0.54,
+        "clipping_pct": 0.099,
+        "outside_drift": 0.0,
+        "outside_drift_max": 0
+      },
+      "routes": []
+    },
+    "overall": {
+      "decision": "WARN",
+      "route_to": "qc_review",
+      "message": "QC Officer xem xét trước khi chuyển chuyên gia (có thể chuyển kèm ghi chú).",
+      "eligible_for_expert": false
+    },
+    "config_version": "QG-1.0",
+    "evaluated_at": "2026-11-20T06:20:44+00:00"
+  },
+  "versions": [
+    {
+      "version": 1,
+      "kind": "ai_generated",
+      "path": "outputs/runs/R20261120T061856-HV11/V2_aodai.png",
+      "sha256": "475beeefbbfd0449c8955125dadd9a3dcb5048d195affe562b9c02ff84e18108",
+      "parent_version": null,
+      "parent_sha256": null,
+      "created_at": "2026-11-20T06:20:04+00:00",
+      "created_by": "pipeline",
+      "actor_type": "ai",
+      "ai_assisted": true,
+      "note": "Thiết kế cuối do pipeline sinh."
+    }
+  ],
+  "edits": [],
+  "reviews": [],
+  "approval": {
+    "status": "qa_warning",
+    "label": "Có cảnh báo — chờ QC xem xét",
+    "decided_by": "quality_gate",
+    "decided_at": "2026-11-20T06:20:44+00:00",
+    "reason": "Chờ QC Officer xem xét cảnh báo trước khi chuyển chuyên gia."
+  },
+  "ai_disclosure": {
+    "label": "Thiết kế được tạo với sự hỗ trợ của AI",
+    "ai_steps": [
+      "Viết mô tả hoa văn tiếng Anh ≤21 token",
+      "Sinh hoa văn phẳng (ControlNet 0.65, seed 42)",
+      "Chọn bố cục 'Dải dọc lệch phải'",
+      "Sinh áo dài nền bằng LoRA, SAM tách vùng áo (seed 2104541885, thử 1 ứng viên)",
+      "Hoàn thiện img2img chỉ vùng áo (strength 0.2), khóa họa tiết"
+    ],
+    "human_steps": [
+      "Thu thập ảnh hiện vật (Mendeley Data, bộ dữ liệu LR3D-CULT2 (FPT University, Hà Nội))"
+    ],
+    "system_steps": [
+      "Tách nền, letterbox 512, Canny chỉ giữ hoa văn",
+      "Ghép tất định lên áo do LoRA sinh (mask mềm, displacement, shading)",
+      "Cổng chất lượng G2+G3: WARN"
+    ]
+  },
+  "ledger": [
+    {
+      "seq": 1,
+      "at": "2026-11-20T06:20:48+00:00",
+      "event": "step:collect_image",
+      "actor": "Nhóm dự án",
+      "actor_type": "human",
+      "payload_hash": "88dc4f30a8671e7b438b10e2379392af008e9d9b25b3c13497b4278c79469964",
+      "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "payload": {
+        "label": "Thu thập ảnh hiện vật (Mendeley Data, bộ dữ liệu LR3D-CULT2 (FPT University, Hà Nội))",
+        "tool": "Trình duyệt web",
+        "inputs": [],
+        "outputs": [
+          "948ad910cd75c0f73eeec0f5500b1e6df1f5174e6c287ffa115fe917ec049cf2"
+        ]
+      },
+      "entry_hash": "3ce5b116af2dcff38dc40ec41052562f40614a68b9de59555de525c2cf90d55e"
+    },
+    {
+      "seq": 2,
+      "at": "2026-11-18T00:00:00+00:00",
+      "event": "step:describe_motif",
+      "actor": "claude-sonnet-5-5",
+      "actor_type": "ai",
+      "payload_hash": "cf03759d9e2771a56cdbc6ba73cd852c02d242a408bbf14c1d1e6e4900672765",
+      "prev_hash": "3ce5b116af2dcff38dc40ec41052562f40614a68b9de59555de525c2cf90d55e",
+      "payload": {
+        "label": "Viết mô tả hoa văn tiếng Anh ≤21 token",
+        "tool": "scripts/07_describe_heritage.py",
+        "inputs": [],
+        "outputs": []
+      },
+      "entry_hash": "253f8dd4277cbead8471ce0caf3608fa519f12a1c3f000aa8952c1d277410ff5"
+    },
+    {
+      "seq": 3,
+      "at": "2026-11-20T06:20:04+00:00",
+      "event": "step:preprocess",
+      "actor": "generation/controlnet.py",
+      "actor_type": "system",
+      "payload_hash": "abd86ec22168da7cbbca0302e95c61ecd14335a4c0aa2613c6dac654e8879cc6",
+      "prev_hash": "253f8dd4277cbead8471ce0caf3608fa519f12a1c3f000aa8952c1d277410ff5",
+      "payload": {
+        "label": "Tách nền, letterbox 512, Canny chỉ giữ hoa văn",
+        "tool": "OpenCV",
+        "inputs": [
+          "948ad910cd75c0f73eeec0f5500b1e6df1f5174e6c287ffa115fe917ec049cf2"
+        ],
+        "outputs": [
+          "26ab5a102da0a6fa40d0dc2ac649f7ffe4e7602450b834eab7cd85c91400ad6f",
+          "45563fbdddfaf261f1dd8e412e68026352a6d4ac206b66511d372e45bfd2ded9"
+        ]
+      },
+      "entry_hash": "20d99d49732aa60077b590d3d0f0a88107ac09cb0aebe52cefec7793da8a8966"
+    },
+    {
+      "seq": 4,
+      "at": "2026-11-20T06:20:04+00:00",
+      "event": "step:generate_pattern",
+      "actor": "Stable Diffusion 1.5 + ControlNet Canny",
+      "actor_type": "ai",
+      "payload_hash": "24f36f5f55bae3d70e0d904d37757d47d332e3ffa56091b677daa98c9f86449d",
+      "prev_hash": "20d99d49732aa60077b590d3d0f0a88107ac09cb0aebe52cefec7793da8a8966",
+      "payload": {
+        "label": "Sinh hoa văn phẳng (ControlNet 0.65, seed 42)",
+        "tool": "generation/pattern.py",
+        "inputs": [
+          "45563fbdddfaf261f1dd8e412e68026352a6d4ac206b66511d372e45bfd2ded9"
+        ],
+        "outputs": [
+          "c1bc6b0d8e8b498a7a83b08909c84c23f261f2d690af39f6279d5476aaa33547"
+        ]
+      },
+      "entry_hash": "2f9d7d400a95f3ea233b1fb1ac17be5469a5da30926ecc6907ddcbd63085941e"
+    },
+    {
+      "seq": 5,
+      "at": "2026-11-20T06:20:04+00:00",
+      "event": "step:layout_select",
+      "actor": "CLIP ViT-B/32",
+      "actor_type": "ai",
+      "payload_hash": "a3b765fe4342e0380cd4c877eeab37078407a4c0fed6b38159a7d28f7cc82731",
+      "prev_hash": "2f9d7d400a95f3ea233b1fb1ac17be5469a5da30926ecc6907ddcbd63085941e",
+      "payload": {
+        "label": "Chọn bố cục 'Dải dọc lệch phải'",
+        "tool": "generation/layout_select.py",
+        "inputs": [],
+        "outputs": []
+      },
+      "entry_hash": "1f546eb0f264b399ea48ba2e1ab504d02486a0b5f47098d80617e7cd012743bf"
+    },
+    {
+      "seq": 6,
+      "at": "2026-11-20T06:20:04+00:00",
+      "event": "step:generate_garment",
+      "actor": "Stable Diffusion 1.5 + LoRA dáng áo dài",
+      "actor_type": "ai",
+      "payload_hash": "341bf3db616bc756b8508de4c2d69f4622c7e5922f80596bad7a855ae0f2def9",
+      "prev_hash": "1f546eb0f264b399ea48ba2e1ab504d02486a0b5f47098d80617e7cd012743bf",
+      "payload": {
+        "label": "Sinh áo dài nền bằng LoRA, SAM tách vùng áo (seed 2104541885, thử 1 ứng viên)",
+        "tool": "generation/garment_lora.py",
+        "inputs": [],
+        "outputs": [
+          "ea52da06e3260ed50e68a3ceb4be673c9a0e4a54c07b8b4e8796980136795692",
+          "39a4d6341e1a41e6d086ed7c4ded2b82c9c3df8880db5a8be9663269c527c5c1"
+        ]
+      },
+      "entry_hash": "f206c2aaa636950a5a72770c28e179acec53ed0eba331e9701680ca2141f8994"
+    },
+    {
+      "seq": 7,
+      "at": "2026-11-20T06:20:04+00:00",
+      "event": "step:composite",
+      "actor": "generation/garment.py",
+      "actor_type": "system",
+      "payload_hash": "5d6632fc10f24f1352489527b67a03096b1dcd42c293a7f44dd702d7fb9fa800",
+      "prev_hash": "f206c2aaa636950a5a72770c28e179acec53ed0eba331e9701680ca2141f8994",
+      "payload": {
+        "label": "Ghép tất định lên áo do LoRA sinh (mask mềm, displacement, shading)",
+        "tool": "OpenCV/NumPy",
+        "inputs": [
+          "c1bc6b0d8e8b498a7a83b08909c84c23f261f2d690af39f6279d5476aaa33547",
+          "ea52da06e3260ed50e68a3ceb4be673c9a0e4a54c07b8b4e8796980136795692"
+        ],
+        "outputs": [
+          "cd18c6b0844f60d2dfab4ebf2bec5a4c16588f983bd7fbd7c317bb740c15f881"
+        ]
+      },
+      "entry_hash": "9ed38b917eeef474a74286a9a6007b8ee89bbb871953884033a6f09e4bc798fe"
+    },
+    {
+      "seq": 8,
+      "at": "2026-11-20T06:20:04+00:00",
+      "event": "step:polish",
+      "actor": "Stable Diffusion 1.5 img2img",
+      "actor_type": "ai",
+      "payload_hash": "6a434b79d8690e718e97c46e9fdf7eb1ff277ee0a00d1270a629c91654f4d3ca",
+      "prev_hash": "9ed38b917eeef474a74286a9a6007b8ee89bbb871953884033a6f09e4bc798fe",
+      "payload": {
+        "label": "Hoàn thiện img2img chỉ vùng áo (strength 0.2), khóa họa tiết",
+        "tool": "generation/garment.py",
+        "inputs": [
+          "cd18c6b0844f60d2dfab4ebf2bec5a4c16588f983bd7fbd7c317bb740c15f881"
+        ],
+        "outputs": [
+          "475beeefbbfd0449c8955125dadd9a3dcb5048d195affe562b9c02ff84e18108"
+        ]
+      },
+      "entry_hash": "95194ad4890555a98e17a586a788daba8cbcbcb4c1c32ae3ea1d78f9fbd7b84a"
+    },
+    {
+      "seq": 9,
+      "at": "2026-11-20T06:20:04+00:00",
+      "event": "version:ai_generated",
+      "actor": "pipeline",
+      "actor_type": "ai",
+      "payload_hash": "9199f9baf7013402a716ae5a3fecb7ba7c7479afb1f363ded4b80254033e44e4",
+      "prev_hash": "95194ad4890555a98e17a586a788daba8cbcbcb4c1c32ae3ea1d78f9fbd7b84a",
+      "payload": {
+        "version": 1,
+        "sha256": "475beeefbbfd0449c8955125dadd9a3dcb5048d195affe562b9c02ff84e18108",
+        "parent": null
+      },
+      "entry_hash": "70921a95be9330ca673329dd5e2190dbf67d99fef131760f35a6a339317f4ab8"
+    },
+    {
+      "seq": 10,
+      "at": "2026-11-20T06:20:44+00:00",
+      "event": "step:quality_gate",
+      "actor": "quality/gate.py",
+      "actor_type": "system",
+      "payload_hash": "9734e56bba21adc4a89588ac150f7d43f548d6af76b14dd459ef451d7333acd5",
+      "prev_hash": "70921a95be9330ca673329dd5e2190dbf67d99fef131760f35a6a339317f4ab8",
+      "payload": {
+        "label": "Cổng chất lượng G2+G3: WARN",
+        "tool": "QG-1.0",
+        "inputs": [],
+        "outputs": []
+      },
+      "entry_hash": "10fdc33b969998562f16047b8aa71d4fa832d91908c82c14f89f7bc70bccd948"
+    },
+    {
+      "seq": 11,
+      "at": "2026-11-20T06:20:44+00:00",
+      "event": "quality_gate",
+      "actor": "quality_gate",
+      "actor_type": "system",
+      "payload_hash": "7117a0831883bb4103809e91fedd91f97615a3f82ffa95806f2ce9cbfdb5549b",
+      "prev_hash": "10fdc33b969998562f16047b8aa71d4fa832d91908c82c14f89f7bc70bccd948",
+      "payload": {
+        "decision": "WARN",
+        "config_version": "QG-1.0"
+      },
+      "entry_hash": "f688792dd001828b846c364a3eb4541c181d96e490096e557d05197c972eb43e"
+    },
+    {
+      "seq": 12,
+      "at": "2026-11-20T06:20:44+00:00",
+      "event": "approval:qa_warning",
+      "actor": "quality_gate",
+      "actor_type": "system",
+      "payload_hash": "f851f290530e8a30cb3f60b7aaf4c44be802cf3f373eadff64666152548cad49",
+      "prev_hash": "f688792dd001828b846c364a3eb4541c181d96e490096e557d05197c972eb43e",
+      "payload": {
+        "reason": "Chờ QC Officer xem xét cảnh báo trước khi chuyển chuyên gia."
+      },
+      "entry_hash": "7c42c7c7b811b9be9abd0a047592e27484773845567e33f8c5e397859ac68e85"
+    }
+  ],
+  "rights": {
+    "demo_display": {
+      "allowed": true,
+      "level": "warn",
+      "reason": "Chỉ hiển thị phi thương mại, kèm nhãn 'chưa xác minh quyền' và ghi nguồn."
+    },
+    "publish_public": {
+      "allowed": false,
+      "level": "block",
+      "reason": "Không xuất bản công khai khi quyền ở trạng thái 'Chưa xác minh quyền sử dụng'."
+    },
+    "commercial_use": {
+      "allowed": false,
+      "level": "block",
+      "reason": "Chưa có căn cứ cho phép sử dụng thương mại."
+    }
+  }
+}
