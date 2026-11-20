@@ -32,7 +32,7 @@ export async function render([heritageId]) {
             downloadAllBtn.textContent = 'Đang tải…';
             for (let i = 0; i < designs.length; i++) {
                 const d = designs[i];
-                const src = fullImage(d, heritageId, data.media(d.final_path, latestOf(d)));
+                const src = fullImage(d, heritageId, data.media(d.latest_path || d.final_path, latestOf(d)));
                 await downloadImage(src, `thiet-ke-${heritageId}-V${i + 1}`);
                 if (i < designs.length - 1) await new Promise((r) => setTimeout(r, 450));
             }

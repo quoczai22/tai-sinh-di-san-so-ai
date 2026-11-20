@@ -33,7 +33,7 @@ export async function init() {
             const t = setTimeout(() => ctrl.abort(), 2500);
             state.health = await getJson(`${API}/health`, { signal: ctrl.signal });
             clearTimeout(t);
-            state.mode = 'live';
+            state.mode = 'demo';
         } catch { state.mode = 'demo'; }
     }
     try { state.meta = await getJson('./data/meta.json'); } catch { state.meta = null; }
@@ -41,7 +41,8 @@ export async function init() {
 }
 
 export const isLive = () => state.mode === 'live';
-export const canGenerate = () => state.mode === 'live' && Boolean(state.health?.generation_available);
+export const canGenerate = () => Boolean(state.health?.generation_available);
+export function activateLive() { state.mode = 'live'; state.cache.delete('live:heritage'); state.cache.delete('live:passports'); }
 export function invalidate(prefix = '') { for (const k of [...state.cache.keys()]) if (k.startsWith(prefix)) state.cache.delete(k); }
 
 // Ảnh: demo dùng bản WebP đã xuất; live lấy tệp gốc qua API (đã kiểm đường dẫn)
@@ -66,7 +67,7 @@ const plain = (h) => ({ ...h, items: h.items.map((it) => ({ ...it, name: plainNa
 export async function heritage() {
     const demo = await cached('demo:heritage', () => getJson('./data/heritage.json'));
     if (state.mode !== 'live') return plain(demo);
-    return plain(await cached('live:heritage', async () => {
+    try { return plain(await cached('live:heritage', async () => {
         const items = await getJson(`${API}/heritage?include_retired=true`);
         const byId = Object.fromEntries(demo.items.map((x) => [x.id, x]));
         return {
@@ -74,11 +75,14 @@ export async function heritage() {
             items: items.map((it) => ({ ...byId[it.id], ...it, image: `${API}${it.image}`,
                 selection: byId[it.id]?.selection, rights: byId[it.id]?.rights })),
         };
-    }));
+    })); } catch { state.mode = 'demo'; return plain(demo); }
 }
 
 export async function passports() {
-    if (state.mode === 'live') return cached('live:passports', () => getJson(`${API}/passports`));
+    if (state.mode === 'live') {
+        try { return await cached('live:passports', () => getJson(`${API}/passports`)); }
+        catch { state.mode = 'demo'; }
+    }
     return cached('demo:passports', () => getJson('./data/passports.json'));
 }
 
@@ -88,7 +92,8 @@ export async function startGeneration(heritageId, seed) {
         body: JSON.stringify({ heritage_id: heritageId, seed }),
     });
 }
-export const jobStatus = (jobId) => getJson(`${API}/generate/${jobId}`);
+export const jobStatus = (jobId, heritageId) =>
+    getJson(`${API}/generate/${encodeURIComponent(jobId)}?heritage_id=${encodeURIComponent(heritageId)}`);
 
 export function audit(event, extra = {}) {
     if (state.mode !== 'live') return;

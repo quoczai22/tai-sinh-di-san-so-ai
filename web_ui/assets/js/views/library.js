@@ -5,7 +5,7 @@
 import { h } from '../core/dom.js';
 import { icon } from '../core/icons.js';
 import * as data from '../core/data.js';
-import { byPref, latestOf } from '../core/designs.js';
+import { assetUrl, byPref, latestOf, patternOf } from '../core/designs.js';
 import { litWords } from '../core/reveal.js';
 import { artifactCard } from '../components/artifact-card.js';
 import { chapterHead } from '../components/chapter-head.js';
@@ -27,12 +27,11 @@ export async function render() {
     // ---- 2. Hành trình: khối dính, cuộn dọc thì các chặng trượt ngang ----
     const sample = [...passports].sort(byPref)[0];
     const sampleItem = sample ? items.find((i) => i.id === sample.heritage_id) : active[0];
-    const dir = sample ? sample.thumb.replace(/final_img2img\.webp$/, '') : '';
     // Ba chặng người xem nhìn thấy được: hiện vật → hoa văn → tà áo
     const journey = [
         { title: 'Hiện vật', sub: 'Một chiếc bình gốm Bát Tràng có nguồn gốc rõ ràng.', img: sampleItem?.image, ai: false, contain: true },
-        { title: 'Hoa văn', sub: 'Nét vẽ trên men được dệt thành tấm hoa văn liền mạch.', img: dir && `./${dir}pattern.webp`, ai: true },
-        { title: 'Tà áo dài', sub: 'Hoa văn khoác lên dáng áo dài, giữ trọn nét gốc.', img: sample && `./${latestOf(sample)}`, ai: true },
+        { title: 'Hoa văn', sub: 'Nét vẽ trên men được dệt thành tấm hoa văn liền mạch.', img: sample && assetUrl(patternOf(sample)), ai: true },
+        { title: 'Tà áo dài', sub: 'Hoa văn khoác lên dáng áo dài, giữ trọn nét gốc.', img: sample && assetUrl(latestOf(sample)), ai: true },
     ];
     const journeySection = h('section', { class: 'journey-pin', 'data-pin': '' },
         h('div', { class: 'pin-sticky' },

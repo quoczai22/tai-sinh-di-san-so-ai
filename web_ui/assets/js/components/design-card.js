@@ -7,7 +7,7 @@ import { aiMark } from './badges.js';
 import { openLightbox } from './lightbox.js';
 
 export function designCard(d, n, heritageId) {
-    const src = data.media(d.final_path, latestOf(d));
+    const src = data.media(d.latest_path || d.final_path, latestOf(d));
     const fullSrc = fullImage(d, heritageId, src);
     const card = h('article', { class: 'design out-card', role: 'button', tabindex: '0', 'aria-label': `Xem thiết kế ${n}`, style: { '--k': String(n - 1) } },
         h('div', { class: 'pic' }, h('img', { src, alt: `Thiết kế ${n}`, loading: 'lazy' }), aiMark()));
