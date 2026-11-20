@@ -1,7 +1,7 @@
 """Sinh ảnh áo dài trắng mỗi lần chạy bằng SD 1.5 cộng LoRA dáng áo dài, không phụ thuộc áo mẫu cố định.
 
 Quy trình: sinh tối đa `tries` ứng viên (seed liên tiếp) → tách vùng áo bằng SAM → nhận ứng viên đầu tiên có
-mặt nạ hợp lệ (`mask_ok`). Không ứng viên nào đạt thì ném `GarmentError`; nơi gọi quay về áo mẫu cố định.
+mặt nạ hợp lệ (`mask_ok`) và áo trắng trơn (`color_ok`). Không ứng viên nào đạt thì ném `GarmentError`; nơi gọi quay về áo mẫu cố định.
 
 LoRA do scripts/13_train_lora.py huấn luyện từ VietFashion (CC BY-NC 4.0, chỉ dùng phi thương mại).
 """
@@ -22,8 +22,32 @@ NEG_EXTRA = ", orange, red, colored trim, patterned"   # LoRA hay thêm viền m
 MIN_FRAC, MAX_FRAC, MIN_HEIGHT_FRAC = 0.08, 0.55, 0.60
 
 
+# Áo phải trắng trơn: tỉ lệ điểm "có màu rực" (độ bão hòa HSV > COLOR_SAT và đủ sáng) trong vùng áo không quá COLOR_MAX_FRAC.
+# Đo trên 6 áo đã sinh: áo trắng đạt 0 đến 3% (viền hay thắt lưng nhỏ), áo có mảng đỏ hoặc cam đạt 16 đến 28%.
+COLOR_SAT, COLOR_MIN_VAL, COLOR_MAX_FRAC = 0.35, 0.25, 0.05
+
+
 class GarmentError(RuntimeError):
     """Không sinh được áo hợp lệ (thiếu LoRA, hoặc mọi ứng viên bị loại)."""
+
+
+def color_ok(img: Image.Image, mask: np.ndarray) -> tuple[bool, str]:
+    """Kiểm tra áo có trắng trơn không: vùng áo (theo mặt nạ) không được có mảng màu rực lớn (đỏ, cam...).
+
+    LoRA đôi khi sinh áo có thân đỏ hoặc váy cam dù prompt đã yêu cầu trắng. Áo như vậy làm hoa văn xanh lam mất nổi bật
+    và trông sai, nên bị loại như ứng viên có mặt nạ hỏng. Trả về (hợp lệ, lý do nếu không).
+    """
+    import cv2                                                      # noqa: PLC0415
+
+    m = np.asarray(mask) > 0
+    if not m.any():
+        return False, "mặt nạ rỗng"
+    hsv = cv2.cvtColor(np.asarray(img.convert("RGB")), cv2.COLOR_RGB2HSV).astype(np.float32) / 255.0
+    vivid = (hsv[..., 1] > COLOR_SAT) & (hsv[..., 2] > COLOR_MIN_VAL)
+    frac = float(vivid[m].mean())
+    if frac > COLOR_MAX_FRAC:
+        return False, f"áo có màu rực {frac:.0%} vùng áo (tối đa {COLOR_MAX_FRAC:.0%}), không phải áo trắng trơn"
+    return True, ""
 
 
 def mask_ok(mask: np.ndarray) -> tuple[bool, str]:
@@ -87,6 +111,8 @@ def generate_garment(out_dir: Path, seed: int = 42, lora_dir: Path | None = None
                 tried.append({"seed": s, "status": "rejected", "reason": str(exc)})
                 continue
             ok, why = mask_ok(mask)
+            if ok:
+                ok, why = color_ok(img, mask)
             if not ok:
                 tried.append({"seed": s, "status": "rejected", "reason": why})
                 continue

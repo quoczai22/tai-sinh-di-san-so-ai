@@ -42,7 +42,7 @@ Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang ch
  Hiện vật (data/heritage, có nguồn & quyền)
         │  tiêu chí tuyển ảnh C1–C4 · cổng quyền
         ▼
- Ảnh bình gốc (data/heritage/LR3D_xx.png, ảnh render cả bình), không qua mảng trải phẳng làm sẵn
+ Mảng hoa văn phẳng đã trải từ mô hình 3D (data/heritage/panels)
         ▼
  GIAI ĐOẠN 1  SD 1.5 + ControlNet Canny (chỉ nét hoa văn) ──► hoa văn phẳng lát liền ──► Cổng G2
         ▼

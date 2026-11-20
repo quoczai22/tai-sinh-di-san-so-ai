@@ -84,6 +84,13 @@ export async function passports() {
     return cached('demo:passports', () => getJson('./data/passports.json'));
 }
 
+// Danh sách thiết kế cho trang Kết quả. Chế độ trình diễn đọc bộ riêng ./data/result/passports.json (xuất bằng
+// scripts/11_export_demo_data.py --only-result); trang chủ, Thư viện và Studio vẫn dùng passports() như cũ.
+export async function resultPassports() {
+    if (state.mode === 'live') return passports();
+    return cached('demo:result-passports', () => getJson('./data/result/passports.json'));
+}
+
 export async function passport(id) {
     if (!/^DP-[A-Z0-9]{2,8}-[0-9T]{8,15}-V[0-9]{1,2}$/.test(id)) throw new Error('Mã Passport không hợp lệ.');
     if (state.mode === 'live') return getJson(`${API}/passports/${id}`);

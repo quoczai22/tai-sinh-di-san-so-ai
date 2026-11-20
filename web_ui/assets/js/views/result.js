@@ -130,10 +130,10 @@ function openLightbox({ src, alt, filename, opener }) {
 }
 
 // Ảnh gốc đầy đủ của thiết kế. Chế độ trực tiếp: tệp PNG từ máy chủ. Chế độ trình diễn: bản PNG gốc scripts/11_export_demo_data.py
-// chép vào assets/images/variants/<mã hiện vật>_V<số>_aodai.png (thiết kế đã được hệ thống sửa thì chỉ có bản WebP nén).
+// chép vào assets/images/result/<mã hiện vật>_V<số>_aodai.png (thiết kế đã được hệ thống sửa thì chỉ có bản WebP nén).
 function fullImage(d, heritageId, fallback) {
     if (data.isLive() || latestOf(d) !== d.thumb) return fallback;
-    return `./assets/images/variants/${encodeURIComponent(heritageId)}_V${d.passport_id.split('-V').pop()}_aodai.png`;
+    return `./assets/images/result/${encodeURIComponent(heritageId)}_V${d.passport_id.split('-V').pop()}_aodai.png`;
 }
 
 function designCard(d, n, heritageId) {
@@ -150,7 +150,7 @@ function designCard(d, n, heritageId) {
 export async function render([heritageId]) {
     const { items } = await data.heritage();
     const item = items.find((i) => i.id === heritageId);
-    const all = (await data.passports()).filter((p) => p.heritage_id === heritageId && p.thumb);
+    const all = (await data.resultPassports()).filter((p) => p.heritage_id === heritageId && p.thumb);
     const run = [...new Set(all.map((p) => p.run_id))].sort().reverse()[0];
     const designs = all.filter((p) => p.run_id === run).sort((a, b) => a.passport_id.localeCompare(b.passport_id));
     const studio = item ? `#/studio/${encodeURIComponent(item.id)}` : '#/studio';

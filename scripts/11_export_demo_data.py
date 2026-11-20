@@ -8,7 +8,11 @@ quả Cổng chất lượng, kế hoạch/kết quả thí nghiệm. Không có
 Ảnh hiển thị được nén WebP để trang nhẹ; mã băm SHA-256 trong Passport luôn tính
 trên tệp PNG gốc (giao diện ghi rõ điều này).
 
-    python scripts/11_export_demo_data.py
+    python scripts/11_export_demo_data.py                 # xuất TOÀN BỘ web_ui/data từ outputs/ hiện có (xóa và ghi lại hết)
+    python scripts/11_export_demo_data.py --only-result  # chỉ xuất bộ thiết kế cho trang Kết quả, không đụng dữ liệu khác
+
+--only-result ghi vào web_ui/data/result/ (danh sách Passport và ảnh thu nhỏ) và web_ui/assets/images/result/ (ảnh PNG đầy đủ).
+Các trang khác (trang chủ, Thư viện, Studio, bảng chất lượng) vẫn đọc web_ui/data/ và assets/images/variants/ như cũ.
 """
 from __future__ import annotations
 
@@ -49,7 +53,36 @@ def dump(name: str, obj) -> None:
     (OUT / name).write_text(json.dumps(obj, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
 
+def export_result() -> int:
+    """Xuất riêng bộ thiết kế cho trang Kết quả (web_ui/data/result/ và web_ui/assets/images/result/), không đụng gì khác."""
+    result_dir = OUT / "result"
+    images_dir = ROOT / "web_ui" / "assets" / "images" / "result"
+    for d in (result_dir, images_dir):
+        shutil.rmtree(d, ignore_errors=True)
+    images_dir.mkdir(parents=True)
+    index = store.list_passports()
+    for entry in index:
+        p = store.get_passport(entry["passport_id"])
+        media = result_dir / "media" / p["passport_id"]
+        # Ảnh thu nhỏ: bản đầu tiên (do AI sinh) và bản sửa của hệ thống nếu có; cùng ý nghĩa với thumb và repair_thumb ở passports.json
+        entry["thumb"] = webp(ROOT / p["versions"][0]["path"], media / "final_img2img.webp") if p["versions"] else None
+        repair = next((v for v in p["versions"] if v["kind"] == "system_repair"), None)
+        entry["repair_thumb"] = webp(ROOT / repair["path"], media / "repair_pattern_lock.webp") if repair else None
+    dump("result/passports.json", index)
+    newest: dict[tuple[str, str], dict] = {}
+    for entry in sorted(index, key=lambda e: e["created_at"]):
+        newest[(entry["heritage_id"], entry["passport_id"].rsplit("-V", 1)[-1])] = entry
+    for (hid, variant), entry in newest.items():
+        if entry["final_path"]:
+            shutil.copy2(ROOT / entry["final_path"], images_dir / f"{hid}_V{variant}_aodai.png")
+    size = sum(f.stat().st_size for d in (result_dir, images_dir) for f in d.rglob("*") if f.is_file())
+    print(f"Đã xuất bộ thiết kế cho trang Kết quả: {len(index)} Passport ({size / 1e6:.1f} MB)")
+    return 0
+
+
 def main() -> int:
+    if "--only-result" in sys.argv[1:]:
+        return export_result()
     if OUT.exists():
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)

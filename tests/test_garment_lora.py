@@ -55,3 +55,57 @@ def test_pick_seed_ngau_nhien_khi_khong_chi_dinh_va_giu_nguyen_khi_co():
     assert gl.pick_seed(7) == 7 and gl.pick_seed(0) == 0          # seed 0 vẫn là seed hợp lệ
     seeds = {gl.pick_seed() for _ in range(20)}
     assert len(seeds) > 1 and all(0 <= s < 2**31 for s in seeds)  # không còn mặc định cố định 42
+
+
+def _ao_mau(mau_than, ti_le_mau=0.0, nen=(240, 240, 240)):
+    """Ảnh áo giả: nền xám, vùng áo trắng, có thể tô một mảng màu chiếm `ti_le_mau` vùng áo."""
+    vung = ao()
+    a = np.full((688, 512, 3), nen, np.uint8)
+    a[vung > 0] = (245, 245, 245)
+    ys, xs = np.where(vung > 0)
+    n = int(len(ys) * ti_le_mau)
+    a[ys[:n], xs[:n]] = mau_than                       # ys đã xếp theo hàng: mảng màu nằm ở phần trên áo
+    return Image.fromarray(a), vung
+
+
+def test_ao_trang_tron_hop_le():
+    img, vung = _ao_mau((200, 30, 30), 0.0)
+    assert gl.color_ok(img, vung) == (True, "")
+
+
+def test_ao_co_mang_do_hoac_cam_bi_loai():
+    for mau in ((200, 30, 30), (230, 140, 20)):         # đỏ, cam
+        img, vung = _ao_mau(mau, 0.25)
+        ok, why = gl.color_ok(img, vung)
+        assert not ok and "màu rực" in why
+
+
+def test_vien_mau_nho_van_chap_nhan():
+    img, vung = _ao_mau((200, 30, 30), 0.02)           # thắt lưng hoặc viền chiếm 2% vùng áo
+    assert gl.color_ok(img, vung)[0]
+
+
+def test_mau_ngoai_vung_ao_khong_tinh():
+    img, vung = _ao_mau((245, 245, 245), 0.0)
+    a = np.asarray(img).copy()
+    a[:100, :100] = (200, 30, 30)                       # đỏ ở nền, ngoài mặt nạ áo
+    assert gl.color_ok(Image.fromarray(a), vung)[0]
+
+
+def test_mau_sam_toi_khong_bi_coi_la_mau_ruc():
+    # vùng áo xám đậm hay bóng đổ có độ bão hòa cao nhưng rất tối: không tính là màu rực
+    vung = ao()
+    a = np.full((688, 512, 3), 240, np.uint8)
+    a[vung > 0] = (30, 8, 8)
+    assert gl.color_ok(Image.fromarray(a), vung)[0]
+
+
+def test_mat_na_rong_bi_loai_o_color_ok():
+    assert gl.color_ok(Image.new("RGB", (10, 10)), np.zeros((10, 10)))[1] == "mặt nạ rỗng"
+
+
+def test_bien_the_mac_dinh_dung_chung_bo_cuc_co_dinh():
+    from generation import garment, streamlit_runner as sr
+    assert {v["layout"] for v in sr.DEFAULT_VARIANTS} == {"front_panel"}
+    garment.get_layout("front_panel")                   # bố cục phải tồn tại (không ném lỗi)
+    assert [v["level"] for v in sr.DEFAULT_VARIANTS] == [1, 2, 3, 4]

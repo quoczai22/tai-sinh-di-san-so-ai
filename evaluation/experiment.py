@@ -38,7 +38,7 @@ BASE_CONFIG = {
     "layout": "front_panel", "polish_strength": 0.40, "polish_seed": "same_as_seed",
     "steps": 25, "guidance": 7.5, "composite_mode": "full", "stage2_finish": "img2img_0.40",
     "garment_source": "fixed",   # "fixed" là áo mẫu cố định, "lora" là áo do LoRA sinh (EXP-D)
-    "source": "render",          # ảnh nạp cho ControlNet: "render" (cả bình), "elements"; "panel" chỉ còn cho thí nghiệm cũ (EXP-D đến EXP-G)
+    "source": "render",          # ảnh nạp cho ControlNet: "render" (cả bình), "panel" (mảng phẳng), "elements" (EXP-E)
 }
 
 
@@ -218,13 +218,8 @@ def pregenerate_garments(seeds: list[int], out_dir: Path, generate=None) -> dict
     return out
 
 
-PANELS_DIR = ROOT / "data" / "heritage" / "panels"   # mảng hoa văn trải phẳng: chỉ còn dùng cho thí nghiệm cũ, không thuộc luồng sản phẩm
-
-
 def source_prepared(cache: dict, heritage_id: str, source: str) -> dict:
-    """Ảnh điều kiện cho ControlNet của một hiện vật theo nguồn (render, elements, và panel cho thí nghiệm cũ), có nhớ lại.
-
-    "panel" đọc thẳng data/heritage/panels/ (luồng sản phẩm đã bỏ nguồn này), để chạy lại và đối chiếu EXP-D đến EXP-G.
+    """Ảnh điều kiện cho ControlNet của một hiện vật theo nguồn (render, panel, elements), có nhớ lại để khỏi tính lại.
 
     elements: lấy phần tử đầu tiên trong kho (thí nghiệm cần một ảnh cố định). Thiếu nguồn thì quay về bậc thấp hơn
     như `element_library.variant_inputs`.
@@ -232,10 +227,7 @@ def source_prepared(cache: dict, heritage_id: str, source: str) -> dict:
     from generation import controlnet as cn, element_library      # noqa: PLC0415
     key = (heritage_id, source)
     if key not in cache:
-        if source == "panel":
-            path = PANELS_DIR / f"{heritage_id}.png"
-        else:
-            _, path = element_library.variant_inputs(heritage_id, source)[0]
+        _, path = element_library.variant_inputs(heritage_id, source)[0]
         cache[key] = cn.prepare(heritage_id, ornament_only=True, trim=True, image_path=path)
     return cache[key]
 

@@ -41,16 +41,16 @@ def score(rec: dict) -> float:
     return float(min(rec["size_wh"])) * float(rec.get("ink_frac", 0.0)) * min(1.0, dens if dens else 1.0)
 
 
-SOURCES = ("render", "elements")
+PANELS_DIR = ROOT / "data" / "heritage" / "panels"
+SOURCES = ("render", "panel", "elements")
 
 
-def variant_inputs(heritage_id: str, source: str = "render", root: Path = ROOT,
+def variant_inputs(heritage_id: str, source: str = "render", root: Path = ROOT, panels_dir: Path = PANELS_DIR,
                    index_path: Path = INDEX_PATH, crops_path: Path = CROPS_PATH) -> list[tuple[str, Optional[Path]]]:
     """Ảnh nạp cho 4 biến thể: danh sách 4 cặp (nhãn nguồn, đường dẫn ảnh).
 
-    "render": ảnh hiện vật gốc trong data/heritage/ (với LR3D là ảnh render cả bình), đường dẫn None.
-    "elements": mỗi biến thể một phần tử trong kho; hiện vật thiếu phần tử thì quay về ảnh hiện vật gốc.
-    Không còn nguồn mảng phẳng làm sẵn: luồng sản phẩm đi từ ảnh bình gốc.
+    Đường dẫn None nghĩa là dùng ảnh hiện vật mặc định trong data/heritage/ (với LR3D là ảnh render cả bình).
+    Thiếu nguồn được yêu cầu thì quay về bậc thấp hơn: elements, panel, rồi ảnh hiện vật.
     """
     if source not in SOURCES:
         raise ValueError(f"source phải là một trong {SOURCES}, nhận {source!r}")
@@ -59,6 +59,11 @@ def variant_inputs(heritage_id: str, source: str = "render", root: Path = ROOT,
         if picked:  # thiếu phần tử thì quay vòng cho đủ 4 biến thể
             return [(picked[i % len(picked)]["element_id"], Path(root) / picked[i % len(picked)]["file"])
                     for i in range(4)]
+        source = "panel"
+    if source == "panel":
+        panel = Path(panels_dir) / f"{heritage_id}.png"
+        if panel.is_file():
+            return [("panel", panel)] * 4
     return [("hien_vat", None)] * 4
 
 

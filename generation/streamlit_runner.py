@@ -29,11 +29,14 @@ OUT_DIR = ROOT / "outputs" / "runs"
 PASSPORT_DIR = ROOT / "outputs" / "passports"
 SEED = 42
 POLISH_STRENGTH = 0.40
+# Bố cục cố định "front_panel" (ô giữa ngực rồi dải xuống tà) cho cả 4 biến thể, giống EXP-G: chỉ ô hoa văn đổi theo mức,
+# vị trí họa tiết trên áo không đổi. Muốn CLIP tự chọn bố cục khác nhau cho mỗi biến thể thì bỏ khóa "layout".
+FIXED_LAYOUT = "front_panel"
 DEFAULT_VARIANTS = (
-    {"level": 1, "palette": "original"},
-    {"level": 2, "palette": "free"},
-    {"level": 3, "palette": "free"},
-    {"level": 4, "palette": "free"},
+    {"level": 1, "palette": "original", "layout": FIXED_LAYOUT},
+    {"level": 2, "palette": "free", "layout": FIXED_LAYOUT},
+    {"level": 3, "palette": "free", "layout": FIXED_LAYOUT},
+    {"level": 4, "palette": "free", "layout": FIXED_LAYOUT},
 )
 log = logging.getLogger(__name__)
 
@@ -55,16 +58,15 @@ def generate_design_set(
     seed: int = SEED,
     variants: tuple[dict, ...] = DEFAULT_VARIANTS,
     run_id: str | None = None,
-    source: str = "render",
+    source: str = "panel",
     garment_lora_dir: Path | None = None,
     garment_seed: int | None = None,
 ) -> list[dict]:
     """Sinh bộ thiết kế cho một hiện vật.
 
-    source chọn ảnh nạp cho ControlNet (thiếu phần tử thì tự quay về ảnh hiện vật):
-    - "render" (mặc định): ảnh hiện vật gốc trong data/heritage/ (với LR3D là ảnh render cả bình). Pipeline đi thẳng từ
-      ảnh bình gốc, không qua mảng hoa văn trải phẳng làm sẵn. Vòng kiểm tra G2 (lọt hình bình, đường nối) và sinh lại
-      hoa văn bù cho việc ControlNet có thể bám theo dáng bình.
+    source chọn ảnh nạp cho ControlNet (thiếu thì tự quay về bậc thấp hơn: elements, panel, rồi ảnh hiện vật):
+    - "panel" (mặc định): mảng texture phẳng trong data/heritage/panels/. Cho hoa văn phẳng, ít lọt hình bình (thí nghiệm EXP-E).
+    - "render": ảnh hiện vật trong data/heritage/ (với LR3D là ảnh render cả bình), ControlNet bám theo dáng bình.
     - "elements": mỗi biến thể một phần tử trong kho data/elements/.
 
     Áo dài nền luôn do SD 1.5 + LoRA dáng áo dài sinh mới mỗi lần chạy, vùng áo tách bằng SAM
@@ -213,7 +215,7 @@ def generate_design_set(
                 similarity = scorer.similarity(prepared["reference"], design_pattern)
                 records.append({
                     "status": "completed", "variant_index": index, "timestamp": _now(),
-                    "source_element": source_ids[(index - 1) % len(source_ids)],  # mã phần tử hoặc "hien_vat"
+                    "source_element": source_ids[(index - 1) % len(source_ids)],  # mã phần tử, "panel" hoặc "hien_vat"
                     "seed": seed, "intensity_level": variant["level"], "level_name": result["level_name"],
                     "controlnet_weight": result["weight"], "palette_mode": variant["palette"],
                     "layout": chosen["layout"], "layout_label": chosen["label"], "layout_scale": chosen["scale"],
