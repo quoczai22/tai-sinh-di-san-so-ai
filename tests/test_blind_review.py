@@ -68,3 +68,64 @@ def test_dung_lai_ra_cung_ma_anh(tmp_path):
     a = BR.build(tmp_path / "a")["key"].read_text(encoding="utf-8-sig")
     b = BR.build(tmp_path / "b")["key"].read_text(encoding="utf-8-sig")
     assert a == b
+
+
+def _thiet_ke_gia(tmp_path, seeds=(42, 43, 44), heritage=("LR3D_33", "LR3D_61"), levels=(1, 2)):
+    """Thiết kế giả: mỗi (hiện vật, mức) có một thiết kế cho mỗi seed, ảnh nhỏ màu khác nhau."""
+    from PIL import Image
+    rows = []
+    for h in heritage:
+        for lv in levels:
+            for sd in seeds:
+                img = tmp_path / f"{h}_{lv}_{sd}.png"
+                Image.new("RGB", (40, 60), (sd, lv * 40, 90)).save(img)
+                rows.append({"passport_id": f"DP-{h}-{lv}-{sd}", "run_id": f"R{sd}", "heritage_id": h, "image": img,
+                             "intensity_level": lv, "seed": sd, "layout": "front_panel", "garment_seed": sd,
+                             "g2": "PASS", "g3": "PASS", "approval": "pending_expert_review"})
+    return rows
+
+
+def test_nhieu_seed_gom_theo_o_va_khoa_giai_ma_co_seed(tmp_path):
+    out = tmp_path / "goi"
+    r = BR.build(out, designs=_thiet_ke_gia(tmp_path))
+    assert r["total"] == 12 and r["per_rater"] == 4              # 4 ô (2 hiện vật x 2 mức), mỗi ô 3 seed
+    key = list(csv.DictReader((out / "GIU_RIENG" / "key.csv").open(encoding="utf-8-sig")))
+    assert {"seed", "run_id", "cell"} <= set(key[0])
+    cells = {}
+    for k in key:
+        cells.setdefault(k["cell"], set()).add(k["seed"])
+    assert len(cells) == 4 and all(s == {"42", "43", "44"} for s in cells.values())
+    page = (out / "GOI_GUI" / "index.html").read_text(encoding="utf-8")
+    data_json = re.search(r"const DATA = (\{.*\});", page).group(1)      # dữ liệu nhúng trong trang (JS dùng chữ "seed" cho bộ xáo nên không dò cả trang)
+    for bad in ("seed", "intensity", "DP-LR3D", "run_id", "garment_seed", "R42", "R43", "R44"):
+        assert bad not in data_json, bad                         # trang gửi không lộ seed, mức sáng tạo hay mã Passport
+
+
+@pytest.mark.skipif(__import__("shutil").which("node") is None, reason="cần Node.js")
+def test_moi_nguoi_cham_thay_mot_thiet_ke_moi_o_va_ba_nguoi_phu_het_seed(tmp_path):
+    import json
+    import subprocess
+    out = tmp_path / "goi"
+    BR.build(out, designs=_thiet_ke_gia(tmp_path))
+    page = (out / "GOI_GUI" / "index.html").read_text(encoding="utf-8")
+    seed_from = next(l for l in page.splitlines() if l.startswith("function seedFrom"))
+    block = page[page.index("// --- chọn thiết kế cho người chấm"):page.index("// --- hết khối chọn thiết kế ---")]
+    items = json.loads(re.search(r"const DATA = (\{.*\});", page).group(1))["items"]
+    js = seed_from + "\n" + block + f"\nconst items = {json.dumps(items)};\n" \
+        "const out = {}; for (const id of ['CG01','CG02','CG03','CG04','CG06']) out[id] = pickForRater(items, id).map((x) => x.code);\n" \
+        "console.log(JSON.stringify(out));"
+    res = subprocess.run(["node", "-e", js], capture_output=True, text=True, encoding="utf-8", check=True)
+    picked = json.loads(res.stdout)
+    cell_of = {it["code"]: it["cell"] for it in items}
+    for codes in picked.values():
+        assert len(codes) == 4 and sorted(cell_of[c] for c in codes) == sorted(set(cell_of.values()))   # một thiết kế mỗi ô
+    # CG01, CG02, CG03 liên tiếp: mỗi thiết kế được đúng một người trong ba người thấy
+    all_codes = sorted(c for k in ("CG01", "CG02", "CG03") for c in picked[k])
+    assert all_codes == sorted(cell_of) and len(all_codes) == 12
+    assert picked["CG01"] == picked["CG04"] and picked["CG03"] == picked["CG06"]    # lệch ba thì quay lại chu kỳ
+
+
+def test_mot_seed_thi_nguoi_cham_thay_het_nhu_cu(tmp_path):
+    out = tmp_path / "goi"
+    r = BR.build(out, designs=_thiet_ke_gia(tmp_path, seeds=(42,)))
+    assert r["total"] == 4 and r["per_rater"] == 4

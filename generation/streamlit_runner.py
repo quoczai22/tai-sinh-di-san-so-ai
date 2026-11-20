@@ -61,6 +61,7 @@ def generate_design_set(
     source: str = "panel",
     garment_lora_dir: Path | None = None,
     garment_seed: int | None = None,
+    passport_dir: Path | None = None,
 ) -> list[dict]:
     """Sinh bộ thiết kế cho một hiện vật.
 
@@ -74,6 +75,7 @@ def generate_design_set(
     ném GarmentError, không quay về áo khác. garment_lora_dir chọn thư mục LoRA (mặc định data/lora/aodai_r16_512).
     garment_seed: seed sinh áo, độc lập với `seed` (hoa văn và polish). Mặc định None là ngẫu nhiên mỗi lần chạy nên
     mỗi lần ra một áo khác; seed áo thực dùng được ghi vào manifest và Passport để tái lập.
+    passport_dir: nơi lưu Design Passport (mặc định outputs/passports). Bộ nhiều seed cho đánh giá mù lưu riêng để không lẫn vào bộ demo.
     """
     from provenance import passport as P                          # noqa: PLC0415
     from provenance.builder import build_design_passport          # noqa: PLC0415
@@ -270,7 +272,7 @@ def generate_design_set(
                                    assessment=assessment, now=now, root=ROOT,
                                    polish_prompt=garment.POLISH_PROMPT, polish_negative=garment.POLISH_NEG,
                                    garment=garment_info)
-        P.save(pp, PASSPORT_DIR)
+        P.save(pp, passport_dir or PASSPORT_DIR)
         rel = rec["design_path_abs"].relative_to(ROOT).as_posix()
         results.append({
             "status": "completed", "variant_index": rec["variant_index"], "run_id": run_id,
