@@ -340,7 +340,10 @@ def artifact_image(path: str = Query(max_length=200)) -> FileResponse:
     if not any(rel.as_posix().startswith(r) for r in allowed_roots):
         raise HTTPException(status_code=404, detail="Không tìm thấy tệp.")
     full = (PROJECT_ROOT / rel).resolve()
-    if PROJECT_ROOT.resolve() not in full.parents or not full.is_file():
+    output_root = (PROJECT_ROOT / "outputs").resolve()
+    within_project = PROJECT_ROOT.resolve() in full.parents
+    within_outputs = rel.as_posix().startswith("outputs/") and output_root in full.parents
+    if not (within_project or within_outputs) or not full.is_file():
         raise HTTPException(status_code=404, detail="Không tìm thấy tệp.")
     return FileResponse(full)
 

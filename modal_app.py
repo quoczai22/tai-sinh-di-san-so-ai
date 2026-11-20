@@ -57,9 +57,18 @@ api_secret = modal.Secret.from_name("tai-sinh-di-san-secret")
 def fastapi_app():
     Path(OUTPUT_VOLUME_MOUNT, "variants").mkdir(parents=True, exist_ok=True)
     Path(OUTPUT_VOLUME_MOUNT, "audit").mkdir(parents=True, exist_ok=True)
+    output_link = Path("/app/outputs")
+    if output_link.is_symlink():
+        if output_link.resolve() != Path(OUTPUT_VOLUME_MOUNT):
+            raise RuntimeError("/app/outputs trỏ sai Modal Volume")
+    elif output_link.exists():
+        raise RuntimeError("/app/outputs phải trỏ tới Modal Volume trước khi khởi động")
+    else:
+        output_link.symlink_to(OUTPUT_VOLUME_MOUNT, target_is_directory=True)
 
     os.environ["HF_HOME"] = BAKED_HF_CACHE
     os.environ["DH_OUTPUT_DIR"] = OUTPUT_VOLUME_MOUNT
+    os.environ.setdefault("TSDS_GENERATE_PER_HOUR", "1000")
     # Fail-closed: thiếu DH_API_KEY trong secret thì api.main từ chối khởi động.
     os.environ["DH_REQUIRE_API_KEY"] = "1"
 
