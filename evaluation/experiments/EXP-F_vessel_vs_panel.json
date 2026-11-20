@@ -1,0 +1,28 @@
+{
+  "id": "EXP-F",
+  "title": "Đi từ ảnh bình gốc so với từ mảng hoa văn đã làm phẳng sẵn, trên pipeline hiện tại",
+  "question": "Nếu pipeline nhận thẳng ảnh bình gốc (render cả bình) thay vì mảng hoa văn phẳng làm sẵn, thiết kế cuối giữ họa tiết, dáng áo và màu tốt hơn hay kém hơn?",
+  "why": "EXP-E chạy trước khi pipeline có áo LoRA và polish 0,20 kèm khóa họa tiết. Chạy lại trên cấu hình mặc định hiện tại để biết bỏ bước làm phẳng có được không.",
+  "design": "single_factor_with_replicates",
+  "independent_variable": {"name": "source", "levels": ["panel", "render"]},
+  "replicates": {"name": "seed", "levels": [42, 43, 44]},
+  "fixed": {
+    "controlnet_weight": 0.65,
+    "prompt_modifier": "",
+    "palette_mode": "free",
+    "layout": "front_panel",
+    "polish_seed": "same_as_seed",
+    "stage2_finish": "masked_0.20+pattern_lock",
+    "garment_source": "lora"
+  },
+  "units": {"heritage": "active"},
+  "requires_gpu": true,
+  "notes": "Mức 'panel' là cách hiện tại (đối chứng). Cùng (hiện vật, seed) thì hai mức chung áo LoRA và seed, chỉ khác ảnh nạp cho ControlNet. Không có vòng thử lại G2/G3 để đo thô.",
+  "metrics": {
+    "automatic": ["vessel_leakage", "seam_ratio", "pattern_preservation", "garment_shape_iou", "sharpness_ratio", "detail_ratio", "palette_shift_de"],
+    "human": ["motif_recognizability", "looks_like_printed_fabric", "aesthetic"]
+  },
+  "blind_review": {"enabled": true, "min_raters": 3, "shown_per_item": 1},
+  "analysis": "Như EXP-E. Mức 'panel' là đối chứng.",
+  "status": "planned"
+}
