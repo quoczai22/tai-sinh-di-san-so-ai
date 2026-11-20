@@ -200,6 +200,10 @@ function sceneTargets(el, vh) {
     return [clamp01((vh - r.top) / (vh * 0.7)), clamp01((vh - r.top) / (vh + r.height)), clamp01(-r.top / Math.max(r.height, 1))];
 }
 
+// Giá trị biến CSS đã ghi lần trước: chỉ ghi lại khi đổi, tránh làm trình duyệt tính lại style
+// cho cả cây con của mọi khối [data-scene] ở mỗi khung hình khi trang đứng yên hoặc khối ở xa.
+const sceneWritten = new WeakMap();
+
 function sceneFrame() {
     sceneQueued = false;
     const vh = window.innerHeight;
@@ -213,9 +217,16 @@ function sceneFrame() {
             return target[i];
         });
         sceneState.set(el, next);
-        names.forEach((n, i) => el.style.setProperty(n, next[i].toFixed(4)));
+        const prev = sceneWritten.get(el) || [];
+        const vals = next.map((v) => v.toFixed(4));
+        vals.forEach((v, i) => { if (prev[i] !== v) el.style.setProperty(names[i], v); });
+        sceneWritten.set(el, vals);
     };
-    for (const el of document.querySelectorAll('[data-scene]')) step(el, sceneTargets(el, vh), ['--e', '--p', '--x']);
+    // Đọc vị trí của mọi khối TRƯỚC, rồi mới ghi biến CSS: đọc-ghi xen kẽ bắt trình duyệt tính lại
+    // bố cục (forced layout) một lần cho mỗi khối trong cùng một khung hình.
+    const scenesNow = [...document.querySelectorAll('[data-scene]')];
+    const targets = scenesNow.map((el) => sceneTargets(el, vh));
+    scenesNow.forEach((el, i) => step(el, targets[i], ['--e', '--p', '--x']));
     for (const wrap of document.querySelectorAll('[data-pin]')) {
         const track = wrap.querySelector('[data-pin-track]');
         const sticky = track?.parentElement;
