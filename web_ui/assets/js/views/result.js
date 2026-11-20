@@ -159,6 +159,24 @@ export async function render([heritageId]) {
     }
     const grid = h('div', { class: 'out-grid' }, designs.map((d, k) => designCard(d, k + 1, heritageId)));
     requestAnimationFrame(() => grid.classList.add('shown'));
+    const downloadAllBtn = h('button', {
+        class: 'btn hero-btn ghost',
+        type: 'button',
+        title: 'Tải 4 file ảnh PNG gốc chất lượng cao',
+        onclick: async () => {
+            downloadAllBtn.disabled = true;
+            downloadAllBtn.textContent = 'Đang tải…';
+            for (let i = 0; i < designs.length; i++) {
+                const d = designs[i];
+                const src = fullImage(d, heritageId, data.media(d.final_path, latestOf(d)));
+                await downloadImage(src, `thiet-ke-${heritageId}-V${i + 1}`);
+                if (i < designs.length - 1) await new Promise((r) => setTimeout(r, 450));
+            }
+            downloadAllBtn.disabled = false;
+            downloadAllBtn.replaceChildren(icon('download'), ' Tải toàn bộ 4 ảnh');
+        }
+    }, icon('download'), ' Tải toàn bộ 4 ảnh');
+
     return h('div', { class: 'result' },
         h('div', { class: 'result-head' },
             h('div', { class: 'result-artifact' }, h('img', { src: item.image, alt: '' })),
@@ -167,5 +185,6 @@ export async function render([heritageId]) {
         grid,
         h('div', { class: 'result-actions' },
             h('a', { class: 'btn hero-btn primary', href: studio }, 'Tạo lại'),
+            downloadAllBtn,
             h('a', { class: 'btn hero-btn ghost', href: '#/studio' }, 'Chọn hiện vật khác')));
 }
