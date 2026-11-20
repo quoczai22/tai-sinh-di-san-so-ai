@@ -5,7 +5,7 @@
 // Mọi ảnh do AI hỗ trợ tạo đều mang nhãn AI (aiMark). Không có số liệu nào viết cứng.
 import { clear, h, icon } from './dom.js';
 import * as data from './data.js';
-import { cycle, parallax, reduced, splitWords } from './motion.js';
+import { cycle, parallax, pauseOffscreen, reduced, splitWords } from './motion.js';
 import { aiMark } from './ui.js';
 
 let current = null;
@@ -101,6 +101,7 @@ export async function renderHero(route, params, info) {
     current?.destroy?.();
     current = null;
     const hero = document.getElementById('hero');
+    pauseOffscreen(hero);
     const visual = clear(document.getElementById('hero-visual'));
     const actions = clear(document.getElementById('hero-actions'));
     const credit = document.getElementById('hero-credit');
