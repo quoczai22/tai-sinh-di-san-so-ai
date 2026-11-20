@@ -1088,6 +1088,10 @@ html.motion-off .thread-path { stroke-dashoffset: 0; }
 .result-artifact { flex: none; width: 84px; aspect-ratio: 1; display: grid; place-items: center; background: var(--vitrine); }
 .result-artifact img { max-height: 84%; max-width: 70%; object-fit: contain; }
 .result-head .io-name { margin: 0; text-align: left; }
+/* Nhãn chế độ trình diễn: kết quả đã sinh sẵn (bắt buộc hiển thị khi không có GPU trực tuyến) */
+.demo-notice { margin: -8px 0 24px; padding: 10px 14px; font-size: 14px; line-height: 1.5; color: var(--ink);
+    background: var(--warn-soft); border-left: 3px solid var(--warn); border-radius: var(--radius-s); }
+.demo-notice strong { color: var(--warn); }
 .result-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
 .result-actions .hero-btn.ghost, .lb-actions .hero-btn.ghost { color: var(--ink); border-color: var(--ink-3); }
 .artifact-card { text-decoration: none; }

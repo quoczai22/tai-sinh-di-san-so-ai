@@ -36,6 +36,14 @@ export function aiMark() {
     return h('span', { class: 'ai-tag', title: 'Thiết kế có AI hỗ trợ tạo', 'aria-label': 'Thiết kế có AI hỗ trợ tạo' }, 'AI');
 }
 
+/** Nhãn bắt buộc khi chạy chế độ trình diễn (không có GPU trực tuyến): ảnh là kết quả thật đã sinh sẵn. */
+export const DEMO_LABEL = 'Kết quả đã sinh sẵn — không phải sinh trực tiếp';
+export function demoNotice() {
+    return h('p', { class: 'demo-notice', role: 'note' },
+        h('strong', {}, DEMO_LABEL),
+        ' · Máy GPU hiện không trực tuyến, trang hiển thị bộ thiết kế thật đã tạo trước trên GPU.');
+}
+
 /** Dòng chú thích quyền sử dụng dưới ảnh (chữ nghiêng, không dùng thẻ màu). */
 export function rightsNote(status) {
     const r = RIGHTS[status] || RIGHTS.unverified;

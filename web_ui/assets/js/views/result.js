@@ -1,6 +1,6 @@
 import { h, icon } from '../lib/dom.js';
 import * as data from '../lib/data.js';
-import { aiMark, stateBox } from '../lib/ui.js';
+import { aiMark, demoNotice, stateBox } from '../lib/ui.js';
 
 // ---------------------------------------------------------------------------------------------
 // Trang Kết quả: bốn tà áo của bộ thiết kế mới nhất của hiện vật (#/result/<mã hiện vật>).
@@ -163,6 +163,7 @@ export async function render([heritageId]) {
         h('div', { class: 'result-head' },
             h('div', { class: 'result-artifact' }, h('img', { src: item.image, alt: '' })),
             h('h2', { class: 'io-name' }, item.name)),
+        data.isLive() ? null : demoNotice(),
         grid,
         h('div', { class: 'result-actions' },
             h('a', { class: 'btn hero-btn primary', href: studio }, 'Tạo lại'),

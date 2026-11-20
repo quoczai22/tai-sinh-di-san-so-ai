@@ -1,6 +1,6 @@
 import { h, icon, toast } from '../lib/dom.js';
 import * as data from '../lib/data.js';
-import { section, stateBox } from '../lib/ui.js';
+import { DEMO_LABEL, section, stateBox } from '../lib/ui.js';
 import { hoverSpin, mountViewer } from '../lib/viewer3d.js';
 
 // ---------------------------------------------------------------------------------------------
@@ -37,6 +37,7 @@ export async function render([heritageId]) {
     const goToResult = () => { location.hash = `#/result/${encodeURIComponent(heritageId)}`; };
 
     const note = h('p', { class: 'out-note', role: 'status', 'aria-live': 'polite' });
+    if (!can && hasDesigns) note.textContent = `Máy GPU chưa trực tuyến: nút trên mở bộ thiết kế thật đã tạo trước (${DEMO_LABEL.toLowerCase()}).`;
     const progressBar = h('span');
     const progress = h('div', { class: 'out-progress', hidden: true }, h('div', { class: 'progress' }, progressBar));
     const seedInput = h('input', { type: 'number', min: 0, max: 2147483647, value: 42, id: 'seed', inputmode: 'numeric' });
