@@ -92,6 +92,8 @@ const SVG = `<svg xmlns="http://www.w3.org/2000/svg" class="phoenix-svg" viewBox
 </g>
 </svg>`;
 
+import { pauseOffscreen } from './motion.js';
+
 let template = null;
 
 /** Trả về một bản sao của hình chim phượng, bọc trong khối cảnh cuộn. */
@@ -102,5 +104,6 @@ export function phoenix() {
     wrap.setAttribute('aria-hidden', 'true');
     wrap.setAttribute('data-scene', '');
     wrap.append(document.importNode(template, true));
+    pauseOffscreen(wrap);
     return wrap;
 }
