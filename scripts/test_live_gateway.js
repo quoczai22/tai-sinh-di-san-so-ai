@@ -37,6 +37,9 @@ async function main() {
         requests.push({ url, options });
         if (url === 'https://alert.mock') { alerts++; return new Response(null, { status: 204 }); }
         if (url.endsWith('/generate') && options.method === 'POST') {
+            if (JSON.parse(options.body).seed === 47) {
+                return Response.json({ detail: 'Job đang chạy' }, { status: 409 });
+            }
             return Response.json({ job_id: 'abc123', status_url: '/generate/abc123' }, { status: 202 });
         }
         if (url.endsWith('/generate/abc123')) {
@@ -64,6 +67,10 @@ async function main() {
 
     result = await call('generate/abc123', 'GET', undefined, { heritage_id: 'LR3D_61' });
     assert.equal(result.body.status, 'completed');
+
+    result = await call('generate', 'POST', { heritage_id: 'LR3D_61', seed: 47 });
+    assert.equal(result.code, 409);
+    assert.equal(result.body.backend, undefined, 'busy GPU must not be labeled demo');
 
     result = await call('passports');
     assert.equal(result.body.length, 1);
@@ -100,7 +107,7 @@ async function main() {
     result = response();
     await handler(req, result);
     assert.equal(result.body.reason, 'rate_limit_exceeded');
-    console.log('live gateway: 9 contract checks passed (mock only)');
+    console.log('live gateway: 10 contract checks passed (mock only)');
 }
 
 main().catch((error) => { console.error(error); process.exitCode = 1; });

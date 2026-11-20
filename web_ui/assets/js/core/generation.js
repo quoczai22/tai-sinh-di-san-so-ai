@@ -4,6 +4,25 @@
 import * as data from './data.js';
 
 const MAX_WAIT_MS = 8 * 60 * 1000;
+const PENDING_KEY = 'dh:pending-generation';
+
+function pendingJob(heritageId) {
+    try {
+        const saved = JSON.parse(sessionStorage.getItem(PENDING_KEY) || 'null');
+        if (saved?.heritageId === heritageId && Date.now() - saved.startedAt < MAX_WAIT_MS) return saved.jobId;
+        sessionStorage.removeItem(PENDING_KEY);
+    } catch {}
+    return null;
+}
+
+function rememberJob(heritageId, jobId) {
+    try { sessionStorage.setItem(PENDING_KEY, JSON.stringify({ heritageId, jobId, startedAt: Date.now() })); }
+    catch {}
+}
+
+function forgetJob() {
+    try { sessionStorage.removeItem(PENDING_KEY); } catch {}
+}
 
 function beforeDeadline(promise, deadline) {
     const remaining = deadline - Date.now();
@@ -19,20 +38,43 @@ function beforeDeadline(promise, deadline) {
 
 export async function runGeneration(heritageId, seed, onProgress = () => {}) {
     const deadline = Date.now() + MAX_WAIT_MS;
-    data.audit('generation_requested', { step: 3, heritage_id: heritageId });
-    const started = await beforeDeadline(data.startGeneration(heritageId, seed), deadline);
-    if (started.backend === 'demo') return started;
-    const jobId = started.job_id;
-    let job;
-    do {
+    let jobId = pendingJob(heritageId);
+    if (jobId) {
+        try { await beforeDeadline(data.jobStatus(jobId, heritageId), deadline); }
+        catch (error) {
+            if (error.status !== 404) throw error;
+            forgetJob();
+            jobId = null;
+        }
+    }
+    if (!jobId) {
+        data.audit('generation_requested', { step: 3, heritage_id: heritageId });
+        const started = await beforeDeadline(data.startGeneration(heritageId, seed), deadline);
+        if (started.backend === 'demo') return started;
+        jobId = started.job_id;
+        rememberJob(heritageId, jobId);
+    }
+    let misses = 0;
+    while (true) {
         await beforeDeadline(new Promise((r) => setTimeout(r, 1200)), deadline);
-        job = await beforeDeadline(data.jobStatus(jobId, heritageId), deadline);
+        let job;
+        try { job = await beforeDeadline(data.jobStatus(jobId, heritageId), deadline); }
+        catch (error) {
+            if (error.status === 404) forgetJob();
+            if (error.status !== 404 && ++misses < 10) continue;
+            throw error;
+        }
+        if (job.backend === 'demo') {
+            if (++misses < 10) continue;
+            return job;
+        }
+        misses = 0;
         onProgress(job.progress || 0);
-    } while (['queued', 'running'].includes(job.status));
-    if (job.status !== 'completed') throw new Error(job.label);
-    if (job.backend !== 'demo') {
+        if (['queued', 'running'].includes(job.status)) continue;
+        forgetJob();
+        if (job.status !== 'completed') throw new Error(job.label);
         data.activateLive();
         data.invalidate('live:passports');
+        return job;
     }
-    return job;
 }

@@ -96,6 +96,11 @@ module.exports = async function handler(req, res) {
                 headers: { ...buildBackendHeaders('modal', config), 'Content-Type': 'application/json' },
                 body: JSON.stringify({ heritage_id: heritageId, seed: body.seed }),
             }, config.modalTimeoutMs);
+            if (upstream.status === 409) {
+                return res.status(409).json({
+                    detail: 'Một lượt sinh đang chạy trên GPU. Hãy chờ lượt đó hoàn tất rồi thử lại.',
+                });
+            }
             if (!upstream.ok) throw new Error('HTTP ' + upstream.status);
             const job = await upstream.json();
             logGatewayAudit({ step: 3, event: 'gateway_generate', heritage_id: heritageId,
