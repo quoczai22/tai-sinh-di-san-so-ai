@@ -22,12 +22,13 @@ import threading
 import time
 import uuid
 
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from api.audit import append_audit_event, get_output_dir
+from api import store
 from provenance.heritage import load_heritage_metadata
 
 
@@ -52,6 +53,7 @@ _health_calls = 0
 
 class GenerateRequest(BaseModel):
     heritage_id: str
+    seed: int | None = None
 
 
 class AuditRequest(BaseModel):
@@ -257,7 +259,42 @@ def health() -> dict:
     if _health_calls <= warmup_Needed:
         raise HTTPException(status_code=503, detail="Space đang khởi động (warming up)...")
     _check_fail_or_hang()
-    return {"status": "ok"}
+    return {"status": "ok", "generation_available": True}
+
+
+@app.get("/passports")
+def passports() -> list[dict]:
+    _check_fail_or_hang()
+    return store.list_passports()
+
+
+@app.get("/experiments")
+def experiments() -> list[dict]:
+    _check_fail_or_hang()
+    return store.list_experiments()
+
+
+@app.get("/media/run/{run_id}/{filename}")
+def run_image(run_id: str, filename: str) -> FileResponse:
+    _check_fail_or_hang()
+    file = store.safe_run_file(run_id, filename)
+    if file is None:
+        raise HTTPException(status_code=404, detail="Không tìm thấy ảnh.")
+    return FileResponse(file)
+
+
+@app.get("/media/artifact")
+def artifact_image(path: str = Query(max_length=200)) -> FileResponse:
+    _check_fail_or_hang()
+    relative = Path(path)
+    if relative.is_absolute() or ".." in relative.parts or relative.suffix.lower() != ".png":
+        raise HTTPException(status_code=404, detail="Không tìm thấy ảnh.")
+    if not relative.as_posix().startswith("outputs/runs/"):
+        raise HTTPException(status_code=404, detail="Không tìm thấy ảnh.")
+    file = (PROJECT_ROOT / relative).resolve()
+    if PROJECT_ROOT.resolve() not in file.parents or not file.is_file():
+        raise HTTPException(status_code=404, detail="Không tìm thấy ảnh.")
+    return FileResponse(file)
 
 
 @app.get("/heritage")
@@ -308,6 +345,7 @@ def generate_designs(request: GenerateRequest) -> dict:
     return {
         "job_id": job_id,
         "status_url": f"/generate/{job_id}",
+        "seed": request.seed,
         "queue_position": queue_pos,
     }
 
