@@ -23,7 +23,7 @@ Nguồn: bộ dữ liệu LR3D-CULT2 "Vietnamese Ceramic Cultural Artifacts" (Ng
 | HV11 | LR3D_97 | Men lam: nét lam thưa trên men kem (#97) | Chưa xác minh | như trên |
 | HV12 | LR3D_124 | Men lam: huy hiệu rồng và lông vũ (#124) | Chưa xác minh | như trên |
 
-Mỗi hiện vật có hai ảnh: ảnh render cả bình từ mô hình 3D (`data/heritage/LR3D_xx.png`, 512×512, để hiển thị và nhận diện) và **mảng hoa văn phẳng** là texture UV trải phẳng của mô hình (`data/heritage/panels/LR3D_xx.png`, cạnh dài khoảng 2.048 px, đưa vào mô hình sinh). Mô tả hiện vật do nhóm viết (`description_origin: team_written`). Ngày thu thập chưa có nhật ký (trường `collected_on` để trống và được ghi là cần điền).
+Mỗi hiện vật có hai ảnh: ảnh render cả bình từ mô hình 3D (`data/heritage/LR3D_xx.png`, 512×512, để hiển thị và nhận diện) và **mảng hoa văn phẳng** là texture UV trải phẳng của mô hình (`data/heritage/panels/LR3D_xx.png`, cạnh dài khoảng 2.048 px). Từ 20/11/2026 luồng sinh đi từ ảnh render cả bình; mảng phẳng chỉ còn dùng cho các thí nghiệm EXP-D đến EXP-G. Mô tả hiện vật do nhóm viết (`description_origin: team_written`). Ngày thu thập chưa có nhật ký (trường `collected_on` để trống và được ghi là cần điền).
 
 ### Sáu hiện vật cũ (ngừng dùng)
 
@@ -60,7 +60,7 @@ Tệp `config/heritage_selection.json` (HS-2.0), chạy bằng `provenance/regis
 | HV11 | 165×326, phóng ×1,50 | **Không đạt** | 5.453 | **Không đạt** | Cảnh báo | Cảnh báo |
 | HV12 | 129×309, phóng ×1,58 | **Không đạt** | 7.968 | **Không đạt** | Cảnh báo | Cảnh báo |
 
-**Cần nói rõ giới hạn của kết quả này:** C1 và C2 được đo trên **ảnh render cả bình** (512×512), nên cả 6 hiện vật đều trượt C1 và 3 hiện vật trượt C2. Nhưng ảnh đưa vào mô hình sinh từ 19/11/2026 là **mảng hoa văn phẳng** (khoảng 2.048 px), chưa được chấm C1 và C2. Chưa có phép đo C1, C2 cho mảng phẳng; đây là việc còn lại. Cả 6 hiện vật ở mức cảnh báo C3 (quyền chưa xác minh) và C4 (nguồn là bộ dữ liệu nghiên cứu, không phải bảo tàng).
+**Cần nói rõ giới hạn của kết quả này:** C1 và C2 được đo trên **ảnh render cả bình** (512×512), nên cả 6 hiện vật đều trượt C1 và 3 hiện vật trượt C2. Từ 20/11/2026 ảnh đưa vào mô hình sinh lại là chính ảnh render cả bình đó, nên giới hạn C1 và C2 này áp thẳng cho luồng sinh. Mảng hoa văn phẳng (khoảng 2.048 px, dùng ở 19/11/2026) chưa được chấm C1 và C2. Cả 6 hiện vật ở mức cảnh báo C3 (quyền chưa xác minh) và C4 (nguồn là bộ dữ liệu nghiên cứu, không phải bảo tàng).
 
 ### Kết quả cho 6 ảnh cũ (ngừng dùng)
 

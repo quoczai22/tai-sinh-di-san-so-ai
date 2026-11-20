@@ -124,23 +124,9 @@ def test_bo_qua_file_hong(tmp_path):
 
 # ---------- Chọn nguồn ảnh nạp cho bốn biến thể ----------
 
-def _panels(tmp_path, ten="H1"):
-    d = tmp_path / "panels"
-    d.mkdir()
-    el.write_rgba_png(d / f"{ten}.png", rgba_phan_tu(HINH_L, 3.0))
-    return d
-
-
 def test_nguon_mac_dinh_la_anh_hien_vat(tmp_path):
-    got = lib.variant_inputs("H1", root=tmp_path, panels_dir=tmp_path / "khong_co")
+    got = lib.variant_inputs("H1", root=tmp_path)
     assert got == [("hien_vat", None)] * 4
-
-
-def test_nguon_panel_co_file_va_thieu_file(tmp_path):
-    d = _panels(tmp_path)
-    got = lib.variant_inputs("H1", "panel", root=tmp_path, panels_dir=d)
-    assert got == [("panel", d / "H1.png")] * 4
-    assert lib.variant_inputs("KHAC", "panel", root=tmp_path, panels_dir=d) == [("hien_vat", None)] * 4  # thiếu: về mặc định
 
 
 def test_nguon_elements_quay_vong_du_4_bien_the(tmp_path):
@@ -151,19 +137,21 @@ def test_nguon_elements_quay_vong_du_4_bien_the(tmp_path):
     assert all(p == root / f"data/elements/obj_a/{lab}.png" for lab, p in got)
 
 
-def test_nguon_elements_thieu_kho_quay_ve_panel_roi_hien_vat(tmp_path):
-    d = _panels(tmp_path, "KHONG_CO_TRONG_KHO")
-    got = lib.variant_inputs("KHONG_CO_TRONG_KHO", "elements", root=tmp_path, panels_dir=d,
-                             index_path=tmp_path / "x.json", crops_path=tmp_path / "y.json")
-    assert got == [("panel", d / "KHONG_CO_TRONG_KHO.png")] * 4
-    got2 = lib.variant_inputs("H2", "elements", root=tmp_path, panels_dir=d,
-                              index_path=tmp_path / "x.json", crops_path=tmp_path / "y.json")
-    assert got2 == [("hien_vat", None)] * 4
+def test_nguon_elements_thieu_kho_quay_ve_anh_hien_vat(tmp_path):
+    got = lib.variant_inputs("H2", "elements", root=tmp_path, index_path=tmp_path / "x.json", crops_path=tmp_path / "y.json")
+    assert got == [("hien_vat", None)] * 4
 
 
 def test_nguon_khong_hop_le_bao_loi(tmp_path):
     with pytest.raises(ValueError):
         lib.variant_inputs("H1", "linh_tinh", root=tmp_path)
+
+
+def test_nguon_panel_da_bi_bo_khoi_luong_san_pham(tmp_path):
+    """Luồng sản phẩm đi từ ảnh bình gốc; mảng phẳng làm sẵn không còn là nguồn hợp lệ."""
+    with pytest.raises(ValueError):
+        lib.variant_inputs("H1", "panel", root=tmp_path)
+    assert "panel" not in lib.SOURCES
 
 
 # ---------- Ảnh hiện vật nền xám (ảnh render) phải được tách nền đúng ----------
