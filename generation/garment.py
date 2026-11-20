@@ -162,8 +162,44 @@ def ground_alpha(pattern: Image.Image) -> np.ndarray:
     dark = np.clip((60.0 - lab[:, :, 0]) / (60.0 - 35.0), 0.0, 1.0)
     alpha = np.maximum(colored, dark).astype(np.float32)
     if alpha.mean() < 0.05:
-        return np.ones_like(alpha)
+        # Độ đục thấp có hai nguyên nhân khác nhau. (1) Không có mực: hoa văn trắng trên nền kem, giữ đục hoàn toàn.
+        # (2) Mực thật nhưng thưa hoặc nhạt (ô chỉ có vài phần tử nhỏ trên nền phẳng): phải giữ nền trong suốt,
+        # nếu không cả màu nền của ô bị in thành một mảng phẳng đè lên áo.
+        faint = _faint_ink_alpha(lab)
+        return faint if faint is not None else np.ones_like(alpha)
     return alpha
+
+
+# Điều kiện để coi ô là "nền phẳng có mực thưa" (thay vì hoa văn trắng trên kem, ảnh nhiễu hay có đốm bẩn).
+# Đo trên khoảng cách ΔE76 trong LAB tới màu nền của ô (trung vị từng kênh):
+#   gần nền   : ΔE dưới FAINT_NEAR_DE     phải chiếm ít nhất FAINT_GROUND_MIN số điểm (nền phải là đa số rõ ràng)
+#   lệch nhẹ  : ΔE từ FAINT_NEAR_DE đến FAINT_INK_DE phải chiếm nhiều nhất FAINT_MID_MAX (vùng này là hoa văn trắng
+#               trên kem, nhiễu hoặc bóng đổ, không phải nét mực có biên sắc)
+#   mực rõ    : ΔE từ FAINT_INK_DE trở lên phải chiếm ít nhất FAINT_INK_MIN_FRAC
+# Hiệu chỉnh trên 6 ô phần tử thật (gần nền từ 0,858, lệch nhẹ tới 0,087) và các ca đối kháng (hoa văn trắng + đốm bẩn:
+# gần nền 0,799, lệch nhẹ 0,195; nhiễu σ=10: 0,562 và 0,426). Biên còn hẹp, xem docs/KET_QUA_EXP_G.md.
+FAINT_NEAR_DE = 8.0
+FAINT_INK_DE = 20.0
+FAINT_GROUND_MIN = 0.82
+FAINT_MID_MAX = 0.12
+FAINT_INK_MIN_FRAC = 0.005
+
+
+def _faint_ink_alpha(lab: np.ndarray) -> np.ndarray | None:
+    """Độ đục theo độ lệch so với màu nền của ô, dùng khi cách tính tuyệt đối không thấy mực.
+
+    Màu nền = trung vị từng kênh LAB của cả ô (ô thưa thì trung vị rơi vào nền). Độ đục tăng tuyến tính từ 0 khi lệch
+    nền 8 lên 1 khi lệch nền 24. Trả về None nếu ô không đủ điều kiện là "nền phẳng có mực thưa" (xem các hằng FAINT_*
+    ở trên), để nơi gọi giữ đục hoàn toàn như cũ.
+    """
+    ground = np.median(lab.reshape(-1, 3), axis=0)
+    dist = np.sqrt(((lab - ground) ** 2).sum(axis=2))
+    near = float((dist < FAINT_NEAR_DE).mean())
+    mid = float(((dist >= FAINT_NEAR_DE) & (dist < FAINT_INK_DE)).mean())
+    strong = float((dist >= FAINT_INK_DE).mean())
+    if near < FAINT_GROUND_MIN or mid > FAINT_MID_MAX or strong < FAINT_INK_MIN_FRAC:
+        return None
+    return np.clip((dist - FAINT_NEAR_DE) / (FAINT_INK_DE + 4.0 - FAINT_NEAR_DE), 0.0, 1.0).astype(np.float32)
 
 
 def _feather(mask: np.ndarray, px: float) -> np.ndarray:
