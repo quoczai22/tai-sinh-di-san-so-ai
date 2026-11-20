@@ -90,3 +90,5 @@ dist/
 
 # Điều phối nhiều AI (file giao việc / báo cáo cục bộ)
 .ai/
+/.vercel/
+/.env.local
