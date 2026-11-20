@@ -1,5 +1,7 @@
 # Hướng dẫn Triển khai Có Failover — Tái Sinh Di Sản Số
 
+> Với giao diện mới sau refactor, đọc DEPLOY_LIVE.md. Các route /api/generate, /api/status và /api/media dưới đây mô tả gateway cũ; không dùng để deploy UI mới. Project Vercel chính thức đã chốt là tai-sinh-di-san-so-ai.
+
 Tài liệu vận hành kiến trúc triển khai 2 lớp có khả năng tự động chuyển đổi (**Modal GPU → Demo Mode kết quả thật**) cho vòng Chung kết Cuộc thi Sáng tạo trẻ 2026.
 
 > [!NOTE]
