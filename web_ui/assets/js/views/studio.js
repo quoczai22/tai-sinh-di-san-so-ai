@@ -73,7 +73,8 @@ export async function render([heritageId]) {
     } }, 'Tạo thiết kế', icon('arrow'));
 
     // Khung hiện vật: ảnh phẳng làm sẵn; nếu có mô hình 3D thì thay bằng khung xoay 360 độ bằng chuột
-    const artifactBox = h('div', { class: 'io-artifact' }, h('img', { src: item.image, alt: item.name }));
+    const hint = h('div', { class: 'viewer3d-hint', 'aria-hidden': 'true' }, '🖱️ Kéo để xoay 360° · Lăn để thu phóng');
+    const artifactBox = h('div', { class: 'io-artifact' }, h('img', { src: item.image, alt: item.name }), hint);
     mountViewer(artifactBox, heritageId);
 
     return h('div', { class: 'studio-io' },

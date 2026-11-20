@@ -125,9 +125,5 @@ export async function renderHero(route, params, info) {
             h('a', { class: 'btn hero-btn primary', href: '#hien-vat', onclick: (e) => { e.preventDefault(); document.getElementById('hien-vat')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }, 'Khám phá hiện vật', icon('arrow')),
             h('a', { class: 'btn hero-btn ghost', href: '#/studio' }, 'Vào Studio thiết kế'));
         try { current = await libraryVisual(visual); } catch (e) { console.warn(e); }
-    } else if (route.id === 'studio' && params[0]) {
-        // Ảnh hiện vật đã nằm ở khung "Đầu vào" bên dưới, không lặp lại trên ảnh bìa
-    } else {
-        visual.append(h('div', { class: 'chapter-mark', 'aria-hidden': 'true' }, route.chapter));
     }
 }

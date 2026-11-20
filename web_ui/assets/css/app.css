@@ -3,6 +3,31 @@
    men ngọc (celadon), nâu đất. Một điểm nhấn duy nhất: "chuỗi truy vết" nối các
    ảnh trong quy trình bằng sợi chỉ lam. Mọi thứ khác giữ yên. */
 
+/* Tối ưu trải nghiệm: vùng bôi đen (selection) và thanh cuộn tinh tế theo bảng màu gốm Bát Tràng */
+::selection {
+    background: var(--lam-soft);
+    color: var(--lam-strong);
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--paper);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--ink-3);
+}
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) var(--paper);
+}
+
 :root {
     --paper: #F4F0E6;
     --porcelain: #FCFBF7;
@@ -94,9 +119,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
 h3 { font-size: 16px; margin: 0 0 8px; font-weight: 600; }
 .muted { color: var(--ink-3); }
 .small { font-size: 13px; }
-.note { font-size: 13px; color: var(--ink-2); background: var(--porcelain-2); border-left: 3px solid var(--line); padding: 8px 12px; border-radius: 0 var(--radius-s) var(--radius-s) 0; }
-.note.heritage { border-left-color: var(--dat); }
-.note.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+.note { font-size: 13.5px; color: var(--ink-2); background: var(--porcelain-2); border: 1px solid var(--line); padding: 10px 14px; border-radius: var(--radius-s); }
+.note.heritage { border-color: rgba(139, 94, 60, .3); background: var(--dat-soft); color: var(--dat); }
+.note.warn { border-color: rgba(138, 100, 0, .3); background: var(--warn-soft); color: var(--warn); }
 .panel { background: var(--porcelain); border: 1px solid var(--line); border-radius: var(--radius-m); padding: 18px 20px; }
 .panel.flat { box-shadow: none; }
 .grid { display: grid; gap: 16px; }
