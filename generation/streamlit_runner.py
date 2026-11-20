@@ -29,14 +29,13 @@ OUT_DIR = ROOT / "outputs" / "runs"
 PASSPORT_DIR = ROOT / "outputs" / "passports"
 SEED = 42
 POLISH_STRENGTH = 0.40
-# Bố cục cố định "front_panel" (ô giữa ngực rồi dải xuống tà) cho cả 4 biến thể, giống EXP-G: chỉ ô hoa văn đổi theo mức,
-# vị trí họa tiết trên áo không đổi. Muốn CLIP tự chọn bố cục khác nhau cho mỗi biến thể thì bỏ khóa "layout".
-FIXED_LAYOUT = "front_panel"
+# 4 biến thể không khóa bố cục: CLIP xếp hạng các bố cục rồi mỗi biến thể lấy bố cục chưa dùng, nên 4 thiết kế của một
+# hiện vật nằm ở 4 vị trí khác nhau trên áo. Muốn cố định một bố cục cho cả bốn (như EXP-G) thì thêm khóa "layout" vào từng biến thể.
 DEFAULT_VARIANTS = (
-    {"level": 1, "palette": "original", "layout": FIXED_LAYOUT},
-    {"level": 2, "palette": "free", "layout": FIXED_LAYOUT},
-    {"level": 3, "palette": "free", "layout": FIXED_LAYOUT},
-    {"level": 4, "palette": "free", "layout": FIXED_LAYOUT},
+    {"level": 1, "palette": "original"},
+    {"level": 2, "palette": "free"},
+    {"level": 3, "palette": "free"},
+    {"level": 4, "palette": "free"},
 )
 log = logging.getLogger(__name__)
 

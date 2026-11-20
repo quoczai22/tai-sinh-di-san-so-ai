@@ -17,7 +17,7 @@ Bộ tài liệu này chỉ phục vụ vòng chung kết và tập trung vào b
 | [07_PROVENANCE_COPYRIGHT.md](07_PROVENANCE_COPYRIGHT.md) | Danh mục nguồn, tiêu chí tuyển ảnh, cổng quyền, Design Passport, nhãn AI |
 | [08_KPI.md](08_KPI.md) | Bảng KPI và cơ chế đo |
 | [09_ARCHITECTURE_UI.md](09_ARCHITECTURE_UI.md) | Kiến trúc module, API, giao diện |
-| [10_TEST_REPORT.md](10_TEST_REPORT.md) | 313 ca kiểm thử, lỗi phát hiện và đã sửa |
+| [10_TEST_REPORT.md](10_TEST_REPORT.md) | 322 ca kiểm thử, lỗi phát hiện và đã sửa |
 | [11_CHANGELOG.md](11_CHANGELOG.md) | So sánh với bản 09/2026, việc còn lại |
 | `diagrams/` | BPMN 2.0 XML, SVG, PlantUML |
 
@@ -27,8 +27,8 @@ Bộ tài liệu này chỉ phục vụ vòng chung kết và tập trung vào b
 
 | BTC yêu cầu | Đã làm | Bằng chứng |
 |---|---|---|
-| Đo mức giữ hoa văn và hình dáng áo sau khi hoàn thiện ảnh | Cổng G3: PPS (giữ họa tiết), IoU dáng áo, độ nét, giữ chi tiết mịn, lệch màu, đo trên thiết kế cuối; 24 thiết kế bộ demo (seed 42) và 48 thiết kế seed 43, 44 đều có kết quả; G3 đạt 72/72 nên không phân biệt được thiết kế | `quality/`, `outputs/passports/` (mục `quality`), `GET /quality/designs` |
-| Tiêu chí loại hoặc thử lại | Ngưỡng PASS/WARN/FAIL có giải thích; vòng thử lại polish (đổi seed, hạ độ nhiễu, trả bản ghép thô); kiểm tra áo nền (tối đa 6 ứng viên, phải trắng trơn: `color_ok` loại áo có mảng đỏ hoặc cam); G2 lỗi tự sinh lại hoa văn (đổi seed, tối đa 3 lần, giữ bản ít lỗi nhất) | `config/quality_gate.json`, `quality/retry.py`, `quality/pattern_retry.py`, `generation/garment_lora.py` |
+| Đo mức giữ hoa văn và hình dáng áo sau khi hoàn thiện ảnh | Cổng G3: PPS (giữ họa tiết), IoU dáng áo, độ nét, giữ chi tiết mịn, lệch màu, đo trên thiết kế cuối; 24 thiết kế bộ demo (seed 42) và 48 thiết kế seed 43, 44 đều có kết quả; G3: 55/72 đạt, 17 cảnh báo (giữ chi tiết mịn), 0 lỗi | `quality/`, `outputs/passports/` (mục `quality`), `GET /quality/designs` |
+| Tiêu chí loại hoặc thử lại | Ngưỡng PASS/WARN/FAIL có giải thích; vòng thử lại polish (đổi seed, hạ độ nhiễu, trả bản ghép thô); kiểm tra áo nền (tối đa 6 ứng viên, phải trắng trơn: `color_ok` loại áo có mảng đỏ hoặc cam; mặt nạ áo bỏ khe nền giữa tay và thân); G2 lỗi tự sinh lại hoa văn (đổi seed, tối đa 3 lần, giữ bản ít lỗi nhất) | `config/quality_gate.json`, `quality/retry.py`, `quality/pattern_retry.py`, `generation/garment_lora.py` |
 | Chuyên gia di sản và thiết kế đánh giá | Bộ tiêu chí 5 mục, phiếu chấm, gói chấm mù, API ghi phiếu (`POST /passports/{id}/reviews`). Giao diện web không còn trang thẩm định (gỡ 19/11/2026); việc xem xét là bước ngoài hệ thống, kết quả đưa vào báo cáo. **Chưa có phiếu của người thật** | `config/expert_rubric.json`, `outputs/blind_review/` |
 | Bộ hiện vật – hoa văn – thiết kế cuối kèm phiếu | 24 thiết kế (seed 42; thêm 48 thiết kế seed 43, 44), mỗi lần chạy có ảnh hiện vật (`00_reference.png`), hoa văn (`V<n>_pattern.png`), bản ghép thô và thiết kế cuối (`V<n>_aodai.png`); 24 Passport | `outputs/runs/`, `outputs/passports/` |
 | Ví dụ bị loại và được sửa | 2 thiết kế của hiện vật HV12 (LR3D_124 mức 2 và 3) bị G2 loại (đường nối) sau 4 lần sinh lại; áo LoRA có mảng đỏ hoặc cam bị `color_ok` loại; polish 0,30 làm mất họa tiết được đổi sang 0,20 kèm khoá họa tiết; khoá họa tiết cũ làm mất nét mảnh được sửa (`dog_sigma_low` 0,3) | [05](05_QUALITY_ASSURANCE.md) mục "Ví dụ", `evaluation/polish_finish_trial.csv` |
@@ -63,9 +63,9 @@ Bộ tài liệu này chỉ phục vụ vòng chung kết và tập trung vào b
 | BPMN | XML chuẩn BPMN 2.0, đọc được bằng bpmn-moddle không cảnh báo; có kiểm thử ngữ nghĩa | – |
 | UML | 7 tác nhân, 19 ca, include/extend có lý do | 3 ca mới là kế hoạch hoặc chạy một phần |
 | APQC | Tham chiếu PCF 7.4 ở cấp hạng mục và nhóm, có AS-IS/TO-BE, chủ, kiểm soát, KPI | Mã PCF sâu hơn cần đối chiếu bản chính thức |
-| Chất lượng AI | Đo được thiết kế cuối, có chỉ số giữ chi tiết mịn, có định tuyến và vòng thử lại | Ngưỡng chưa hiệu chỉnh với chuyên gia; còn mất khoảng 11 đến 12% chi tiết mịn so với bản ghép thô; G3 đạt 72/72 nên không phân biệt thiết kế |
+| Chất lượng AI | Đo được thiết kế cuối, có chỉ số giữ chi tiết mịn, có định tuyến và vòng thử lại | Ngưỡng chưa hiệu chỉnh với chuyên gia; còn mất khoảng 11 đến 12% chi tiết mịn so với bản ghép thô; 17/72 thiết kế cảnh báo G3 do giữ chi tiết mịn |
 | Thí nghiệm | Có kiểm soát bằng mã, sáu thí nghiệm đã chạy (B đến G) | EXP-A chưa chạy; phiếu chấm mù chưa có |
 | Nguồn gốc | Truy vết đầy đủ, phát hiện sửa trái phép | Băm đầu chuỗi chưa neo ra ngoài |
 | Bản quyền | Minh bạch, hệ thống tự chặn | Chưa có giấy phép từng vật; LoRA chỉ dùng phi thương mại |
-| Độ tin cậy | Không vỡ endpoint cũ, 313 ca kiểm thử | Sinh ảnh GPU chỉ kiểm thử thủ công |
+| Độ tin cậy | Không vỡ endpoint cũ, 322 ca kiểm thử | Sinh ảnh GPU chỉ kiểm thử thủ công |
 | Mở rộng | Cấu hình có phiên bản, lớp lưu trữ tách riêng | Một tiến trình, một GPU |

@@ -82,44 +82,60 @@ Mọi lần bị loại ghi vào `outputs/qc/pattern_rejects.csv` và `outputs/q
 
 ## Kết quả bộ demo hiện tại (20/11/2026, seed 42)
 
-Bộ 24 thiết kế (6 hiện vật LR3D-CULT2 × 4 mức sáng tạo) sinh bằng `scripts/14_generate_demo_set.py`. Cả bộ dùng **một seed duy nhất (42)** cho hoa văn, polish và áo LoRA, nên chạy lại ra đúng bộ này và cả 6 hiện vật dùng chung một áo trắng. Ảnh nạp là mảng hoa văn phẳng, bố cục cố định `front_panel` cho cả 4 mức (chỉ ô hoa văn đổi theo mức), polish chỉ vùng áo 0,20 kèm khoá họa tiết. Áo LoRA phải trắng trơn (`color_ok`: loại ứng viên có hơn 5% vùng áo bão hòa cao; áo trắng đo được 0 đến 3%, áo đỏ của LR3D_124 là 27%, áo cam của LR3D_38 là 16%). Kết quả đọc từ Passport (`GET /quality/designs`).
+Bộ 24 thiết kế (6 hiện vật LR3D-CULT2 × 4 mức sáng tạo) sinh bằng `scripts/14_generate_demo_set.py`. Cả bộ dùng **một seed duy nhất (42)** cho hoa văn, polish và áo LoRA, nên chạy lại ra đúng bộ này và cả 6 hiện vật dùng chung một áo trắng. Ảnh nạp là mảng hoa văn phẳng; 4 thiết kế của mỗi hiện vật nằm ở **4 vị trí khác nhau trên áo** (CLIP xếp hạng các bố cục, mỗi biến thể lấy một bố cục chưa dùng); polish chỉ vùng áo 0,20 kèm khoá họa tiết. Áo LoRA phải trắng trơn (`color_ok`: loại ứng viên có hơn 5% vùng áo bão hòa cao; áo trắng đo được 0 đến 3%, áo đỏ của LR3D_124 là 27%, áo cam của LR3D_38 là 16%). Prompt áo không còn chữ "waist" và có cụm tư thế "arms slightly away from the body, wide sleeves, standing straight"; negative prompt chặn `belt, sash, waistband, bow, tie, hands on hips, arms crossed, hands in pockets`. Áo dài không có dây buộc ở bụng (bản trước có dây ở nhiều áo); tay rời thân để khe giữa tay và thân hở. Mặt nạ áo còn qua bước bỏ khe nền (mục "Khe nền trong mặt nạ áo"). Kết quả đọc từ Passport (`GET /quality/designs`).
 
 | | PASS | WARN | FAIL |
 |---|---|---|---|
 | G2 hoa văn | 16 | 6 | 2 |
-| G3 thiết kế cuối | 24 | 0 | 0 |
-| Tổng thể (mức tệ hơn của G2 và G3) | 16 | 6 | 2 |
+| G3 thiết kế cuối | 20 | 4 | 0 |
+| Tổng thể (mức tệ hơn của G2 và G3) | 13 | 9 | 2 |
 
 | Phép đo (n = 24) | Trung bình | Thấp nhất | Cao nhất |
 |---|---|---|---|
-| PPS | 0,945 | 0,891 | 0,967 |
-| IoU dáng áo | 0,998 | 0,998 | 0,999 |
-| Độ nét | 0,853 | 0,830 | 0,902 |
-| Giữ chi tiết mịn | 0,888 (trung vị 0,881) | 0,854 | 0,947 |
-| Lệch màu ΔE | 1,06 | 0,48 | 1,77 |
+| PPS | 0,952 | 0,903 | 0,979 |
+| IoU dáng áo | 0,994 | 0,988 | 1,000 |
+| Độ nét | 0,848 | 0,762 | 0,897 |
+| Giữ chi tiết mịn | 0,880 (trung vị 0,889) | 0,784 | 0,948 |
+| Lệch màu ΔE | 0,94 | 0,20 | 1,83 |
 | VLS | 0,039 | 0,000 | 0,221 |
 | Đường nối | 1,34 (trung vị 1,26) | 0,72 | 2,90 |
 
-- Cả 24 thiết kế có trạng thái polish `passed`; G3 đạt cả 24 (bộ 19/11/2026 chỉ đạt 14/24, 10 cảnh báo đều do giữ chi tiết mịn dưới 0,85). Chi tiết mịn thấp nhất của bộ này là 0,854, **sát ngưỡng cảnh báo 0,85**; bản cuối vẫn mất trung bình khoảng 11% chi tiết mịn so với bản ghép thô.
+- Cả 24 thiết kế có trạng thái polish `passed`; G3 đạt 20/24, 4 thiết kế cảnh báo đều do giữ chi tiết mịn dưới 0,85 (thấp nhất 0,784); không thiết kế nào lỗi G3 (bộ 19/11/2026 đạt 14/24, 10 cảnh báo cùng lý do). Bản cuối vẫn mất trung bình khoảng 11% chi tiết mịn so với bản ghép thô.
 - G2: 2 thiết kế LỖI đều của LR3D_124 (mức 2 và 3) do đường nối (2,90 và 2,17 sau 4 lần sinh lại). 6 thiết kế cảnh báo: 3 do VLS (0,201, 0,203, 0,221) và 3 do đường nối (1,54, 1,60, 1,92).
 - Vòng sinh lại hoa văn: 21 thiết kế đạt ngay, 1 được cứu (LR3D_124 mức 1, seed 45), 2 hết lượt vẫn lỗi (`best_of_failed`).
-- Trạng thái Passport sau cổng: 16 chờ chuyên gia, 6 chờ QC, 2 không đạt (`qa_failed`, 2 thiết kế này bị ẩn khỏi trang Kết quả).
+- Trạng thái Passport sau cổng: 13 chờ chuyên gia, 9 chờ QC, 2 không đạt (`qa_failed`, 2 thiết kế này bị ẩn khỏi trang Kết quả).
 
 ### Bộ nhiều seed (42, 43, 44)
 
-Bộ seed 43 và 44 sinh bằng `scripts/14_generate_demo_set.py --seed N --out outputs/multiseed` (cùng cấu hình, seed áo bằng seed hoa văn) để làm gói chấm mù nhiều seed. Dữ liệu thô ở `outputs/multiseed/` (không đưa lên git); giao diện web chỉ dùng bộ seed 42.
+Bộ seed 43 và 44 sinh bằng `scripts/14_generate_demo_set.py --seed N --out outputs/multiseed` (cùng cấu hình, seed áo bằng seed hoa văn) để làm gói chấm mù nhiều seed. Dữ liệu thô ở `outputs/multiseed/` (không đưa lên git); giao diện web chỉ dùng bộ seed 42. Seed áo thực dùng: bộ 42 dùng áo 42, bộ 43 dùng áo 43, bộ 44 dùng áo 45 (áo 44 bị loại vì khe nền), nên ba bộ dùng ba áo khác nhau.
 
 | Seed | G2 đạt | G2 cảnh báo | G2 lỗi | G3 |
 |---|---|---|---|---|
-| 42 | 16 | 6 | 2 | 24/24 đạt |
-| 43 | 20 | 3 | 1 | 24/24 đạt |
-| 44 | 16 | 7 | 1 | 24/24 đạt |
-| Cả ba | 52 | 16 | 4 | 72/72 đạt |
+| 42 | 16 | 6 | 2 | 20 đạt, 4 cảnh báo |
+| 43 | 20 | 3 | 1 | 18 đạt, 6 cảnh báo |
+| 44 | 16 | 7 | 1 | 17 đạt, 7 cảnh báo |
+| Cả ba | 52 | 16 | 4 | 55 đạt, 17 cảnh báo |
 
-- Theo mức sáng tạo (mỗi mức 18 thiết kế): mức 1 có 7 đạt, 11 cảnh báo; mức 2 có 11, 4, 3; mức 3 có 16, 1, 1; mức 4 có 18, 0, 0. Trọng số ControlNet càng cao thì càng hay cảnh báo hoặc lỗi.
-- Theo hiện vật (mỗi hiện vật 12 thiết kế): cả 4 thiết kế LỖI đều của LR3D_124 (5 đạt, 3 cảnh báo, 4 lỗi); 5 hiện vật còn lại không có thiết kế nào LỖI.
-- Trung vị cả 72: PPS 0,958, giữ chi tiết mịn 0,883, IoU dáng áo 0,992 (thấp nhất 0,965), VLS 0,038 (cao nhất 0,362, ở seed 44, dưới ngưỡng lỗi 0,40).
-- G3 đạt 72/72 nên **không phân biệt được thiết kế với nhau**; việc xếp hạng cần chuyên gia chấm mù.
+- Theo mức sáng tạo (mỗi mức 18 thiết kế): tổng thể mức 1 có 7 đạt, 11 cảnh báo; mức 2 có 8, 7, 3 (đạt, cảnh báo, lỗi); mức 3 có 12, 5, 1; mức 4 có 10, 8, 0. Trọng số ControlNet càng cao thì càng hay cảnh báo hoặc lỗi.
+- Theo hiện vật (mỗi hiện vật 12 thiết kế): cả 4 thiết kế LỖI đều của LR3D_124 (3 đạt, 5 cảnh báo, 4 lỗi); 5 hiện vật còn lại không có thiết kế nào LỖI.
+- Trung vị cả 72: PPS 0,952, giữ chi tiết mịn 0,888, IoU dáng áo 0,996 (thấp nhất 0,979), VLS 0,038 (cao nhất 0,362, ở seed 44, dưới ngưỡng lỗi 0,40).
+- G3 cả ba seed: 55 đạt, 17 cảnh báo, 0 lỗi; cả 17 cảnh báo đều do giữ chi tiết mịn dưới 0,85 (thấp nhất 0,625). Việc xếp hạng độ đẹp vẫn cần chuyên gia chấm mù.
+
+### Khe nền trong mặt nạ áo (tìm ra và sửa ngày 20/11/2026)
+
+**Lỗi:** hoa văn bị in lên **khe nền nhìn thấy giữa tay áo và thân** (và khe giữa hai tà). Hoa văn không tràn ra ngoài hình dáng áo: điểm ngoài mặt nạ áo bị đổi bằng 0 ở cả 72 thiết kế (`outside_drift` cũng bằng 0). Nhưng mặt nạ áo do SAM sinh ra đã tính khe nền là áo, nên hoa văn in lên nền xám nhìn thấy qua khe và polish vẽ khe thành vệt trắng mờ như vải.
+
+**Nguyên nhân (đã đo):** bước lấp lỗ `clean_mask` không thêm điểm nào; chính mặt nạ SAM chứa khe. Áo sinh với prompt cũ có tay buông sát thân tạo khe hẹp, tối: đo bằng màu nền nội suy cùng hàng, 2,1% đến 5,1% mặt nạ là khe nền, so với 0,36% ở áo bản trước. Trên bản sinh trước khi sửa mặt nạ, trong đúng vùng khe 19% đến 67% điểm bị đổi (hoa văn hoặc polish), đo ở 3 hiện vật.
+
+**Cách sửa** (`generation/garment_sam.py::remove_background_gaps`, gọi cuối `garment_mask_sam`):
+- **Lõi khe:** điểm trong mặt nạ có màu gần màu nền dự đoán cùng hàng (nội suy giữa nền ngay trái và ngay phải của áo), khoảng cách RGB dưới 16, vùng từ 80 điểm.
+- **Nới có giới hạn:** phần khe trong bóng (tối hơn nền) được nới ra tối đa 90 điểm quanh lõi, chỉ ở thung lũng ngang hẹp (dưới 61 điểm) và sâu (ít nhất 45 mức sáng); bóng đổ rộng trên vải trắng không bị nới tới.
+- **Giới hạn loại áo:** nếu bỏ khe cắt quá 8% mặt nạ thì coi bộ phát hiện không tin được và loại áo (vòng sinh áo thử seed kế). Cách chỉ so độ sáng một phía đã thử và bỏ, vì cắt cả bóng đổ trên vải ở áo nền sáng (tới 17% mặt nạ).
+- **Prompt áo:** thêm cụm tư thế "arms slightly away from the body, wide sleeves, standing straight" và chặn `hands on hips, arms crossed, hands in pockets`; thử 3 biến thể prompt trên 8 seed áo cho tỉ lệ nhận áo 5/8 (prompt trước), 4/8 và 6/8 (prompt dùng). Chênh lệch nhỏ, nằm trong sai số của mẫu 8 seed.
+
+**Kết quả sau sửa:** 0% điểm ngoài mặt nạ bị đổi ở cả 72 thiết kế; ảnh phóng to khe tay của các thiết kế kiểm tra cho thấy hoa văn dừng ở mép tay và khe lộ nền. Điểm giống nền còn sót trong mặt nạ (đo ở áo seed 42 và 45; chưa đo riêng áo seed 43) là 364 điểm (khoảng 0,1% khung) ở áo seed 42 và 24 điểm ở áo seed 45.
+
+**Hạn chế:** bộ phát hiện dựa vào màu nên khe sáng gần bằng vải có thể không bị bắt; ngưỡng chọn theo thử trên 4 đến 8 áo, chưa kiểm rộng. Ở áo seed 42 bộ nới cắt nhầm một mảng nhỏ hình chữ T ở ngực (bóng đổ), nên bố cục phủ ngực có một chỗ trống nhỏ trong hoa văn. Ba bộ dùng ba áo (seed áo 42, 43 và 45); seed áo 44 bị loại nên bộ 44 dùng áo 45.
 
 ### Mốc so sánh: bản 06/09/2026 (số liệu lịch sử)
 
@@ -129,9 +145,10 @@ Trên 24 thiết kế cũ (6 hiện vật × 4, áo mẫu cố định, polish t
 
 | Trường hợp | Chuyện gì xảy ra | Xử lý | Bằng chứng |
 |---|---|---|---|
-| `DP-HV12-20261120T100243-V2`, `V3` | Hoa văn có đường nối lớn khi lát (bản ít lỗi nhất sau 4 lần: 2,90 và 2,17; các lần khác 2,38 đến 4,89); mảng phẳng của LR3D_124 có rìa lệch, ô có khoảng trống lớn giữa dải lông vũ và huy hiệu rồng | G2 loại sau 4 lần sinh lại (seed 42 đến 45), trạng thái `qa_failed`, ẩn khỏi trang Kết quả; giữ bản ít lỗi nhất | Passport hiện tại, `outputs/qc/pattern_rejects.csv` |
-| `DP-HV12-20261120T100243-V1` | Đường nối 2,71, 5,94 và 5,90 ở seed 42, 43, 44 | Sinh lại: đạt ở lần thử thứ 4 (seed 45, đường nối 1,54, còn cảnh báo) | như trên |
-| `DP-HV10-20261120T095836-V1`, `V2` và `DP-HV07-20261120T095214-V1` | VLS 0,221, 0,203 và 0,201, lọt nhẹ hình vật chứa | G2 cảnh báo, chờ QC xem | Passport hiện tại |
+| `DP-HV12-20261120T143124-V2`, `V3` | Hoa văn có đường nối lớn khi lát (bản ít lỗi nhất sau 4 lần: 2,90 và 2,17; các lần khác 2,38 đến 4,89); mảng phẳng của LR3D_124 có rìa lệch, ô có khoảng trống lớn giữa dải lông vũ và huy hiệu rồng | G2 loại sau 4 lần sinh lại (seed 42 đến 45), trạng thái `qa_failed`, ẩn khỏi trang Kết quả; giữ bản ít lỗi nhất | Passport hiện tại, `outputs/qc/pattern_rejects.csv` |
+| `DP-HV12-20261120T143124-V1` | Đường nối 2,71, 5,94 và 5,90 ở seed 42, 43, 44 | Sinh lại: đạt ở lần thử thứ 4 (seed 45, đường nối 1,54, còn cảnh báo) | như trên |
+| `DP-HV10-20261120T142700-V1`, `V2` và `DP-HV07-20261120T142053-V1` | VLS 0,221, 0,203 và 0,201, lọt nhẹ hình vật chứa | G2 cảnh báo, chờ QC xem | Passport hiện tại |
+| Hoa văn in lên khe nền giữa tay và thân (lượt sinh 20/11/2026 trước khi sửa mặt nạ) | Hoa văn và polish phủ lên nền xám nhìn thấy qua khe; không có điểm nào ngoài mặt nạ bị đổi nên chỉ số `outside_drift` không bắt được | `remove_background_gaps` bỏ khe khỏi mặt nạ, giới hạn 8% | mục "Khe nền trong mặt nạ áo", `tests/test_garment_sam.py` |
 | Áo LoRA có mảng đỏ hoặc cam (bộ demo trước: LR3D_124 đỏ 27% vùng áo, LR3D_38 cam 16%) | Hoa văn xanh lam mất nổi bật, áo không còn trắng trơn | `color_ok` loại ứng viên có trên 5% vùng áo bão hòa cao; bộ hiện tại cả 6 áo đều đạt ở lần thử đầu | `generation/garment_lora.py`, `tests/test_garment_lora.py` |
 | Hoa văn mang dáng cả chiếc bình khi nạp ảnh render (LR3D_33, 50, 97, 124 ở mức 1 và 2; LR3D_124 ra ba vật rời) | G2 **không bắt được**: LR3D_33 đo VLS 0,0001 vì bình choán đầy khung | Quay về nguồn mảng phẳng làm mặc định; EXP-F, EXP-G ghi lại | [06](06_EXPERIMENTS.md), `docs/KET_QUA_EXP_G.md` |
 | Bộ demo trước (polish 0,30, chưa khoá họa tiết): HV07 V3 | PPS 0,36, 0,3995, 0,3983, 0,3756 ở 4 seed (seed 42 đến 45) đều dưới 0,40 | Hạ độ nhiễu xuống 0,22 và thử lần 5: đạt | `outputs/qc/rejects.csv` và ảnh bị loại trong commit `900ee09` |
@@ -146,7 +163,7 @@ Trên 24 thiết kế cũ (6 hiện vật × 4, áo mẫu cố định, polish t
 - PPS đo mức giữ họa tiết **so với bản ghép**, không so với hiện vật gốc. Hoa văn giai đoạn 1 có giống hiện vật hay không vẫn là việc của chuyên gia (tiêu chí "Nhận ra họa tiết gốc").
 - Với khoá họa tiết, PPS gần 0,94 do cách làm; không dùng để so độ đẹp.
 - IoU dáng áo gần 1 vì polish chỉ vùng áo; nó không đo áo LoRA có giống áo dài truyền thống hay không. Áo LoRA vẫn thường tay loe và thắt eo; nhóm chấp nhận tay loe. Việc này chỉ chấm mù mới trả lời.
-- Ngưỡng `detail_ratio` (0,85 và 0,6) đặt theo quan sát trên bộ demo, chưa đối chiếu với người xem. Bộ hiện tại có chi tiết mịn thấp nhất 0,854, chỉ hơn ngưỡng 0,01.
+- Ngưỡng `detail_ratio` (0,85 và 0,6) đặt theo quan sát trên bộ demo, chưa đối chiếu với người xem. Bộ seed 42 có chi tiết mịn thấp nhất 0,784 và 4/24 thiết kế dưới ngưỡng cảnh báo 0,85.
 - Chưa có phiếu chuyên gia thật nên chưa đo được mức đồng thuận giữa cổng tự động và người.
 
 ## Bộ tiêu chí chuyên gia (ER-1.0)

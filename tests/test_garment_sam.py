@@ -174,3 +174,86 @@ def test_apply_de_lo_vai_ao_o_cho_nen_hoa_van(tmp_path):
     doi_khong_tach = (np.abs(khong_tach - ao.astype(int)).max(2) > 6)[trong_ao].mean()
     doi_tach = (np.abs(tach - ao.astype(int)).max(2) > 6)[trong_ao].mean()
     assert doi_tach < doi_khong_tach * 0.6
+
+
+# ---- khe nền lọt vào mặt nạ áo (khe giữa tay và thân, khe giữa hai tà) ----
+
+def _ao_co_khe(slit=True, shadow=False, speck=False):
+    """Ảnh giả 300x200: nền xám có dốc sáng ngang, áo trắng x 60..140, khe nền x 95..105 (y 80..250) nằm trong mặt nạ."""
+    h, w = 300, 200
+    wall = np.tile(np.linspace(100, 130, w, dtype=np.float32), (h, 1))
+    img = np.stack([wall] * 3, axis=2)
+    mask = np.zeros((h, w), np.uint8)
+    mask[20:280, 60:140] = 1
+    img[20:280, 60:140] = 235
+    if slit:
+        img[80:250, 95:105] = np.stack([wall[80:250, 95:105]] * 3, axis=2)      # khe là màu nền, vẫn nằm trong mặt nạ
+    if shadow:
+        img[100:200, 65:90] = 175                                               # bóng đổ trên vải: sáng hơn nền nhiều
+    if speck:
+        img[40:45, 70:75] = 105                                                 # đốm tối 5x5 trên vải
+    return img.astype(np.uint8), mask
+
+
+def test_khe_nen_trong_mat_na_bi_bo():
+    from generation import garment_sam as GS
+    img, mask = _ao_co_khe()
+    out = GS.remove_background_gaps(img, mask)
+    assert out[150, 100] == 0                                    # giữa khe: đã bỏ
+    assert out[150, 80] == 1 and out[150, 120] == 1              # vải hai bên khe giữ nguyên
+    assert out[30, 100] == 1                                     # phần nối trên cùng vẫn là áo
+    assert out.sum() < mask.sum() and out.sum() > 0.7 * mask.sum()
+
+
+def test_bong_do_tren_vai_va_dom_nho_khong_bi_coi_la_khe():
+    from generation import garment_sam as GS
+    img, mask = _ao_co_khe(slit=False, shadow=True, speck=True)
+    out = GS.remove_background_gaps(img, mask)
+    assert (out == mask).all()                                   # không có khe thì giữ nguyên từng điểm
+
+
+def test_khong_khe_thi_tra_lai_dung_mat_na():
+    from generation import garment_sam as GS
+    img, mask = _ao_co_khe(slit=False)
+    assert (GS.remove_background_gaps(img, mask) == mask).all()
+
+
+def test_expected_wall_noi_suy_giua_hai_ben_ao():
+    from generation import garment_sam as GS
+    img, mask = _ao_co_khe(slit=False)
+    est = GS.expected_wall(img, mask)
+    # tại hàng 150, nền trái ~ 100 + 30*(50/199) = 107,5; phải ~ 100 + 30*(150/199) = 122,6; giữa áo nội suy ~ 115
+    assert abs(float(est[150, 100, 0]) - 115) < 6
+
+
+def test_phan_khe_trong_bong_noi_voi_loi_khe_cung_bi_bo():
+    from generation import garment_sam as GS
+    img, mask = _ao_co_khe()
+    img[170:220, 95:105] = 60                                    # nửa dưới của khe nằm trong bóng: tối hơn nền (100 đến 130)
+    out = GS.remove_background_gaps(img, mask)
+    assert out[120, 100] == 0 and out[190, 100] == 0             # lõi khe và phần bóng nối liền đều bị bỏ
+    assert out[190, 80] == 1 and out[190, 120] == 1              # vải hai bên giữ nguyên
+
+
+def test_vung_toi_xa_loi_khe_khong_bi_noi_toi():
+    from generation import garment_sam as GS
+    img, mask = _ao_co_khe()
+    img[80:250, 95:105] = 60                                     # cả khe tối hơn nền: không có lõi khe, không có gì để neo
+    out = GS.remove_background_gaps(img, mask)
+    assert (out == mask).all()
+
+
+def test_vai_trang_trong_bong_nep_gap_sang_hon_nen_khong_bi_bo():
+    from generation import garment_sam as GS
+    img, mask = _ao_co_khe(slit=False)
+    img[60:260, 70:90] = 150                                     # nếp gấp tối nhưng vẫn sáng hơn nền 100 đến 130 từ 20 mức
+    out = GS.remove_background_gaps(img, mask)
+    assert (out == mask).all()
+
+
+def test_max_gap_frac_la_nguong_hop_ly():
+    from generation import garment_sam as GS
+    img, mask = _ao_co_khe()
+    out = GS.remove_background_gaps(img, mask)
+    removed = 1.0 - float(out.sum()) / float(mask.sum())
+    assert 0 < removed < GS.MAX_GAP_FRAC * 2                     # khe giả chiếm vài phần trăm mặt nạ, xa mức nghi ngờ

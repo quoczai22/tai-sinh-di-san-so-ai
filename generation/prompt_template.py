@@ -48,8 +48,9 @@ NEG_PATTERN = ("vase, pot, jar, vessel, bottle, ceramic object, 3d render, photo
 # sang sườn xám Trung Hoa (P = 0,381). Mô tả đủ cấu trúc thì 3/3 seed đều đúng.
 GARMENT_PROMPT = (
     "a plain white Vietnamese ao dai — ankle length silk tunic, high mandarin collar, "
-    "long sleeves, front and back panels split from the waist down, worn over loose "
-    "white silk trousers, elegant slim silhouette, full body front view, studio photo")
+    "long sleeves, arms slightly away from the body, wide sleeves, long front and back panels, "
+    "worn over loose white silk trousers, elegant slim silhouette, standing straight, "
+    "full body front view, studio photo")
 GARMENT_NEG = ("blurry, low quality, watermark, text, deformed, extra limbs, cropped, "
                "pattern, print, embroidery, busy background")
 

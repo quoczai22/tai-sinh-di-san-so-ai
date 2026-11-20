@@ -59,8 +59,8 @@ APQC PCF chỉ dùng làm **khung phân loại** để gọi tên và xếp nhó
 |---|---|---|
 | Thiết kế đo | 24 (6 hiện vật cũ × 4 biến thể) | 24 (6 hiện vật LR3D-CULT2 × 4 mức sáng tạo) |
 | G2 hoa văn: PASS / WARN / FAIL | 21 / 1 / 2 | 16 / 6 / 2 |
-| G3 thiết kế cuối: PASS / WARN / FAIL | 0 / 4 / 20 | 24 / 0 / 0 |
-| PPS (giữ họa tiết) | trung vị 0,36 trước sửa | trung bình 0,945 (khoá họa tiết là bước mặc định) |
+| G3 thiết kế cuối: PASS / WARN / FAIL | 0 / 4 / 20 | 20 / 4 / 0 |
+| PPS (giữ họa tiết) | trung vị 0,36 trước sửa | trung bình 0,952 (khoá họa tiết là bước mặc định) |
 | Thiết kế được sửa tự động | 19; G3 sau sửa: 10 PASS, 9 WARN | không còn thiết kế G3 FAIL để sửa |
 | Hiện vật có quyền sử dụng đã xác minh | 0/6 | 0/6 |
 | Trường nguồn gốc điền được | 7/10 ở cả 6 hiện vật | 8/10 ở cả 6 hiện vật (thiếu giấy phép từng vật và ngày thu thập) |

@@ -11,12 +11,12 @@ Bốn biến thể V1 đến V4 của bản 06/09/2026 khác nhau ở **bốn** 
 | Trọng số ControlNet | 0,85 | 0,65 | 0,45 | 0,25 |
 | Cụm từ thêm vào prompt | – | – | "modern simplified interpretation" | "bold contemporary reinterpretation" |
 | Bảng màu | giữ màu gốc | tự do | tự do | tự do |
-| Bố cục trên áo | do CLIP chọn, khác nhau giữa các biến thể (bản 06/09/2026); **từ 20/11/2026 cố định `front_panel` cho cả bốn** | | | |
+| Bố cục trên áo | do CLIP chọn, khác nhau giữa các biến thể (bộ demo vẫn giữ cách này; EXP-F và EXP-G cố định `front_panel` để so riêng ô hoa văn) | | | |
 | Seed | 42 | 42 | 42 | 42 |
 
 Vì vậy không thể nói khác biệt giữa V1 và V4 là do trọng số ControlNet, và không biết với seed khác kết quả dao động bao nhiêu. Bộ biến thể này vẫn được giữ làm **tính năng sản phẩm** (đưa ra 4 phương án đa dạng cho nhà thiết kế), nhưng không dùng làm bằng chứng so sánh.
 
-Từ 20/11/2026 bộ demo dùng **một seed duy nhất (42)** và bố cục cố định `front_panel`, nên bốn mức chỉ còn khác nhau ở trọng số ControlNet, cụm prompt và bảng màu. Độ dao động theo seed được đo ở gói chấm mù nhiều seed (42, 43, 44; xem [05](05_QUALITY_ASSURANCE.md)) và ở các thí nghiệm có kiểm soát bên dưới.
+Từ 20/11/2026 bộ demo dùng **một seed duy nhất (42)** nhưng vẫn để CLIP chọn bố cục khác nhau cho bốn biến thể, nên bốn mức khác nhau cả ở trọng số ControlNet, cụm prompt, bảng màu và vị trí họa tiết. Độ dao động theo seed được đo ở gói chấm mù nhiều seed (42, 43, 44; xem [05](05_QUALITY_ASSURANCE.md)) và ở các thí nghiệm có kiểm soát bên dưới.
 
 ## Module Experiment Management
 

@@ -16,7 +16,7 @@ api/                main.py (v1.1.0) · store.py · audit.py
 config/             heritage_selection.json · quality_gate.json · expert_rubric.json
 web_ui/             giao diện cho người xem: Trang chủ, Studio, Kết quả (giao diện 09/2026 lưu ở archive/web_ui_2026-09/)
 scripts/            08 chuyển schema, trích LR3D · 09 nạp ảnh hiện vật · 10 tạo hiện vật từ LR3D · 11 xuất dữ liệu trình diễn, lọc VietFashion · 12 dựng sơ đồ, xuất tập LoRA · 13 huấn luyện LoRA · 14 sinh bộ demo
-tests/              313 ca pytest
+tests/              322 ca pytest
 ```
 
 Luồng dữ liệu một lần chạy:
