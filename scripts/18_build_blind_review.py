@@ -17,6 +17,8 @@ Thứ tự hiện thiết kế được xáo riêng cho từng người chấm (
 
     uv run python scripts/18_build_blind_review.py                 # dựng vào outputs/blind_review/
     uv run python scripts/18_build_blind_review.py --out thư_mục   # chọn nơi dựng
+    uv run python scripts/18_build_blind_review.py --experiment outputs/experiments/EXP-A --seeds 42,7
+        # gói chấm mù của một thí nghiệm (ô = hiện vật x giá trị biến độc lập), chỉ các tiêu chí trong đặc tả thí nghiệm
 
 Ảnh nằm trong outputs/ nên không đưa lên git (dữ liệu thô).
 """
@@ -91,10 +93,31 @@ def role_criteria(rubric: dict) -> dict:
             "both": [c["key"] for c in rubric["criteria"]]}
 
 
-def build(out: Path, root: Path = ROOT, designs: list[dict] | None = None) -> dict:
+def collect_experiment(exp_dir: Path, seeds: list[int] | None = None) -> tuple[list[dict], list[str]]:
+    """Thiết kế của một thí nghiệm (results.csv) cho gói chấm mù, và danh sách tiêu chí người chấm theo đặc tả (metrics.human).
+
+    Mỗi dòng giống collect(): ô = (hiện vật, giá trị biến độc lập); seeds chọn các lượt lặp đưa vào gói (mặc định mọi seed).
+    Giá trị biến độc lập đi vào cột intensity_level của key.csv, không vào trang gửi người chấm."""
+    spec = json.loads((exp_dir / "spec.json").read_text(encoding="utf-8"))
+    rows = []
+    with (exp_dir / "results.csv").open(encoding="utf-8-sig", newline="") as f:
+        for r in csv.DictReader(f):
+            if r.get("status", "completed") != "completed" or not r.get("image"):
+                continue
+            if seeds is not None and int(r["replicate"]) not in seeds:
+                continue
+            rows.append({"passport_id": r["run_key"], "run_id": spec["id"], "heritage_id": r["heritage_id"],
+                         "image": exp_dir / r["image"], "intensity_level": r["iv_level"], "seed": r["replicate"],
+                         "layout": r.get("cfg.layout", ""), "garment_seed": "", "g2": "", "g3": "", "approval": ""})
+    return sorted(rows, key=lambda d: d["passport_id"]), list(spec["metrics"]["human"])
+
+
+def build(out: Path, root: Path = ROOT, designs: list[dict] | None = None, criteria_keys: list[str] | None = None) -> dict:
     from api.main import ui_items                                        # noqa: PLC0415
 
     rubric = json.loads((root / "config" / "expert_rubric.json").read_text(encoding="utf-8"))
+    if criteria_keys:                                                    # thí nghiệm chỉ chấm các tiêu chí nêu trong đặc tả
+        rubric = {**rubric, "criteria": [c for c in rubric["criteria"] if c["key"] in criteria_keys]}
     designs = designs if designs is not None else collect(root)
     names = {i["id"]: plain_name(i["name"]) for i in ui_items(include_retired=True)}
     if out.exists():
@@ -370,9 +393,16 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $('#zoom')
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default=str(ROOT / "outputs" / "blind_review"))
+    ap.add_argument("--out", default=None)
+    ap.add_argument("--experiment", default=None, help="thư mục thí nghiệm (ví dụ outputs/experiments/EXP-A): dựng gói từ results.csv của nó")
+    ap.add_argument("--seeds", default=None, help="chỉ lấy các seed này (cách nhau bằng dấu phẩy), dùng với --experiment")
     args = ap.parse_args()
-    r = build(Path(args.out))
+    if args.experiment:
+        exp = (ROOT / args.experiment) if not Path(args.experiment).is_absolute() else Path(args.experiment)
+        designs, keys = collect_experiment(exp, [int(x) for x in args.seeds.split(",")] if args.seeds else None)
+        r = build(Path(args.out) if args.out else ROOT / "outputs" / f"blind_review_{exp.name}", designs=designs, criteria_keys=keys)
+    else:
+        r = build(Path(args.out) if args.out else ROOT / "outputs" / "blind_review")
     print(f"Đã dựng gói chấm mù {r['total']} thiết kế tại {r['out']}\n  gửi người chấm: {r['zip']}\n  nhóm giữ riêng: {r['key']}")
     return 0
 

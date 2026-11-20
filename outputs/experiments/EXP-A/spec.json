@@ -27,11 +27,13 @@
     "prompt_modifier": "",
     "palette_mode": "free",
     "layout": "front_panel",
-    "polish_strength": 0.4,
     "polish_seed": "same_as_seed",
     "steps": 25,
     "guidance": 7.5,
-    "prompt_terms_version": "data/prompt_terms.json@2026-11-18"
+    "prompt_terms_version": "data/prompt_terms.json@2026-11-18",
+    "stage2_finish": "masked_0.20+pattern_lock",
+    "garment_source": "lora",
+    "source": "panel"
   },
   "units": {
     "heritage": "active"

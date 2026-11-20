@@ -20,9 +20,9 @@ Mã quy trình L3 tham chiếu [02_APQC.md](02_APQC.md).
 
 | Mã | KPI | Công thức | Hiện tại | Mục tiêu | Nguồn, cách đo | L3 | Chủ |
 |---|---|---|---|---|---|---|---|
-| K07 | Dao động theo seed | Hệ số biến thiên (sd / trung bình) của PPS theo seed ở từng mức trọng số | Chưa đo theo EXP-A (chưa chạy). Với bộ demo 3 seed (42, 43, 44; 24 ô × 3 seed): hệ số biến thiên của PPS theo seed trung bình 0,95 đến 1,6% ở mỗi mức sáng tạo, lớn nhất 4,0% (tính từ Passport bộ ba seed, chưa có script riêng) | Báo cáo kèm mọi kết luận; không đặt ngưỡng | `outputs/experiments/EXP-A/summary.json` | 1.1 | BA |
+| K07 | Dao động theo seed | Hệ số biến thiên (sd / trung bình) của PPS theo seed ở từng mức trọng số | EXP-A (5 seed, 6 hiện vật): hệ số biến thiên của PPS theo seed trong mỗi ô trung bình 2,1% ở trọng số 0,85, 2,4% ở 0,65, 2,8% ở 0,45, 2,9% ở 0,25 (tính từ `outputs/experiments/EXP-A/results.csv`, chưa có script riêng). Bộ demo 3 seed (42, 43, 44; 24 ô × 3 seed): trung bình 0,95 đến 1,6% theo mức sáng tạo, lớn nhất 4,0% (tính từ Passport) | Báo cáo kèm mọi kết luận; không đặt ngưỡng | `outputs/experiments/EXP-A/summary.json` | 1.1 | BA |
 | K08 | Tỉ lệ thí nghiệm hợp lệ đơn biến | Kế hoạch qua `validate_plan` / kế hoạch dùng làm bằng chứng | 7/7 (EXP-A đến EXP-G) | 100% | `python -m evaluation.experiment plan …` | 1.1 | BA |
-| K18 | Số lượt chạy hoàn tất theo kế hoạch | Lượt `completed` / lượt trong `plan.csv` | EXP-B 126/126; EXP-C 24/24; EXP-D 60/60; EXP-E 36/36; EXP-F 36/36; EXP-G 126/126; EXP-A 0/120 | 100% trước khi phân tích | `results.csv` | 1.1 | BA |
+| K18 | Số lượt chạy hoàn tất theo kế hoạch | Lượt `completed` / lượt trong `plan.csv` | EXP-B 126/126; EXP-C 24/24; EXP-D 60/60; EXP-E 36/36; EXP-F 36/36; EXP-G 126/126; EXP-A 120/120 | 100% trước khi phân tích | `results.csv` | 1.1 | BA |
 
 ## Nguồn gốc và bản quyền (yêu cầu BTC 3)
 

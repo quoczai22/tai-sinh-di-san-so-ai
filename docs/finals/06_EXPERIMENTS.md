@@ -59,7 +59,7 @@ python -m evaluation.experiment analyze outputs/experiments/EXP-A               
 | Lặp | 5 seed: 42, 7, 123, 2024, 31415 | 3 seed polish: 42, 7, 123 | Không (tất định) | 5 seed: 42 đến 46 (cũng là seed hoa văn và seed áo LoRA) | 3 seed: 42, 43, 44 |
 | Hiện vật | 6 hiện vật đang dùng | 6 hiện vật đang dùng | 6 hiện vật cũ (chỉ ghép trên CPU) | 6 hiện vật đang dùng | 6 hiện vật đang dùng |
 | Số lượt | 120 | 126 | 24 | 60 | 36 |
-| Trạng thái | Đã lập và kiểm tra kế hoạch; **chưa chạy** | **Đã chạy 126/126** | **Đã chạy 24/24** (trên 6 hiện vật cũ) | **Đã chạy 60/60** | **Đã chạy 36/36** |
+| Trạng thái | **Đã chạy 120/120** (20/11/2026) | **Đã chạy 126/126** | **Đã chạy 24/24** (trên 6 hiện vật cũ) | **Đã chạy 60/60** | **Đã chạy 36/36** |
 | Chấm mù | Chưa | Chưa | Gói đã dựng, **chưa có phiếu** | Gói đã dựng (60 ảnh, 3 phiếu trống), **chưa có phiếu** | Chưa |
 
 Hai thí nghiệm thêm ngày 20/11/2026, cùng cố định: áo LoRA, bố cục `front_panel`, ControlNet 0,65, bảng màu tự do, polish chỉ vùng áo 0,20 kèm khoá họa tiết; lặp theo 3 seed 42, 43, 44.
@@ -75,6 +75,26 @@ Hai thí nghiệm thêm ngày 20/11/2026, cùng cố định: áo LoRA, bố c�
 Mỗi thí nghiệm chỉ đổi một yếu tố. Kế hoạch đổi hơn một yếu tố bị mã từ chối (kiểm thử `test_experiment.py`, `test_exp_g.py`).
 
 Ghi chú về việc áo mẫu cố định đã bỏ: luồng sản phẩm hiện chỉ dùng áo do LoRA sinh. Quyết định này là lựa chọn thiết kế của nhóm (không phụ thuộc dáng áo có sẵn), **không** phải kết luận của EXP-D, vì EXP-D không thấy khác biệt có ý nghĩa (xem dưới) và chưa có chấm mù. Mức `fixed` còn trong mã chỉ để chạy lại các thí nghiệm cũ.
+
+## Kết quả EXP-A: trọng số ControlNet (120 lượt)
+
+Chạy ngày 20/11/2026, cả 120 lượt hoàn tất. Mỗi mức 30 cặp (6 hiện vật × 5 seed: 42, 7, 123, 2024, 31415). Cấu hình: nguồn mảng phẳng, áo LoRA (mỗi seed một áo), bố cục `front_panel`, bảng màu tự do, polish chỉ vùng áo 0,20 kèm khoá họa tiết; chỉ đổi trọng số ControlNet. Trung bình theo mức (số liệu trong `outputs/experiments/EXP-A/summary.json`); cột cuối là kiểm định Friedman trên 30 khối (hiện vật × seed):
+
+| Chỉ số | 0,85 | 0,65 | 0,45 | 0,25 | Friedman p |
+|---|---|---|---|---|---|
+| Lọt hình bình (VLS, thấp là tốt) | 0,097 | 0,086 | 0,036 | **0,012** | dưới 0,001 |
+| Đường nối khi lát (thấp là tốt) | 1,68 | 1,64 | 1,38 | **1,24** | 0,39 |
+| Giữ họa tiết qua polish (PPS) | 0,941 | 0,938 | 0,937 | 0,940 | 0,46 |
+| Giữ dáng áo (IoU) | 0,991 | 0,989 | 0,990 | 0,992 | 0,68 |
+| Giữ chi tiết mịn | 0,865 | 0,866 | 0,866 | 0,863 | 0,74 |
+| Lệch màu ΔE | 1,25 | 1,23 | 1,12 | 1,21 | 0,47 |
+
+- **Hạ trọng số làm giảm lọt hình bình rõ.** So với 0,85, mức 0,45 và 0,25 khác có ý nghĩa (Wilcoxon theo cặp p = 0,0001 và 0,0003); mức 0,65 chưa khác (p = 0,47). Đường nối cũng thấp dần theo trọng số nhưng không đạt ý nghĩa tổng thể (Friedman p = 0,39; riêng 0,25 so với 0,85 p = 0,032, chưa hiệu chỉnh đa so sánh).
+- **PPS, IoU, chi tiết mịn và màu không đổi theo trọng số.** PPS đo giữ họa tiết qua polish so với bản ghép thô, **không đo giống hiện vật gốc**, nên không thấy được việc trọng số thấp thay hoa văn.
+- **Xem ảnh (seed 42) cho thấy điều chỉ số máy không thấy:** ở 0,25 hoa văn thành mảng hoa văn dày chung chung, LR3D_124 mất dải lông vũ và huy hiệu rồng, LR3D_61 mất hình rồng thành dải sóng. Trọng số thấp tránh dáng bình nhưng bỏ họa tiết gốc. Kết luận về "nhận ra họa tiết gốc" phải chờ phiếu chuyên gia.
+- **Theo hiện vật:** LR3D_38 lọt hình bình nhiều nhất ở 0,85 (VLS 0,213) và PPS giảm từ 0,934 xuống 0,892 ở 0,25; LR3D_50 và LR3D_97 gần như không lọt (VLS 0,0 đến 0,04).
+- **Dao động theo seed:** hệ số biến thiên của PPS trong từng ô (hiện vật × mức), trung bình 6 hiện vật, là 2,1% ở 0,85, 2,4% ở 0,65, 2,8% ở 0,45, 2,9% ở 0,25: tăng nhẹ khi trọng số giảm. VLS dao động rất lớn (hệ số biến thiên 81% đến 177%) vì hầu hết giá trị gần 0, vài seed cao.
+- **Giới hạn:** 30 cặp mỗi mức; Wilcoxon chạy ba lần cho mỗi chỉ số, không hiệu chỉnh; chưa chấm mù; chỉ số CLIP nêu trong đặc tả không có trong kết quả (cột `clip_similarity_pattern_vs_ceramic` không được ghi). EXP-A giữ cố định prompt, bảng màu và bố cục, còn bốn mức sáng tạo của bộ demo đổi cả prompt và bảng màu cùng trọng số, nên kết quả EXP-A không thay được so sánh bốn mức của bộ demo.
 
 ## Kết quả EXP-B: bước hoàn thiện (126 lượt)
 
@@ -201,7 +221,7 @@ Ngoài EXP-B, nhóm thử riêng cách hoàn thiện trên bản ghép thô củ
 
 ## Những gì chưa làm được
 
-- **EXP-A chưa chạy:** 120 lượt GPU, kế hoạch đã kiểm tra. Chạy bằng một lệnh trên máy của nhóm.
 - **Gói chấm mù nhiều seed (72 thiết kế, mỗi người chấm 24) đã dựng, chưa có phiếu.** Xem [05](05_QUALITY_ASSURANCE.md).
+- **Gói chấm mù riêng cho EXP-A đã dựng, chưa có phiếu:** `scripts/18_build_blind_review.py --experiment outputs/experiments/EXP-A --seeds 42,7` ra `outputs/blind_review_EXP-A/` (48 ảnh = 6 hiện vật × 4 trọng số × 2 seed, 24 ô; mỗi người chấm thấy 24 ảnh, một seed mỗi ô, theo mã người chấm). Chỉ 4 tiêu chí trong đặc tả EXP-A (nhận ra họa tiết gốc, phù hợp văn hoá, thẩm mỹ, toàn vẹn dáng áo); trang gửi người chấm không lộ trọng số, seed hay tên thí nghiệm; `key.csv` ghi trọng số ở cột `intensity_level`. Cần ít nhất 3 người chấm (đặc tả), có mã số cuối liên tiếp (CG01, CG02, ...).
 - **Chưa có phiếu chuyên gia thật.** Các tệp `ratings_CG01.csv` đến `CG03.csv` trong gói chấm là mẫu trống; nhóm **không** điền điểm giả. Vì vậy mọi kết luận về "đẹp hơn" hay "giống vải in hơn" ở trên đều chưa có.
 - Các kết quả trên dùng cấu hình lúc chạy (xem từng mục). Cấu hình mặc định hiện nay của luồng sản phẩm (polish 0,20 và khoá họa tiết 0,3) khác EXP-B, D, E; phần "Thử hoàn thiện ảnh" đo trực tiếp cấu hình hiện nay.

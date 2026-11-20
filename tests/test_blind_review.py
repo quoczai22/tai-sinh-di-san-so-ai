@@ -129,3 +129,42 @@ def test_mot_seed_thi_nguoi_cham_thay_het_nhu_cu(tmp_path):
     out = tmp_path / "goi"
     r = BR.build(out, designs=_thiet_ke_gia(tmp_path, seeds=(42,)))
     assert r["total"] == 4 and r["per_rater"] == 4
+
+
+def _thi_nghiem_gia(tmp_path):
+    """Thư mục thí nghiệm giả: 2 hiện vật x 2 trọng số x 3 seed, spec chỉ yêu cầu 2 tiêu chí người chấm."""
+    import json
+    from PIL import Image
+    exp = tmp_path / "EXP-T"
+    (exp / "images").mkdir(parents=True)
+    (exp / "spec.json").write_text(json.dumps({"id": "EXP-T", "metrics": {"human": ["aesthetic", "motif_recognizability"]}}), encoding="utf-8")
+    with (exp / "results.csv").open("w", encoding="utf-8-sig", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["run_key", "heritage_id", "iv_level", "replicate", "status", "image", "cfg.layout"])
+        for h in ("LR3D_33", "LR3D_61"):
+            for lv in ("0.85", "0.25"):
+                for sd in (42, 7, 123):
+                    name = f"images/{h}_{lv}_{sd}.png"
+                    Image.new("RGB", (40, 60), (sd % 255, 90, 120)).save(exp / name)
+                    w.writerow([f"EXP-T|{h}|w={lv}|seed={sd}", h, lv, sd, "completed", name, "front_panel"])
+        w.writerow(["EXP-T|LR3D_33|w=0.85|seed=999", "LR3D_33", "0.85", 999, "garment_failed", "", ""])    # lượt không ra ảnh: bỏ
+    return exp
+
+
+def test_goi_mu_thi_nghiem_chon_seed_va_tieu_chi_theo_dac_ta(tmp_path):
+    exp = _thi_nghiem_gia(tmp_path)
+    designs, keys = BR.collect_experiment(exp, [42, 7])
+    assert len(designs) == 8 and {d["seed"] for d in designs} == {"42", "7"} and keys == ["aesthetic", "motif_recognizability"]
+    assert len(BR.collect_experiment(exp)[0]) == 12                # không chọn seed: mọi lượt hoàn tất, lượt lỗi bị bỏ
+    out = tmp_path / "goi"
+    r = BR.build(out, designs=designs, criteria_keys=keys)
+    assert r["total"] == 8 and r["per_rater"] == 4                 # 4 ô (2 hiện vật x 2 trọng số), mỗi ô 2 seed
+    page = (out / "GOI_GUI" / "index.html").read_text(encoding="utf-8")
+    import json
+    data = json.loads(re.search(r"const DATA = (\{.*\});", page).group(1))
+    assert [c["key"] for c in data["criteria"]] == ["motif_recognizability", "aesthetic"]      # chỉ tiêu chí trong đặc tả, theo thứ tự bộ tiêu chí
+    dj = json.dumps(data)
+    for bad in ("0.85", "0.25", "EXP-T", "run_key", "seed"):
+        assert bad not in dj, bad                                  # trang gửi không lộ giá trị biến độc lập, tên thí nghiệm hay seed
+    key = list(csv.DictReader((out / "GIU_RIENG" / "key.csv").open(encoding="utf-8-sig")))
+    assert {k["intensity_level"] for k in key} == {"0.85", "0.25"} and {k["run_id"] for k in key} == {"EXP-T"}
