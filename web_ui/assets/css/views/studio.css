@@ -104,6 +104,11 @@
     color: var(--ink-3);
 }
 
+.out-note.out-detail {
+    margin-top: 6px;
+    color: var(--ink-2);
+}
+
 .result-head .io-name {
     margin: 0;
     text-align: left;
