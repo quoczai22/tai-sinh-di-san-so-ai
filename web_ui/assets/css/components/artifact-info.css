@@ -1,0 +1,227 @@
+/* components/artifact-info.css — Ô "VỀ HIỆN VẬT" (.ai-*) bên phải bình ở Studio: mô tả, bốn dòng dữ kiện, hoa văn và ý nghĩa,
+   hiện vật bảo tàng tương đồng, nguồn ảnh, nguồn tham khảo. JS: components/artifact-info.js. Bố cục hai cột: views/studio.css. */
+
+.ai-panel {
+    background: var(--porcelain);
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--lam);
+    padding: 28px 32px 24px;
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--ink);
+    text-align: left;
+}
+
+.ai-kicker,
+.ai-h {
+    margin: 0 0 10px;
+    font-family: var(--font-ui);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--dat);
+}
+
+.ai-h {
+    margin-bottom: 12px;
+}
+
+.ai-lead {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 19px;
+    line-height: 1.55;
+    text-wrap: pretty;
+}
+
+.ai-facts {
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
+    gap: 10px 18px;
+    margin: 22px 0 0;
+    padding: 18px 0 0;
+    border-top: 1px solid var(--line-2);
+}
+
+.ai-facts dt {
+    font-size: 13px;
+    color: var(--ink-3);
+    padding-top: 2px;
+}
+
+.ai-facts dd {
+    margin: 0;
+}
+
+.ai-block {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line-2);
+}
+
+.ai-block p {
+    margin: 0 0 6px;
+}
+
+.ai-motifs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+}
+
+.ai-motifs li {
+    position: relative;
+    padding-left: 20px;
+}
+
+/* Dấu thoi lam đầu dòng, gợi nét chấm men lam */
+.ai-motifs li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: .62em;
+    width: 7px;
+    height: 7px;
+    background: var(--lam);
+    transform: rotate(45deg);
+}
+
+.ai-motif {
+    margin: 0;
+}
+
+.ai-motif strong {
+    font-weight: 600;
+}
+
+.ai-motif span {
+    color: var(--ink-2);
+}
+
+.ai-meaning {
+    margin: 2px 0 0;
+    font-style: italic;
+    color: var(--ink-2);
+}
+
+.ai-ref {
+    margin-left: 2px;
+    font-size: 10.5px;
+    font-style: normal;
+    color: var(--lam);
+}
+
+.ai-panel a svg {
+    width: 13px;
+    height: 13px;
+    flex: none;
+    margin-left: 5px;
+    vertical-align: -1px;
+}
+
+.ai-link {
+    color: var(--lam-strong);
+}
+
+.ai-compare {
+    display: grid;
+    gap: 3px;
+    padding: 14px 16px;
+    background: var(--lam-soft);
+    border-radius: var(--radius-s);
+    color: var(--ink);
+    text-decoration: none;
+    transition: background .25s ease;
+}
+
+.ai-compare:hover,
+.ai-compare:focus-visible {
+    background: #D8E1EE;
+    color: var(--ink);
+}
+
+.ai-compare-holder {
+    font-size: 11.5px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--lam-strong);
+}
+
+.ai-compare-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    line-height: 1.35;
+}
+
+.ai-compare-meta,
+.ai-compare-note {
+    font-size: 14px;
+    color: var(--ink-2);
+}
+
+.ai-compare-note {
+    margin-top: 4px;
+    font-style: italic;
+}
+
+.ai-muted {
+    font-size: 14px;
+    color: var(--ink-3);
+}
+
+.ai-sources {
+    margin-top: 20px;
+    font-size: 13.5px;
+    color: var(--ink-2);
+}
+
+.ai-sources summary {
+    cursor: pointer;
+    color: var(--ink-3);
+}
+
+.ai-sources summary:hover {
+    color: var(--ink);
+}
+
+.ai-sources ol {
+    margin: 10px 0 0;
+    padding-left: 20px;
+    display: grid;
+    gap: 6px;
+}
+
+.ai-src-holder {
+    font-weight: 600;
+}
+
+.ai-note {
+    margin: 18px 0 0;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--ink-3);
+}
+
+@media (max-width: 900px) {
+    .ai-panel {
+        padding: 24px 20px 20px;
+    }
+}
+
+@media (max-width: 640px) {
+    .ai-facts {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2px;
+    }
+
+    .ai-facts dd {
+        margin-bottom: 10px;
+    }
+
+    .ai-lead {
+        font-size: 17.5px;
+    }
+}

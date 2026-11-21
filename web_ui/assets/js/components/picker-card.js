@@ -7,7 +7,7 @@ export function pickerCard(it) {
     const pic = h('div', { class: 'pic' }, h('img', { src: it.image, alt: '', loading: 'lazy' }));
     const card = h('a', { class: 'artifact', href: `#/studio/${encodeURIComponent(it.id)}`, style: { textDecoration: 'none' } },
         pic,
-        h('div', { class: 'body' }, h('div', { class: 'code' }, it.dating || 'Gốm Bát Tràng'), h('div', { class: 'name' }, it.name)));
+        h('div', { class: 'body' }, h('div', { class: 'code' }, it.dating || (it.info ? 'Gốm hoa lam' : 'Gốm Bát Tràng')), h('div', { class: 'name' }, it.name)));
     hoverSpin(card, pic, it.id);
     return card;
 }

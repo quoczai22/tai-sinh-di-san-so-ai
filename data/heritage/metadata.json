@@ -30,8 +30,45 @@
       {
         "date": "2026-11-19",
         "event": "Gộp nhánh chung-ket: 6 vật LR3D-CULT2 thành hiện vật chính (HV07 đến HV12, active); 6 hiện vật cũ giữ lại ở trạng thái retired."
+      },
+      {
+        "date": "2026-11-21",
+        "event": "Thêm artifact_info cho 6 hiện vật LR3D (mô tả hoa văn, ý nghĩa có nguồn, đối chiếu The Met / Mia); ghi rõ xuất xứ từng vật chưa xác định."
       }
-    ]
+    ],
+    "artifact_info_sources": {
+      "usc_pam": {
+        "title": "Fact Sheet: Symbols in Chinese Art",
+        "holder": "USC Pacific Asia Museum",
+        "url": "https://pacificasiamuseum.org/chineseceramics/teachers/fact_symbols.html"
+      },
+      "met_49855": {
+        "title": "Flask with Lotus Pond (chú giải hiện vật: sen theo Phật giáo vào Trung Hoa, tượng trưng sự thanh khiết)",
+        "holder": "The Metropolitan Museum of Art",
+        "url": "https://www.metmuseum.org/art/collection/search/49855"
+      },
+      "met_49216": {
+        "title": "Bottle with Peony Scroll (chú giải hiện vật: hoa văn ở cổ bình tương ứng kiểu cổ áo mây trên vải vóc, y phục)",
+        "holder": "The Metropolitan Museum of Art",
+        "url": "https://www.metmuseum.org/art/collection/search/49216"
+      },
+      "btlsqg_tk15": {
+        "title": "Đồ gốm Đông Nam Á thế kỷ 15 (gọi dáng yuhuchun là bình hình tỳ bà)",
+        "holder": "Bảo tàng Lịch sử Quốc gia",
+        "url": "https://baotanglichsu.vn/vi/Articles/3101/69655/djo-gom-djong-nam-a-the-ky-15.html"
+      },
+      "btlsqg": {
+        "title": "Bảo vật quốc gia: Bình gốm hoa lam vẽ thiên nga (Nguyễn Đình Chiến, 2017)",
+        "holder": "Bảo tàng Lịch sử Quốc gia",
+        "url": "https://baotanglichsu.vn/vi/Articles/1001/28550/bao-vat-quoc-gia-binh-gom-hoa-lam-ve-thien-nga.html"
+      },
+      "mia_102199": {
+        "title": "Bottle Vase (Yu-hu chun), Việt Nam, cuối thế kỷ 15",
+        "holder": "Minneapolis Institute of Art",
+        "url": "https://collections.artsmia.org/art/102199/bottle-vase-vietnam"
+      }
+    },
+    "artifact_info_note": "artifact_info: thông tin cho người xem (dáng, kỹ thuật, hoa văn, phong cách, đối chiếu bảo tàng). Ý nghĩa hoa văn chỉ ghi khi có nguồn (khóa trong artifact_info_sources); 'tương đồng' là so sánh phong cách, không khẳng định niên đại hay nơi làm của vật. Chưa qua chuyên gia thẩm định."
   },
   "items": {
     "BT_Hac_XP": {
@@ -394,6 +431,50 @@
           "response": null
         },
         "review_flags": []
+      },
+      "artifact_info": {
+        "summary": "Hũ vai rộng, hai quai đắp hình đầu thú. Hoa văn xếp thành từng băng: vai có các ô vân như ý chứa hoa lá, thân là mẫu đơn dây, chân là hàng ô cánh sen.",
+        "form": "Hũ thân phình, vai rộng, cổ ngắn, hai quai đầu thú",
+        "technique": "Vẽ lam dưới men (hoa lam): vẽ màu lam cô-ban lên xương gốm rồi phủ men trong.",
+        "style": "Tương đồng gốm hoa lam Trung Hoa thời Nguyên (thế kỷ 14)",
+        "origin": "Chưa xác định. Tên tệp gốc trong bộ dữ liệu cho thấy vật này nhiều khả năng thuộc nhóm mô hình lấy từ Sketchfab, không phải nhóm quét tại làng gốm Bát Tràng, Thanh Hà.",
+        "motifs": [
+          {
+            "name": "Vân như ý",
+            "where": "các ô hình mây cụm quanh vai",
+            "meaning": "Cùng dạng hoa văn cổ áo mây trên vải vóc, y phục thời đó.",
+            "source": "met_49216"
+          },
+          {
+            "name": "Mẫu đơn dây",
+            "meaning": "Điềm may, vẻ đẹp nữ tính.",
+            "source": "usc_pam",
+            "where": "băng chính quanh thân"
+          },
+          {
+            "name": "Cánh sen",
+            "meaning": "Đến cùng Phật giáo, tượng trưng sự thanh khiết.",
+            "source": "met_49855",
+            "where": "hàng ô quanh chân"
+          }
+        ],
+        "comparison": {
+          "title": "Bình vẽ mẫu đơn dây",
+          "title_original": "Bottle with Peony Scroll",
+          "dating": "Thời Nguyên, giữa thế kỷ 14",
+          "place": "Cảnh Đức Trấn, Trung Quốc",
+          "holder": "The Metropolitan Museum of Art",
+          "accession": "26.271.1a, b",
+          "url": "https://www.metmuseum.org/art/collection/search/49216",
+          "note": "Cùng cách chia băng: ô vân như ý ở vai, mẫu đơn dây ở thân, ô cánh sen ở chân."
+        },
+        "sources": [
+          "met_49216",
+          "usc_pam",
+          "met_49855"
+        ],
+        "origin_note": "Nhóm biên soạn từ quan sát mô hình và đối chiếu nguồn bảo tàng; chưa qua chuyên gia gốm thẩm định.",
+        "written_on": "2026-11-21"
       }
     },
     "LR3D_61": {
@@ -439,6 +520,49 @@
           "response": null
         },
         "review_flags": []
+      },
+      "artifact_info": {
+        "summary": "Hũ thân tròn, vai đầy. Một con rồng thân dài phủ vảy uốn quanh bình giữa những dải mây xoắn; chân bình là hàng cánh sen dài.",
+        "form": "Hũ thân tròn, vai đầy, cổ thẳng ngắn",
+        "technique": "Vẽ lam dưới men (hoa lam): vẽ màu lam cô-ban lên xương gốm rồi phủ men trong.",
+        "style": "Tương đồng gốm hoa lam Trung Hoa đầu thời Minh (thế kỷ 15)",
+        "origin": "Chưa xác định. Tên tệp gốc trong bộ dữ liệu cho thấy vật này nhiều khả năng thuộc nhóm mô hình lấy từ Sketchfab, không phải nhóm quét tại làng gốm Bát Tràng, Thanh Hà.",
+        "motifs": [
+          {
+            "name": "Rồng",
+            "meaning": "Tượng trưng cho trời và hoàng đế.",
+            "source": "usc_pam",
+            "where": "uốn quanh thân"
+          },
+          {
+            "name": "Mây",
+            "meaning": "Điềm lành, hạnh phúc.",
+            "source": "usc_pam",
+            "where": "dải mây xoắn quanh rồng và ở vai"
+          },
+          {
+            "name": "Cánh sen",
+            "meaning": "Đến cùng Phật giáo, tượng trưng sự thanh khiết.",
+            "source": "met_49855",
+            "where": "hàng cánh sen dài quanh chân"
+          }
+        ],
+        "comparison": {
+          "title": "Hũ vẽ rồng",
+          "title_original": "Jar with dragon",
+          "dating": "Thời Minh, niên hiệu Tuyên Đức (1426–1435)",
+          "place": "Cảnh Đức Trấn, Trung Quốc",
+          "holder": "The Metropolitan Museum of Art",
+          "accession": "37.191.1",
+          "url": "https://www.metmuseum.org/art/collection/search/39666",
+          "note": "Hũ do triều đình đặt làm ở lò Cảnh Đức Trấn. Dáng hũ, rồng giữa mây và hàng cánh sen ở chân rất gần với vật này."
+        },
+        "sources": [
+          "usc_pam",
+          "met_49855"
+        ],
+        "origin_note": "Nhóm biên soạn từ quan sát mô hình và đối chiếu nguồn bảo tàng; chưa qua chuyên gia gốm thẩm định.",
+        "written_on": "2026-11-21"
       }
     },
     "LR3D_50": {
@@ -484,6 +608,42 @@
           "response": null
         },
         "review_flags": []
+      },
+      "artifact_info": {
+        "summary": "Bình cổ cao, thân cầu. Dây hoa cuộn, chủ yếu là hoa sen, phủ kín cổ và thân; chân bình viền một hàng ô cánh sen nhỏ.",
+        "form": "Bình cổ cao, thân cầu, miệng hơi loe",
+        "technique": "Vẽ lam dưới men (hoa lam): vẽ màu lam cô-ban lên xương gốm rồi phủ men trong.",
+        "style": "Tương đồng gốm hoa lam Trung Hoa thời Thanh (cuối thế kỷ 17 – thế kỷ 18)",
+        "origin": "Chưa xác định. Tên tệp gốc trong bộ dữ liệu cho thấy vật này nhiều khả năng thuộc nhóm mô hình lấy từ Sketchfab, không phải nhóm quét tại làng gốm Bát Tràng, Thanh Hà.",
+        "motifs": [
+          {
+            "name": "Sen dây",
+            "meaning": "Đến cùng Phật giáo, tượng trưng sự thanh khiết.",
+            "source": "met_49855",
+            "where": "hoa sen trên dây hoa cuộn kín cổ và thân"
+          },
+          {
+            "name": "Cánh sen",
+            "meaning": "Đến cùng Phật giáo, tượng trưng sự thanh khiết.",
+            "source": "met_49855",
+            "where": "hàng ô nhỏ quanh chân"
+          }
+        ],
+        "comparison": {
+          "title": "Bình vẽ sen dây",
+          "title_original": "Bottle with lotus scrolls",
+          "dating": "Thời Thanh, niên hiệu Khang Hy (cuối thế kỷ 17 – đầu thế kỷ 18)",
+          "place": "Cảnh Đức Trấn, Trung Quốc",
+          "holder": "The Metropolitan Museum of Art",
+          "accession": "14.40.309",
+          "url": "https://www.metmuseum.org/art/collection/search/47638",
+          "note": "Cùng dáng bình cổ cao thân cầu và cùng đề tài sen dây."
+        },
+        "sources": [
+          "met_49855"
+        ],
+        "origin_note": "Nhóm biên soạn từ quan sát mô hình và đối chiếu nguồn bảo tàng; chưa qua chuyên gia gốm thẩm định.",
+        "written_on": "2026-11-21"
       }
     },
     "LR3D_38": {
@@ -529,6 +689,25 @@
           "response": null
         },
         "review_flags": []
+      },
+      "artifact_info": {
+        "summary": "Bình trụ cao, thân thon. Những khóm cây hoa thân mảnh, hoa nhỏ kết chùm, vươn từ chân lên vai trên nền lam nhạt.",
+        "form": "Bình trụ cao, thân thon dài, vai xuôi",
+        "technique": "Men xanh xám nhạt; lá vẽ lam, hoa nhỏ màu trắng. Chưa xác định được kỹ thuật từ mô hình.",
+        "style": "Chưa xác định",
+        "origin": "Chưa xác định. Tên tệp gốc trong bộ dữ liệu cho thấy vật này nhiều khả năng thuộc nhóm mô hình lấy từ Sketchfab, không phải nhóm quét tại làng gốm Bát Tràng, Thanh Hà.",
+        "motifs": [
+          {
+            "name": "Cây hoa",
+            "where": "các khóm hoa thân thẳng quanh thân",
+            "meaning": null,
+            "source": null
+          }
+        ],
+        "comparison": null,
+        "sources": [],
+        "origin_note": "Nhóm biên soạn từ quan sát mô hình và đối chiếu nguồn bảo tàng; chưa qua chuyên gia gốm thẩm định.",
+        "written_on": "2026-11-21"
       }
     },
     "LR3D_97": {
@@ -574,6 +753,57 @@
           "response": null
         },
         "review_flags": []
+      },
+      "artifact_info": {
+        "summary": "Bình dáng quả lê, cổ thắt, men trắng ngà rạn, miệng có vết sứt. Lá chuối dưới miệng, mây xoắn ở cổ, thân chia ô vẽ hoa lá cách điệu, chân là hàng cánh sen.",
+        "form": "Bình dáng tỳ bà (ngọc hồ xuân): thân hình quả lê, cổ thắt, miệng loe",
+        "technique": "Vẽ lam dưới men (hoa lam): vẽ màu lam cô-ban lên xương gốm rồi phủ men trong.",
+        "style": "Tương đồng gốm hoa lam Việt Nam thế kỷ 15. Theo Bảo tàng Lịch sử Quốc gia, gốm hoa lam Việt xuất hiện từ thời Trần (thế kỷ 14) và phát triển rực rỡ ở thế kỷ 15.",
+        "origin": "Chưa xác định. Tên tệp gốc trong bộ dữ liệu cho thấy vật này nhiều khả năng thuộc nhóm mô hình lấy từ Sketchfab, không phải nhóm quét tại làng gốm Bát Tràng, Thanh Hà.",
+        "motifs": [
+          {
+            "name": "Lá chuối",
+            "where": "băng dưới miệng",
+            "meaning": null,
+            "source": null
+          },
+          {
+            "name": "Mây",
+            "meaning": "Điềm lành, hạnh phúc.",
+            "source": "usc_pam",
+            "where": "mây xoắn quanh cổ"
+          },
+          {
+            "name": "Hoa lá cách điệu",
+            "where": "các ô quanh thân",
+            "meaning": null,
+            "source": null
+          },
+          {
+            "name": "Cánh sen",
+            "meaning": "Đến cùng Phật giáo, tượng trưng sự thanh khiết.",
+            "source": "met_49855",
+            "where": "hàng cánh sen quanh chân"
+          }
+        ],
+        "comparison": {
+          "title": "Bình ngọc hồ xuân",
+          "title_original": "Bottle Vase (Yu-hu chun)",
+          "dating": "Cuối thế kỷ 15",
+          "place": "Việt Nam",
+          "holder": "Minneapolis Institute of Art",
+          "accession": "2007.19.2",
+          "url": "https://collections.artsmia.org/art/102199/bottle-vase-vietnam",
+          "note": "Cùng dáng quả lê và cách chia băng: mây xoắn ở cổ, lá chuối dưới miệng, cánh sen quanh chân."
+        },
+        "sources": [
+          "btlsqg",
+          "btlsqg_tk15",
+          "usc_pam",
+          "met_49855"
+        ],
+        "origin_note": "Nhóm biên soạn từ quan sát mô hình và đối chiếu nguồn bảo tàng; chưa qua chuyên gia gốm thẩm định.",
+        "written_on": "2026-11-21"
       }
     },
     "LR3D_124": {
@@ -619,6 +849,39 @@
           "response": null
         },
         "review_flags": []
+      },
+      "artifact_info": {
+        "summary": "Bình vuông bốn mặt, cổ thẳng ngắn. Vai viền vân như ý, giữa mặt bình là ô tròn có rồng cuộn, chân là băng lá chuối.",
+        "form": "Bình vuông bốn mặt, cổ thẳng ngắn",
+        "technique": "Vẽ lam dưới men (hoa lam): vẽ màu lam cô-ban lên xương gốm rồi phủ men trong.",
+        "style": "Chưa xác định; cách vẽ gần gốm hoa lam Trung Hoa",
+        "origin": "Chưa xác định. Tên tệp gốc trong bộ dữ liệu cho thấy vật này nhiều khả năng thuộc nhóm mô hình lấy từ Sketchfab, không phải nhóm quét tại làng gốm Bát Tràng, Thanh Hà.",
+        "motifs": [
+          {
+            "name": "Vân như ý",
+            "where": "băng quanh vai",
+            "meaning": null,
+            "source": null
+          },
+          {
+            "name": "Rồng cuộn",
+            "meaning": "Tượng trưng cho trời và hoàng đế.",
+            "source": "usc_pam",
+            "where": "cuộn trong ô tròn giữa mặt bình"
+          },
+          {
+            "name": "Lá chuối",
+            "where": "băng quanh chân",
+            "meaning": null,
+            "source": null
+          }
+        ],
+        "comparison": null,
+        "sources": [
+          "usc_pam"
+        ],
+        "origin_note": "Nhóm biên soạn từ quan sát mô hình và đối chiếu nguồn bảo tàng; chưa qua chuyên gia gốm thẩm định.",
+        "written_on": "2026-11-21"
       }
     }
   }

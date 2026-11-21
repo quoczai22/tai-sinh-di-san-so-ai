@@ -1,4 +1,4 @@
-/* views/studio.css — RIÊNG TRANG STUDIO: bố cục đầu vào → tạo (.studio-io, .io-*), nút Tạo (.gen-btn), tiến độ (.out-progress, .out-note). JS: views/studio.js. */
+/* views/studio.css — RIÊNG TRANG STUDIO: bố cục đầu vào → tạo (.studio-io, .io-*; .has-info: thêm cột ô Về hiện vật), nút Tạo (.gen-btn), tiến độ (.out-progress, .out-note). JS: views/studio.js. */
 
 .io-artifact::before {
     content: "";
@@ -139,4 +139,47 @@
 
 .io-artifact.has-3d img {
     display: none;
+}
+
+/* ---------- Ô "Về hiện vật" (components/artifact-info.css) ----------
+   Màn rộng: bình + nút Tạo ở cột trái, ô thông tin ở cột phải. Màn hẹp: bình → nút → thông tin. */
+.studio-io.has-info {
+    max-width: 1120px;
+    grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "input info" "action info";
+    justify-items: stretch;
+    align-items: start;
+    column-gap: clamp(32px, 5vw, 72px);
+    row-gap: 24px;
+}
+
+.studio-io.has-info .io-input {
+    grid-area: input;
+}
+
+.studio-io.has-info .io-action {
+    grid-area: action;
+}
+
+.studio-io.has-info .ai-panel {
+    grid-area: info;
+}
+
+@media (max-width: 900px) {
+    .studio-io.has-info {
+        max-width: 620px;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: none;
+        grid-template-areas: "input" "action" "info";
+    }
+}
+
+/* Màn hẹp: thanh điều khiển 3D nằm thành hàng riêng dưới ảnh bình và tên (trước đây bị dồn lên trên ảnh) */
+@media (max-width: 640px) {
+    .io-input .viewer-controls.lb-zoomrow {
+        grid-column: 1 / -1;
+        grid-row: 5;
+        margin-top: 12px;
+    }
 }
