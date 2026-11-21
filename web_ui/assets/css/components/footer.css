@@ -117,3 +117,53 @@
         height: 36px;
     }
 }
+
+/* ---------- Mặt trống đồng ở góc phải chân trang (decor/drum.js, gắn bởi components/nav.js) ----------
+   Nhô lên từ góc dưới phải, bị cắt bởi mép chân trang. Các vành hiện cố định (--e) và quay rất chậm. */
+.site-foot {
+    overflow: hidden;
+}
+
+.foot-inner {
+    position: relative;
+    z-index: 1;
+}
+
+.foot-drum {
+    --e: 1;
+    --p: .5;
+    position: absolute;
+    right: -70px;
+    bottom: -100px;
+    width: clamp(240px, 26vw, 380px);
+    aspect-ratio: 1;
+    opacity: .5;
+    pointer-events: none;
+}
+
+.foot-drum .drum-spin {
+    animation: foot-drum-spin 240s linear infinite;
+}
+
+.foot-drum .drum-flock {
+    animation: foot-drum-spin 160s linear infinite reverse;
+}
+
+@keyframes foot-drum-spin {
+    to { rotate: 360deg; }
+}
+
+/* Máy yếu hoặc hệ điều hành bật giảm chuyển động: giữ hình tĩnh */
+html.calm .foot-drum .drum-spin,
+html.calm .foot-drum .drum-flock {
+    animation: none;
+}
+
+@media (max-width: 640px) {
+    .foot-drum {
+        right: -90px;
+        bottom: -90px;
+        width: 240px;
+        opacity: .32;
+    }
+}
