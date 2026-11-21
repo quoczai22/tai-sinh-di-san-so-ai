@@ -1,0 +1,142 @@
+/* views/studio.css — RIÊNG TRANG STUDIO: bố cục đầu vào → tạo (.studio-io, .io-*), nút Tạo (.gen-btn), tiến độ (.out-progress, .out-note). JS: views/studio.js. */
+
+.io-artifact::before {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    z-index: 1;
+    pointer-events: none;
+    opacity: .75;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M1 23V1h22M5 19V5h14M9 15V9h6'/%3E%3C/svg%3E") left top / 22px no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M23 23V1H1M19 19V5H5M15 15V9H9'/%3E%3C/svg%3E") right top / 22px no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M1 1v22h22M5 5v14h14M9 9v6h6'/%3E%3C/svg%3E") left bottom / 22px no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M23 1v22H1M19 5v14H5M15 9v6H9'/%3E%3C/svg%3E") right bottom / 22px no-repeat;
+}
+
+/* ---------- Studio: ĐẦU VÀO → TẠO (kết quả ở trang riêng #/result) ---------- */
+.studio-io {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 24px;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+.io-input {
+    width: 100%;
+    text-align: center;
+}
+
+.io-artifact {
+    position: relative;
+    aspect-ratio: 4 / 4.6;
+    display: grid;
+    place-items: center;
+    background: var(--vitrine);
+}
+
+.io-artifact img {
+    max-height: 80%;
+    max-width: 78%;
+    object-fit: contain;
+    object-position: center 44%;
+    filter: drop-shadow(0 14px 14px rgba(40, 28, 10, .2));
+}
+
+.io-name {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 1.2;
+    margin: 16px 0 6px;
+    text-wrap: balance;
+}
+
+.io-change {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--dat);
+}
+
+.io-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.gen-btn {
+    white-space: nowrap;
+}
+
+.gen-btn svg {
+    transition: transform .35s var(--ease-out);
+}
+
+.gen-btn:hover:not(:disabled) svg {
+    transform: translateX(4px);
+}
+
+.gen-btn:disabled {
+    opacity: .55;
+    cursor: default;
+}
+
+.out-progress {
+    width: 160px;
+}
+
+.io-input .kicker {
+    justify-content: flex-start;
+}
+
+.io-input .kicker {
+    justify-content: center;
+}
+
+.out-note {
+    margin: 14px 0 0;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--ink-3);
+}
+
+.result-head .io-name {
+    margin: 0;
+    text-align: left;
+}
+
+@media (max-width: 640px) {
+    .io-input {
+            max-width: none;
+            display: grid;
+            grid-template-columns: 110px minmax(0, 1fr);
+            grid-template-areas: "k k" "a n" "a s" "a c";
+            column-gap: 16px;
+            text-align: left;
+            align-items: start;
+        }
+    .io-input .kicker {
+            grid-area: k;
+            justify-content: flex-start;
+        }
+    .io-artifact {
+            grid-area: a;
+        }
+    .io-name {
+            grid-area: n;
+            font-size: 21px;
+            margin: 0 0 4px;
+        }
+    .io-change {
+            grid-area: c;
+            margin-top: 6px;
+        }
+}
+
+.io-artifact.has-3d img {
+    display: none;
+}

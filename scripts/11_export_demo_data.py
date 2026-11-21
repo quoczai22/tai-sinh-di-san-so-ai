@@ -66,6 +66,7 @@ def export_result() -> int:
         media = result_dir / "media" / p["passport_id"]
         # Ảnh thu nhỏ: bản đầu tiên (do AI sinh) và bản sửa của hệ thống nếu có; cùng ý nghĩa với thumb và repair_thumb ở passports.json
         entry["thumb"] = webp(ROOT / p["versions"][0]["path"], media / "final_img2img.webp") if p["versions"] else None
+        entry["full_image"] = f"assets/images/result/{entry['heritage_id']}_V{entry['passport_id'].rsplit('-V', 1)[-1]}_aodai.png"
         repair = next((v for v in p["versions"] if v["kind"] == "system_repair"), None)
         entry["repair_thumb"] = webp(ROOT / repair["path"], media / "repair_pattern_lock.webp") if repair else None
     dump("result/passports.json", index)

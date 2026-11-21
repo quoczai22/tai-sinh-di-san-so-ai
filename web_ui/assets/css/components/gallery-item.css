@@ -1,0 +1,99 @@
+/* components/gallery-item.css — LƯỚI TÀ ÁO trang chủ: .gallery-cols, .gallery-col, .gallery-item, .gi-img. JS: components/gallery-item.js. */
+
+/* ---------- 4. Tà áo: ba cột trôi lệch nhịp ---------- */
+.gallery-cols {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(18px, 2.6vw, 36px);
+    align-items: start;
+}
+
+.gallery-col {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(28px, 4vw, 56px);
+    translate: 0 calc((.5 - var(--p, .5)) * var(--s, 1) * 160px);
+}
+
+.gallery-col:nth-child(2) {
+    margin-top: clamp(40px, 8vw, 120px);
+}
+
+.gallery-item {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.gi-img {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+    background: var(--line-2);
+    clip-path: inset(calc((1 - var(--e, 1)) * 16%) 0 0 0);
+}
+
+.gi-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    scale: calc(1.18 - var(--e, 1) * .12);
+    translate: 0 calc((.5 - var(--p, .5)) * 8%);
+    transition: transform 1.4s var(--ease-out);
+}
+
+.gallery-item:hover .gi-img img {
+    transform: scale(1.04);
+}
+
+@media (max-width: 980px) {
+    .gallery-cols {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    .gallery-col {
+            display: contents;
+        }
+}
+
+@media (max-width: 640px) {
+    .gallery-col {
+            translate: 0 calc((.5 - var(--p, .5)) * var(--s, 1) * 60px);
+        }
+}
+
+/* Tà áo: đứng yên khi cuộn; rê chuột / bấm vào thì ảnh phóng nhẹ */
+.gallery-col, html .gallery-col {
+    translate: none !important;
+}
+
+.gi-img {
+    clip-path: none;
+}
+
+.gi-img img {
+    scale: 1;
+    translate: none;
+    transition: transform .9s var(--ease-out);
+}
+
+.gallery-item:hover .gi-img img, .gallery-item:focus-visible .gi-img img {
+    transform: scale(1.04);
+}
+
+.gallery-item:active .gi-img img {
+    transform: scale(1.07);
+    transition-duration: .35s;
+}
+
+/* Ba cột thẳng hàng: bỏ độ lệch cột giữa, ảnh cùng tỉ lệ, chú thích cùng chiều cao */
+.gallery-col:nth-child(2) {
+    margin-top: 0;
+}
+
+.gallery-cols {
+    align-items: stretch;
+}
+
+.gallery-item {
+    cursor: default;
+}

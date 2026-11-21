@@ -24,7 +24,7 @@ def test_js_module_syntax(path):
 
 
 def test_every_route_has_a_view():
-    app = (WEB / "assets" / "js" / "app.js").read_text(encoding="utf-8")
+    app = (WEB / "assets" / "js" / "core" / "routes.js").read_text(encoding="utf-8")
     routes = set(re.findall(r"views/([a-z]+)\.js", app))
     assert routes
     for r in routes:
@@ -77,3 +77,38 @@ def test_every_active_heritage_has_a_valid_glb_model():
         assert glb.exists(), it["id"]
         assert glb.read_bytes()[:4] == b"glTF", it["id"]
         assert glb.stat().st_size < 8_000_000, it["id"]
+
+
+def _ui_index():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("ui_index", ROOT / "scripts" / "ui_index.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_index_html_matches_modules_and_css_order():
+    """Thẻ CSS và import map trong index.html phải đúng như scripts/ui_index.py sinh ra (chạy script đó sau khi thêm/đổi file)."""
+    ui = _ui_index()
+    html = (WEB / "index.html").read_text(encoding="utf-8")
+    assert ui.build(html, ui.current_version(html)) == html, "Chạy: python scripts/ui_index.py"
+
+
+def test_ui_files_stay_small_and_documented():
+    """Mỗi file giao diện (JS, CSS, Streamlit) ≤ 500 dòng và mở đầu bằng chú thích vai trò."""
+    files = [p for p in (WEB / "assets" / "js").rglob("*.js") if "vendor" not in p.parts]
+    files += list((WEB / "assets" / "css").rglob("*.css"))
+    files += list((ROOT / "streamlit_ui").rglob("*.py"))
+    for p in files:
+        text = p.read_text(encoding="utf-8")
+        assert text.count("\n") <= 500, (p.relative_to(ROOT).as_posix(), text.count("\n"))
+        if p.name not in ("config.js",):
+            assert text.lstrip().startswith(("//", "/*", '"""')), p.relative_to(ROOT).as_posix()
+
+
+def test_views_do_not_define_components():
+    """View chỉ ghép component: không tự định nghĩa hàm dựng thẻ/khung (đặt trong components/)."""
+    for p in (WEB / "assets" / "js" / "views").glob("*.js"):
+        names = re.findall(r"^(?:export )?(?:async )?function (\w+)", p.read_text(encoding="utf-8"), re.M)
+        extra = [n for n in names if n not in ("render", "picker")]
+        assert not extra, (p.name, extra)

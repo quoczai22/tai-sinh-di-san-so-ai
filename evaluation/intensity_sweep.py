@@ -42,7 +42,7 @@ CSV_FILE = ROOT / "evaluation" / "intensity_sweep.csv"
 # Bản cũ mặc định "BT001","BT008","BT010" — ba mã không còn tồn tại. Nay lấy từ
 # Heritage Registry (chỉ hiện vật active).
 def _default_items() -> list[str]:
-    from streamlit_ui.heritage_data import load_heritage_metadata  # noqa: PLC0415
+    from provenance.heritage import load_heritage_metadata  # noqa: PLC0415
     return [it["heritage_id"] for it in load_heritage_metadata(ROOT)]
 
 

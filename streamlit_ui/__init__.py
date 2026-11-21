@@ -1,1 +1,1 @@
-"""Các thành phần nhỏ cho ứng dụng Streamlit MVP."""
+"""Công cụ Streamlit nội bộ: app.py (luồng chính), state.py, theme.py, variants.py, components/, screens/."""

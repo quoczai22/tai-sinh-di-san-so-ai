@@ -1,0 +1,13 @@
+.git
+.vscode
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+digital-heritage-ai/
+outputs/
+web_ui/
+docs/
+scripts/
+*.md
+.env

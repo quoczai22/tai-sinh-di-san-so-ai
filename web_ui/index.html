@@ -10,8 +10,35 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap">
-    <link rel="stylesheet" href="./assets/css/app.css?v=finals-73">
-    <link rel="stylesheet" href="./assets/css/exhibit.css?v=finals-73">
+    <!-- css:start — do scripts/ui_index.py sinh từ assets/css/order.json, không sửa tay -->
+    <link rel="stylesheet" href="./assets/css/base/tokens.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/base/reset.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/base/typography.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/base/layout.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/base/reveal.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/buttons.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/badges.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/feedback.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/nav.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/menu.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/hero.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/hero-fan.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/journey-pin.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/journey-card.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/artifact-card.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/picker-card.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/gallery-item.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/design-card.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/lightbox.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/viewer3d.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/components/footer.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/decor/phoenix.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/decor/drum.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/views/home.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/views/studio.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/views/result.css?v=finals-79">
+    <link rel="stylesheet" href="./assets/css/base/motion.css?v=finals-79">
+    <!-- css:end -->
 </head>
 <body>
     <a class="skip-link" href="#main">Bỏ qua điều hướng</a>
@@ -75,27 +102,48 @@
     <div id="overlay-root"></div>
     <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
     <!-- Gắn phiên bản cho mọi module để trình duyệt không trộn bản cũ và bản mới sau khi cập nhật.
-         Đổi "finals-73" ở đây và ở các thẻ link/script khi phát hành bản mới. -->
+         Import map do scripts/ui_index.py sinh ra — không sửa tay. Phát hành bản mới:
+         python scripts/ui_index.py finals-N (đổi "finals-79" ở mọi thẻ link/script và import map). -->
     <script type="importmap">
-{
+    {
         "imports": {
-                "./assets/js/app.js": "./assets/js/app.js?v=finals-73",
-                "./assets/js/lib/data.js": "./assets/js/lib/data.js?v=finals-73",
-                "./assets/js/lib/drum.js": "./assets/js/lib/drum.js?v=finals-73",
-                "./assets/js/lib/dom.js": "./assets/js/lib/dom.js?v=finals-73",
-                "./assets/js/lib/hero.js": "./assets/js/lib/hero.js?v=finals-73",
-                "./assets/js/lib/motion.js": "./assets/js/lib/motion.js?v=finals-73",
-                "./assets/js/lib/phoenix.js": "./assets/js/lib/phoenix.js?v=finals-73",
-                "./assets/js/lib/ui.js": "./assets/js/lib/ui.js?v=finals-73",
-                "./assets/js/lib/viewer3d.js": "./assets/js/lib/viewer3d.js?v=finals-73",
-                "three": "./assets/js/vendor/three/three.module.js",
-                "./assets/js/views/result.js": "./assets/js/views/result.js?v=finals-73",
-                "./assets/js/views/library.js": "./assets/js/views/library.js?v=finals-73",
-                "./assets/js/views/studio.js": "./assets/js/views/studio.js?v=finals-73"
+            "./assets/js/app.js": "./assets/js/app.js?v=finals-79",
+            "./assets/js/components/artifact-card.js": "./assets/js/components/artifact-card.js?v=finals-79",
+            "./assets/js/components/badges.js": "./assets/js/components/badges.js?v=finals-79",
+            "./assets/js/components/chapter-head.js": "./assets/js/components/chapter-head.js?v=finals-79",
+            "./assets/js/components/design-card.js": "./assets/js/components/design-card.js?v=finals-79",
+            "./assets/js/components/gallery-item.js": "./assets/js/components/gallery-item.js?v=finals-79",
+            "./assets/js/components/hero/fan.js": "./assets/js/components/hero/fan.js?v=finals-79",
+            "./assets/js/components/hero/index.js": "./assets/js/components/hero/index.js?v=finals-79",
+            "./assets/js/components/hero/marquee.js": "./assets/js/components/hero/marquee.js?v=finals-79",
+            "./assets/js/components/journey-card.js": "./assets/js/components/journey-card.js?v=finals-79",
+            "./assets/js/components/layout.js": "./assets/js/components/layout.js?v=finals-79",
+            "./assets/js/components/lightbox.js": "./assets/js/components/lightbox.js?v=finals-79",
+            "./assets/js/components/nav.js": "./assets/js/components/nav.js?v=finals-79",
+            "./assets/js/components/picker-card.js": "./assets/js/components/picker-card.js?v=finals-79",
+            "./assets/js/components/viewer-controls.js": "./assets/js/components/viewer-controls.js?v=finals-79",
+            "./assets/js/components/viewer3d.js": "./assets/js/components/viewer3d.js?v=finals-79",
+            "./assets/js/core/data.js": "./assets/js/core/data.js?v=finals-79",
+            "./assets/js/core/designs.js": "./assets/js/core/designs.js?v=finals-79",
+            "./assets/js/core/dom.js": "./assets/js/core/dom.js?v=finals-79",
+            "./assets/js/core/download.js": "./assets/js/core/download.js?v=finals-79",
+            "./assets/js/core/generation.js": "./assets/js/core/generation.js?v=finals-79",
+            "./assets/js/core/icons.js": "./assets/js/core/icons.js?v=finals-79",
+            "./assets/js/core/motion.js": "./assets/js/core/motion.js?v=finals-79",
+            "./assets/js/core/reveal.js": "./assets/js/core/reveal.js?v=finals-79",
+            "./assets/js/core/router.js": "./assets/js/core/router.js?v=finals-79",
+            "./assets/js/core/routes.js": "./assets/js/core/routes.js?v=finals-79",
+            "./assets/js/core/scenes.js": "./assets/js/core/scenes.js?v=finals-79",
+            "./assets/js/decor/drum.js": "./assets/js/decor/drum.js?v=finals-79",
+            "./assets/js/decor/phoenix.js": "./assets/js/decor/phoenix.js?v=finals-79",
+            "./assets/js/views/library.js": "./assets/js/views/library.js?v=finals-79",
+            "./assets/js/views/result.js": "./assets/js/views/result.js?v=finals-79",
+            "./assets/js/views/studio.js": "./assets/js/views/studio.js?v=finals-79",
+            "three": "./assets/js/vendor/three/three.module.js"
         }
     }
     </script>
-    <script src="./assets/js/config.js?v=finals-73"></script>
-    <script type="module" src="./assets/js/app.js?v=finals-73"></script>
+    <script src="./assets/js/config.js?v=finals-79"></script>
+    <script type="module" src="./assets/js/app.js?v=finals-79"></script>
 </body>
 </html>

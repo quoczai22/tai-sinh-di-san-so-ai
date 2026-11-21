@@ -1,0 +1,169 @@
+const fs = require('fs');
+const path = require('path');
+
+/**
+ * Bộ đếm Rate Limit theo IP (in-memory trên từng instance Vercel Function).
+ * Giới hạn mặc định: RATE_LIMIT_PER_HOUR = 10 lượt / IP / giờ.
+ * Lưu ý: Vì Vercel Serverless có thể khởi tạo lại container khi scale hoặc sau thời gian rảnh,
+ * bộ đếm in-memory áp dụng trong vòng đời warm instance — phù hợp quy mô cuộc thi.
+ */
+const ipBuckets = new Map();
+
+function getClientIp(req) {
+    const xff = req.headers['x-forwarded-for'];
+    if (typeof xff === 'string' && xff.trim()) {
+        return xff.split(',')[0].trim();
+    }
+    return req.headers['x-real-ip'] || req.socket?.remoteAddress || 'unknown';
+}
+
+function checkRateLimit(req) {
+    const limit = Math.max(1, parseInt(process.env.RATE_LIMIT_PER_HOUR || '10', 10));
+    const windowMs = 60 * 60 * 1000;
+    const now = Date.now();
+    const ip = getClientIp(req);
+
+    const timestamps = (ipBuckets.get(ip) || []).filter((ts) => now - ts < windowMs);
+    if (timestamps.length >= limit) {
+        ipBuckets.set(ip, timestamps);
+        return { allowed: false, limit, remaining: 0, ip };
+    }
+    timestamps.push(now);
+    ipBuckets.set(ip, timestamps);
+    return { allowed: true, limit, remaining: limit - timestamps.length, ip };
+}
+
+function getBackendConfig() {
+    const modalUrl = (process.env.MODAL_URL || '').trim().replace(/\/$/, '');
+    const modalKey = (process.env.MODAL_KEY || '').trim();
+    const hfSpaceUrl = (process.env.HF_SPACE_URL || '').trim().replace(/\/$/, '');
+    const hfToken = (process.env.HF_TOKEN || '').trim();
+    const hfApiKey = (process.env.HF_API_KEY || '').trim();
+    // Mặc định 25 giây: đủ cho Modal khởi động container nguội trước khi bị coi là sập.
+    const modalTimeoutMs = Math.max(500, parseInt(process.env.MODAL_TIMEOUT_MS || '25000', 10));
+    const hfTimeoutMs = Math.max(500, parseInt(process.env.HF_TIMEOUT_MS || '6000', 10));
+    return { modalUrl, modalKey, hfSpaceUrl, hfToken, hfApiKey, modalTimeoutMs, hfTimeoutMs };
+}
+
+function buildBackendHeaders(backend, config = getBackendConfig()) {
+    const headers = { Accept: 'application/json' };
+    if (backend === 'modal') {
+        if (config.modalKey) headers['X-API-Key'] = config.modalKey;
+    } else if (backend === 'hf') {
+        // Authorization: Bearer HF_TOKEN -> để Hugging Face cho phép vào Space riêng tư.
+        // X-API-Key -> khoá ứng dụng, phải khớp DH_API_KEY đặt trong secret của Space.
+        // Dùng HF_API_KEY nếu có, không thì dùng chung MODAL_KEY. Không gửi HF_TOKEN vào X-API-Key.
+        if (config.hfToken) headers['Authorization'] = `Bearer ${config.hfToken}`;
+        const appKey = config.hfApiKey || config.modalKey;
+        if (appKey) headers['X-API-Key'] = appKey;
+    }
+    return headers;
+}
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(new Error(`Timeout after ${timeoutMs}ms`)), timeoutMs);
+    try {
+        return await fetch(url, { ...options, signal: controller.signal });
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+let cachedDemoData = null;
+function loadDemoData() {
+    if (cachedDemoData) return cachedDemoData;
+    const candidates = [
+        path.join(__dirname, '..', 'assets', 'data', 'demo_variants.json'),
+        path.join(process.cwd(), 'assets', 'data', 'demo_variants.json'),
+        path.join(process.cwd(), 'web_ui', 'assets', 'data', 'demo_variants.json'),
+    ];
+    for (const filePath of candidates) {
+        if (fs.existsSync(filePath)) {
+            cachedDemoData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+            return cachedDemoData;
+        }
+    }
+    return { items: {} };
+}
+
+function getDemoVariants(heritageId) {
+    const data = loadDemoData();
+    const list = data?.items?.[heritageId] || [];
+    return list.map((variant) => ({
+        ...variant,
+        image_url: variant.image_url || `./assets/images/variants/${heritageId}_V${variant.variant_index}_aodai.png`,
+    }));
+}
+
+function logGatewayAudit(entry) {
+    const payload = {
+        timestamp: new Date().toISOString(),
+        ...entry,
+    };
+    console.log('[AUDIT]', JSON.stringify(payload));
+    try {
+        const outDir = process.env.DH_OUTPUT_DIR
+            ? path.resolve(process.env.DH_OUTPUT_DIR)
+            : path.resolve(__dirname, '..', '..', 'outputs');
+        const auditDir = path.join(outDir, 'audit');
+        if (fs.existsSync(path.dirname(outDir))) {
+            fs.mkdirSync(auditDir, { recursive: true });
+            fs.appendFileSync(path.join(auditDir, 'audit.jsonl'), `${JSON.stringify(payload)}\n`, 'utf8');
+        }
+    } catch (_) {
+        // Trên Vercel serverless filesystem là read-only; stdout log đã lưu vào Vercel Runtime Logs.
+    }
+}
+
+let lastAlertTimestamp = 0;
+
+function _resetAlertCooldown() {
+    lastAlertTimestamp = 0;
+}
+
+/**
+ * Gửi cảnh báo sự cố tới Discord Webhook khi Modal gặp lỗi/timeout.
+ * - Cooldown chống spam: mặc định 30 phút (ALERT_COOLDOWN_MIN) lưu trong RAM instance.
+ * - Timeout 3s, bọc try/catch, không bao giờ làm hỏng request của người dùng.
+ * - Tuyệt đối không gửi token, key hay IP người dùng.
+ */
+async function notifyAlert(message) {
+    const webhookUrl = (process.env.ALERT_DISCORD_WEBHOOK_URL || '').trim();
+    if (!webhookUrl) return;
+
+    const cooldownMin = Math.max(1, parseInt(process.env.ALERT_COOLDOWN_MIN || '30', 10));
+    const cooldownMs = cooldownMin * 60 * 1000;
+    const now = Date.now();
+    if (now - lastAlertTimestamp < cooldownMs) {
+        return;
+    }
+    lastAlertTimestamp = now;
+
+    try {
+        await fetchWithTimeout(
+            webhookUrl,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: String(message || '') }),
+            },
+            3000
+        );
+    } catch (err) {
+        // Lỗi gửi cảnh báo KHÔNG được làm hỏng request của người dùng
+        console.warn('[ALERT] Không thể gửi cảnh báo Discord:', err.message || err);
+    }
+}
+
+module.exports = {
+    checkRateLimit,
+    getBackendConfig,
+    buildBackendHeaders,
+    fetchWithTimeout,
+    loadDemoData,
+    getDemoVariants,
+    logGatewayAudit,
+    notifyAlert,
+    _resetAlertCooldown,
+};

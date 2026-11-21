@@ -1,0 +1,36 @@
+/* views/result.css — RIÊNG TRANG KẾT QUẢ: đầu trang (.result-head, .result-artifact), hàng nút (.result-actions). JS: views/result.js. */
+
+/* Trang Kết quả */
+.result-head {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.result-artifact {
+    flex: none;
+    width: 84px;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    background: var(--vitrine);
+}
+
+.result-artifact img {
+    max-height: 84%;
+    max-width: 70%;
+    object-fit: contain;
+}
+
+.result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+/* ---------- Hiện vật tách nền: bình nền trong suốt đặt trên khung nền be, đổ bóng bám theo hình bình ---------- */
+.result-artifact img {
+    filter: drop-shadow(0 6px 6px rgba(40, 28, 10, .22));
+}

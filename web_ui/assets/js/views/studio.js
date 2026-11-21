@@ -1,23 +1,17 @@
-import { h, icon, toast } from '../lib/dom.js';
-import * as data from '../lib/data.js';
-import { section, stateBox } from '../lib/ui.js';
-import { hoverSpin, mountViewer } from '../lib/viewer3d.js';
-
-// ---------------------------------------------------------------------------------------------
-// Studio cho người xem: chọn hiện vật (đầu vào) → bấm Tạo thiết kế → chuyển sang trang Kết quả (#/result).
-// · Có máy chủ GPU: bấm Tạo là sinh thật, có thanh tiến độ, xong chuyển sang trang Kết quả.
-// · Không có GPU: không giả lập việc sinh. Bấm Tạo mở trang Kết quả với bộ thiết kế mô hình đã tạo trước
-//   đó trên GPU (trang Kết quả ghi rõ ngày tạo).
-// ---------------------------------------------------------------------------------------------
-// Thẻ hiện vật trong lưới chọn: rê chuột vào thì bình xoay 3D, rê ra thì đứng yên
-function pickerCard(it) {
-    const pic = h('div', { class: 'pic' }, h('img', { src: it.image, alt: '', loading: 'lazy' }));
-    const card = h('a', { class: 'artifact', href: `#/studio/${encodeURIComponent(it.id)}`, style: { textDecoration: 'none' } },
-        pic,
-        h('div', { class: 'body' }, h('div', { class: 'code' }, it.dating || 'Gốm Bát Tràng'), h('div', { class: 'name' }, it.name)));
-    hoverSpin(card, pic, it.id);
-    return card;
-}
+// views/studio.js — TRANG STUDIO (#/studio, #/studio/<mã hiện vật>): bước 1–2 của pipeline GUI.
+//  · Chưa chọn hiện vật: lưới picker-card để chọn đầu vào.
+//  · Đã chọn: khung 3D + thanh điều khiển, nút Tạo thiết kế.
+//    Có máy chủ GPU (data.canGenerate): bấm Tạo là sinh thật (core/generation.js), có thanh tiến độ, xong sang #/result.
+//    Không có GPU: không giả lập việc sinh — bấm Tạo mở trang Kết quả với bộ thiết kế đã tạo trước đó trên GPU.
+// View chỉ lấy dữ liệu và ghép component; không tự định nghĩa component.
+import { h } from '../core/dom.js';
+import { icon } from '../core/icons.js';
+import * as data from '../core/data.js';
+import { pendingGeneration, runGeneration } from '../core/generation.js';
+import { section, stateBox } from '../components/layout.js';
+import { pickerCard } from '../components/picker-card.js';
+import { mountViewer } from '../components/viewer3d.js';
+import { viewerControls } from '../components/viewer-controls.js';
 
 function picker(items) {
     return section('Chọn một hiện vật', 'Hoa văn của hiện vật bạn chọn sẽ được dệt lên tà áo dài.',
@@ -33,56 +27,52 @@ export async function render([heritageId]) {
     data.audit('heritage_selected', { step: 1, heritage_id: heritageId });
 
     const hasDesigns = (await data.passports()).some((p) => p.heritage_id === heritageId);
-    const can = data.canGenerate();
+    const recovering = pendingGeneration()?.heritageId === heritageId;
+    const can = data.canGenerate() || recovering;
     const goToResult = () => { location.hash = `#/result/${encodeURIComponent(heritageId)}`; };
 
     const note = h('p', { class: 'out-note', role: 'status', 'aria-live': 'polite' });
     const progressBar = h('span');
     const progress = h('div', { class: 'out-progress', hidden: true }, h('div', { class: 'progress' }, progressBar));
-    const seedInput = h('input', { type: 'number', min: 0, max: 2147483647, value: 42, id: 'seed', inputmode: 'numeric' });
-    const genBtn = h('button', { class: 'btn hero-btn primary gen-btn', onclick: async () => {
+    const start = async () => {
+        if (genBtn.disabled) return;
         if (!can) {
             // Không có GPU: mở trang Kết quả với bộ đã tạo trước
-            if (!hasDesigns) { note.textContent = 'Hiện vật này chưa được chạy trên máy GPU nên chưa có thiết kế.'; return; }
+            if (!hasDesigns) { note.textContent = 'Hiện vật này chưa có thiết kế.'; return; }
             goToResult();
             return;
         }
-        const seed = Number(seedInput.value);
-        if (!Number.isInteger(seed) || seed < 0) { toast('Seed phải là số nguyên không âm.'); return; }
         genBtn.disabled = true;
         progress.hidden = false;
-        note.textContent = 'Đang tạo thiết kế…';
+        note.textContent = recovering ? 'Đang khôi phục lượt tạo ảnh…' : 'Đang tạo ảnh';
         try {
-            data.audit('generation_requested', { step: 3, heritage_id: heritageId });
-            const { job_id: jobId } = await data.startGeneration(heritageId, seed);
-            let job;
-            do {
-                await new Promise((r) => setTimeout(r, 1200));
-                job = await data.jobStatus(jobId);
-                progressBar.style.width = `${job.progress || 0}%`;
-            } while (['queued', 'running'].includes(job.status));
-            if (job.status !== 'completed') throw new Error(job.label);
-            data.invalidate('live:passports');
+            await runGeneration(heritageId, null, (pct, job) => {
+                progressBar.style.width = `${pct}%`;
+                note.textContent = job.status === 'queued' ? 'Đang chờ tạo ảnh' : 'Đang tạo ảnh';
+            });
             goToResult();
         } catch (err) {
             progress.hidden = true;
             note.textContent = `Không tạo được thiết kế: ${err.message}`;
             genBtn.disabled = false;
         }
-    } }, 'Tạo thiết kế', icon('arrow'));
+    };
+    const genBtn = h('button', { class: 'btn hero-btn primary gen-btn', onclick: start }, 'Tạo thiết kế', icon('arrow'));
+    if (recovering) setTimeout(start, 0);
 
     // Khung hiện vật: ảnh phẳng làm sẵn; nếu có mô hình 3D thì thay bằng khung xoay 360 độ bằng chuột
-    const artifactBox = h('div', { class: 'io-artifact' }, h('img', { src: item.image, alt: item.name }));
-    mountViewer(artifactBox, heritageId);
+    const artifactImg = h('img', { src: item.image, alt: item.name });
+    const artifactBox = h('div', { class: 'io-artifact' }, artifactImg);
+    const viewerPromise = mountViewer(artifactBox, heritageId);
 
     return h('div', { class: 'studio-io' },
         h('div', { class: 'io-input' },
             artifactBox,
+            viewerControls(artifactImg, viewerPromise),
             h('h2', { class: 'io-name' }, item.name),
             h('a', { class: 'io-change', href: '#/studio' }, 'Đổi hiện vật')),
         h('div', { class: 'io-action' },
             genBtn,
-            can ? h('details', { class: 'adv' }, h('summary', {}, 'Tuỳ chọn'), h('label', { class: 'field', for: 'seed' }, 'Seed', seedInput)) : null,
             progress,
             note));
 }

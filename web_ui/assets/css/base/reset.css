@@ -1,0 +1,138 @@
+/* base/reset.css — NỀN TRANG: reset, html/body, phần tử thô (a, img, button, input), vùng bôi đen, thanh cuộn. */
+
+/* Tái Sinh Di Sản Số — giao diện chung kết
+   Bảng màu lấy từ chất liệu gốm Bát Tràng: nền men ngà, mực lam (cobalt dưới men),
+   men ngọc (celadon), nâu đất. Một điểm nhấn duy nhất: "chuỗi truy vết" nối các
+   ảnh trong quy trình bằng sợi chỉ lam. Mọi thứ khác giữ yên. */
+/* Tối ưu trải nghiệm: vùng bôi đen (selection) và thanh cuộn tinh tế theo bảng màu gốm Bát Tràng */
+::selection {
+    background: var(--lam-soft);
+    color: var(--lam-strong);
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--paper);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--ink-3);
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) var(--paper);
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+body {
+    font-family: var(--font-ui);
+    font-size: var(--fs-body);
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--paper);
+    -webkit-font-smoothing: antialiased;
+    font-variant-numeric: tabular-nums;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: var(--lam); text-underline-offset: 3px; }
+
+a:hover { color: var(--lam-strong); }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+:focus-visible { outline: 2px solid var(--lam); outline-offset: 2px; border-radius: 4px; }
+
+h3 { font-size: 16px; margin: 0 0 8px; font-weight: 600; }
+
+[hidden] { display: none !important; }
+
+html {
+    scroll-padding-top: calc(var(--nav-h) + 12px);
+    overflow-x: clip;
+}
+
+body {
+    overflow-x: clip;
+    background: var(--paper);
+}
+
+::selection {
+    background: var(--lam);
+    color: #fff;
+}
+
+/* Dừng hiệu ứng ở các khối đang khuất ngoài khung nhìn (JS gắn data-paused) */
+[data-paused], [data-paused] *, [data-paused] *::before, [data-paused] *::after {
+    animation-play-state: paused !important;
+}
+
+/* =====================================================================
+   Bản 4 — tinh chỉnh theo lối trình bày của bảo tàng trực tuyến
+   (Rijksmuseum, The Met, V&A): ảnh là nhân vật chính, góc gần vuông,
+   ít thẻ màu, chú thích kiểu nhãn hiện vật bằng serif cổ điển.
+   ===================================================================== */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Chuyển trang: mờ dần chéo (View Transitions), có dự phòng là đổi ngay */
+::view-transition-old(root) {
+    animation: vtOut .38s cubic-bezier(.4, 0, 1, 1) both;
+}
+
+::view-transition-new(root) {
+    animation: vtIn .6s var(--ease-out) both;
+}
+
+::view-transition-group(topnav) {
+    animation: none;
+}
+
+/* =====================================================================
+   Bản 5 — một họ chữ (Noto Serif), trang chủ cho người xem, cảnh cuộn
+   Biến --e/--p/--x/--pp do core/scenes.js đặt theo vị trí cuộn.
+   ===================================================================== */
+body {
+    font-size: 16.5px;
+    letter-spacing: .002em;
+}
+
+html.motion-off :is(.hero-copy, .fan-card, .fan-stage, .gallery-col, .gi-img img, .artifact-grid-v2 .ac-stage img, .artifact-grid-v2 .ac-body, .journey-pin .jc-img img) {
+    translate: none !important;
+    scale: none !important;
+}
+
+html.motion-off :is(.gi-img, .artifact-grid-v2 .ac-stage) {
+    clip-path: none;
+}
+
+html.calm :is(.phx-body, .phx-wings, .phx-pulse, .phx-spine, .phx-pearl) {
+    animation: none;
+}
+
+@keyframes vtOut {
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes vtIn {
+    from {
+        opacity: 0;
+    }
+}

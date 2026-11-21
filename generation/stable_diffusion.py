@@ -38,9 +38,13 @@ def load_env() -> None:
                 os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
     os.environ.setdefault("SD15_MODEL_ID", DEFAULT_SD15_MODEL_ID)
     os.environ.setdefault("CONTROLNET_CANNY_ID", DEFAULT_CONTROLNET_CANNY_ID)
-    default_cache = ROOT / "digital-heritage-ai" / ".model-cache" / "huggingface"
-    cache_dir = Path(os.environ.setdefault("HF_HOME", str(default_cache)))
-    cache_dir.mkdir(parents=True, exist_ok=True)
+    existing_hf_home = os.environ.get("HF_HOME", "").strip()
+    if existing_hf_home:
+        Path(existing_hf_home).mkdir(parents=True, exist_ok=True)
+    else:
+        default_cache = ROOT / "digital-heritage-ai" / ".model-cache" / "huggingface"
+        os.environ["HF_HOME"] = str(default_cache)
+        default_cache.mkdir(parents=True, exist_ok=True)
 
 
 def runtime_status() -> tuple[bool, str]:

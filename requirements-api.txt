@@ -1,0 +1,17 @@
+--extra-index-url https://download.pytorch.org/whl/cu126
+torch==2.13.0+cu126
+diffusers>=0.31.0
+transformers>=4.44.0
+accelerate>=0.34.0
+safetensors>=0.4.5
+huggingface_hub>=0.25.0
+opencv-python-headless>=4.10.0
+pillow>=10.4.0
+numpy>=1.26.0
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-dotenv>=1.0.1
+# Pipeline bản chung kết (main): LoRA dáng áo dài cần peft; cổng chất lượng G2/G3 cần scikit-image + scipy
+peft>=0.13.0
+scikit-image>=0.22
+scipy>=1.11

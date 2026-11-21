@@ -84,3 +84,11 @@ data/vietfashion/
 
 # Gói đánh giá mù (ảnh thiết kế đã đổi tên mã, không đưa lên git)
 outputs/blind_review/
+
+# Gói upload Hugging Face Space (sinh bởi scripts/build_hf_space.py)
+dist/
+
+# Điều phối nhiều AI (file giao việc / báo cáo cục bộ)
+.ai/
+/.vercel/
+/.env.local

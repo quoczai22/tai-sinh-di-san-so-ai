@@ -65,7 +65,7 @@ Bối cảnh là một xưởng thiết kế làm việc với hiện vật gố
 
 ### Bố cục "triển lãm số" và chuyển động (bản 3, 18/11/2026)
 
-Lấy cảm hứng từ cách các nền tảng di sản trực tuyến kể chuyện (ảnh bìa tràn màn hình, chương đánh số, băng thẻ ảnh cuộn ngang), không sao chép giao diện hay thương hiệu của nền tảng nào. Khung trang ở `web_ui/assets/css/exhibit.css`, chuyển động ở `web_ui/assets/js/lib/motion.js`, ảnh bìa ở `web_ui/assets/js/lib/hero.js`.
+Lấy cảm hứng từ cách các nền tảng di sản trực tuyến kể chuyện (ảnh bìa tràn màn hình, chương đánh số, băng thẻ ảnh cuộn ngang), không sao chép giao diện hay thương hiệu của nền tảng nào. Kiểu dáng ở `web_ui/assets/css/` (mỗi component một file, thứ tự nạp trong `order.json`), chuyển động ở `web_ui/assets/js/core/motion.js`, `core/reveal.js`, `core/scenes.js`, ảnh bìa ở `web_ui/assets/js/components/hero/`. Sơ đồ từng file: `docs/UI_ARCHITECTURE.md`.
 
 | Thành phần | Mô tả |
 |---|---|
@@ -114,7 +114,7 @@ pip install -r requirements-dev.txt && pytest   # kiểm thử, không cần GPU
 
 ## Khung xem 3D (trang Studio của từng hiện vật)
 
-- `web_ui/assets/js/lib/viewer3d.js` dựng khung xoay 3D bằng Three.js (bản chép sẵn trong `assets/js/vendor/three/`, giấy phép MIT, nạp qua importmap trong `index.html`). Thư viện chỉ tải khi mở trang Studio của một hiện vật.
+- `web_ui/assets/js/components/viewer3d.js` dựng khung xoay 3D bằng Three.js (bản chép sẵn trong `assets/js/vendor/three/`, giấy phép MIT, nạp qua importmap trong `index.html`). Thư viện chỉ tải khi mở trang Studio của một hiện vật.
 - Mô hình là `assets/models/<mã hiện vật>.glb`, tạo bằng `scripts/16_export_heritage_glb.py` từ mô hình gốc trong `data/lr3d_src/` (thư mục này bị `.gitignore`).
 - Thao tác: kéo chuột để xoay, lăn chuột để thu phóng, tự xoay nhẹ và dừng khi đang kéo. Nền canvas trong suốt nên khung nền be của trang hiện phía sau.
 - Thẻ trong lưới (Thư viện và lưới chọn của Studio): `hoverSpin()` dựng bình 3D đứng yên khi thẻ sắp vào màn hình (trong lúc chờ vẫn hiện ảnh phẳng). Bình tự xoay cùng tốc độ như trang riêng khi rê chuột hoặc focus bàn phím vào thẻ, rê ra thì dừng vòng vẽ và canvas giữ nguyên góc đang xoay. Thẻ không kéo xoay được để bấm vào vẫn mở Studio. Bật "giảm chuyển động" thì bình vẫn hiện 3D nhưng không xoay khi rê chuột.

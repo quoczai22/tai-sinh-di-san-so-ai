@@ -1,0 +1,351 @@
+/* components/journey-card.css — THẺ MỘT CHẶNG trong Hành trình: .journey-card, ảnh .jc-img, số .jc-num, chữ .jc-body. JS: components/journey-card.js. */
+
+.journey-card {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 4.3;
+    border-radius: 20px;
+    overflow: hidden;
+    isolation: isolate;
+    color: #fff;
+    text-decoration: none;
+    background: var(--cobalt-800);
+    box-shadow: 0 18px 40px -26px rgba(11, 27, 51, .6);
+    transition: translate .5s var(--ease-out), box-shadow .5s ease;
+}
+
+.jc-img {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+}
+
+.jc-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.4s var(--ease-out);
+}
+
+.jc-img.contain {
+    background: radial-gradient(circle at 50% 45%, #fff 0, #EFE7D6 55%, #D8C8A8 100%);
+}
+
+.jc-img.contain img {
+    object-fit: contain;
+    padding: 12% 14% 34%;
+    filter: drop-shadow(0 16px 16px rgba(0, 0, 0, .2));
+}
+
+.journey-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, rgba(8, 21, 42, .45) 0%, transparent 28%, transparent 46%, rgba(8, 21, 42, .92) 100%);
+}
+
+.jc-num {
+    position: absolute;
+    top: 16px;
+    left: 18px;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: 46px;
+    line-height: 1;
+}
+
+.jc-num::after {
+    content: "";
+    display: block;
+    width: 26px;
+    height: 2px;
+    margin-top: 8px;
+    background: var(--gold);
+    transition: width .5s var(--ease-out);
+}
+
+.jc-body {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 20px 20px 22px;
+}
+
+.jc-body h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 23px;
+    line-height: 1.22;
+    margin: 0 0 6px;
+}
+
+.jc-body p {
+    margin: 0;
+    font-size: 13.5px;
+    opacity: .8;
+}
+
+.journey-card:hover {
+    translate: 0 -8px;
+    box-shadow: 0 30px 50px -24px rgba(11, 27, 51, .7);
+}
+
+.journey-card:hover .jc-img img {
+    transform: scale(1.07);
+}
+
+.journey-card:hover .jc-num::after {
+    width: 56px;
+}
+
+html.motion-off .reveal .jc-img img {
+    clip-path: none;
+    scale: 1;
+}
+
+.journey-card {
+    border-radius: 4px;
+}
+
+.jc-body h3 {
+    font-family: var(--font-caption);
+    font-weight: 500;
+    font-size: 28px;
+    line-height: 1.12;
+    margin: 0 0 6px;
+}
+
+.jc-body p {
+    font-family: var(--font-caption);
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.3;
+    opacity: .86;
+}
+
+.jc-num {
+    font-family: var(--font-caption);
+    font-weight: 400;
+    font-size: 44px;
+}
+
+.jc-num::after {
+    height: 1px;
+}
+
+.journey-card:hover {
+    translate: 0 -4px;
+}
+
+.reveal .jc-img img {
+    clip-path: inset(18% 0 0 0);
+    scale: 1.08;
+    transition: clip-path 1.4s var(--ease-out), scale 1.8s var(--ease-out), transform 1s var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 90ms + 120ms);
+}
+
+.reveal.in .jc-img img {
+    clip-path: inset(0 0 0 0);
+    scale: 1;
+}
+
+.reveal.in:hover .jc-img img {
+    transition-delay: 0s;
+}
+
+/* Hover chậm, mềm */
+.journey-card .jc-img img {
+    transition-duration: 1.6s;
+}
+
+.journey-card:hover .jc-img img {
+    transform: scale(1.04);
+}
+
+.journey-card {
+    border-radius: 0;
+}
+
+/* Mũi tên ↗ trên thẻ hành trình */
+.journey-card::before {
+    content: "";
+    position: absolute;
+    right: 20px;
+    bottom: 26px;
+    width: 14px;
+    height: 14px;
+    z-index: 2;
+    border-top: 1.5px solid var(--gold);
+    border-right: 1.5px solid var(--gold);
+    transition: transform .4s var(--ease-out), opacity .4s ease;
+    opacity: .75;
+}
+
+.journey-card:hover::before {
+    transform: translate(6px, -6px);
+    opacity: 1;
+}
+
+.journey-card .jc-body {
+    padding-right: 52px;
+}
+
+.journey-card:hover .jc-body h3 {
+    color: var(--gold);
+}
+
+.jc-body h3 {
+    transition: color .3s ease;
+}
+
+.jc-body {
+    font-variant-numeric: lining-nums;
+}
+
+.jc-num {
+    font-variant-numeric: lining-nums;
+}
+
+.pin-track .journey-card {
+    flex: none;
+    width: clamp(250px, 72vw, 360px);
+    scroll-snap-align: start;
+}
+
+.journey-pin.pinned .journey-card {
+    width: clamp(300px, 27vw, 400px);
+}
+
+/* ảnh trong thẻ trượt ngược chiều băng thẻ: cảm giác chiều sâu */
+.journey-pin.pinned .jc-img img {
+    scale: 1.16;
+    translate: calc((var(--pp, 0) - .5) * -9%) 0;
+}
+
+.journey-pin.pinned .jc-img.contain img {
+    scale: 1;
+    translate: none;
+}
+
+.jc-num {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: 40px;
+    letter-spacing: .02em;
+}
+
+.jc-body h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 27px;
+}
+
+.jc-body p {
+    font-family: var(--font-ui);
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.45;
+}
+
+.journey-card::before {
+    display: none;
+}
+
+.journey-card .jc-body::after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 1px;
+    margin-top: 16px;
+    background: var(--gold);
+    transition: width .7s var(--ease-out);
+}
+
+.journey-card:hover .jc-body::after {
+    width: 64px;
+}
+
+.journey-card:hover .jc-img img {
+    transform: scale(1.05);
+}
+
+.journey-pin.pinned .journey-card {
+    width: auto;
+    height: min(calc(100vh - var(--nav-h) - 190px), 560px);
+    aspect-ratio: 3 / 4.2;
+}
+
+.journey-pin.pinned .journey-card {
+    height: auto;
+    max-height: 600px;
+    width: auto;
+    aspect-ratio: 3 / 4.1;
+}
+
+.jc-img.contain {
+    background: var(--vitrine);
+}
+
+.jc-img.contain::before {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    z-index: 1;
+    pointer-events: none;
+    opacity: .75;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M1 23V1h22M5 19V5h14M9 15V9h6'/%3E%3C/svg%3E") left top / 22px no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M23 23V1H1M19 19V5H5M15 15V9H9'/%3E%3C/svg%3E") right top / 22px no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M1 1v22h22M5 5v14h14M9 9v6h6'/%3E%3C/svg%3E") left bottom / 22px no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M23 1v22H1M19 5v14H5M15 9v6H9'/%3E%3C/svg%3E") right bottom / 22px no-repeat;
+}
+
+.jc-img.contain::before {
+    inset: 14px 14px auto;
+    height: calc(100% - 28px);
+}
+
+.jc-body h3 {
+    text-wrap: balance;
+}
+
+/* Thẻ hành trình có ảnh hiện vật trên nền ngà: chữ mực trên dải ngà, không phủ dải xám */
+.journey-card:has(.jc-img.contain)::after {
+    background: linear-gradient(180deg, rgba(248, 242, 230, 0) 52%, rgba(248, 242, 230, .96) 84%);
+}
+
+.journey-card:has(.jc-img.contain) {
+    color: var(--cobalt-800);
+}
+
+.journey-card:has(.jc-img.contain) .jc-body p {
+    opacity: .85;
+}
+
+.journey-card:has(.jc-img.contain):hover .jc-body h3 {
+    color: var(--dat);
+}
+
+.jc-img.contain::before {
+    display: none;
+}
+
+.jc-img.contain img {
+    padding: 14% 16% 36%;
+}
+
+/* Thẻ là liên kết: không để màu "liên kết khi rê chuột" làm chữ chìm vào ảnh */
+.journey-card:hover, .journey-card:focus-visible {
+    color: #fff;
+}
+
+.journey-card:has(.jc-img.contain):hover, .journey-card:has(.jc-img.contain):focus-visible {
+    color: var(--cobalt-800);
+}
+
+/* Hành trình và Áo dài từ hoa văn gốm ở trang chủ: vẫn có hiệu ứng rê chuột nhưng không dẫn tới trang nào (là div, không phải liên kết) */
+.journey-card {
+    cursor: default;
+}
