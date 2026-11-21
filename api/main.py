@@ -114,22 +114,14 @@ def heritage_items(include_retired: bool = False) -> list[dict]:
 
 
 def _artifact_info(item: dict, sources: dict) -> dict | None:
-<<<<<<< ours
-    """Ô "Về hiện vật" ở Studio: khối artifact_info trong metadata.json, nguồn tra sẵn theo khóa ở _meta.artifact_info_sources."""
-=======
     """Sổ hoa văn ở Studio: khối artifact_info trong metadata.json, nguồn tra sẵn theo khóa ở _meta.artifact_info_sources."""
->>>>>>> theirs
     info = item.get("artifact_info")
     if not info:
         return None
     keys = list(dict.fromkeys([*(info.get("sources") or []),
                                *(m["source"] for m in info.get("motifs", []) if m.get("source"))]))
     return {
-<<<<<<< ours
-        "summary": info.get("summary"), "form": info.get("form"), "technique": info.get("technique"),
-=======
         "summary": info.get("summary"), "motifText": info.get("motif_text"), "form": info.get("form"), "technique": info.get("technique"),
->>>>>>> theirs
         "style": info.get("style"), "origin": info.get("origin"),
         "motifs": [{"name": m["name"], "where": m.get("where"), "meaning": m.get("meaning"), "source": m.get("source")}
                    for m in info.get("motifs", [])],
@@ -177,11 +169,7 @@ def ui_items(include_retired: bool = False) -> list[dict]:
             },
             "completeness": completeness(item),
             "rightsGate": demo_gate.as_dict(),
-<<<<<<< ours
-            # Ô "Về hiện vật" ở Studio: dáng, kỹ thuật, hoa văn và ý nghĩa (có nguồn), đối chiếu bảo tàng
-=======
             # Sổ hoa văn ở Studio: hoa văn và ý nghĩa (có nguồn), nguồn ảnh, đối chiếu bảo tàng
->>>>>>> theirs
             "info": _artifact_info(item, info_sources),
         })
     return result

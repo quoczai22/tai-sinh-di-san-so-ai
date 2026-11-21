@@ -37,11 +37,7 @@ index.html ─► config.js (DH_API_BASE)
 |---|---|---|---|---|
 | 0. Khám phá | `#/library` | `views/library.js` | `hero/fan`, `journey-card`, `artifact-card`, `gallery-item`, `chapter-head`; trang trí `decor/phoenix`, `decor/drum` | `data.heritage()`, `data.passports()` |
 | 1. Chọn đầu vào | `#/studio` | `views/studio.js` | `picker-card` (rê chuột thì xoay 3D qua `viewer3d.hoverSpin`) | `data.heritage()` |
-<<<<<<< ours
-| 2. Tạo thiết kế | `#/studio/<mã>` | `views/studio.js` | `viewer3d`, `viewer-controls`, `artifact-info` (ô "Về hiện vật"), `layout.stateBox` | Có GPU: `core/generation.js` gọi `POST /generate` rồi hỏi `GET /generate/{id}`. Không có GPU: mở bộ đã sinh sẵn, không giả lập |
-=======
 | 2. Tạo thiết kế | `#/studio/<mã>` | `views/studio.js` | `viewer3d`, `viewer-controls`, `artifact-book` (nút "Xem ý nghĩa hoa văn" mở sổ hai trang nổi trên trang), `layout.stateBox` | Có GPU: `core/generation.js` gọi `POST /generate` rồi hỏi `GET /generate/{id}`. Không có GPU: mở bộ đã sinh sẵn, không giả lập |
->>>>>>> theirs
 | 3. Xem và tải đầu ra | `#/result/<mã>` | `views/result.js` | `design-card`, `lightbox`, `badges.demoNotice` | `data.passports()`, `core/download.js` |
 
 Nhãn AI (`components/badges.js#aiMark`) có trên **mọi** ảnh do AI hỗ trợ tạo, phục vụ YC3. Ở chế độ trình diễn, trang Kết quả luôn có dòng "Kết quả đã sinh sẵn".
@@ -74,11 +70,7 @@ web_ui/
     │   │   ├── badges.js      nhãn AI, nhãn "đã sinh sẵn"
     │   │   ├── layout.js      section, stateBox
     │   │   ├── chapter-head.js, journey-card.js, artifact-card.js, gallery-item.js   (trang chủ)
-<<<<<<< ours
-    │   │   ├── picker-card.js, viewer3d.js, viewer-controls.js, artifact-info.js     (Studio)
-=======
     │   │   ├── picker-card.js, viewer3d.js, viewer-controls.js, artifact-book.js     (Studio)
->>>>>>> theirs
     │   │   └── design-card.js, lightbox.js                                           (Kết quả)
     │   ├── decor/             hình trang trí SVG: phoenix.js, drum.js (trống, mây, sợi chỉ)
     │   ├── views/             library.js, studio.js, result.js — chỉ ghép component
@@ -86,11 +78,7 @@ web_ui/
     ├── css/                   thứ tự nạp = assets/css/order.json
     │   ├── base/              tokens → reset → typography → layout → reveal  …  motion (nạp cuối)
     │   ├── components/        1 file cho 1 component JS (nav, menu, hero, hero-fan, journey-pin, journey-card,
-<<<<<<< ours
-    │   │                      artifact-card, picker-card, gallery-item, design-card, lightbox, viewer3d, artifact-info, footer,
-=======
     │   │                      artifact-card, picker-card, gallery-item, design-card, lightbox, viewer3d, artifact-book, footer,
->>>>>>> theirs
     │   │                      buttons, badges, feedback)
     │   ├── decor/             phoenix.css, drum.css
     │   └── views/             home.css, studio.css, result.css
