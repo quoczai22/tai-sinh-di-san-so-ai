@@ -12,7 +12,7 @@ const LIVE_RUN_KEY = 'dh:last-live-run';
 
 function savedLiveRun() {
     try {
-        const saved = JSON.parse(sessionStorage.getItem(LIVE_RUN_KEY) || 'null');
+        const saved = JSON.parse(localStorage.getItem(LIVE_RUN_KEY) || 'null');
         return saved?.heritageId && saved?.runId ? saved : null;
     } catch { return null; }
 }
@@ -59,7 +59,7 @@ export function liveRunFor(heritageId) {
 export function activateLive(heritageId, runId) {
     state.mode = 'live';
     if (heritageId && runId) {
-        try { sessionStorage.setItem(LIVE_RUN_KEY, JSON.stringify({ heritageId, runId })); } catch {}
+        try { localStorage.setItem(LIVE_RUN_KEY, JSON.stringify({ heritageId, runId })); } catch {}
     }
     state.cache.delete('live:heritage');
     state.cache.delete('live:passports');

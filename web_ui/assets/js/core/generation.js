@@ -5,23 +5,25 @@ import * as data from './data.js';
 
 const MAX_WAIT_MS = 20 * 60 * 1000;
 const PENDING_KEY = 'dh:pending-generation';
+const RECOVERY_MS = 24 * 60 * 60 * 1000;
 
-function pendingJob(heritageId) {
+export function pendingGeneration() {
     try {
-        const saved = JSON.parse(sessionStorage.getItem(PENDING_KEY) || 'null');
-        if (saved?.heritageId === heritageId && Date.now() - saved.startedAt < MAX_WAIT_MS) return saved.jobId;
-        sessionStorage.removeItem(PENDING_KEY);
+        const saved = JSON.parse(localStorage.getItem(PENDING_KEY) || 'null');
+        if (saved?.heritageId && saved?.jobId &&
+            Date.now() - saved.startedAt < RECOVERY_MS) return saved;
+        localStorage.removeItem(PENDING_KEY);
     } catch {}
     return null;
 }
 
 function rememberJob(heritageId, jobId) {
-    try { sessionStorage.setItem(PENDING_KEY, JSON.stringify({ heritageId, jobId, startedAt: Date.now() })); }
+    try { localStorage.setItem(PENDING_KEY, JSON.stringify({ heritageId, jobId, startedAt: Date.now() })); }
     catch {}
 }
 
 function forgetJob() {
-    try { sessionStorage.removeItem(PENDING_KEY); } catch {}
+    try { localStorage.removeItem(PENDING_KEY); } catch {}
 }
 
 function beforeDeadline(promise, deadline) {
@@ -38,13 +40,13 @@ function beforeDeadline(promise, deadline) {
 
 export async function runGeneration(heritageId, seed, onProgress = () => {}) {
     const deadline = Date.now() + MAX_WAIT_MS;
-    let jobId = pendingJob(heritageId);
+    const pending = pendingGeneration();
+    let jobId = pending?.heritageId === heritageId ? pending.jobId : null;
     if (jobId) {
         try { await beforeDeadline(data.jobStatus(jobId, heritageId), deadline); }
         catch (error) {
-            if (error.status !== 404) throw error;
-            forgetJob();
-            jobId = null;
+            if (error.status === 404) forgetJob();
+            throw error;
         }
     }
     if (!jobId) {
@@ -66,7 +68,7 @@ export async function runGeneration(heritageId, seed, onProgress = () => {}) {
         }
         if (job.backend === 'demo') {
             if (++misses < 10) continue;
-            return job;
+            throw new Error('Chưa kết nối lại được máy sinh ảnh. Lượt của bạn vẫn được lưu; hãy quay lại sau.');
         }
         misses = 0;
         onProgress(job.progress || 0, job);

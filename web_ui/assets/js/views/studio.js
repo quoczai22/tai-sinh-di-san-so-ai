@@ -7,7 +7,7 @@
 import { h, toast } from '../core/dom.js';
 import { icon } from '../core/icons.js';
 import * as data from '../core/data.js';
-import { runGeneration } from '../core/generation.js';
+import { pendingGeneration, runGeneration } from '../core/generation.js';
 import { section, stateBox } from '../components/layout.js';
 import { pickerCard } from '../components/picker-card.js';
 import { mountViewer } from '../components/viewer3d.js';
@@ -27,14 +27,16 @@ export async function render([heritageId]) {
     data.audit('heritage_selected', { step: 1, heritage_id: heritageId });
 
     const hasDesigns = (await data.passports()).some((p) => p.heritage_id === heritageId);
-    const can = data.canGenerate();
+    const recovering = pendingGeneration()?.heritageId === heritageId;
+    const can = data.canGenerate() || recovering;
     const goToResult = () => { location.hash = `#/result/${encodeURIComponent(heritageId)}`; };
 
     const note = h('p', { class: 'out-note', role: 'status', 'aria-live': 'polite' });
     const progressBar = h('span');
     const progress = h('div', { class: 'out-progress', hidden: true }, h('div', { class: 'progress' }, progressBar));
     const seedInput = h('input', { type: 'number', min: 0, max: 2147483647, id: 'seed', inputmode: 'numeric' });
-    const genBtn = h('button', { class: 'btn hero-btn primary gen-btn', onclick: async () => {
+    const start = async () => {
+        if (genBtn.disabled) return;
         if (!can) {
             // Không có GPU: mở trang Kết quả với bộ đã tạo trước
             if (!hasDesigns) { note.textContent = 'Hiện vật này chưa có thiết kế.'; return; }
@@ -49,11 +51,13 @@ export async function render([heritageId]) {
         }
         genBtn.disabled = true;
         progress.hidden = false;
-        note.textContent = 'Đang tạo thiết kế…';
+        note.textContent = recovering ? 'Đang khôi phục lượt tạo ảnh của bạn…' : 'Đang gửi yêu cầu tạo ảnh…';
         try {
             await runGeneration(heritageId, seed, (pct, job) => {
                 progressBar.style.width = `${pct}%`;
-                note.textContent = job.label || (job.status === 'queued' ? 'Đang chờ lượt sinh…' : 'Đang tạo thiết kế…');
+                note.textContent = job.status === 'queued'
+                    ? `Đang chờ tạo ảnh · Vị trí ${job.queue_position || 1}/2`
+                    : `Đang tạo ảnh · ${job.label || `${pct}%`}`;
             });
             goToResult();
         } catch (err) {
@@ -61,7 +65,9 @@ export async function render([heritageId]) {
             note.textContent = `Không tạo được thiết kế: ${err.message}`;
             genBtn.disabled = false;
         }
-    } }, 'Tạo thiết kế', icon('arrow'));
+    };
+    const genBtn = h('button', { class: 'btn hero-btn primary gen-btn', onclick: start }, 'Tạo thiết kế', icon('arrow'));
+    if (recovering) setTimeout(start, 0);
 
     // Khung hiện vật: ảnh phẳng làm sẵn; nếu có mô hình 3D thì thay bằng khung xoay 360 độ bằng chuột
     const artifactImg = h('img', { src: item.image, alt: item.name });

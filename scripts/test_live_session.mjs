@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
 const entries = new Map();
-globalThis.sessionStorage = {
+globalThis.localStorage = {
     getItem: (key) => entries.get(key) ?? null,
     setItem: (key, value) => entries.set(key, String(value)),
     removeItem: (key) => entries.delete(key),
@@ -29,7 +29,7 @@ globalThis.fetch = async (url, options = {}) => {
 };
 
 const data = await import('../web_ui/assets/js/core/data.js');
-const { runGeneration } = await import('../web_ui/assets/js/core/generation.js');
+const { pendingGeneration, runGeneration } = await import('../web_ui/assets/js/core/generation.js');
 
 await data.init();
 assert.equal(data.isLive(), true);
@@ -38,6 +38,7 @@ assert.equal(data.liveRunFor('LR3D_33'), 'R-old');
 location.hash = '#/studio/LR3D_33';
 await data.init();
 assert.equal(data.isLive(), false);
+assert.equal(pendingGeneration().jobId, 'job123', 'closing a tab must retain the pending job');
 
 const job = await runGeneration('LR3D_33', 42);
 assert.equal(job.run_id, 'R-new');
@@ -49,4 +50,4 @@ healthFails = true;
 await data.init();
 assert.equal(data.isLive(), true);
 assert.equal(data.liveRunFor('LR3D_33'), 'R-new');
-console.log('live session: reload restores the completed run without a second POST');
+console.log('live session: returning browser restores the completed run without a second POST');

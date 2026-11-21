@@ -18,7 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field, field_validator
 
-from api import store
+from api import jobs, store
 from api.audit import AUDIT_EVENTS, append_audit_event
 from provenance import passport as P
 from provenance.registry import (all_items, assess_selection, completeness, get_item,
@@ -64,11 +64,18 @@ _jobs_lock = threading.Lock()
 _active_job_id: str | None = None
 _pending_jobs: deque[tuple[str, str, int]] = deque()
 _worker_running = False
-MAX_PENDING_JOBS = int(os.getenv("TSDS_MAX_PENDING_JOBS", "3"))
+MAX_ACTIVE_JOBS = int(os.getenv("TSDS_MAX_ACTIVE_JOBS", "3"))
 _rate: dict[str, deque] = defaultdict(deque)
 GENERATE_LIMIT_PER_HOUR = int(os.getenv("TSDS_GENERATE_PER_HOUR", "6"))
 WRITE_KEY = os.getenv("TSDS_WRITE_KEY", "")
 MAX_EDIT_BYTES = 8 * 1024 * 1024
+
+
+def _save_job(job_id: str) -> None:
+    try:
+        jobs.save(PROJECT_ROOT, job_id, _jobs[job_id])
+    except OSError:
+        log.exception("Không lưu được trạng thái job %s", job_id)
 
 
 # ------------------------------------------------------------------ helpers --
@@ -264,13 +271,14 @@ def generate_designs(request: GenerateRequest) -> dict:
                                                     "Giao diện đang hiển thị kết quả đã sinh sẵn.") from None
     seed = SEED if request.seed is None else request.seed
     with _jobs_lock:
-        if len(_pending_jobs) >= MAX_PENDING_JOBS:
+        if len(_pending_jobs) + int(_active_job_id is not None) >= MAX_ACTIVE_JOBS:
             raise HTTPException(status_code=429, detail="Hàng chờ tạo thiết kế đã đầy. Vui lòng thử lại sau.")
         job_id = uuid.uuid4().hex
         position = len(_pending_jobs) + 1
         _jobs[job_id] = {"status": "queued", "progress": 0,
                          "label": f"Đang chờ lượt {position}...", "queue_position": position,
                          "seed": seed}
+        _save_job(job_id)
         _pending_jobs.append((job_id, request.heritage_id, seed))
         start_worker = not _worker_running
         if start_worker:
@@ -287,6 +295,7 @@ def generate_designs(request: GenerateRequest) -> dict:
                 _active_job_id = current_id
                 _jobs[current_id].update(status="running", progress=1,
                                          label="Đang chuẩn bị thiết kế...", queue_position=0)
+                _save_job(current_id)
                 for position, (waiting_id, _, _) in enumerate(_pending_jobs, start=1):
                     _jobs[waiting_id].update(queue_position=position,
                                              label=f"Đang chờ lượt {position}...")
@@ -313,6 +322,7 @@ def generate_designs(request: GenerateRequest) -> dict:
                     _jobs[current_id].update(status="completed", progress=100, variants=variants,
                                              run_id=variants[0]["run_id"] if variants else None,
                                              label=f"Đã tạo xong {done}/{len(variants)} thiết kế.")
+                    _save_job(current_id)
                 try:
                     append_audit_event(PROJECT_ROOT, {"step": 3, "event": "generation_completed",
                                                       "heritage_id": heritage_id, "job_id": current_id})
@@ -323,6 +333,7 @@ def generate_designs(request: GenerateRequest) -> dict:
                 with _jobs_lock:
                     _jobs[current_id].update(status="failed",
                                              label="Pipeline gặp lỗi. Đã ghi nhật ký máy chủ; vui lòng thử lại.")
+                    _save_job(current_id)
                 try:
                     append_audit_event(PROJECT_ROOT, {"step": 3, "event": "generation_failed",
                                                       "heritage_id": heritage_id, "job_id": current_id})
@@ -349,9 +360,12 @@ def record_audit_event(request: AuditRequest) -> dict:
 def generate_status(job_id: str) -> dict:
     with _jobs_lock:
         job = _jobs.get(job_id)
-        if job is None:
-            raise HTTPException(status_code=404, detail="Không tìm thấy job.")
-        return dict(job)
+        if job is not None:
+            return dict(job)
+    saved = jobs.load(PROJECT_ROOT, job_id)
+    if saved is None:
+        raise HTTPException(status_code=404, detail="Không tìm thấy job.")
+    return saved
 
 
 @app.get("/media/run/{run_id}/{filename}")

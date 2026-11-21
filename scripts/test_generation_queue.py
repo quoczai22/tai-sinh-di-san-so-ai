@@ -56,11 +56,11 @@ def test_queue() -> None:
     first = main.generate_designs(GenerateRequest(heritage_id="LR3D_33", seed=1))
     assert started.wait(5)
     queued = [main.generate_designs(GenerateRequest(heritage_id="LR3D_61", seed=seed))
-              for seed in (2, 3, 4)]
-    assert [job["queue_position"] for job in queued] == [1, 2, 3]
+              for seed in (2, 3)]
+    assert [job["queue_position"] for job in queued] == [1, 2]
     assert calls == ["LR3D_33"]
     try:
-        main.generate_designs(GenerateRequest(heritage_id="LR3D_61", seed=5))
+        main.generate_designs(GenerateRequest(heritage_id="LR3D_61", seed=4))
     except HTTPException as error:
         assert error.status_code == 429
     else:
@@ -69,8 +69,10 @@ def test_queue() -> None:
     assert wait_for(first["job_id"])["status"] == "completed"
     for job in queued:
         assert wait_for(job["job_id"])["status"] == "completed"
-    assert calls == ["LR3D_33", "LR3D_61", "LR3D_61", "LR3D_61"]
-    print("generation queue: 4 sequential jobs, 1 full-queue rejection passed")
+    assert calls == ["LR3D_33", "LR3D_61", "LR3D_61"]
+    main._jobs.clear()
+    assert main.generate_status(first["job_id"])["status"] == "completed"
+    print("generation queue: 3 sequential jobs, 1 full-queue rejection, persistent result passed")
 
 
 if __name__ == "__main__":
