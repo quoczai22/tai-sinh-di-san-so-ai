@@ -26,7 +26,7 @@ import modal
 
 APP_NAME = "tai-sinh-di-san-so-api"
 GPU_TYPE = os.environ.get("MODAL_GPU", "T4")
-SCALEDOWN_SECONDS = 900  # 15 phút (nằm trong khung 10–15 phút theo thiết kế)
+SCALEDOWN_SECONDS = 420  # Giữ T4 tối đa 7 phút sau lượt dùng cuối
 
 OUTPUT_VOLUME_MOUNT = "/data/outputs"
 # Model (SD1.5, ControlNet, CLIP) đã tải sẵn vào image ở đường dẫn này (xem Dockerfile).

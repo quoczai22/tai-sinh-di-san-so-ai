@@ -19,7 +19,7 @@ Ngày cập nhật: 21/11/2026. Tài liệu này mô tả nhánh deploy/live-gat
 
 ## Lưu ảnh
 
-Modal gắn Volume tại /data/outputs. Docker image phải để trống đường dẫn này trước khi mount. Khi khởi động, modal_app.py nối /app/outputs tới Volume vì generation/streamlit_runner.py và api/store.py đều dùng /app/outputs. Mount và khởi động T4 đã kiểm chứng. Bốn Passport và ảnh V1 vẫn đọc được với cùng SHA-256 sau khi dừng app rồi deploy lại; chưa chờ scaledown tự động 900 giây.
+Modal gắn Volume tại /data/outputs. Docker image phải để trống đường dẫn này trước khi mount. Khi khởi động, modal_app.py nối /app/outputs tới Volume vì generation/streamlit_runner.py và api/store.py đều dùng /app/outputs. Mount và khởi động T4 đã kiểm chứng. Bốn Passport và ảnh V1 vẫn đọc được với cùng SHA-256 sau khi dừng app rồi deploy lại; chưa chờ scaledown tự động. Cấu hình giữ T4 sau lượt dùng cuối là 420 giây (7 phút); `timeout=900` là giới hạn thời gian xử lý, không phải thời gian chờ.
 
 Backend đặt TSDS_GENERATE_PER_HOUR=1000 mặc định để gateway kiểm soát theo IP người dùng. Giới hạn gateway là giới hạn mềm, lưu trong RAM từng Vercel Function instance.
 
