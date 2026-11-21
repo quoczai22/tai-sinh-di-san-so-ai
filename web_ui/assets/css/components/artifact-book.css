@@ -1,0 +1,292 @@
+/* components/artifact-book.css — SỔ HOA VĂN (Studio): nút mở .book-btn, lớp phủ .book-overlay, cuốn sổ hai trang .bk-book
+   (trang trái ảnh tĩnh hiện vật, trang phải ý nghĩa hoa văn và nguồn ảnh). Màn hẹp: hai trang xếp dọc, cuộn trong sổ.
+   JS: components/artifact-book.js. */
+
+.book-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 9px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-s);
+    background: var(--porcelain);
+    color: var(--lam-strong);
+    font: inherit;
+    font-size: 14.5px;
+    cursor: pointer;
+    transition: background .25s ease, border-color .25s ease;
+}
+
+.book-btn:hover,
+.book-btn:focus-visible {
+    background: var(--lam-soft);
+    border-color: var(--lam);
+}
+
+.book-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+body.book-open {
+    overflow: hidden;
+}
+
+.book-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(8, 21, 42, .78);
+    backdrop-filter: blur(6px);
+    animation: bk-fade .25s ease both;
+}
+
+/* Khung ngoài giữ dấu X; cuốn sổ bên trong có thể cuộn */
+.bk-wrap {
+    position: relative;
+    width: min(1040px, 96vw);
+}
+
+/* Cuốn sổ: hai trang giấy, gáy ở giữa, mép giấy xếp chồng phía sau */
+.bk-book {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    width: 100%;
+    height: min(680px, 90vh);
+    perspective: 2200px;
+    background: var(--paper);
+    border-radius: 4px;
+    box-shadow:
+        0 0 0 1px rgba(60, 40, 10, .12),
+        4px 5px 0 -1px #E8E0CE,
+        8px 10px 0 -2px #DCD2BC,
+        0 40px 90px -30px rgba(0, 0, 0, .75);
+    animation: bk-rise .45s var(--ease-out) both;
+}
+
+.bk-book::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 64px;
+    translate: -50% 0;
+    pointer-events: none;
+    background: linear-gradient(to right, transparent, rgba(70, 48, 14, .14) 44%, rgba(70, 48, 14, .26) 50%, rgba(70, 48, 14, .14) 56%, transparent);
+}
+
+.bk-page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 40px 44px 26px;
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.bk-left {
+    background: linear-gradient(to left, rgba(120, 90, 40, .08), transparent 22%);
+}
+
+/* Trang phải mở ra từ gáy sổ */
+.bk-right {
+    overflow-y: auto;
+    background: linear-gradient(to right, rgba(120, 90, 40, .08), transparent 22%);
+    transform-origin: left center;
+    animation: bk-turn .7s var(--ease-out) .08s both;
+}
+
+.bk-kicker,
+.bk-h {
+    margin: 0 0 14px;
+    font-family: var(--font-ui);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--dat);
+}
+
+.bk-h {
+    margin-bottom: 8px;
+}
+
+.bk-figure {
+    margin: 0;
+}
+
+.bk-frame {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3.9;
+    max-height: 360px;
+    margin: 0 auto;
+    background: var(--vitrine);
+    outline: 1px solid rgba(176, 138, 69, .4);
+    outline-offset: -10px;
+}
+
+.bk-frame img {
+    max-height: 84%;
+    max-width: 74%;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 14px rgba(40, 28, 10, .2));
+}
+
+.bk-figure figcaption {
+    display: grid;
+    gap: 2px;
+    margin-top: 14px;
+    text-align: center;
+}
+
+.bk-name {
+    font-family: var(--font-display);
+    font-size: 24px;
+    line-height: 1.25;
+}
+
+.bk-cap {
+    font-size: 13px;
+    color: var(--ink-3);
+}
+
+.bk-text {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 19px;
+    line-height: 1.65;
+    text-wrap: pretty;
+}
+
+.bk-block {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line-2);
+}
+
+.bk-block p {
+    margin: 0 0 6px;
+}
+
+.bk-link {
+    color: var(--lam-strong);
+}
+
+.bk-link svg {
+    width: 12px;
+    height: 12px;
+    margin-left: 4px;
+    vertical-align: -1px;
+}
+
+/* Số trang nhỏ ở chân, đẩy xuống cuối trang */
+.bk-folio {
+    margin: auto 0 0;
+    padding-top: 14px;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-style: italic;
+    color: var(--ink-3);
+}
+
+.bk-right .bk-folio {
+    text-align: right;
+}
+
+.bk-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+}
+
+.bk-close:hover,
+.bk-close:focus-visible {
+    background: rgba(29, 42, 54, .08);
+}
+
+.bk-close svg {
+    width: 22px;
+    height: 22px;
+}
+
+@keyframes bk-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes bk-rise {
+    from { opacity: 0; transform: translateY(18px) scale(.97); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes bk-turn {
+    from { opacity: 0; transform: rotateY(-70deg); }
+    to { opacity: 1; transform: none; }
+}
+
+/* Màn hẹp: hai trang xếp dọc, cả cuốn sổ cuộn */
+@media (max-width: 760px) {
+    .book-overlay {
+        padding: 12px;
+    }
+
+    .bk-book {
+        grid-template-columns: minmax(0, 1fr);
+        height: auto;
+        max-height: 92vh;
+        overflow-y: auto;
+    }
+
+    .bk-book::after {
+        display: none;
+    }
+
+    .bk-page {
+        padding: 30px 22px 10px;
+    }
+
+    .bk-left,
+    .bk-right {
+        background: none;
+    }
+
+    .bk-right {
+        overflow: visible;
+        padding-top: 18px;
+        border-top: 1px solid var(--line-2);
+        animation: bk-fade .4s ease .1s both;
+    }
+
+    .bk-frame {
+        max-width: 280px;
+    }
+
+    /* Dấu X luôn trong tầm tay khi cuộn sổ */
+    .bk-close {
+        background: var(--paper);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+    }
+
+    .bk-left .bk-folio {
+        display: none;
+    }
+}

@@ -21,7 +21,11 @@
     "components/design-card.css",
     "components/lightbox.css",
     "components/viewer3d.css",
+<<<<<<< ours
     "components/artifact-info.css",
+=======
+    "components/artifact-book.css",
+>>>>>>> theirs
     "components/footer.css",
     "decor/phoenix.css",
     "decor/drum.css",
