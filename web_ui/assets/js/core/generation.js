@@ -73,7 +73,7 @@ export async function runGeneration(heritageId, seed, onProgress = () => {}) {
         if (['queued', 'running'].includes(job.status)) continue;
         forgetJob();
         if (job.status !== 'completed') throw new Error(job.label);
-        data.activateLive();
+        data.activateLive(heritageId, job.run_id);
         data.invalidate('live:passports');
         return job;
     }

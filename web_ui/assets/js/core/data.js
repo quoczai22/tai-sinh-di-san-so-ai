@@ -8,6 +8,14 @@
 
 const API = (window.DH_API_BASE || '').replace(/\/$/, '');
 const state = { mode: 'demo', health: null, meta: null, cache: new Map() };
+const LIVE_RUN_KEY = 'dh:last-live-run';
+
+function savedLiveRun() {
+    try {
+        const saved = JSON.parse(sessionStorage.getItem(LIVE_RUN_KEY) || 'null');
+        return saved?.heritageId && saved?.runId ? saved : null;
+    } catch { return null; }
+}
 
 async function getJson(url, opts = {}) {
     const res = await fetch(url, { cache: 'no-store', ...opts });
@@ -33,7 +41,10 @@ export async function init() {
             const t = setTimeout(() => ctrl.abort(), 2500);
             state.health = await getJson(`${API}/health`, { signal: ctrl.signal });
             clearTimeout(t);
-            state.mode = 'demo';
+            const resultId = location.hash.match(/^#\/result\/([^/]+)$/)?.[1];
+            const saved = savedLiveRun();
+            state.mode = state.health?.generation_available && resultId &&
+                decodeURIComponent(resultId) === saved?.heritageId ? 'live' : 'demo';
         } catch { state.mode = 'demo'; }
     }
     try { state.meta = await getJson('./data/meta.json'); } catch { state.meta = null; }
@@ -42,7 +53,18 @@ export async function init() {
 
 export const isLive = () => state.mode === 'live';
 export const canGenerate = () => Boolean(state.health?.generation_available);
-export function activateLive() { state.mode = 'live'; state.cache.delete('live:heritage'); state.cache.delete('live:passports'); }
+export function liveRunFor(heritageId) {
+    const saved = savedLiveRun();
+    return saved?.heritageId === heritageId ? saved.runId : null;
+}
+export function activateLive(heritageId, runId) {
+    state.mode = 'live';
+    if (heritageId && runId) {
+        try { sessionStorage.setItem(LIVE_RUN_KEY, JSON.stringify({ heritageId, runId })); } catch {}
+    }
+    state.cache.delete('live:heritage');
+    state.cache.delete('live:passports');
+}
 export function invalidate(prefix = '') { for (const k of [...state.cache.keys()]) if (k.startsWith(prefix)) state.cache.delete(k); }
 
 // Ảnh: demo dùng bản WebP đã xuất; live lấy tệp gốc qua API (đã kiểm đường dẫn)
@@ -75,7 +97,7 @@ export async function heritage() {
             items: items.map((it) => ({ ...byId[it.id], ...it, image: `${API}${it.image}`,
                 selection: byId[it.id]?.selection, rights: byId[it.id]?.rights })),
         };
-    })); } catch { state.mode = 'demo'; return plain(demo); }
+    })); } catch { return plain(demo); }
 }
 
 export async function passports() {
