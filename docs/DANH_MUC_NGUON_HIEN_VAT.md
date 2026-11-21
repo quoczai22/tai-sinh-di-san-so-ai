@@ -47,6 +47,30 @@ URL đầy đủ của sáu ảnh cũ nằm trong lịch sử của file `data/m
 
 Thông số đầy đủ (phương pháp mặt nạ, độ phủ UV, số đảo tìm được) ở `data/heritage/lr3d_crops.json`. Kho phần tử cắt từ các mảng này ở `data/elements/` (không commit), mỗi phần tử có bản ghi trong `index.json` kèm mã vật nguồn, DOI và trạng thái giấy phép.
 
+## 3b. Thông tin cho người xem: ô "Về hiện vật" ở Studio (21/11/2026)
+
+**Lưu ở đâu.** Khối `artifact_info` của từng hiện vật trong `data/heritage/metadata.json` (danh mục duy nhất mà API và giao diện đọc). Nguồn dùng chung nằm ở `_meta.artifact_info_sources`, mỗi ý nghĩa hoa văn trỏ tới một khóa nguồn. API `/heritage` trả trường `info`; `scripts/11_export_demo_data.py` xuất trường này sang `web_ui/data/heritage.json`. Không ghi vào `data/archive/2026-09_schema1/items_v1.json` hay `metadata_v1.json`: đó là bản lưu trữ, không mã nào đọc. Nội dung của hai tệp đó (mô tả của nhóm, đường dẫn bộ dữ liệu, ghi chú giấy phép) đã có sẵn trong danh mục chuẩn ở `team_description`, `provenance` và `license_note`.
+
+**Ô gồm:** mô tả ngắn; dáng; kỹ thuật; phong cách; xuất xứ; hoa văn (vị trí, ý nghĩa khi có nguồn); hiện vật bảo tàng tương đồng; nguồn ảnh và quyền dùng; nguồn tham khảo; ghi chú "chưa qua chuyên gia gốm thẩm định".
+
+**Nguyên tắc biên soạn.**
+
+- Ý nghĩa hoa văn chỉ ghi khi có nguồn bảo tàng: rồng, mây, mẫu đơn (USC Pacific Asia Museum, *Symbols in Chinese Art*); sen (The Met, chú giải hiện vật 1984.297); vân như ý (The Met, chú giải hiện vật 26.271.1a, b: hoa văn cổ áo mây trên vải vóc, y phục). Lá chuối, cây hoa, hoa lá cách điệu chưa tìm được nguồn đáng tin nên chỉ ghi vị trí.
+- "Tương đồng" là so sánh phong cách với hiện vật bảo tàng có hồ sơ, không khẳng định niên đại hay nơi làm của vật.
+- Xuất xứ từng vật ghi "Chưa xác định". Tên tệp ảnh render gốc của cả sáu vật trong bộ dữ liệu đều có tiền tố `sketchfab_collection_` (trường `render_source` trong `lr3d_crops.json`), nên nhiều khả năng cả sáu thuộc nhóm lấy từ Sketchfab, không phải nhóm quét ở Bát Tràng, Thanh Hà. Đây là suy luận từ tên tệp, chưa được tác giả bộ dữ liệu xác nhận.
+- Nhóm gọi băng hoa văn ở chân bình #124 là "lông vũ" (`team_description`); ô thông tin dùng "lá chuối", tên quen dùng cho dạng băng này trên gốm hoa lam (Mia mô tả "plantain leaves" ở bình #97 có cùng dạng). Cần chuyên gia chốt.
+
+| Hiện vật | Phong cách (tương đồng) | Hiện vật đối chiếu |
+|---|---|---|
+| `LR3D_33` | Hoa lam Trung Hoa thời Nguyên, thế kỷ 14 | The Met 26.271.1a, b, *Bottle with Peony Scroll* |
+| `LR3D_61` | Hoa lam Trung Hoa đầu thời Minh, thế kỷ 15 | The Met 37.191.1, *Jar with dragon*, niên hiệu Tuyên Đức |
+| `LR3D_50` | Hoa lam Trung Hoa thời Thanh | The Met 14.40.309, *Bottle with lotus scrolls*, niên hiệu Khang Hy |
+| `LR3D_38` | Chưa xác định | Chưa tìm được |
+| `LR3D_97` | Hoa lam Việt Nam thế kỷ 15 | Minneapolis Institute of Art 2007.19.2, *Bottle Vase (Yu-hu chun)*, Việt Nam, cuối thế kỷ 15 |
+| `LR3D_124` | Chưa xác định, cách vẽ gần hoa lam Trung Hoa | Chưa tìm được |
+
+Bối cảnh Việt Nam lấy từ Bảo tàng Lịch sử Quốc gia: gốm hoa lam Việt xuất hiện từ thời Trần thế kỷ 14, đỉnh cao ở thế kỷ 15 (bài *Bảo vật quốc gia: Bình gốm hoa lam vẽ thiên nga*, 2017); dáng yuhuchun được gọi là bình hình tỳ bà (bài *Đồ gốm Đông Nam Á thế kỷ 15*).
+
 ## 4. Cách ghi công
 
 Khi hiển thị hoặc công bố, ghi:

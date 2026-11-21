@@ -10,7 +10,7 @@ export function artifactCard(it, k) {
         'aria-label': `${it.name}, tạo thiết kế` },
     stage,
     h('div', { class: 'ac-body' },
-        h('div', { class: 'code' }, it.dating || 'Gốm Bát Tràng'),
+        h('div', { class: 'code' }, it.dating || (it.info ? 'Gốm hoa lam' : 'Gốm Bát Tràng')),
         h('div', { class: 'name' }, it.name)));
     hoverSpin(card, stage, it.id);                              // rê chuột vào thẻ: bình xoay 3D, rê ra: đứng yên
     return card;
