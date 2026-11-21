@@ -58,7 +58,7 @@ Thông số đầy đủ (phương pháp mặt nạ, độ phủ UV, số đảo
 - Ý nghĩa hoa văn chỉ ghi khi có nguồn bảo tàng: rồng, mây, mẫu đơn (USC Pacific Asia Museum, *Symbols in Chinese Art*); sen (The Met, chú giải hiện vật 1984.297); vân như ý (The Met, chú giải hiện vật 26.271.1a, b: hoa văn cổ áo mây trên vải vóc, y phục). Lá chuối, cây hoa, hoa lá cách điệu chưa tìm được nguồn đáng tin nên chỉ ghi vị trí.
 - "Tương đồng" là so sánh phong cách với hiện vật bảo tàng có hồ sơ, không khẳng định niên đại hay nơi làm của vật.
 - Xuất xứ từng vật ghi "Chưa xác định". Tên tệp ảnh render gốc của cả sáu vật trong bộ dữ liệu đều có tiền tố `sketchfab_collection_` (trường `render_source` trong `lr3d_crops.json`), nên nhiều khả năng cả sáu thuộc nhóm lấy từ Sketchfab, không phải nhóm quét ở Bát Tràng, Thanh Hà. Đây là suy luận từ tên tệp, chưa được tác giả bộ dữ liệu xác nhận.
-- Nhóm gọi băng hoa văn ở chân bình #124 là "lông vũ" (`team_description`); ô thông tin dùng "lá chuối", tên quen dùng cho dạng băng này trên gốm hoa lam (Mia mô tả "plantain leaves" ở bình #97 có cùng dạng). Cần chuyên gia chốt.
+- Nhóm gọi băng hoa văn ở chân bình #124 là "lông vũ" (`team_description`); ô thông tin của #124 dùng đúng từ "lông vũ" theo cách gọi của nhóm (ngày 22/11/2026). Ở bình #97 vẫn dùng "lá chuối", vì Mia mô tả "plantain leaves" cho dạng băng đó. Cần chuyên gia chốt tên gọi.
 
 | Hiện vật | Phong cách (tương đồng) | Hiện vật đối chiếu |
 |---|---|---|
