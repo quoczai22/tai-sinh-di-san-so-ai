@@ -32,7 +32,8 @@ export async function render([heritageId]) {
     const goToResult = () => { location.hash = `#/result/${encodeURIComponent(heritageId)}`; };
 
     const note = h('p', { class: 'out-note', role: 'status', 'aria-live': 'polite' });
-    const resumeHint = h('p', { class: 'out-note', hidden: true },
+    const detail = h('p', { class: 'out-note out-detail', role: 'status', hidden: true });
+    const resumeHint = h('p', { class: 'out-note out-hint', hidden: true },
         'Bạn có thể rời trang và quay lại bằng trình duyệt này để xem kết quả.');
     const progressBar = h('span');
     const progress = h('div', { class: 'out-progress', hidden: true }, h('div', { class: 'progress' }, progressBar));
@@ -54,17 +55,24 @@ export async function render([heritageId]) {
         genBtn.disabled = true;
         progress.hidden = false;
         resumeHint.hidden = false;
-        note.textContent = recovering ? 'Đang khôi phục lượt tạo ảnh của bạn…' : 'Đang gửi yêu cầu tạo ảnh…';
+        detail.hidden = false;
+        note.textContent = recovering ? 'Đang khôi phục lượt tạo ảnh…' : 'Đang gửi yêu cầu tạo ảnh…';
+        detail.textContent = '';
         try {
             await runGeneration(heritageId, seed, (pct, job) => {
                 progressBar.style.width = `${pct}%`;
-                note.textContent = job.status === 'queued'
-                    ? `Đang chờ tạo ảnh · Vị trí ${job.queue_position || 1}/2`
-                    : `Đang tạo ảnh · ${job.label || `${pct}%`}`;
+                if (job.status === 'queued') {
+                    note.textContent = 'Đang chờ tạo ảnh';
+                    detail.textContent = `Vị trí hàng chờ: ${job.queue_position || 1}/2`;
+                } else {
+                    note.textContent = 'Đang tạo ảnh';
+                    detail.textContent = job.label || `${pct}%`;
+                }
             });
             goToResult();
         } catch (err) {
             progress.hidden = true;
+            detail.hidden = true;
             note.textContent = `Không tạo được thiết kế: ${err.message}`;
             genBtn.disabled = false;
         }
@@ -88,5 +96,6 @@ export async function render([heritageId]) {
             can ? h('details', { class: 'adv' }, h('summary', {}, 'Tuỳ chọn'), h('label', { class: 'field', for: 'seed' }, 'Seed (để trống để sinh khác mỗi lần)', seedInput)) : null,
             progress,
             note,
+            detail,
             resumeHint));
 }
