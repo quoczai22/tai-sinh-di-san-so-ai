@@ -25,7 +25,11 @@ Vì sao dùng **generalization** cho tác nhân: mọi vai trò nội bộ đề
 | Mã | Ca sử dụng | Tác nhân | Triển khai | Mã nguồn / giao diện |
 |---|---|---|---|---|
 | UC01 | Đăng ký và đăng nhập | Người dùng đã đăng ký | Kế hoạch | Hiện chỉ có khoá ghi `TSDS_WRITE_KEY` |
+<<<<<<< ours
 | UC02 | Xem danh mục hiện vật | Khách | Đã chạy | `GET /heritage`, Trang chủ và lưới chọn ở Studio; ô "Về hiện vật" ở Studio (nguồn ảnh, hoa văn, đối chiếu bảo tàng) |
+=======
+| UC02 | Xem danh mục hiện vật | Khách | Đã chạy | `GET /heritage`, Trang chủ và lưới chọn ở Studio; sổ hoa văn ở Studio (ảnh tĩnh, ý nghĩa hoa văn, nguồn ảnh, đối chiếu bảo tàng) |
+>>>>>>> theirs
 | UC03 | Tải lên hiện vật | Nhà thiết kế | Một phần | Ảnh mới đưa vào bằng dòng lệnh; chưa có nút tải lên |
 | UC04 | Kiểm tra nguồn gốc hiện vật | (được include) | Đã chạy | `provenance/registry.py::assess_selection` |
 | UC05 | Quản lý giấy phép và bản quyền | Quản trị viên | Một phần | Sửa `data/heritage/metadata.json`; giao diện chỉ xem |
@@ -76,7 +80,11 @@ Những nối kết **cố ý không vẽ**: Thử nghiệm có kiểm soát kh�
 |---|---|
 | Tác nhân | Nhà thiết kế; Hệ thống xử lý AI (phụ) |
 | Mô tả | Từ một hiện vật trong thư viện, hệ thống sinh 4 phương án áo dài, đo chất lượng từng phương án và tạo Design Passport cho mỗi phương án |
+<<<<<<< ours
 | Hoàn thành thành công | 1. Nhà thiết kế chọn hiện vật ở Studio (xem ô "Về hiện vật"), bấm Tạo thiết kế; không nhập seed. 2. Hệ thống xếp lượt vào hàng chờ GPU, kiểm tra quyền mục đích "thử nghiệm". 3. Hệ thống tạo thư mục lần chạy riêng. 4. Hệ thống sinh áo dài nền bằng LoRA (seed ngẫu nhiên mỗi lượt), rồi sinh hoa văn, ghép, hoàn thiện chỉ vùng áo có khoá họa tiết cho 4 phương án. 5. Hệ thống chạy G2 (lỗi thì sinh lại với seed kế tiếp, tối đa 3 lần) và G3 (lỗi thì thử lại hoàn thiện). 6. Hệ thống tạo Passport, trang Kết quả hiện 4 thiết kế |
+=======
+| Hoàn thành thành công | 1. Nhà thiết kế chọn hiện vật ở Studio (có thể mở sổ hoa văn), bấm Tạo thiết kế; không nhập seed. 2. Hệ thống xếp lượt vào hàng chờ GPU, kiểm tra quyền mục đích "thử nghiệm". 3. Hệ thống tạo thư mục lần chạy riêng. 4. Hệ thống sinh áo dài nền bằng LoRA (seed ngẫu nhiên mỗi lượt), rồi sinh hoa văn, ghép, hoàn thiện chỉ vùng áo có khoá họa tiết cho 4 phương án. 5. Hệ thống chạy G2 (lỗi thì sinh lại với seed kế tiếp, tối đa 3 lần) và G3 (lỗi thì thử lại hoàn thiện). 6. Hệ thống tạo Passport, trang Kết quả hiện 4 thiết kế |
+>>>>>>> theirs
 | Thay thế | 2a. Hiện vật đã ngừng dùng hoặc quyền bị từ chối → báo lý do, không chạy. 2b. Hàng chờ đầy (3 lượt) hoặc vượt giới hạn lượt/giờ → trả 429, giao diện báo thử lại sau. 4a. Một phương án lỗi GPU → phương án đó ghi `failed`, ba phương án còn lại vẫn chạy. 4b. Máy chủ không có PyTorch/GPU → API trả 503 kèm thông báo "chưa có môi trường sinh ảnh", giao diện hiển thị kết quả đã sinh sẵn. 4c. Bản triển khai Vercel: máy GPU lỗi hoặc quá thời gian → cổng trả bộ đã sinh sẵn, trang Kết quả ghi "Kết quả đã sinh sẵn — không phải sinh trực tiếp" |
 | Tiền điều kiện | Hiện vật ở trạng thái `active`; chưa vượt giới hạn 6 lần sinh/giờ/IP ở API (cổng Vercel: 10 lần/giờ/IP) |
 | Hậu điều kiện | Có thư mục `outputs/runs/<mã lần chạy>/` với manifest; 4 Passport ở trạng thái do cổng đặt (không bao giờ là "đã phê duyệt") |
