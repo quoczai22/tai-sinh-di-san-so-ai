@@ -3,7 +3,7 @@
 // Vị trí trong pipeline GUI: Studio (bấm Tạo thiết kế) → generation.js → API → trang Kết quả.
 import * as data from './data.js';
 
-const MAX_WAIT_MS = 8 * 60 * 1000;
+const MAX_WAIT_MS = 20 * 60 * 1000;
 const PENDING_KEY = 'dh:pending-generation';
 
 function pendingJob(heritageId) {
@@ -26,12 +26,12 @@ function forgetJob() {
 
 function beforeDeadline(promise, deadline) {
     const remaining = deadline - Date.now();
-    if (remaining <= 0) return Promise.reject(new Error('Quá 8 phút chờ tạo thiết kế. Vui lòng thử lại.'));
+    if (remaining <= 0) return Promise.reject(new Error('Quá 20 phút chờ tạo thiết kế. Vui lòng thử lại.'));
     let timer;
     return Promise.race([
         promise,
         new Promise((_, reject) => {
-            timer = setTimeout(() => reject(new Error('Quá 8 phút chờ tạo thiết kế. Vui lòng thử lại.')), remaining);
+            timer = setTimeout(() => reject(new Error('Quá 20 phút chờ tạo thiết kế. Vui lòng thử lại.')), remaining);
         }),
     ]).finally(() => clearTimeout(timer));
 }
@@ -69,7 +69,7 @@ export async function runGeneration(heritageId, seed, onProgress = () => {}) {
             return job;
         }
         misses = 0;
-        onProgress(job.progress || 0);
+        onProgress(job.progress || 0, job);
         if (['queued', 'running'].includes(job.status)) continue;
         forgetJob();
         if (job.status !== 'completed') throw new Error(job.label);

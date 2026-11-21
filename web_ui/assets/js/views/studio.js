@@ -33,7 +33,7 @@ export async function render([heritageId]) {
     const note = h('p', { class: 'out-note', role: 'status', 'aria-live': 'polite' });
     const progressBar = h('span');
     const progress = h('div', { class: 'out-progress', hidden: true }, h('div', { class: 'progress' }, progressBar));
-    const seedInput = h('input', { type: 'number', min: 0, max: 2147483647, value: 42, id: 'seed', inputmode: 'numeric' });
+    const seedInput = h('input', { type: 'number', min: 0, max: 2147483647, id: 'seed', inputmode: 'numeric' });
     const genBtn = h('button', { class: 'btn hero-btn primary gen-btn', onclick: async () => {
         if (!can) {
             // Không có GPU: mở trang Kết quả với bộ đã tạo trước
@@ -41,13 +41,20 @@ export async function render([heritageId]) {
             goToResult();
             return;
         }
-        const seed = Number(seedInput.value);
-        if (!Number.isInteger(seed) || seed < 0) { toast('Seed phải là số nguyên không âm.'); return; }
+        const seed = seedInput.value === ''
+            ? crypto.getRandomValues(new Uint32Array(1))[0] % 2147483648
+            : Number(seedInput.value);
+        if (!Number.isInteger(seed) || seed < 0 || seed > 2147483647) {
+            toast('Seed phải là số nguyên từ 0 đến 2147483647.'); return;
+        }
         genBtn.disabled = true;
         progress.hidden = false;
         note.textContent = 'Đang tạo thiết kế…';
         try {
-            await runGeneration(heritageId, seed, (pct) => { progressBar.style.width = `${pct}%`; });
+            await runGeneration(heritageId, seed, (pct, job) => {
+                progressBar.style.width = `${pct}%`;
+                note.textContent = job.label || (job.status === 'queued' ? 'Đang chờ lượt sinh…' : 'Đang tạo thiết kế…');
+            });
             goToResult();
         } catch (err) {
             progress.hidden = true;
@@ -69,7 +76,7 @@ export async function render([heritageId]) {
             h('a', { class: 'io-change', href: '#/studio' }, 'Đổi hiện vật')),
         h('div', { class: 'io-action' },
             genBtn,
-            can ? h('details', { class: 'adv' }, h('summary', {}, 'Tuỳ chọn'), h('label', { class: 'field', for: 'seed' }, 'Seed', seedInput)) : null,
+            can ? h('details', { class: 'adv' }, h('summary', {}, 'Tuỳ chọn'), h('label', { class: 'field', for: 'seed' }, 'Seed (để trống để sinh khác mỗi lần)', seedInput)) : null,
             progress,
             note));
 }

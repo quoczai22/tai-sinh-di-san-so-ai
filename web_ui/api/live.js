@@ -101,6 +101,11 @@ module.exports = async function handler(req, res) {
                     detail: 'Một lượt sinh đang chạy trên GPU. Hãy chờ lượt đó hoàn tất rồi thử lại.',
                 });
             }
+            if (upstream.status === 429) {
+                return res.status(429).json({
+                    detail: 'Hàng chờ tạo thiết kế đã đầy. Vui lòng thử lại sau.',
+                });
+            }
             if (!upstream.ok) throw new Error('HTTP ' + upstream.status);
             const job = await upstream.json();
             logGatewayAudit({ step: 3, event: 'gateway_generate', heritage_id: heritageId,
@@ -122,6 +127,9 @@ module.exports = async function handler(req, res) {
             const upstream = await fetchWithTimeout(
                 config.modalUrl + '/generate/' + encodeURIComponent(job[1]),
                 { headers: buildBackendHeaders('modal', config) }, config.modalTimeoutMs);
+            if (upstream.status === 404) {
+                return res.status(404).json({ detail: 'Lượt sinh không còn trên máy chủ. Vui lòng tạo lại.' });
+            }
             if (!upstream.ok) throw new Error('HTTP ' + upstream.status);
             return res.status(200).json(await upstream.json());
         } catch (error) {

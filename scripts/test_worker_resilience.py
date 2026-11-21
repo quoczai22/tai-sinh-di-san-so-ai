@@ -34,32 +34,25 @@ fake.generate_design_set = _boom
 fake.SEED = 42  # api/main.py (bản chung kết) import SEED cùng generate_design_set
 sys.modules["generation.streamlit_runner"] = fake
 
-from fastapi.testclient import TestClient  # noqa: E402
-
-from api.main import app  # noqa: E402
+from api import main as api  # noqa: E402
+from api.main import GenerateRequest  # noqa: E402
 
 
 def main() -> int:
-    client = TestClient(app)
-    headers = {"X-API-Key": "test_key"}
-
     def wait_done(job_id: str) -> dict:
         deadline = time.time() + 10
         state: dict = {}
         while time.time() < deadline:
-            state = client.get(f"/generate/{job_id}", headers=headers).json()
+            state = api.generate_status(job_id)
             if state.get("status") in {"failed", "completed"}:
                 break
             time.sleep(0.2)
         return state
 
-    # API bản chung kết chạy MỘT job mỗi lúc (job thứ hai trong lúc bận nhận 409), nên gửi
-    # tuần tự: job lỗi phải nhả khoá, job sau vẫn được nhận và cũng báo "failed" (không kẹt).
+    # Job lỗi phải nhả GPU để job tiếp theo trong hàng chờ vẫn chạy.
     states: dict[str, dict] = {}
     for hid in ("LR3D_33", "LR3D_61"):
-        res = client.post("/generate", json={"heritage_id": hid}, headers=headers)
-        assert res.status_code == 202, f"{hid}: HTTP {res.status_code} {res.text}"
-        job_id = res.json()["job_id"]
+        job_id = api.generate_designs(GenerateRequest(heritage_id=hid))["job_id"]
         states[job_id] = wait_done(job_id)
 
     # Bản chung kết ẩn chi tiết lỗi khỏi người dùng (chỉ ghi log máy chủ): job phải "failed",
