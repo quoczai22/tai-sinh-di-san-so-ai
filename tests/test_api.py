@@ -191,13 +191,13 @@ def test_review_rule_conflict_flagged_and_name_consent(api_client):
     assert p["approval"]["status"] == "approved" and p["integrity"]["ok"]
 
 
-def test_publish_blocked_until_rights_cleared(api_client):
+def test_publish_needs_review_then_allowed_for_open_license(api_client):
     pid = _expert_id(api_client)
     assert api_client.post(f"/passports/{pid}/publish").status_code == 409   # chưa duyệt
     api_client.post(f"/passports/{pid}/reviews", json=_review())
     r = api_client.post(f"/passports/{pid}/publish")
-    detail = r.json()["detail"]  # quyền xuất bản của hiện vật chưa được xác nhận nên bị chặn
-    assert r.status_code == 403 and ("Không xuất bản" in detail or "ngừng sử dụng" in detail)
+    # 6 vật LR3D dùng CC BY 4.0 (giấy phép mở) nên cổng quyền cho xuất bản sau khi duyệt
+    assert r.status_code == 200, r.text
 
 
 def test_export_is_labeled(api_client):
@@ -206,7 +206,7 @@ def test_export_is_labeled(api_client):
     r = api_client.get(f"/passports/{pid}/export")
     assert r.status_code == 200 and r.headers["content-type"] == "image/png"
     meta = read_label(r.content)
-    assert meta["passport_id"] == pid and meta["rights_warning"] == "true"
+    assert meta["passport_id"] == pid and meta["rights_warning"] == "false"
     assert api_client.audit_events[-1]["event"] == "design_exported"
 
 

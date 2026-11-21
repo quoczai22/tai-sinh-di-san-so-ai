@@ -1,0 +1,388 @@
+{
+  "schema": "run-manifest/1.0",
+  "run_id": "R20261121T161803-HV12",
+  "heritage_id": "LR3D_124",
+  "code": "HV12",
+  "seed": 42,
+  "created_at": "2026-11-21T16:20:57+00:00",
+  "versions": {
+    "torch": "2.13.0+cu126",
+    "diffusers": "0.43.0",
+    "sd_model_id": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+    "controlnet_id": "lllyasviel/control_v11p_sd15_canny",
+    "scheduler": "UniPCMultistep",
+    "steps": 25,
+    "guidance": 7.5,
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU 8GB"
+  },
+  "rights_gate_experiment": {
+    "allowed": true,
+    "level": "ok",
+    "reason": "Được phép."
+  },
+  "garment": {
+    "source": "lora",
+    "seed": 42,
+    "lora": "D:\\CÁC CUỘC THI\\Sáng tạo trẻ Quốc gia trong lĩnh vực Trí tuệ nhân tạo năm 2026\\tai-sinh-di-san-so-ai\\data\\lora\\aodai_r16_512",
+    "tried": [
+      {
+        "seed": 42,
+        "status": "accepted",
+        "reason": ""
+      }
+    ],
+    "image": "outputs/runs/R20261121T161803-HV12/garment.png",
+    "mask": "outputs/runs/R20261121T161803-HV12/garment_mask.png"
+  },
+  "designs": [
+    {
+      "status": "completed",
+      "variant_index": 1,
+      "timestamp": "2026-11-21T16:19:19+00:00",
+      "source_element": "panel",
+      "seed": 42,
+      "intensity_level": 1,
+      "level_name": "Nguyên bản",
+      "controlnet_weight": 0.85,
+      "palette_mode": "original",
+      "layout": "front_panel",
+      "layout_label": "Dải thân trước",
+      "layout_scale": 0.95,
+      "layout_score": 0.0669,
+      "layout_selected_by": "clip_auto",
+      "layout_ranking": "front_panel:0.0669;center_medallion:0.0649;shoulder_hem:0.0636;shoulder:0.0621;full_body:0.049;hem_band:0.0434;side_stripe:0.0392",
+      "pattern_seed": 45,
+      "pattern_status": "retried_seed",
+      "pattern_attempts": 4,
+      "pattern_attempt_log": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "status": "failed",
+          "decision": "FAIL",
+          "failed_metrics": [
+            "seam_ratio"
+          ],
+          "values": {
+            "vessel_leakage": 0.0096,
+            "seam_ratio": 2.708
+          }
+        },
+        {
+          "attempt": 2,
+          "seed": 43,
+          "status": "failed",
+          "decision": "FAIL",
+          "failed_metrics": [
+            "seam_ratio"
+          ],
+          "values": {
+            "vessel_leakage": 0.0002,
+            "seam_ratio": 5.944
+          }
+        },
+        {
+          "attempt": 3,
+          "seed": 44,
+          "status": "failed",
+          "decision": "FAIL",
+          "failed_metrics": [
+            "seam_ratio"
+          ],
+          "values": {
+            "vessel_leakage": 0.1469,
+            "seam_ratio": 5.904
+          }
+        },
+        {
+          "attempt": 4,
+          "seed": 45,
+          "status": "ok",
+          "decision": "WARN",
+          "failed_metrics": [],
+          "values": {
+            "vessel_leakage": 0.0379,
+            "seam_ratio": 1.537
+          }
+        }
+      ],
+      "polish_strength": 0.2,
+      "polish_mask": true,
+      "polish_lock": true,
+      "polish_status": "passed",
+      "polish_attempts": 1,
+      "polish_label": null,
+      "positive_prompt": "a flat decorative pattern inspired by Blue and white dragon medallion and feather band, featuring Round cobalt blue dragon medallion above a feather band with scalloped cloud border., hand-painted ceramic enamel style, bold outline linework, asymmetric composition, seamless repeating pattern.",
+      "negative_prompt": "vase, pot, jar, vessel, bottle, ceramic object, 3d render, photograph, person, mannequin, garment, kaleidoscope, mandala, mirror symmetry, radial symmetry, neon colors, oversaturated, blurry, low quality, watermark, text, distorted",
+      "steps": 25,
+      "guidance": 7.5,
+      "sd_model_id": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+      "controlnet_id": "lllyasviel/control_v11p_sd15_canny",
+      "torch_version": "2.13.0+cu126",
+      "diffusers_version": "0.43.0",
+      "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU 8GB",
+      "duration_s": 7.59,
+      "n_edge_px": 11711,
+      "control_mode": "ornament_only",
+      "similarity_pattern_vs_ceramic": 0.8153,
+      "source_palette": "#8e9d94;#3a5874;#243a59;#5c7783;#eaeceb",
+      "pattern_path": "outputs/runs/R20261121T161803-HV12/V1_pattern.png",
+      "raw_path": "outputs/runs/R20261121T161803-HV12/V1_aodai_raw.png",
+      "design_path_abs": "outputs/runs/R20261121T161803-HV12/V1_aodai.png",
+      "passport_id": "DP-HV12-20261121T161803-V1"
+    },
+    {
+      "status": "completed",
+      "variant_index": 2,
+      "timestamp": "2026-11-21T16:19:59+00:00",
+      "source_element": "panel",
+      "seed": 42,
+      "intensity_level": 2,
+      "level_name": "Gần nguyên bản",
+      "controlnet_weight": 0.65,
+      "palette_mode": "free",
+      "layout": "center_medallion",
+      "layout_label": "Ô giữa ngực",
+      "layout_scale": 1.1,
+      "layout_score": 0.0796,
+      "layout_selected_by": "clip_auto",
+      "layout_ranking": "center_medallion:0.0796;full_body:0.0716;front_panel:0.0715;shoulder:0.0706;shoulder_hem:0.0656;side_stripe:0.0648;hem_band:0.058",
+      "pattern_seed": 45,
+      "pattern_status": "best_of_failed",
+      "pattern_attempts": 4,
+      "pattern_attempt_log": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "status": "failed",
+          "decision": "FAIL",
+          "failed_metrics": [
+            "seam_ratio"
+          ],
+          "values": {
+            "vessel_leakage": 0.0,
+            "seam_ratio": 3.039
+          }
+        },
+        {
+          "attempt": 2,
+          "seed": 43,
+          "status": "failed",
+          "decision": "FAIL",
+          "failed_metrics": [
+            "seam_ratio"
+          ],
+          "values": {
+            "vessel_leakage": 0.0196,
+            "seam_ratio": 4.888
+          }
+        },
+        {
+          "attempt": 3,
+          "seed": 44,
+          "status": "failed",
+          "decision": "FAIL",
+          "failed_metrics": [
+            "seam_ratio"
+          ],
+          "values": {
+            "vessel_leakage": 0.1626,
+            "seam_ratio": 3.302
+          }
+        },
+        {
+          "attempt": 4,
+          "seed": 45,
+          "status": "failed",
+          "decision": "FAIL",
+          "failed_metrics": [
+            "seam_ratio"
+          ],
+          "values": {
+            "vessel_leakage": 0.0008,
+            "seam_ratio": 2.9
+          }
+        }
+      ],
+      "polish_strength": 0.2,
+      "polish_mask": true,
+      "polish_lock": true,
+      "polish_status": "passed",
+      "polish_attempts": 1,
+      "polish_label": null,
+      "positive_prompt": "a flat decorative pattern inspired by Blue and white dragon medallion and feather band, featuring Round cobalt blue dragon medallion above a feather band with scalloped cloud border., hand-painted ceramic enamel style, bold outline linework, asymmetric composition, seamless repeating pattern.",
+      "negative_prompt": "vase, pot, jar, vessel, bottle, ceramic object, 3d render, photograph, person, mannequin, garment, kaleidoscope, mandala, mirror symmetry, radial symmetry, neon colors, oversaturated, blurry, low quality, watermark, text, distorted",
+      "steps": 25,
+      "guidance": 7.5,
+      "sd_model_id": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+      "controlnet_id": "lllyasviel/control_v11p_sd15_canny",
+      "torch_version": "2.13.0+cu126",
+      "diffusers_version": "0.43.0",
+      "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU 8GB",
+      "duration_s": 7.64,
+      "n_edge_px": 11711,
+      "control_mode": "ornament_only",
+      "similarity_pattern_vs_ceramic": 0.8291,
+      "source_palette": "#8e9d94;#3a5874;#243a59;#5c7783;#eaeceb",
+      "pattern_path": "outputs/runs/R20261121T161803-HV12/V2_pattern.png",
+      "raw_path": "outputs/runs/R20261121T161803-HV12/V2_aodai_raw.png",
+      "design_path_abs": "outputs/runs/R20261121T161803-HV12/V2_aodai.png",
+      "passport_id": "DP-HV12-20261121T161803-V2"
+    },
+    {
+      "status": "completed",
+      "variant_index": 3,
+      "timestamp": "2026-11-21T16:20:40+00:00",
+      "source_element": "panel",
+      "seed": 42,
+      "intensity_level": 3,
+      "level_name": "Cân bằng",
+      "controlnet_weight": 0.45,
+      "palette_mode": "free",
+      "layout": "shoulder_hem",
+      "layout_label": "Vai kết hợp gấu tà",
+      "layout_scale": 0.78,
+      "layout_score": 0.0737,
+      "layout_selected_by": "clip_auto",
+      "layout_ranking": "center_medallion:0.078;shoulder_hem:0.0737;front_panel:0.0721;side_stripe:0.0586;full_body:0.0583;shoulder:0.0557;hem_band:0.0546",
+      "pattern_seed": 43,
+      "pattern_status": "best_of_failed",
+      "pattern_attempts": 4,
+      "pattern_attempt_log": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "status": "failed",
+          "decision": "FAIL",
+          "failed_metrics": [
+            "seam_ratio"
+          ],
+          "values": {
+            "vessel_leakage": 0.0077,
+            "seam_ratio": 2.406
+          }
+        },
+        {
+          "attempt": 2,
+          "seed": 43,
+          "status": "failed",
+          "decision": "FAIL",
+          "failed_metrics": [
+            "seam_ratio"
+          ],
+          "values": {
+            "vessel_leakage": 0.0001,
+            "seam_ratio": 2.167
+          }
+        },
+        {
+          "attempt": 3,
+          "seed": 44,
+          "status": "failed",
+          "decision": "FAIL",
+          "failed_metrics": [
+            "seam_ratio"
+          ],
+          "values": {
+            "vessel_leakage": 0.0505,
+            "seam_ratio": 3.402
+          }
+        },
+        {
+          "attempt": 4,
+          "seed": 45,
+          "status": "failed",
+          "decision": "FAIL",
+          "failed_metrics": [
+            "seam_ratio"
+          ],
+          "values": {
+            "vessel_leakage": 0.0,
+            "seam_ratio": 2.382
+          }
+        }
+      ],
+      "polish_strength": 0.2,
+      "polish_mask": true,
+      "polish_lock": true,
+      "polish_status": "passed",
+      "polish_attempts": 1,
+      "polish_label": null,
+      "positive_prompt": "a flat decorative pattern inspired by Blue and white dragon medallion and feather band, featuring Round cobalt blue dragon medallion above a feather band with scalloped cloud border., modern simplified interpretation, hand-painted ceramic enamel style, bold outline linework, asymmetric composition, seamless repeating pattern.",
+      "negative_prompt": "vase, pot, jar, vessel, bottle, ceramic object, 3d render, photograph, person, mannequin, garment, kaleidoscope, mandala, mirror symmetry, radial symmetry, neon colors, oversaturated, blurry, low quality, watermark, text, distorted",
+      "steps": 25,
+      "guidance": 7.5,
+      "sd_model_id": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+      "controlnet_id": "lllyasviel/control_v11p_sd15_canny",
+      "torch_version": "2.13.0+cu126",
+      "diffusers_version": "0.43.0",
+      "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU 8GB",
+      "duration_s": 7.57,
+      "n_edge_px": 11711,
+      "control_mode": "ornament_only",
+      "similarity_pattern_vs_ceramic": 0.8067,
+      "source_palette": "#8e9d94;#3a5874;#243a59;#5c7783;#eaeceb",
+      "pattern_path": "outputs/runs/R20261121T161803-HV12/V3_pattern.png",
+      "raw_path": "outputs/runs/R20261121T161803-HV12/V3_aodai_raw.png",
+      "design_path_abs": "outputs/runs/R20261121T161803-HV12/V3_aodai.png",
+      "passport_id": "DP-HV12-20261121T161803-V3"
+    },
+    {
+      "status": "completed",
+      "variant_index": 4,
+      "timestamp": "2026-11-21T16:20:57+00:00",
+      "source_element": "panel",
+      "seed": 42,
+      "intensity_level": 4,
+      "level_name": "Tự do sáng tạo",
+      "controlnet_weight": 0.25,
+      "palette_mode": "free",
+      "layout": "shoulder",
+      "layout_label": "Vai và ngực",
+      "layout_scale": 0.85,
+      "layout_score": 0.0778,
+      "layout_selected_by": "clip_auto",
+      "layout_ranking": "shoulder:0.0778;center_medallion:0.0763;front_panel:0.0753;shoulder_hem:0.0695;side_stripe:0.0688;hem_band:0.0507;full_body:0.0349",
+      "pattern_seed": 42,
+      "pattern_status": "passed",
+      "pattern_attempts": 1,
+      "pattern_attempt_log": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "status": "ok",
+          "decision": "PASS",
+          "failed_metrics": [],
+          "values": {
+            "vessel_leakage": 0.0103,
+            "seam_ratio": 1.168
+          }
+        }
+      ],
+      "polish_strength": 0.2,
+      "polish_mask": true,
+      "polish_lock": true,
+      "polish_status": "passed",
+      "polish_attempts": 1,
+      "polish_label": null,
+      "positive_prompt": "a flat decorative pattern inspired by Blue and white dragon medallion and feather band, featuring Round cobalt blue dragon medallion above a feather band with scalloped cloud border., bold contemporary reinterpretation, hand-painted ceramic enamel style, bold outline linework, asymmetric composition, seamless repeating pattern.",
+      "negative_prompt": "vase, pot, jar, vessel, bottle, ceramic object, 3d render, photograph, person, mannequin, garment, kaleidoscope, mandala, mirror symmetry, radial symmetry, neon colors, oversaturated, blurry, low quality, watermark, text, distorted",
+      "steps": 25,
+      "guidance": 7.5,
+      "sd_model_id": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+      "controlnet_id": "lllyasviel/control_v11p_sd15_canny",
+      "torch_version": "2.13.0+cu126",
+      "diffusers_version": "0.43.0",
+      "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU 8GB",
+      "duration_s": 7.85,
+      "n_edge_px": 11711,
+      "control_mode": "ornament_only",
+      "similarity_pattern_vs_ceramic": 0.7402,
+      "source_palette": "#8e9d94;#3a5874;#243a59;#5c7783;#eaeceb",
+      "pattern_path": "outputs/runs/R20261121T161803-HV12/V4_pattern.png",
+      "raw_path": "outputs/runs/R20261121T161803-HV12/V4_aodai_raw.png",
+      "design_path_abs": "outputs/runs/R20261121T161803-HV12/V4_aodai.png",
+      "passport_id": "DP-HV12-20261121T161803-V4"
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 
 Trả lời yêu cầu cải tiến 3 của BTC: **nguồn và giấy phép của các hiện vật, ghi công, lịch sử biên tập thủ công, nhãn "có hỗ trợ AI"**.
 
-Nói thẳng hiện trạng: **chưa hiện vật nào đang dùng có quyền sử dụng đã được xác minh từng vật**. Từ 19/11/2026 dữ liệu chính là 6 hiện vật của bộ dữ liệu nghiên cứu LR3D-CULT2 (HV07 đến HV12). Bộ dữ liệu công bố CC BY 4.0, nhưng từng vật có thể lấy từ nguồn giấy phép học thuật nên quyền từng vật vẫn chưa xác minh. 6 ảnh ban đầu lấy từ website bán gốm (HV01 đến HV06) đã ngừng dùng. Phần việc của bản chung kết là (1) ghi đầy đủ và trung thực những gì đã biết, (2) để hệ thống tự chặn những mục đích chưa được phép, (3) truy vết mọi thay đổi trên thiết kế, (4) ghi nguồn và giấy phép của dữ liệu huấn luyện LoRA.
+Hiện trạng: từ 19/11/2026 dữ liệu chính là 6 hiện vật của bộ dữ liệu nghiên cứu LR3D-CULT2 (HV07 đến HV12). Trang Mendeley Data của bộ dữ liệu ghi giấy phép **CC BY 4.0** (xác nhận ngày 21/11/2026), nên nhóm ghi giấy phép này cho cả 6 vật và ghi công tác giả theo yêu cầu của giấy phép. Hạn chế còn lại: mô tả bộ dữ liệu nói một phần mô hình lấy từ Sketchfab theo giấy phép học thuật, nhóm chưa xác minh riêng nguồn của từng vật. 6 ảnh ban đầu lấy từ website bán gốm (HV01 đến HV06) đã ngừng dùng. Phần việc của bản chung kết là (1) ghi đầy đủ và trung thực những gì đã biết, (2) để hệ thống tự chặn những mục đích chưa được phép, (3) truy vết mọi thay đổi trên thiết kế, (4) ghi nguồn và giấy phép của dữ liệu huấn luyện LoRA.
 
 ## 1. Danh mục nguồn (schema 2.0)
 

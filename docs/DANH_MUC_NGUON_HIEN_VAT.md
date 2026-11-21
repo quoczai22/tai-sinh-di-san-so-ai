@@ -67,7 +67,7 @@ Các bước sau do hệ thống làm tự động, không có chỉnh sửa tay
 
 ## 6. Việc chưa làm
 
-- Nhóm cho biết ngày 19/11/2026 đã được phép dùng bộ dữ liệu cho mục đích phi thương mại. **Hồ sơ chưa lưu bằng chứng**: điền bảng bên dưới và đính kèm thư hoặc tin nhắn xác nhận. Phạm vi cho phép chưa rõ: có gồm hiển thị hoặc cho tải mô hình 3D trên trang công khai không. Xuất xứ và giấy phép từng vật vẫn chưa xác minh. Mọi nơi hiển thị dữ liệu phải kèm nhãn "chỉ dùng phi thương mại".
+- Nhóm cho biết ngày 19/11/2026 đã được phép dùng bộ dữ liệu cho mục đích phi thương mại. **Hồ sơ chưa lưu bằng chứng**: điền bảng bên dưới và đính kèm thư hoặc tin nhắn xác nhận. Phạm vi cho phép chưa rõ: có gồm hiển thị hoặc cho tải mô hình 3D trên trang công khai không. Giấy phép của bộ dữ liệu là CC BY 4.0 (trang Mendeley Data, xác nhận 21/11/2026), đã ghi cho cả 6 vật kèm ghi công tác giả. Nhóm chưa xác minh riêng nguồn của từng vật (một phần mô hình có thể lấy từ Sketchfab theo giấy phép học thuật).
 
 | Mục | Nội dung cần ghi |
 |---|---|
