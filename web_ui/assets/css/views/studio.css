@@ -104,11 +104,6 @@
     color: var(--ink-3);
 }
 
-.out-note.out-detail {
-    margin-top: 6px;
-    color: var(--ink-2);
-}
-
 .out-note.out-hint {
     margin-top: 8px;
     font-size: 13px;
