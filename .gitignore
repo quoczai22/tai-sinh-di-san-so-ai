@@ -40,7 +40,7 @@ data/documents/*
 
 # Dữ liệu thô LR3D-CULT2 và kho phần tử cắt từ đó (chưa xác minh giấy phép, không commit)
 data/LR3D-CULT2*
-data/lr3d_src/
+data/raw/
 data/elements/
 
 # Unreviewed hand-offs, prototypes, and manual-test artefacts.
@@ -80,12 +80,11 @@ outputs/edits/_pytest_*/
 data/heritage/sources/originals/
 
 # Dữ liệu VietFashion tải về (CC BY-NC 4.0), không commit dữ liệu thô
-data/vietfashion/
 
 # Gói đánh giá mù (ảnh thiết kế đã đổi tên mã, không đưa lên git)
-outputs/blind_review/
+outputs/review/
 
-# Gói upload Hugging Face Space (sinh bởi scripts/build_hf_space.py)
+# Gói upload Hugging Face Space (sinh bởi scripts/deploy/build_hf_space.py)
 dist/
 
 # Điều phối nhiều AI (file giao việc / báo cáo cục bộ)

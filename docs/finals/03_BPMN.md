@@ -7,7 +7,7 @@ Tệp:
 | `diagrams/tsds_to_be.bpmn` | TO-BE, BPMN 2.0 XML có phần sơ đồ (DI). Mở được bằng Camunda Modeler, bpmn.io, Signavio |
 | `diagrams/tsds_as_is.bpmn` | AS-IS (bản 09/2026) |
 | `diagrams/bpmn_to_be.svg`, `bpmn_as_is.svg` | Ảnh xuất từ cùng mô hình, để xem nhanh |
-| `scripts/12_build_diagrams.py` | Mã sinh cả XML và SVG từ một mô hình duy nhất, nên hai bản không lệch nhau |
+| `scripts/docs/build_diagrams.py` | Mã sinh cả XML và SVG từ một mô hình duy nhất, nên hai bản không lệch nhau |
 
 Kiểm tra: cả hai tệp `.bpmn` được nạp bằng `bpmn-moddle` (thư viện đọc metamodel BPMN 2.0 của bpmn.io) và không có cảnh báo nào. Bộ kiểm thử `tests/test_diagrams.py` kiểm tra lại cấu trúc mỗi lần chạy.
 
@@ -36,7 +36,7 @@ Kiểm tra: cả hai tệp `.bpmn` được nạp bằng `bpmn-moddle` (thư vi�
 | 7–8. Chuyển sang thiết kế, ghép vào áo | Chọn bố cục (CLIP), ghép hoa văn lên áo do LoRA sinh → Hoàn thiện chỉ vùng áo, khoá họa tiết | Service Task | AI |
 | 9–10. Kiểm tra thiết kế cuối, đo giữ họa tiết và dáng áo | Cổng G3 → "Kết quả G3?" (Đạt / Cảnh báo / Không đạt) | Service Task + Exclusive Gateway | QC |
 | 11. Không đạt thì quay lại bước phù hợp | G2 không đạt → sinh lại với seed kế tiếp (dưới 3 lần); đủ 3 lần → giữ bản ít lỗi nhất, gắn cờ `qa_failed` (`quality/pattern_retry.py`). G3 không đạt → thử lại hoàn thiện: đổi seed, hạ độ nhiễu, cuối cùng trả bản ghép thô (`quality/retry.py`); vẫn lỗi → QC Officer xem | Vòng lặp | AI, QC |
-| 12. Đạt thì chuyển chuyên gia | Xem bộ 4 thiết kế (trang Kết quả) → Lập gói chấm mù, gửi chuyên gia (`scripts/18_build_blind_review.py`) | User Task + Send Task, message flow | Nhà thiết kế, QC |
+| 12. Đạt thì chuyển chuyên gia | Xem bộ 4 thiết kế (trang Kết quả) → Lập gói chấm mù, gửi chuyên gia (`scripts/eval/build_blind_review.py`) | User Task + Send Task, message flow | Nhà thiết kế, QC |
 | 13. Chuyên gia đánh giá | Nhận yêu cầu → Chấm mù 5 tiêu chí → Ghi quyết định và lý do → Gửi phiếu | Message Start, User Task, Message End | Pool chuyên gia |
 | 14. Không đạt thì ghi lý do, sửa, thẩm định lại | "Kết quả thẩm định?" → Cần sửa → Ghi lý do vào Passport → Chỉnh sửa thủ công → Tải bản sửa lên → quay lại cổng G3 | Service Task, **Manual Task**, User Task | QC, Nhà thiết kế |
 | 15. Đạt thì phê duyệt | Phê duyệt, cập nhật Design Passport | Service Task | Dữ liệu |
@@ -84,14 +84,14 @@ Sơ đồ TO-BE được sửa để khớp mã hiện tại. Những chỗ đã
 | G2 lỗi đủ 3 lần → Nhà thiết kế điều chỉnh tham số | Hệ thống giữ bản ít lỗi nhất, gắn cờ `qa_failed` (`quality/pattern_retry.py`) | Thay bằng Service Task ở lane Kiểm soát chất lượng |
 | "Sửa: khoá họa tiết hoặc giảm strength" | Thử lại hoàn thiện: đổi seed, hạ độ nhiễu, cuối cùng trả bản ghép thô (`quality/retry.py`) | Đổi tên; G3 vẫn lỗi sau thử lại thì chuyển QC Officer |
 | QC "trả về sửa" → sửa tự động | `POST /passports/{id}/qc` ghi `qa_failed` kèm lý do, chờ sửa tay rồi tải lên (`POST /passports/{id}/edits`) | Nhánh "Trả về sửa" đi tới "Ghi lý do yêu cầu sửa vào Passport" |
-| "Chọn phương án đề cử", "Gửi yêu cầu thẩm định ẩn danh" | Mã không có bước đề cử; gói chấm mù lập bằng `scripts/18_build_blind_review.py` | Đổi tên hai bước |
+| "Chọn phương án đề cử", "Gửi yêu cầu thẩm định ẩn danh" | Mã không có bước đề cử; gói chấm mù lập bằng `scripts/eval/build_blind_review.py` | Đổi tên hai bước |
 
 Những điểm sơ đồ cố ý không vẽ vì là chi tiết kỹ thuật, không phải quyết định nghiệp vụ:
 
 - **Hàng chờ GPU**: `POST /generate` nhận tối đa 3 lượt đang chờ hoặc đang chạy (`TSDS_MAX_ACTIVE_JOBS`), quá thì trả 429; giới hạn 6 lượt/giờ/IP ở API, 10 lượt/giờ/IP ở cổng Vercel.
 - **Dự phòng khi máy GPU lỗi**: cổng `web_ui/api/live.js` trả bộ thiết kế đã sinh sẵn, trang Kết quả ghi rõ "Kết quả đã sinh sẵn — không phải sinh trực tiếp".
 - **Seed**: web không cho nhập seed. Áo nền dùng seed ngẫu nhiên mỗi lượt (`garment_lora.pick_seed`), hoa văn dùng seed mặc định 42 rồi tăng dần khi sinh lại; cả hai ghi vào Passport.
-- **C1–C4** chạy khi nạp ảnh (`scripts/09_ingest_heritage_image.py`); hiện vật không đạt ở trạng thái `retired` nên không xuất hiện ở Studio. Kiểm tra quyền mục đích "thử nghiệm" chạy lại ở đầu mỗi lượt sinh (`streamlit_runner.py`; quyền bị từ chối thì job thất bại).
+- **C1–C4** chạy khi nạp ảnh (`scripts/data_prep/ingest_heritage_image.py`); hiện vật không đạt ở trạng thái `retired` nên không xuất hiện ở Studio. Kiểm tra quyền mục đích "thử nghiệm" chạy lại ở đầu mỗi lượt sinh (`streamlit_runner.py`; quyền bị từ chối thì job thất bại).
 
 Khoảng trống còn lại giữa quy trình và giao diện web (không sửa trong đợt này):
 

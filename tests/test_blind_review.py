@@ -1,4 +1,4 @@
-"""Kiểm thử gói đánh giá mù (scripts/18_build_blind_review.py): đủ thiết kế, không lộ thông tin, khóa giải mã đúng."""
+"""Kiểm thử gói đánh giá mù (scripts/eval/build_blind_review.py): đủ thiết kế, không lộ thông tin, khóa giải mã đúng."""
 import csv
 import importlib.util
 import re
@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
-spec = importlib.util.spec_from_file_location("blind_review", ROOT / "scripts" / "18_build_blind_review.py")
+spec = importlib.util.spec_from_file_location("blind_review", ROOT / "scripts" / "eval" / "build_blind_review.py")
 BR = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(BR)
 

@@ -1,11 +1,11 @@
-"""Kiểm thử phần đọc dữ liệu và tham số của scripts/13_train_lora.py (không cần GPU)."""
+"""Kiểm thử phần đọc dữ liệu và tham số của scripts/train/train_lora.py (không cần GPU)."""
 import importlib.util
 import json
 from pathlib import Path
 
 import pytest
 
-spec = importlib.util.spec_from_file_location("tl", Path(__file__).resolve().parents[1] / "scripts" / "13_train_lora.py")
+spec = importlib.util.spec_from_file_location("tl", Path(__file__).resolve().parents[1] / "scripts" / "train" / "train_lora.py")
 tl = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(tl)
 
@@ -22,7 +22,7 @@ def test_doc_metadata_hop_le(tmp_path):
 
 
 def test_thieu_metadata_bao_loi_huong_dan(tmp_path):
-    with pytest.raises(FileNotFoundError, match="12_export_lora_set"):
+    with pytest.raises(FileNotFoundError, match="export_lora_set"):
         tl.read_metadata(tmp_path)
 
 

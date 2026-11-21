@@ -3,7 +3,7 @@
 // Vị trí trong pipeline GUI: bước 0 (init chọn chế độ) → cấp dữ liệu cho views/* và components/hero/*.
 // Lớp dữ liệu hai chế độ:
 //  · live — gọi API FastAPI (sinh ảnh thật trên GPU, ghi phiếu thẩm định, chỉnh sửa)
-//  · demo — đọc ./data/*.json do scripts/11_export_demo_data.py xuất từ dữ liệu THẬT
+//  · demo — đọc ./data/*.json do scripts/demo/export_demo_data.py xuất từ dữ liệu THẬT
 // Chế độ được xác định một lần khi mở trang bằng /health (chờ tối đa 2,5 giây).
 
 const API = (window.DH_API_BASE || '').replace(/\/$/, '');
@@ -127,7 +127,7 @@ export async function passports() {
 }
 
 // Danh sách thiết kế cho trang Kết quả. Chế độ trình diễn đọc bộ riêng ./data/result/passports.json (xuất bằng
-// scripts/11_export_demo_data.py --only-result); trang chủ, Thư viện và Studio vẫn dùng passports() như cũ.
+// scripts/demo/export_demo_data.py --only-result); trang chủ, Thư viện và Studio vẫn dùng passports() như cũ.
 export async function resultPassports() {
     if (state.mode === 'live') {
         const live = await passports();                       // passports() có thể rớt về chế độ trình diễn nếu API lỗi

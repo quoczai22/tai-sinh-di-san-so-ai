@@ -1,8 +1,8 @@
-"""Kiểm thử bộ lọc caption của scripts/11_filter_vietfashion.py (không cần dữ liệu hay GPU)."""
+"""Kiểm thử bộ lọc caption của scripts/data_prep/filter_vietfashion.py (không cần dữ liệu hay GPU)."""
 import importlib.util
 from pathlib import Path
 
-spec = importlib.util.spec_from_file_location("loc", Path(__file__).resolve().parents[1] / "scripts" / "11_filter_vietfashion.py")
+spec = importlib.util.spec_from_file_location("loc", Path(__file__).resolve().parents[1] / "scripts" / "data_prep" / "filter_vietfashion.py")
 loc = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(loc)
 
@@ -40,7 +40,7 @@ def test_loai_do_dai_den_goi():
 
 
 def test_chon_theo_ba_dieu_kien():
-    spec2 = importlib.util.spec_from_file_location("xuat", Path(__file__).resolve().parents[1] / "scripts" / "12_export_lora_set.py")
+    spec2 = importlib.util.spec_from_file_location("xuat", Path(__file__).resolve().parents[1] / "scripts" / "data_prep" / "export_lora_set.py")
     xuat = importlib.util.module_from_spec(spec2)
     spec2.loader.exec_module(xuat)
     def r(cap, a, d): return {"caption": cap, "ao_dai_nguoi": str(a), "dai_san": str(d)}

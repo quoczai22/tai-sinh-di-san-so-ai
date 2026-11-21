@@ -5,7 +5,7 @@
 Tài liệu vận hành kiến trúc triển khai 2 lớp có khả năng tự động chuyển đổi (**Modal GPU → Demo Mode kết quả thật**) cho vòng Chung kết Cuộc thi Sáng tạo trẻ 2026.
 
 > [!NOTE]
-> **Về lớp Hugging Face Space**: Hugging Face hiện yêu cầu gói PRO trả phí để tạo Docker Space chạy phần cứng GPU. Do đó, hệ thống chính thức triển khai theo kiến trúc 2 lớp tối ưu chi phí: **Modal GPU (chính) → Demo Mode (kết quả thật $0)**. Toàn bộ mã nguồn đóng gói (`scripts/build_hf_space.py`) và logic kết nối HF Space vẫn được bảo toàn nguyên vẹn trong repo và có thể kích hoạt lại bất kỳ lúc nào bằng cách cấu hình biến môi trường trên Vercel.
+> **Về lớp Hugging Face Space**: Hugging Face hiện yêu cầu gói PRO trả phí để tạo Docker Space chạy phần cứng GPU. Do đó, hệ thống chính thức triển khai theo kiến trúc 2 lớp tối ưu chi phí: **Modal GPU (chính) → Demo Mode (kết quả thật $0)**. Toàn bộ mã nguồn đóng gói (`scripts/deploy/build_hf_space.py`) và logic kết nối HF Space vẫn được bảo toàn nguyên vẹn trong repo và có thể kích hoạt lại bất kỳ lúc nào bằng cách cấu hình biến môi trường trên Vercel.
 
 ---
 
@@ -99,12 +99,12 @@ flowchart LR
 
 ### 3.1. Xuất lại dữ liệu Demo từ `evaluation/variants.csv`
 ```powershell
-python scripts/export_demo_data.py
+python scripts/demo/export_demo_data_legacy.py
 ```
 
 ### 3.2. Kiểm thử tự động 8 tiêu chí nghiệm thu trên máy local (không tốn GPU)
 ```powershell
-python scripts/test_acceptance_1_8.py
+python tests/manual/test_acceptance_1_8.py
 ```
 
 Hoặc chạy thủ công 3 cửa sổ terminal để trải nghiệm trực tiếp trên trình duyệt tại `http://127.0.0.1:3000`:
@@ -118,7 +118,7 @@ $env:PORT="8002"; $env:DELAY="2"; $env:HF_TOKEN="dev_hf"; python mock_backend.py
 # Terminal 3 — Cổng Vercel local (cổng 3000)
 $env:MODAL_URL="http://127.0.0.1:8001"; $env:MODAL_KEY="dev_key"
 $env:HF_SPACE_URL="http://127.0.0.1:8002"; $env:HF_TOKEN="dev_hf"
-node scripts/dev_gateway.js
+node scripts/deploy/dev_gateway.js
 ```
 
 ### 3.3. Triển khai Modal GPU (Backend ①)
@@ -141,7 +141,7 @@ modal deploy modal_app.py
    ```powershell
    pip install -U huggingface_hub
    hf auth login
-   python scripts/build_hf_space.py
+   python scripts/deploy/build_hf_space.py
    hf upload <user>/<space-name> dist/hf_space . --repo-type space
    ```
    CLI cũ dùng `huggingface-cli login` và `huggingface-cli upload ...` với cùng tham số.
@@ -216,7 +216,7 @@ Khi có giám khảo truy cập và Modal gặp sự cố (lỗi mạng, timeout
 
 ## 6. Bảng ghi nhận số đo thực nghiệm (Mục 9 & 10 — Nghiệm thu thực tế)
 
-> Chỉ điền số đo khi đã chạy thật trên Modal T4 (dùng `scripts/measure_backend.py`); chưa chạy thì giữ "chưa đo". Hạn điền trước ngày 23/11/2026 để đưa vào báo cáo cải tiến vòng Chung kết:
+> Chỉ điền số đo khi đã chạy thật trên Modal T4 (dùng `scripts/eval/measure_backend.py`); chưa chạy thì giữ "chưa đo". Hạn điền trước ngày 23/11/2026 để đưa vào báo cáo cải tiến vòng Chung kết:
 
 | Hạng mục đo | Môi trường | Giá trị ghi nhận | Ghi chú |
 |---|---|---|---|
