@@ -77,8 +77,9 @@ module.exports = async function handler(req, res) {
     if (route === 'generate' && req.method === 'POST') {
         const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
         const heritageId = String(body.heritage_id || '');
-        if (!ID.test(heritageId) || !Number.isInteger(body.seed) ||
-            body.seed < 0 || body.seed > 2147483647) {
+        const hasSeed = body.seed !== undefined && body.seed !== null;
+        if (!ID.test(heritageId) || (hasSeed && (!Number.isInteger(body.seed) ||
+            body.seed < 0 || body.seed > 2147483647))) {
             return res.status(400).json({ detail: 'Hiện vật hoặc seed không hợp lệ.' });
         }
         if (!config.modalUrl || !config.modalKey) {
@@ -94,7 +95,7 @@ module.exports = async function handler(req, res) {
             const upstream = await fetchWithTimeout(config.modalUrl + '/generate', {
                 method: 'POST',
                 headers: { ...buildBackendHeaders('modal', config), 'Content-Type': 'application/json' },
-                body: JSON.stringify({ heritage_id: heritageId, seed: body.seed }),
+                body: JSON.stringify(hasSeed ? { heritage_id: heritageId, seed: body.seed } : { heritage_id: heritageId }),
             }, config.modalTimeoutMs);
             if (upstream.status === 409) {
                 return res.status(409).json({

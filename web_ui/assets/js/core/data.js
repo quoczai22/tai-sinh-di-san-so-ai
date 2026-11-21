@@ -127,9 +127,10 @@ export async function passports() {
 }
 
 export async function startGeneration(heritageId, seed) {
+    const payload = seed == null ? { heritage_id: heritageId } : { heritage_id: heritageId, seed };
     return getJson(`${API}/generate`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ heritage_id: heritageId, seed }),
+        body: JSON.stringify(payload),
     });
 }
 export const jobStatus = (jobId, heritageId) =>

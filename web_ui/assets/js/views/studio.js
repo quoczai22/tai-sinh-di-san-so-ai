@@ -4,7 +4,7 @@
 //    Có máy chủ GPU (data.canGenerate): bấm Tạo là sinh thật (core/generation.js), có thanh tiến độ, xong sang #/result.
 //    Không có GPU: không giả lập việc sinh — bấm Tạo mở trang Kết quả với bộ thiết kế đã tạo trước đó trên GPU.
 // View chỉ lấy dữ liệu và ghép component; không tự định nghĩa component.
-import { h, toast } from '../core/dom.js';
+import { h } from '../core/dom.js';
 import { icon } from '../core/icons.js';
 import * as data from '../core/data.js';
 import { pendingGeneration, runGeneration } from '../core/generation.js';
@@ -34,7 +34,6 @@ export async function render([heritageId]) {
     const note = h('p', { class: 'out-note', role: 'status', 'aria-live': 'polite' });
     const progressBar = h('span');
     const progress = h('div', { class: 'out-progress', hidden: true }, h('div', { class: 'progress' }, progressBar));
-    const seedInput = h('input', { type: 'number', min: 0, max: 2147483647, id: 'seed', inputmode: 'numeric' });
     const start = async () => {
         if (genBtn.disabled) return;
         if (!can) {
@@ -43,17 +42,11 @@ export async function render([heritageId]) {
             goToResult();
             return;
         }
-        const seed = seedInput.value === ''
-            ? crypto.getRandomValues(new Uint32Array(1))[0] % 2147483648
-            : Number(seedInput.value);
-        if (!Number.isInteger(seed) || seed < 0 || seed > 2147483647) {
-            toast('Seed phải là số nguyên từ 0 đến 2147483647.'); return;
-        }
         genBtn.disabled = true;
         progress.hidden = false;
         note.textContent = recovering ? 'Đang khôi phục lượt tạo ảnh…' : 'Đang tạo ảnh';
         try {
-            await runGeneration(heritageId, seed, (pct, job) => {
+            await runGeneration(heritageId, null, (pct, job) => {
                 progressBar.style.width = `${pct}%`;
                 note.textContent = job.status === 'queued'
                     ? `Đang chờ tạo ảnh · Vị trí ${job.queue_position || 1}/2`
@@ -82,7 +75,6 @@ export async function render([heritageId]) {
             h('a', { class: 'io-change', href: '#/studio' }, 'Đổi hiện vật')),
         h('div', { class: 'io-action' },
             genBtn,
-            can ? h('details', { class: 'adv' }, h('summary', {}, 'Tuỳ chọn'), h('label', { class: 'field', for: 'seed' }, 'Seed (để trống để sinh khác mỗi lần)', seedInput)) : null,
             progress,
             note));
 }
