@@ -813,14 +813,14 @@
     },
     "LR3D_124": {
       "heritage_id": "LR3D_124",
-      "name": "Hiện vật men lam: huy hiệu rồng và lông vũ (LR3D-CULT2 #124)",
+      "name": "Hiện vật men lam: huy hiệu rồng (LR3D-CULT2 #124)",
       "image_path": "data/heritage/LR3D_124.png",
       "license": "CC-BY-4.0",
       "license_note": "Giấy phép CC BY 4.0 của bộ dữ liệu LR3D-CULT2 (Nguyen và cộng sự, Mendeley Data, DOI 10.17632/jr23fnrvx2.1), áp dụng cho cả bộ. Nhóm ghi công tác giả theo yêu cầu của giấy phép. Nhóm chưa xác minh riêng nguồn của từng vật.",
       "conditioning_mode": "whole_object",
       "code": "HV12",
       "status": "active",
-      "team_description": "Ảnh render cả bình từ mô hình 3D của vật #124. Bình vuông thu nhỏ dần về đáy, cổ hẹp. Giữa thân có huy hiệu tròn hình rồng, phía trên là dải vân mây, phía dưới là dải lông vũ.",
+      "team_description": "Ảnh render cả bình từ mô hình 3D của vật #124. Bình vuông thu nhỏ dần về đáy, cổ hẹp. Giữa thân có huy hiệu tròn hình rồng, phía trên là dải vân mây, phía dưới là dải lá chuối.",
       "provenance": {
         "source_title": "LR3D-CULT2, vật #124 (ảnh render từ mô hình 3D)",
         "source_url": "https://data.mendeley.com/datasets/jr23fnrvx2/1",
@@ -856,8 +856,8 @@
         "review_flags": []
       },
       "artifact_info": {
-        "summary": "Bình vuông bốn mặt, cổ thẳng ngắn. Vai viền vân như ý, giữa mặt bình là ô tròn có rồng cuộn, chân là băng lông vũ.",
-        "motif_text": "Vai bình viền một băng vân như ý; giữa thân là ô tròn có con rồng cuộn mình, biểu tượng của trời và hoàng đế; chân bình là băng lông vũ.",
+        "summary": "Bình vuông bốn mặt, cổ thẳng ngắn. Vai viền vân như ý, giữa mặt bình là ô tròn có rồng cuộn, chân là băng lá chuối.",
+        "motif_text": "Vai bình viền một băng vân như ý; giữa thân là ô tròn có con rồng cuộn mình, biểu tượng của trời và hoàng đế; chân bình là băng lá chuối.",
         "form": "Bình vuông bốn mặt, cổ thẳng ngắn",
         "technique": "Vẽ lam dưới men (hoa lam): vẽ màu lam cô-ban lên xương gốm rồi phủ men trong.",
         "style": "Chưa xác định; cách vẽ gần gốm hoa lam Trung Hoa",

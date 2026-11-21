@@ -21,7 +21,7 @@ Nguồn: bộ dữ liệu LR3D-CULT2 "Vietnamese Ceramic Cultural Artifacts" (Ng
 | HV09 | LR3D_50 | Men lam: dây hoa cuộn dày (#50) | Chưa xác minh | như trên |
 | HV10 | LR3D_38 | Men lam: cây hoa (#38) | Chưa xác minh | như trên |
 | HV11 | LR3D_97 | Men lam: nét lam thưa trên men kem (#97) | Chưa xác minh | như trên |
-| HV12 | LR3D_124 | Men lam: huy hiệu rồng và lông vũ (#124) | Chưa xác minh | như trên |
+| HV12 | LR3D_124 | Men lam: huy hiệu rồng (#124) | Chưa xác minh | như trên |
 
 Mỗi hiện vật có hai ảnh: ảnh render cả bình từ mô hình 3D (`data/heritage/LR3D_xx.png`, 512×512, để hiển thị và nhận diện) và **mảng hoa văn phẳng** là texture UV trải phẳng của mô hình (`data/heritage/panels/LR3D_xx.png`, cạnh dài khoảng 2.048 px, đưa vào mô hình sinh). Mô tả hiện vật do nhóm viết (`description_origin: team_written`). Ngày thu thập chưa có nhật ký (trường `collected_on` để trống và được ghi là cần điền).
 
