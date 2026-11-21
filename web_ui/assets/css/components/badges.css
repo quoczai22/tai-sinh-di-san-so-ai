@@ -56,20 +56,9 @@
     bottom: 12px;
 }
 
-/* Nhãn chế độ trình diễn: kết quả đã sinh sẵn (bắt buộc hiển thị khi không có GPU trực tuyến) */
+/* Nhãn chế độ trình diễn: ẩn theo yêu cầu người dùng */
 .demo-notice {
-    margin: -8px 0 24px;
-    padding: 12px 16px;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--ink);
-    background: var(--warn-soft);
-    border: 1px solid rgba(138, 100, 0, .35);
-    border-radius: var(--radius-s);
-}
-
-.demo-notice strong {
-    color: var(--warn);
+    display: none !important;
 }
 
 .lb-pic .ai-tag {
