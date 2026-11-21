@@ -98,12 +98,12 @@ module.exports = async function handler(req, res) {
             }, config.modalTimeoutMs);
             if (upstream.status === 409) {
                 return res.status(409).json({
-                    detail: 'Một lượt sinh đang chạy trên GPU. Hãy chờ lượt đó hoàn tất rồi thử lại.',
+                    detail: 'Hiện đang có người khác tạo thiết kế. Bạn vui lòng chờ ít phút rồi thử lại.',
                 });
             }
             if (upstream.status === 429) {
                 return res.status(429).json({
-                    detail: 'Hàng chờ tạo thiết kế đã đầy. Vui lòng thử lại sau.',
+                    detail: 'Hiện đang có nhiều người tạo thiết kế cùng lúc. Bạn vui lòng thử lại sau ít phút.',
                 });
             }
             if (upstream.status === 401 || upstream.status === 403) {
