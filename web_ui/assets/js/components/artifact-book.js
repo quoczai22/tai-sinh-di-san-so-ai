@@ -46,11 +46,20 @@ function rightPage(item) {
 }
 
 export function openArtifactBook(item, opener) {
-    const close = () => {
-        document.removeEventListener('keydown', onKey);
+    // Gỡ sổ khỏi trang và trả tiêu điểm cho nút đã mở nó
+    const remove = () => {
         overlay.remove();
         document.body.classList.remove('book-open');
         opener?.focus();
+    };
+    // Đóng sổ: chạy hiệu ứng khép sách (class is-closing) rồi mới gỡ; tắt hiệu ứng thì gỡ ngay
+    const close = () => {
+        if (overlay.classList.contains('is-closing')) return;
+        document.removeEventListener('keydown', onKey);
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) { remove(); return; }
+        overlay.classList.add('is-closing');
+        overlay.addEventListener('animationend', (e) => { if (e.target === overlay) remove(); });
+        setTimeout(remove, 1200);                                     // phòng khi sự kiện animationend không tới
     };
     const closeBtn = h('button', { class: 'bk-close', type: 'button', 'aria-label': 'Đóng sổ' }, icon('close'));
     closeBtn.addEventListener('click', close);

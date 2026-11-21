@@ -307,6 +307,37 @@ body.book-open {
     to { opacity: 1; transform: none; }
 }
 
+/* Đóng sổ (JS thêm class is-closing): trang phải gập về phía gáy như khép sách,
+   rồi cuốn sổ hạ xuống và nền mờ dần. Tổng khoảng 0,9 giây; JS gỡ sổ khi nền mờ xong. */
+.book-overlay.is-closing {
+    pointer-events: none;
+    animation: bk-fade-out .3s ease .6s both;
+}
+
+.is-closing .bk-right {
+    animation: bk-shut .6s cubic-bezier(.5, 0, .75, 0) both;
+}
+
+.is-closing .bk-book {
+    animation: bk-lower .35s ease .55s both;
+}
+
+@keyframes bk-shut {
+    from { opacity: 1; transform: none; filter: none; }
+    75% { opacity: 1; transform: rotateY(-70deg); filter: brightness(.82); }
+    to { opacity: 0; transform: rotateY(-90deg); filter: brightness(.7); }
+}
+
+@keyframes bk-lower {
+    from { opacity: 1; transform: none; }
+    to { opacity: 0; transform: translateY(18px) scale(.97); }
+}
+
+@keyframes bk-fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
 /* Màn hẹp: hai trang xếp dọc, cả cuốn sổ cuộn */
 @media (max-width: 760px) {
     .book-overlay {
@@ -338,6 +369,11 @@ body.book-open {
         padding-top: 18px;
         border-top: 1px dashed rgba(120, 85, 35, .32);
         animation: bk-fade .4s ease .1s both;
+    }
+
+    /* Hai trang xếp dọc không gập được, chỉ khép bằng cách mờ dần */
+    .is-closing .bk-right {
+        animation: none;
     }
 
     .bk-frame {
