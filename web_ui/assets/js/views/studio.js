@@ -32,8 +32,6 @@ export async function render([heritageId]) {
     const goToResult = () => { location.hash = `#/result/${encodeURIComponent(heritageId)}`; };
 
     const note = h('p', { class: 'out-note', role: 'status', 'aria-live': 'polite' });
-    const resumeHint = h('p', { class: 'out-note out-hint', hidden: true },
-        'Bạn có thể rời trang và quay lại bằng trình duyệt này để xem kết quả.');
     const progressBar = h('span');
     const progress = h('div', { class: 'out-progress', hidden: true }, h('div', { class: 'progress' }, progressBar));
     const seedInput = h('input', { type: 'number', min: 0, max: 2147483647, id: 'seed', inputmode: 'numeric' });
@@ -53,7 +51,6 @@ export async function render([heritageId]) {
         }
         genBtn.disabled = true;
         progress.hidden = false;
-        resumeHint.hidden = false;
         note.textContent = recovering ? 'Đang khôi phục lượt tạo ảnh…' : 'Đang tạo ảnh';
         try {
             await runGeneration(heritageId, seed, (pct, job) => {
@@ -65,7 +62,6 @@ export async function render([heritageId]) {
             goToResult();
         } catch (err) {
             progress.hidden = true;
-            resumeHint.hidden = true;
             note.textContent = `Không tạo được thiết kế: ${err.message}`;
             genBtn.disabled = false;
         }
@@ -88,6 +84,5 @@ export async function render([heritageId]) {
             genBtn,
             can ? h('details', { class: 'adv' }, h('summary', {}, 'Tuỳ chọn'), h('label', { class: 'field', for: 'seed' }, 'Seed (để trống để sinh khác mỗi lần)', seedInput)) : null,
             progress,
-            note,
-            resumeHint));
+            note));
 }
