@@ -34,6 +34,7 @@ def _garment_block(garment: dict | None, rec: dict) -> dict:
     if not garment or garment.get("source") != "lora":
         return {"source": "fixed", "template": "data/garment/aodai_template.png",
                 "fallback_reason": (garment or {}).get("fallback_reason")}
+    from generation.garment_lora import NEG_EXTRA                        # noqa: PLC0415  (không nạp torch: garment_lora chỉ nạp torch khi sinh áo)
     lora = garment.get("lora") or ""
     try:
         lora = Path(lora).relative_to(ROOT).as_posix()
@@ -43,7 +44,7 @@ def _garment_block(garment: dict | None, rec: dict) -> dict:
             "lora": {"path": lora, "base_model": rec["sd_model_id"], "training_data": "VietFashion (226 ảnh đã lọc)",
                      "license": LORA_LICENSE, "citation": LORA_CITATION},
             "mask_method": "SAM facebook/sam-vit-base, điểm gợi ý ở trục giữa thân áo",
-            "prompt_negative_extra": ", orange, red, colored trim, patterned"}
+            "prompt_negative_extra": NEG_EXTRA}                 # đúng chuỗi lúc sinh áo (generation/garment_lora.py)
 
 
 def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict, paths: dict,

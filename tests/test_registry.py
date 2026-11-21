@@ -29,8 +29,13 @@ def test_completeness_reports_missing_fields_honestly():
         c = R.completeness(it)
         assert c["total"] == len(R.REQUIRED_PROVENANCE) == 10
         missing = {m["field"] for m in c["missing"]}
-        # Nhóm không biết tác giả ảnh, giấy phép, ngày thu thập chính xác → phải hiện là thiếu
-        assert {"license", "collected_on"} <= missing
+        # Chưa có nhật ký ngày thu thập → phải hiện là thiếu
+        assert "collected_on" in missing
+        # Giấy phép chỉ được coi là thiếu khi quyền còn chưa xác minh
+        if it["provenance"].get("rights_status") == "unverified":
+            assert "license" in missing
+        else:
+            assert "license" not in missing
 
 
 @pytest.mark.parametrize("status,action,allowed,level", [

@@ -11,10 +11,12 @@ Bốn biến thể V1 đến V4 của bản 06/09/2026 khác nhau ở **bốn** 
 | Trọng số ControlNet | 0,85 | 0,65 | 0,45 | 0,25 |
 | Cụm từ thêm vào prompt | – | – | "modern simplified interpretation" | "bold contemporary reinterpretation" |
 | Bảng màu | giữ màu gốc | tự do | tự do | tự do |
-| Bố cục trên áo | do CLIP chọn, khác nhau giữa các biến thể | | | |
+| Bố cục trên áo | do CLIP chọn, khác nhau giữa các biến thể (bộ demo vẫn giữ cách này; EXP-F và EXP-G cố định `front_panel` để so riêng ô hoa văn) | | | |
 | Seed | 42 | 42 | 42 | 42 |
 
 Vì vậy không thể nói khác biệt giữa V1 và V4 là do trọng số ControlNet, và không biết với seed khác kết quả dao động bao nhiêu. Bộ biến thể này vẫn được giữ làm **tính năng sản phẩm** (đưa ra 4 phương án đa dạng cho nhà thiết kế), nhưng không dùng làm bằng chứng so sánh.
+
+Từ 20/11/2026 bộ demo dùng **một seed duy nhất (42)** nhưng vẫn để CLIP chọn bố cục khác nhau cho bốn biến thể, nên bốn mức khác nhau cả ở trọng số ControlNet, cụm prompt, bảng màu và vị trí họa tiết. Độ dao động theo seed được đo ở gói chấm mù nhiều seed (42, 43, 44; xem [05](05_QUALITY_ASSURANCE.md)) và ở các thí nghiệm có kiểm soát bên dưới.
 
 ## Module Experiment Management
 
@@ -34,7 +36,7 @@ Quy trình chạy:
 
 ```bash
 python -m evaluation.experiment plan    evaluation/experiments/EXP-A_controlnet_weight.json   # sinh kế hoạch, KIỂM TRA đơn biến
-python -m evaluation.experiment run     evaluation/experiments/EXP-A_controlnet_weight.json   # chạy (EXP-A, B, D, E cần GPU; EXP-C chạy trên CPU)
+python -m evaluation.experiment run     evaluation/experiments/EXP-A_controlnet_weight.json   # chạy (EXP-A, B, D, E, F cần GPU; EXP-C chạy trên CPU; EXP-G chạy bằng python -m evaluation.exp_g plan|run|analyze)
 python -m evaluation.experiment blind   outputs/experiments/EXP-A --raters CG01,CG02,CG03     # gói chấm mù
 python -m evaluation.experiment analyze outputs/experiments/EXP-A                            # thống kê
 ```
@@ -48,7 +50,7 @@ python -m evaluation.experiment analyze outputs/experiments/EXP-A               
 5. **Đồng thuận trước khi kết luận**: tính Krippendorff's alpha (dữ liệu khoảng) giữa người chấm. Mục tiêu α ≥ 0,667 mới dùng điểm trung bình để kết luận.
 6. **Thống kê**: trung bình, độ lệch chuẩn, khoảng tin cậy 95% (phân phối t), hệ số biến thiên theo mức; so sánh cặp với mức đối chứng trên cùng hiện vật và seed (Wilcoxon có dấu, chỉ báo p khi có ≥ 6 cặp); so sánh tất cả các mức (Friedman, khi có ≥ 3 khối đủ mức).
 
-## Năm thí nghiệm
+## Bảy thí nghiệm (EXP-A đến EXP-G)
 
 | | EXP-A | EXP-B | EXP-C | EXP-D | EXP-E |
 |---|---|---|---|---|---|
@@ -57,12 +59,42 @@ python -m evaluation.experiment analyze outputs/experiments/EXP-A               
 | Lặp | 5 seed: 42, 7, 123, 2024, 31415 | 3 seed polish: 42, 7, 123 | Không (tất định) | 5 seed: 42 đến 46 (cũng là seed hoa văn và seed áo LoRA) | 3 seed: 42, 43, 44 |
 | Hiện vật | 6 hiện vật đang dùng | 6 hiện vật đang dùng | 6 hiện vật cũ (chỉ ghép trên CPU) | 6 hiện vật đang dùng | 6 hiện vật đang dùng |
 | Số lượt | 120 | 126 | 24 | 60 | 36 |
-| Trạng thái | Đã lập và kiểm tra kế hoạch; **chưa chạy** | **Đã chạy 126/126** | **Đã chạy 24/24** (trên 6 hiện vật cũ) | **Đã chạy 60/60** | **Đã chạy 36/36** |
+| Trạng thái | **Đã chạy 120/120** (20/11/2026) | **Đã chạy 126/126** | **Đã chạy 24/24** (trên 6 hiện vật cũ) | **Đã chạy 60/60** | **Đã chạy 36/36** |
 | Chấm mù | Chưa | Chưa | Gói đã dựng, **chưa có phiếu** | Gói đã dựng (60 ảnh, 3 phiếu trống), **chưa có phiếu** | Chưa |
 
-Mỗi thí nghiệm chỉ đổi một yếu tố. Kế hoạch đổi hơn một yếu tố bị mã từ chối (kiểm thử `test_experiment.py`).
+Hai thí nghiệm thêm ngày 20/11/2026, cùng cố định: áo LoRA, bố cục `front_panel`, ControlNet 0,65, bảng màu tự do, polish chỉ vùng áo 0,20 kèm khoá họa tiết; lặp theo 3 seed 42, 43, 44.
+
+| | EXP-F | EXP-G |
+|---|---|---|
+| Câu hỏi | Nếu pipeline nhận thẳng ảnh bình render thay vì mảng hoa văn phẳng, thiết kế cuối giữ họa tiết, dáng áo và màu tốt hơn hay kém hơn? | Trích hoa văn từ mảng phẳng bằng cách dán nguyên, vẽ lại nhẹ hoặc cắt phần tử SAM có giữ họa tiết gốc hơn cách SD vẽ lại hoàn toàn không? |
+| Biến độc lập | Nguồn ảnh nạp: mảng phẳng / ảnh render (`evaluation/experiments/EXP-F_vessel_vs_panel.json`) | Cách tạo ô hoa văn, 7 mức: `sd_controlnet` (đối chứng), `paste_direct`, `img2img_low`, `elements_sam`, `paste_boost`, `elements_clip`, `elements_boost` (`EXP-G_pattern_method.json`, mã `evaluation/exp_g.py`) |
+| Số lượt | 36 (6 hiện vật × 2 × 3 seed) | 126 (6 hiện vật × 7 × 3 seed) |
+| Trạng thái | **Đã chạy 36/36** | **Đã chạy 126/126**; hai mức phần tử chạy lại sau khi sửa lỗi nền in cả mảng (`ground_alpha`) |
+| Chấm mù | Chưa | Chưa |
+
+Mỗi thí nghiệm chỉ đổi một yếu tố. Kế hoạch đổi hơn một yếu tố bị mã từ chối (kiểm thử `test_experiment.py`, `test_exp_g.py`).
 
 Ghi chú về việc áo mẫu cố định đã bỏ: luồng sản phẩm hiện chỉ dùng áo do LoRA sinh. Quyết định này là lựa chọn thiết kế của nhóm (không phụ thuộc dáng áo có sẵn), **không** phải kết luận của EXP-D, vì EXP-D không thấy khác biệt có ý nghĩa (xem dưới) và chưa có chấm mù. Mức `fixed` còn trong mã chỉ để chạy lại các thí nghiệm cũ.
+
+## Kết quả EXP-A: trọng số ControlNet (120 lượt)
+
+Chạy ngày 20/11/2026, cả 120 lượt hoàn tất. Mỗi mức 30 cặp (6 hiện vật × 5 seed: 42, 7, 123, 2024, 31415). Cấu hình: nguồn mảng phẳng, áo LoRA (mỗi seed một áo), bố cục `front_panel`, bảng màu tự do, polish chỉ vùng áo 0,20 kèm khoá họa tiết; chỉ đổi trọng số ControlNet. Trung bình theo mức (số liệu trong `outputs/experiments/EXP-A/summary.json`); cột cuối là kiểm định Friedman trên 30 khối (hiện vật × seed):
+
+| Chỉ số | 0,85 | 0,65 | 0,45 | 0,25 | Friedman p |
+|---|---|---|---|---|---|
+| Lọt hình bình (VLS, thấp là tốt) | 0,097 | 0,086 | 0,036 | **0,012** | dưới 0,001 |
+| Đường nối khi lát (thấp là tốt) | 1,68 | 1,64 | 1,38 | **1,24** | 0,39 |
+| Giữ họa tiết qua polish (PPS) | 0,941 | 0,938 | 0,937 | 0,940 | 0,46 |
+| Giữ dáng áo (IoU) | 0,991 | 0,989 | 0,990 | 0,992 | 0,68 |
+| Giữ chi tiết mịn | 0,865 | 0,866 | 0,866 | 0,863 | 0,74 |
+| Lệch màu ΔE | 1,25 | 1,23 | 1,12 | 1,21 | 0,47 |
+
+- **Hạ trọng số làm giảm lọt hình bình rõ.** So với 0,85, mức 0,45 và 0,25 khác có ý nghĩa (Wilcoxon theo cặp p = 0,0001 và 0,0003); mức 0,65 chưa khác (p = 0,47). Đường nối cũng thấp dần theo trọng số nhưng không đạt ý nghĩa tổng thể (Friedman p = 0,39; riêng 0,25 so với 0,85 p = 0,032, chưa hiệu chỉnh đa so sánh).
+- **PPS, IoU, chi tiết mịn và màu không đổi theo trọng số.** PPS đo giữ họa tiết qua polish so với bản ghép thô, **không đo giống hiện vật gốc**, nên không thấy được việc trọng số thấp thay hoa văn.
+- **Xem ảnh (seed 42) cho thấy điều chỉ số máy không thấy:** ở 0,25 hoa văn thành mảng hoa văn dày chung chung, LR3D_124 mất dải lông vũ và huy hiệu rồng, LR3D_61 mất hình rồng thành dải sóng. Trọng số thấp tránh dáng bình nhưng bỏ họa tiết gốc. Kết luận về "nhận ra họa tiết gốc" phải chờ phiếu chuyên gia.
+- **Theo hiện vật:** LR3D_38 lọt hình bình nhiều nhất ở 0,85 (VLS 0,213) và PPS giảm từ 0,934 xuống 0,892 ở 0,25; LR3D_50 và LR3D_97 gần như không lọt (VLS 0,0 đến 0,04).
+- **Dao động theo seed:** hệ số biến thiên của PPS trong từng ô (hiện vật × mức), trung bình 6 hiện vật, là 2,1% ở 0,85, 2,4% ở 0,65, 2,8% ở 0,45, 2,9% ở 0,25: tăng nhẹ khi trọng số giảm. VLS dao động rất lớn (hệ số biến thiên 81% đến 177%) vì hầu hết giá trị gần 0, vài seed cao.
+- **Giới hạn:** 30 cặp mỗi mức; Wilcoxon chạy ba lần cho mỗi chỉ số, không hiệu chỉnh; chưa chấm mù; chỉ số CLIP nêu trong đặc tả không có trong kết quả (cột `clip_similarity_pattern_vs_ceramic` không được ghi). EXP-A giữ cố định prompt, bảng màu và bố cục, còn bốn mức sáng tạo của bộ demo đổi cả prompt và bảng màu cùng trọng số, nên kết quả EXP-A không thay được so sánh bốn mức của bộ demo.
 
 ## Kết quả EXP-B: bước hoàn thiện (126 lượt)
 
@@ -113,6 +145,43 @@ Mỗi mức 18 cặp (6 hiện vật × 3 seed). Áo mẫu cố định, polish 
 
 Chỉ số VLS nghiêng về mảng phẳng nhưng **chưa đạt ý nghĩa thống kê** (p = 0,25). Trên ảnh, khác biệt rõ hơn chỉ số: nạp ảnh bình render cho ra hình bình đặt trên kệ, hình bình có nền hoặc cổ bình (hiện vật 33, 50, 124), còn nạp mảng phẳng cho hoa văn phẳng ở cả 6 hiện vật. VLS có thể kém nhạy với kiểu lỗi này. Dựa vào đó, mặc định của luồng sản phẩm chuyển sang mảng phẳng; chấm mù sẽ xác nhận.
 
+## Kết quả EXP-F: ảnh bình gốc so với mảng phẳng (36 lượt)
+
+Mỗi mức 18 cặp (6 hiện vật × 3 seed), cấu hình hiện nay (polish 0,20 kèm khoá họa tiết). Trung bình (KTC 95%), số liệu trong `outputs/experiments/EXP-F/summary.json`:
+
+| Chỉ số | Mảng phẳng | Ảnh bình render |
+|---|---|---|
+| Giữ họa tiết (PPS, cao là tốt) | **0,959** (0,953 đến 0,965) | 0,942 (0,929 đến 0,954) |
+| Giữ chi tiết mịn (cao là tốt) | **0,890** (0,880 đến 0,900) | 0,843 (0,799 đến 0,886), thấp nhất 0,544 |
+| Lệch màu ΔE (thấp là tốt) | **1,09** (0,96 đến 1,22) | 1,82 (1,30 đến 2,34), cao nhất 4,93 |
+| Lọt hình bình (VLS, thấp là tốt) | **0,101** | 0,142 (cao nhất 0,509) |
+| Đường nối khi lát (thấp là tốt) | 1,55 | **0,93** |
+| Giữ dáng áo (IoU) | 0,992 | 0,993 |
+| Độ nét | 0,860 | 0,845 |
+
+Mảng phẳng tốt hơn ở họa tiết, chi tiết mịn, màu và lọt hình bình; hai nguồn ngang nhau ở dáng áo. Đường nối ở ảnh bình thấp hơn, nhưng chỉ số này **có thể thiên lệch**: nạp ảnh bình hay cho ra vật rời trên nền trơn, nơi đường nối ít thấy. Chưa có phiếu chấm mù.
+
+Nạp ảnh bình còn có một lỗi chỉ số không thấy: bộ demo sinh thử từ ảnh bình (20/11/2026, đã bỏ) cho hoa văn mang dáng cả chiếc bình ở mức 1 và 2 của LR3D_33, 50, 97 và 124, và hoa văn của LR3D_124 thành ba vật rời. LR3D_33 vẫn đo VLS 0,0001 vì bình choán đầy khung ô. Vì vậy luồng sản phẩm dùng lại **mảng phẳng làm nguồn mặc định** (`source="panel"`).
+
+## Kết quả EXP-G: cách tạo ô hoa văn (126 lượt)
+
+Chi tiết đầy đủ, ảnh và các mức thêm sau ở `docs/KET_QUA_EXP_G.md`. Ba mức đầu so với đối chứng (trung bình 18 lượt mỗi mức):
+
+| Chỉ số | `sd_controlnet` | `paste_direct` | `img2img_low` |
+|---|---|---|---|
+| Khớp SIFT với mảng gốc (cao là kế thừa pixel) | 0,003 | **0,395** | 0,004 |
+| Lọt hình bình (thấp là tốt) | 0,101 | 0,037 | **0,024** |
+| Đường nối khi lát (thấp là tốt) | 1,55 | **1,28** | 1,92 |
+| Giữ họa tiết qua polish | 0,959 | 0,949 | **0,962** |
+| Giữ chi tiết mịn | **0,890** | 0,875 | 0,889 |
+| Lệch màu ΔE | **1,09** | 1,30 | 1,35 |
+
+- **Dán nguyên giữ họa tiết hơn hẳn** (SIFT 0,395 so với 0,003), nhưng ô thường nhạt hơn nên phải kéo đậm mực (`paste_boost`). **Vẽ lại nhẹ** (`img2img_low`) thêm nét vẽ lạ và có đường nối kém nhất.
+- **Phần tử SAM** (`elements_*`) cho áo sạch, nhìn như thêu họa tiết riêng, nhưng quy tắc chọn tự động còn lấy nhầm phần tử ở vài hiện vật (lá ở LR3D_38, mây hoặc đuôi rồng ở LR3D_61).
+- **Lỗi tìm được và đã sửa trong luồng sản phẩm:** ô thưa hoặc mực nhạt bị in cả nền thành mảng phẳng (`ground_alpha`); có 7 ca kiểm thử.
+- **Chưa đưa vào luồng sản phẩm:** luồng vẫn dùng `sd_controlnet` từ mảng phẳng. Các mức dán và phần tử là hướng đang cân nhắc (SAM tách motif, ghép tất định rồi polish), chưa có chấm mù.
+- Cả hai chỉ số lọt hình bình và đường nối thiên lệch với ô thưa; SIFT chỉ đo kế thừa pixel.
+
 ## Kết quả EXP-C: từng bước ghép (chạy trên 6 hiện vật cũ)
 
 Chỉ số: PPS của mỗi chế độ so với bản ghép đầy đủ (bản đầy đủ bằng 1). Chỉ số này cho biết **mỗi bước làm ảnh thay đổi bao nhiêu**, không cho biết bước đó làm ảnh đẹp hơn hay giống vải hơn.
@@ -146,12 +215,13 @@ Ngoài EXP-B, nhóm thử riêng cách hoàn thiện trên bản ghép thô củ
 - **Khoá họa tiết cũ (σ = 1,2) làm PPS tăng mạnh nhưng làm mất nét mảnh:** chi tiết mịn còn 0,56 đến 0,61, thấp hơn cả polish thuần (0,69 đến 0,75). PPS không phát hiện được vì chỉ đo dải tần trung. Đây là lý do nhóm thêm chỉ số `detail_ratio` vào G3: với chỉ số này, 8/12 và 6/12 thiết kế của cấu hình cũ bị loại.
 - **Khoá họa tiết `dog_sigma_low` 0,3** giữ chi tiết mịn ở mức 0,83 ở cả hai độ nhiễu, không thiết kế nào bị loại, lệch màu thấp nhất.
 - **Độ nhiễu 0,20 tốt hơn 0,30** ở mọi chỉ số, nên được chọn làm mặc định.
-- Vẫn còn mất khoảng 17% chi tiết mịn so với bản ghép thô; bộ demo 24 thiết kế cho trung vị 0,87 (mất 13%). Bản cuối chưa bằng bản ghép thô về nét mảnh.
+- Vẫn còn mất khoảng 17% chi tiết mịn so với bản ghép thô; bộ demo hiện tại (24 thiết kế, 20/11/2026) cho trung vị 0,881 (mất 12%), bộ 72 thiết kế nhiều seed cho 0,883. Bản cuối chưa bằng bản ghép thô về nét mảnh.
 - Các số này đo bằng máy; chưa có chấm mù về việc bản nào đẹp hơn.
 
 
 ## Những gì chưa làm được
 
-- **EXP-A chưa chạy:** 120 lượt GPU, kế hoạch đã kiểm tra. Chạy bằng một lệnh trên máy của nhóm.
+- **Gói chấm mù nhiều seed (72 thiết kế, mỗi người chấm 24) đã dựng, chưa có phiếu.** Xem [05](05_QUALITY_ASSURANCE.md).
+- **Gói chấm mù riêng cho EXP-A đã dựng, chưa có phiếu:** `scripts/18_build_blind_review.py --experiment outputs/experiments/EXP-A --seeds 42,7` ra `outputs/blind_review_EXP-A/` (48 ảnh = 6 hiện vật × 4 trọng số × 2 seed, 24 ô; mỗi người chấm thấy 24 ảnh, một seed mỗi ô, theo mã người chấm). Chỉ 4 tiêu chí trong đặc tả EXP-A (nhận ra họa tiết gốc, phù hợp văn hoá, thẩm mỹ, toàn vẹn dáng áo); trang gửi người chấm không lộ trọng số, seed hay tên thí nghiệm; `key.csv` ghi trọng số ở cột `intensity_level`. Cần ít nhất 3 người chấm (đặc tả), có mã số cuối liên tiếp (CG01, CG02, ...).
 - **Chưa có phiếu chuyên gia thật.** Các tệp `ratings_CG01.csv` đến `CG03.csv` trong gói chấm là mẫu trống; nhóm **không** điền điểm giả. Vì vậy mọi kết luận về "đẹp hơn" hay "giống vải in hơn" ở trên đều chưa có.
 - Các kết quả trên dùng cấu hình lúc chạy (xem từng mục). Cấu hình mặc định hiện nay của luồng sản phẩm (polish 0,20 và khoá họa tiết 0,3) khác EXP-B, D, E; phần "Thử hoàn thiện ảnh" đo trực tiếp cấu hình hiện nay.

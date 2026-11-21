@@ -32,9 +32,20 @@ def test_every_route_has_a_view():
 
 
 def test_demo_data_matches_repo():
-    passports = json.loads((WEB / "data" / "passports.json").read_text(encoding="utf-8"))
+    # Trang Kết quả dùng bộ riêng data/result/ (xuất bằng scripts/11_export_demo_data.py --only-result): phải khớp outputs/passports
     stored = sorted(p.stem for p in (ROOT / "outputs" / "passports").glob("DP-*.json"))
-    assert sorted(p["passport_id"] for p in passports) == stored
+    result = json.loads((WEB / "data" / "result" / "passports.json").read_text(encoding="utf-8"))
+    assert sorted(p["passport_id"] for p in result) == stored
+    for p in result:
+        assert (WEB / p["thumb"]).is_file(), p["passport_id"]
+    for hid in {p["heritage_id"] for p in result}:
+        for v in range(1, 5):
+            assert (WEB / "assets" / "images" / "result" / f"{hid}_V{v}_aodai.png").is_file(), (hid, v)
+    # Các trang còn lại giữ bộ cũ: mỗi Passport trong passports.json phải có tệp chi tiết và ảnh thu nhỏ
+    passports = json.loads((WEB / "data" / "passports.json").read_text(encoding="utf-8"))
+    for p in passports:
+        assert (WEB / "data" / "passports" / f"{p['passport_id']}.json").is_file(), p["passport_id"]
+        assert (WEB / p["thumb"]).is_file(), p["passport_id"]
     heritage = json.loads((WEB / "data" / "heritage.json").read_text(encoding="utf-8"))
     registry = json.loads((ROOT / "data" / "heritage" / "metadata.json").read_text(encoding="utf-8"))
     assert len(heritage["items"]) == len(registry["items"])

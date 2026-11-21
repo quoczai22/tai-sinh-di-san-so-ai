@@ -47,7 +47,7 @@ APQC PCF chỉ dùng làm **khung phân loại** để gọi tên và xếp nhó
 ## Lớp B. Cách thực hiện
 
 1. **Khảo sát hiện trạng**: đọc mã nguồn, dữ liệu 06/09/2026 và góp ý của BTC → [01_AUDIT.md](01_AUDIT.md).
-2. **Phân tích vấn đề và rủi ro**: đo 24 thiết kế của bản 06/09/2026 bằng cổng mới để có số liệu nền, rồi đo lại bằng bộ demo ngày 19/11/2026 (mục "Số liệu nền" bên dưới).
+2. **Phân tích vấn đề và rủi ro**: đo 24 thiết kế của bản 06/09/2026 bằng cổng mới để có số liệu nền, rồi đo lại bằng bộ demo ngày 20/11/2026 (mục "Số liệu nền" bên dưới).
 3. **Thiết kế hệ luồng vận hành**: năm luồng end-to-end, cây phân luồng ở đầu vào → BPMN [03_BPMN.md](03_BPMN.md).
 4. **Kiến trúc quy trình**: danh mục L3 có chủ, rủi ro, điểm kiểm soát, KPI (mục Lớp C).
 5. **Kiến trúc bằng chứng**: mỗi điểm kiểm soát sinh ra một bằng chứng có thể mở được (CSV, JSON, ảnh, sổ cái băm).
@@ -55,12 +55,12 @@ APQC PCF chỉ dùng làm **khung phân loại** để gọi tên và xếp nhó
 
 ### Số liệu nền (đo trên dữ liệu thật trong repo)
 
-| Chỉ số | Bản 06/09/2026 (lịch sử, commit `b1192b0`) | Bộ demo 19/11/2026 |
+| Chỉ số | Bản 06/09/2026 (lịch sử, commit `b1192b0`) | Bộ demo 20/11/2026 (seed 42) |
 |---|---|---|
 | Thiết kế đo | 24 (6 hiện vật cũ × 4 biến thể) | 24 (6 hiện vật LR3D-CULT2 × 4 mức sáng tạo) |
-| G2 hoa văn: PASS / WARN / FAIL | 21 / 1 / 2 | 16 / 5 / 3 |
-| G3 thiết kế cuối: PASS / WARN / FAIL | 0 / 4 / 20 | 14 / 10 / 0 |
-| PPS (giữ họa tiết) | trung vị 0,36 trước sửa | trung bình 0,943 (khoá họa tiết là bước mặc định) |
+| G2 hoa văn: PASS / WARN / FAIL | 21 / 1 / 2 | 16 / 6 / 2 |
+| G3 thiết kế cuối: PASS / WARN / FAIL | 0 / 4 / 20 | 20 / 4 / 0 |
+| PPS (giữ họa tiết) | trung vị 0,36 trước sửa | trung bình 0,952 (khoá họa tiết là bước mặc định) |
 | Thiết kế được sửa tự động | 19; G3 sau sửa: 10 PASS, 9 WARN | không còn thiết kế G3 FAIL để sửa |
 | Hiện vật có quyền sử dụng đã xác minh | 0/6 | 0/6 |
 | Trường nguồn gốc điền được | 7/10 ở cả 6 hiện vật | 8/10 ở cả 6 hiện vật (thiếu giấy phép từng vật và ngày thu thập) |

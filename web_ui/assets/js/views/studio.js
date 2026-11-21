@@ -69,7 +69,7 @@ export async function render([heritageId]) {
     return h('div', { class: 'studio-io' },
         h('div', { class: 'io-input' },
             artifactBox,
-            viewerControls(artifactImg, viewerPromise),
+            viewerControls(artifactImg, viewerPromise, artifactBox),
             h('h2', { class: 'io-name' }, item.name),
             bookButton(item),
             h('a', { class: 'io-change', href: '#/studio' }, 'Đổi hiện vật')),

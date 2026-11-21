@@ -20,5 +20,6 @@ export function pickPassport(list) {
 // chép vào assets/images/variants/<mã hiện vật>_V<số>_aodai.png (thiết kế đã được hệ thống sửa thì chỉ có bản WebP nén).
 export function fullImage(d, heritageId, fallback) {
     if (data.isLive() || latestOf(d) !== d.thumb) return fallback;
+    if (d.full_image) return assetUrl(d.full_image);                  // bộ dành riêng cho trang Kết quả (xuất bằng --only-result)
     return `./assets/images/variants/${encodeURIComponent(heritageId)}_V${d.passport_id.split('-V').pop()}_aodai.png`;
 }

@@ -1,9 +1,9 @@
-// components/viewer-controls.js — THANH ĐIỀU KHIỂN KHUNG 3D ở Studio: nút khoá đứng yên / tự xoay, nút − +, thanh thu phóng 70–180%.
-// Vào: artifactImg (ảnh phẳng dự phòng khi không có WebGL) và viewerPromise (kết quả viewer3d.mountViewer).
+// components/viewer-controls.js — THANH ĐIỀU KHIỂN KHUNG 3D ở Studio: nút khoá đứng yên / tự xoay, nút − +, thanh thu phóng 70–180%, lăn chuột trên khung để thu phóng.
+// Vào: artifactImg (ảnh phẳng dự phòng khi không có WebGL), viewerPromise (kết quả viewer3d.mountViewer), box (khung chứa hiện vật, nơi nhận con lăn chuột).
 // Ra: phần tử thanh công cụ. Có 3D thì điều khiển khung 3D; không có thì phóng ảnh phẳng.
 import { h } from '../core/dom.js';
 
-export function viewerControls(artifactImg, viewerPromise) {
+export function viewerControls(artifactImg, viewerPromise, box) {
     // Thanh điều khiển thu phóng hiện vật + nút khoá đứng yên / chuyển động xoay
     let viewerInstance = null;
     Promise.resolve(viewerPromise).then((inst) => { viewerInstance = inst; });
@@ -56,6 +56,12 @@ export function viewerControls(artifactImg, viewerPromise) {
     zoomSlider.addEventListener('input', () => {
         applyZoom(Number(zoomSlider.value) / 100);
     });
+
+    // Lăn chuột trên khung hiện vật: lăn lên phóng to, lăn xuống thu nhỏ (cùng mức 70–180% với thanh trượt)
+    box?.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        applyZoom(zoomLevel * Math.exp(-e.deltaY * 0.0015));
+    }, { passive: false });
 
     const stepOut = h('button', {
         type: 'button',

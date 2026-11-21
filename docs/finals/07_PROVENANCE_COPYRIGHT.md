@@ -2,7 +2,7 @@
 
 Trả lời yêu cầu cải tiến 3 của BTC: **nguồn và giấy phép của các hiện vật, ghi công, lịch sử biên tập thủ công, nhãn "có hỗ trợ AI"**.
 
-Nói thẳng hiện trạng: **chưa hiện vật nào đang dùng có quyền sử dụng đã được xác minh từng vật**. Từ 19/11/2026 dữ liệu chính là 6 hiện vật của bộ dữ liệu nghiên cứu LR3D-CULT2 (HV07 đến HV12). Bộ dữ liệu công bố CC BY 4.0, nhưng từng vật có thể lấy từ nguồn giấy phép học thuật nên quyền từng vật vẫn chưa xác minh. 6 ảnh ban đầu lấy từ website bán gốm (HV01 đến HV06) đã ngừng dùng. Phần việc của bản chung kết là (1) ghi đầy đủ và trung thực những gì đã biết, (2) để hệ thống tự chặn những mục đích chưa được phép, (3) truy vết mọi thay đổi trên thiết kế, (4) ghi nguồn và giấy phép của dữ liệu huấn luyện LoRA.
+Hiện trạng: từ 19/11/2026 dữ liệu chính là 6 hiện vật của bộ dữ liệu nghiên cứu LR3D-CULT2 (HV07 đến HV12). Trang Mendeley Data của bộ dữ liệu ghi giấy phép **CC BY 4.0** (xác nhận ngày 21/11/2026), nên nhóm ghi giấy phép này cho cả 6 vật và ghi công tác giả theo yêu cầu của giấy phép. Hạn chế còn lại: mô tả bộ dữ liệu nói một phần mô hình lấy từ Sketchfab theo giấy phép học thuật, nhóm chưa xác minh riêng nguồn của từng vật. 6 ảnh ban đầu lấy từ website bán gốm (HV01 đến HV06) đã ngừng dùng. Phần việc của bản chung kết là (1) ghi đầy đủ và trung thực những gì đã biết, (2) để hệ thống tự chặn những mục đích chưa được phép, (3) truy vết mọi thay đổi trên thiết kế, (4) ghi nguồn và giấy phép của dữ liệu huấn luyện LoRA.
 
 ## 1. Danh mục nguồn (schema 2.0)
 
@@ -137,7 +137,7 @@ Trang "Nguồn và bản quyền" của giao diện từng tạo sẵn thư cho 
 
 ### Sổ cái băm nối chuỗi
 
-Mỗi sự kiện ghi `seq`, thời điểm, loại sự kiện, người/hệ thống thực hiện, băm của nội dung sự kiện và băm của sự kiện trước; băm của sự kiện là SHA-256 của các trường đó ở dạng JSON chuẩn hoá. Hàm `verify` kiểm tra: chuỗi băm liền mạch, nội dung từng sự kiện chưa bị sửa, các trường tóm tắt (trạng thái phê duyệt, danh sách phiên bản, số phiếu thẩm định) khớp với sổ cái, và băm của từng tệp trên đĩa khớp với băm đã ghi. Kết quả hiện tại: 24/24 Passport của bộ demo đạt.
+Mỗi sự kiện ghi `seq`, thời điểm, loại sự kiện, người/hệ thống thực hiện, băm của nội dung sự kiện và băm của sự kiện trước; băm của sự kiện là SHA-256 của các trường đó ở dạng JSON chuẩn hoá. Hàm `verify` kiểm tra: chuỗi băm liền mạch, nội dung từng sự kiện chưa bị sửa, các trường tóm tắt (trạng thái phê duyệt, danh sách phiên bản, số phiếu thẩm định) khớp với sổ cái, và băm của từng tệp trên đĩa khớp với băm đã ghi. Kết quả hiện tại: 24/24 Passport của bộ demo đạt (72/72 kể cả 48 Passport của bộ seed 43, 44).
 
 Giới hạn cần nói rõ: sổ cái giúp **phát hiện** sửa đổi khi đã biết băm đầu chuỗi; người có quyền ghi tệp vẫn có thể viết lại cả chuỗi. Để chống việc đó, cần neo băm đầu chuỗi ra ngoài (ví dụ ghi vào commit Git đã đẩy lên, hoặc in vào hồ sơ nộp BTC). Bộ kiểm thử có ca sửa một sự kiện và xác nhận `verify` báo lỗi.
 
