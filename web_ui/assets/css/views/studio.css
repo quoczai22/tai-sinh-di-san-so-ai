@@ -109,6 +109,12 @@
     color: var(--ink-2);
 }
 
+.out-note.out-hint {
+    margin-top: 8px;
+    font-size: 13px;
+    opacity: .85;
+}
+
 .result-head .io-name {
     margin: 0;
     text-align: left;

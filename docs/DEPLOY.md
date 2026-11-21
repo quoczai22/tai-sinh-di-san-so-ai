@@ -1,5 +1,7 @@
 # Hướng dẫn Triển khai Có Failover — Tái Sinh Di Sản Số
 
+> Với giao diện mới sau refactor, đọc DEPLOY_LIVE.md. Các route /api/generate, /api/status và /api/media dưới đây mô tả gateway cũ; không dùng để deploy UI mới. Project Vercel chính thức đã chốt là tai-sinh-di-san-so-ai.
+
 Tài liệu vận hành kiến trúc triển khai 2 lớp có khả năng tự động chuyển đổi (**Modal GPU → Demo Mode kết quả thật**) cho vòng Chung kết Cuộc thi Sáng tạo trẻ 2026.
 
 > [!NOTE]
@@ -220,6 +222,6 @@ Khi có giám khảo truy cập và Modal gặp sự cố (lỗi mạng, timeout
 |---|---|---|---|
 | **Modal Cold Start** (từ 0 container → sẵn sàng) | Modal NVIDIA T4 | *(chưa đo)* | Image đã nạp sẵn SD1.5 + ControlNet + CLIP (đọc thẳng từ image) |
 | **Thời gian sinh 1 bộ 4 thiết kế** | Modal NVIDIA T4 | *(chưa đo)* | Gồm 4 biến thể SD1.5 ControlNet + chấm điểm 7 bố cục CLIP + img2img polish |
-| **Thời gian Scale-down về 0** | Modal NVIDIA T4 | *(chưa đo)* — giá trị **cấu hình** là `900s` (15 phút) | `scaledown_window=900` trong `modal_app.py`; số đo thật lấy từ thời điểm container dừng trên dashboard Modal |
+| **Thời gian Scale-down về 0** | Modal NVIDIA T4 | *(chưa đo)* — giá trị **cấu hình** là `420s` (7 phút) | `scaledown_window=420` trong `modal_app.py`; số đo thật lấy từ thời điểm container dừng trên dashboard Modal |
 | **HF Space tự thức khi nhận API request** | HF Space Docker T4 (Private) | Không áp dụng (đã bỏ HF Space) | — |
 | **Thời gian thức dậy của HF Space** | HF Space Docker T4 (Private) | Không áp dụng (đã bỏ HF Space) | — |

@@ -41,14 +41,14 @@ RUN python -m pip install --no-cache-dir --upgrade pip && \
 # Tải sẵn các model (SD1.5 fp16, ControlNet Canny fp16, CLIP ViT-B/32, SAM ViT-B) vào image
 # để rút ngắn tối đa thời gian cold start trên cả Modal và HF Space.
 # SAM dùng trong generation/garment_sam.py (tách dáng áo của ảnh LoRA).
-RUN mkdir -p "${HF_HOME}" "${DH_OUTPUT_DIR}/variants" "${DH_OUTPUT_DIR}/audit" && \
+RUN mkdir -p "${HF_HOME}" && \
     python -c "\
 from huggingface_hub import snapshot_download; \
 snapshot_download('stable-diffusion-v1-5/stable-diffusion-v1-5', allow_patterns=['*.json', '*.txt', '*.fp16.safetensors']); \
 snapshot_download('lllyasviel/control_v11p_sd15_canny', allow_patterns=['*.json', '*.fp16.safetensors']); \
 snapshot_download('openai/clip-vit-base-patch32', allow_patterns=['*.json', '*.txt', '*.safetensors', 'pytorch_model.bin']); \
 snapshot_download('facebook/sam-vit-base', allow_patterns=['*.json', '*.txt', '*.safetensors']); \
-" && chmod -R 777 "${HF_HOME}" "${DH_OUTPUT_DIR}"
+" && chmod -R 777 "${HF_HOME}"
 
 COPY api/ /app/api/
 COPY generation/ /app/generation/

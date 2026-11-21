@@ -2,6 +2,7 @@
 // Vào: data.passports(). Ra: marquee(el) — chỉ dựng một lần, các lần đổi trang sau giữ nguyên.
 import { clear, h } from '../../core/dom.js';
 import * as data from '../../core/data.js';
+import { assetUrl } from '../../core/designs.js';
 
 export async function marquee(el) {
     clear(el);
@@ -9,7 +10,7 @@ export async function marquee(el) {
     try { list = (await data.passports()).filter((d) => d.thumb); } catch { return; }
     if (!list.length) return;
     const row = (items, cls) => h('div', { class: `mq-row ${cls}` },
-        [...items, ...items].map((d) => h('img', { src: `./${d.thumb}`, alt: '', loading: 'lazy', decoding: 'async' })));
+        [...items, ...items].map((d) => h('img', { src: assetUrl(d.thumb), alt: '', loading: 'lazy', decoding: 'async' })));
     const half = Math.ceil(list.length / 2);
     el.append(row(list.slice(0, half), 'a'), row(list.slice(half), 'b'));
 }

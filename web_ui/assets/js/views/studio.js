@@ -7,7 +7,7 @@
 import { h, toast } from '../core/dom.js';
 import { icon } from '../core/icons.js';
 import * as data from '../core/data.js';
-import { runGeneration } from '../core/generation.js';
+import { pendingGeneration, runGeneration } from '../core/generation.js';
 import { section, stateBox } from '../components/layout.js';
 import { pickerCard } from '../components/picker-card.js';
 import { mountViewer } from '../components/viewer3d.js';
@@ -27,33 +27,47 @@ export async function render([heritageId]) {
     data.audit('heritage_selected', { step: 1, heritage_id: heritageId });
 
     const hasDesigns = (await data.passports()).some((p) => p.heritage_id === heritageId);
-    const can = data.canGenerate();
+    const recovering = pendingGeneration()?.heritageId === heritageId;
+    const can = data.canGenerate() || recovering;
     const goToResult = () => { location.hash = `#/result/${encodeURIComponent(heritageId)}`; };
 
     const note = h('p', { class: 'out-note', role: 'status', 'aria-live': 'polite' });
     const detail = h('p', { class: 'out-note out-detail', role: 'status', hidden: true });
+    const resumeHint = h('p', { class: 'out-note out-hint', hidden: true },
+        'Bạn có thể rời trang và quay lại bằng trình duyệt này để xem kết quả.');
     const progressBar = h('span');
     const progress = h('div', { class: 'out-progress', hidden: true }, h('div', { class: 'progress' }, progressBar));
-    const seedInput = h('input', { type: 'number', min: 0, max: 2147483647, value: 42, id: 'seed', inputmode: 'numeric' });
-    const genBtn = h('button', { class: 'btn hero-btn primary gen-btn', onclick: async () => {
+    const seedInput = h('input', { type: 'number', min: 0, max: 2147483647, id: 'seed', inputmode: 'numeric' });
+    const start = async () => {
+        if (genBtn.disabled) return;
         if (!can) {
             // Không có GPU: mở trang Kết quả với bộ đã tạo trước
             if (!hasDesigns) { note.textContent = 'Hiện vật này chưa có thiết kế.'; return; }
             goToResult();
             return;
         }
-        const seed = Number(seedInput.value);
-        if (!Number.isInteger(seed) || seed < 0) { toast('Seed phải là số nguyên không âm.'); return; }
+        const seed = seedInput.value === ''
+            ? crypto.getRandomValues(new Uint32Array(1))[0] % 2147483648
+            : Number(seedInput.value);
+        if (!Number.isInteger(seed) || seed < 0 || seed > 2147483647) {
+            toast('Seed phải là số nguyên từ 0 đến 2147483647.'); return;
+        }
         genBtn.disabled = true;
         progress.hidden = false;
+        resumeHint.hidden = false;
         detail.hidden = false;
-        note.textContent = 'Đang tạo ảnh';
-        detail.textContent = 'Đang gửi yêu cầu tạo ảnh…';
+        note.textContent = recovering ? 'Đang khôi phục lượt tạo ảnh…' : 'Đang gửi yêu cầu tạo ảnh…';
+        detail.textContent = '';
         try {
             await runGeneration(heritageId, seed, (pct, job) => {
                 progressBar.style.width = `${pct}%`;
-                note.textContent = 'Đang tạo ảnh';
-                detail.textContent = job?.label || `${pct}%`;
+                if (job.status === 'queued') {
+                    note.textContent = 'Đang chờ tạo ảnh';
+                    detail.textContent = `Vị trí hàng chờ: ${job.queue_position || 1}/2`;
+                } else {
+                    note.textContent = 'Đang tạo ảnh';
+                    detail.textContent = job.label || `${pct}%`;
+                }
             });
             goToResult();
         } catch (err) {
@@ -62,7 +76,9 @@ export async function render([heritageId]) {
             note.textContent = `Không tạo được thiết kế: ${err.message}`;
             genBtn.disabled = false;
         }
-    } }, 'Tạo thiết kế', icon('arrow'));
+    };
+    const genBtn = h('button', { class: 'btn hero-btn primary gen-btn', onclick: start }, 'Tạo thiết kế', icon('arrow'));
+    if (recovering) setTimeout(start, 0);
 
     // Khung hiện vật: ảnh phẳng làm sẵn; nếu có mô hình 3D thì thay bằng khung xoay 360 độ bằng chuột
     const artifactImg = h('img', { src: item.image, alt: item.name });
@@ -77,8 +93,9 @@ export async function render([heritageId]) {
             h('a', { class: 'io-change', href: '#/studio' }, 'Đổi hiện vật')),
         h('div', { class: 'io-action' },
             genBtn,
-            can ? h('details', { class: 'adv' }, h('summary', {}, 'Tuỳ chọn'), h('label', { class: 'field', for: 'seed' }, 'Seed', seedInput)) : null,
+            can ? h('details', { class: 'adv' }, h('summary', {}, 'Tuỳ chọn'), h('label', { class: 'field', for: 'seed' }, 'Seed (để trống để sinh khác mỗi lần)', seedInput)) : null,
             progress,
             note,
-            detail));
+            detail,
+            resumeHint));
 }

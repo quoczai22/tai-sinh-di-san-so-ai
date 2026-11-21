@@ -18,7 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field, field_validator
 
-from api import store
+from api import jobs, store
 from api.audit import AUDIT_EVENTS, append_audit_event
 from provenance import passport as P
 from provenance.registry import (all_items, assess_selection, completeness, get_item,
@@ -62,10 +62,20 @@ app.add_middleware(
 _jobs: dict[str, dict] = {}
 _jobs_lock = threading.Lock()
 _active_job_id: str | None = None
+_pending_jobs: deque[tuple[str, str, int]] = deque()
+_worker_running = False
+MAX_ACTIVE_JOBS = int(os.getenv("TSDS_MAX_ACTIVE_JOBS", "3"))
 _rate: dict[str, deque] = defaultdict(deque)
 GENERATE_LIMIT_PER_HOUR = int(os.getenv("TSDS_GENERATE_PER_HOUR", "6"))
 WRITE_KEY = os.getenv("TSDS_WRITE_KEY", "")
 MAX_EDIT_BYTES = 8 * 1024 * 1024
+
+
+def _save_job(job_id: str) -> None:
+    try:
+        jobs.save(PROJECT_ROOT, job_id, _jobs[job_id])
+    except OSError:
+        log.exception("Không lưu được trạng thái job %s", job_id)
 
 
 # ------------------------------------------------------------------ helpers --
@@ -249,7 +259,7 @@ def heritage_image(heritage_id: str) -> FileResponse:
 
 @app.post("/generate", status_code=202, dependencies=[Depends(verify_gpu_api_key), Depends(rate_limit)])
 def generate_designs(request: GenerateRequest) -> dict:
-    global _active_job_id
+    global _worker_running
 
     item = get_item(request.heritage_id, PROJECT_ROOT)
     if item is None or item.get("status", "active") != "active":
@@ -261,46 +271,79 @@ def generate_designs(request: GenerateRequest) -> dict:
                                                     "Giao diện đang hiển thị kết quả đã sinh sẵn.") from None
     seed = SEED if request.seed is None else request.seed
     with _jobs_lock:
-        if _active_job_id is not None and _jobs.get(_active_job_id, {}).get("status") in {"queued", "running"}:
-            raise HTTPException(status_code=409, detail="Đang có một job GPU khác chạy. Vui lòng chờ job hiện tại hoàn tất.")
+        if len(_pending_jobs) + int(_active_job_id is not None) >= MAX_ACTIVE_JOBS:
+            raise HTTPException(status_code=429, detail="Hàng chờ tạo thiết kế đã đầy. Vui lòng thử lại sau.")
         job_id = uuid.uuid4().hex
-        _jobs[job_id] = {"status": "queued", "progress": 0, "label": "Đang xếp hàng...", "seed": seed}
-        _active_job_id = job_id
-    append_audit_event(PROJECT_ROOT, {"step": 3, "event": "generation_started",
-                                      "heritage_id": request.heritage_id, "job_id": job_id, "seed": seed})
-
-    def run() -> None:
-        global _active_job_id
-
-        def progress(value: int, label: str) -> None:
+        position = len(_pending_jobs) + 1
+        _jobs[job_id] = {"status": "queued", "progress": 0,
+                         "label": f"Đang chờ lượt {position}...", "queue_position": position,
+                         "seed": seed}
+        _save_job(job_id)
+        _pending_jobs.append((job_id, request.heritage_id, seed))
+        start_worker = not _worker_running
+        if start_worker:
+            _worker_running = True
+    def run_queue() -> None:
+        global _active_job_id, _worker_running
+        while True:
             with _jobs_lock:
-                _jobs[job_id].update(status="running", progress=value, label=label)
+                if not _pending_jobs:
+                    _active_job_id = None
+                    _worker_running = False
+                    return
+                current_id, heritage_id, current_seed = _pending_jobs.popleft()
+                _active_job_id = current_id
+                _jobs[current_id].update(status="running", progress=1,
+                                         label="Đang chuẩn bị thiết kế...", queue_position=0)
+                _save_job(current_id)
+                for position, (waiting_id, _, _) in enumerate(_pending_jobs, start=1):
+                    _jobs[waiting_id].update(queue_position=position,
+                                             label=f"Đang chờ lượt {position}...")
 
-        try:
-            variants = generate_design_set(request.heritage_id, progress, seed=seed)
-            for v in variants:
-                if v.get("status") == "completed":
-                    v["image_url"] = f"/media/run/{v['run_id']}/{Path(v['design_path']).name}"
-            done = sum(1 for v in variants if v.get("status") == "completed")
-            with _jobs_lock:
-                _jobs[job_id].update(status="completed", progress=100, variants=variants,
-                                     run_id=variants[0]["run_id"] if variants else None,
-                                     label=f"Đã tạo xong {done}/{len(variants)} thiết kế.")
-            append_audit_event(PROJECT_ROOT, {"step": 3, "event": "generation_completed",
-                                              "heritage_id": request.heritage_id, "job_id": job_id})
-        except Exception:                                          # noqa: BLE001
-            log.exception("Job %s lỗi", job_id)
-            with _jobs_lock:
-                # Không trả chi tiết lỗi nội bộ cho client (đã ghi log máy chủ)
-                _jobs[job_id].update(status="failed", label="Pipeline gặp lỗi. Đã ghi nhật ký máy chủ; vui lòng thử lại.")
-            append_audit_event(PROJECT_ROOT, {"step": 3, "event": "generation_failed",
-                                              "heritage_id": request.heritage_id, "job_id": job_id})
-        finally:
-            with _jobs_lock:
-                _active_job_id = None
+            try:
+                append_audit_event(PROJECT_ROOT, {"step": 3, "event": "generation_started",
+                                                  "heritage_id": heritage_id, "job_id": current_id,
+                                                  "seed": current_seed})
+            except Exception:
+                log.exception("Không ghi được audit cho job %s", current_id)
 
-    threading.Thread(target=run, daemon=True).start()
-    return {"job_id": job_id, "status_url": f"/generate/{job_id}", "seed": seed}
+            def progress(value: int, label: str) -> None:
+                with _jobs_lock:
+                    _jobs[current_id].update(status="running", progress=value, label=label)
+
+            try:
+                variants = generate_design_set(heritage_id, progress, seed=current_seed)
+                for variant in variants:
+                    if variant.get("status") == "completed":
+                        variant["image_url"] = (f"/media/run/{variant['run_id']}/"
+                                                f"{Path(variant['design_path']).name}")
+                done = sum(1 for variant in variants if variant.get("status") == "completed")
+                with _jobs_lock:
+                    _jobs[current_id].update(status="completed", progress=100, variants=variants,
+                                             run_id=variants[0]["run_id"] if variants else None,
+                                             label=f"Đã tạo xong {done}/{len(variants)} thiết kế.")
+                    _save_job(current_id)
+                try:
+                    append_audit_event(PROJECT_ROOT, {"step": 3, "event": "generation_completed",
+                                                      "heritage_id": heritage_id, "job_id": current_id})
+                except Exception:
+                    log.exception("Không ghi được audit cho job %s", current_id)
+            except Exception:                                      # noqa: BLE001
+                log.exception("Job %s lỗi", current_id)
+                with _jobs_lock:
+                    _jobs[current_id].update(status="failed",
+                                             label="Pipeline gặp lỗi. Đã ghi nhật ký máy chủ; vui lòng thử lại.")
+                    _save_job(current_id)
+                try:
+                    append_audit_event(PROJECT_ROOT, {"step": 3, "event": "generation_failed",
+                                                      "heritage_id": heritage_id, "job_id": current_id})
+                except Exception:
+                    log.exception("Không ghi được audit cho job %s", current_id)
+
+    if start_worker:
+        threading.Thread(target=run_queue, daemon=True).start()
+    return {"job_id": job_id, "status_url": f"/generate/{job_id}",
+            "seed": seed, "queue_position": position}
 
 
 @app.post("/audit", status_code=202)
@@ -317,9 +360,12 @@ def record_audit_event(request: AuditRequest) -> dict:
 def generate_status(job_id: str) -> dict:
     with _jobs_lock:
         job = _jobs.get(job_id)
-        if job is None:
-            raise HTTPException(status_code=404, detail="Không tìm thấy job.")
-        return dict(job)
+        if job is not None:
+            return dict(job)
+    saved = jobs.load(PROJECT_ROOT, job_id)
+    if saved is None:
+        raise HTTPException(status_code=404, detail="Không tìm thấy job.")
+    return saved
 
 
 @app.get("/media/run/{run_id}/{filename}")
@@ -340,7 +386,10 @@ def artifact_image(path: str = Query(max_length=200)) -> FileResponse:
     if not any(rel.as_posix().startswith(r) for r in allowed_roots):
         raise HTTPException(status_code=404, detail="Không tìm thấy tệp.")
     full = (PROJECT_ROOT / rel).resolve()
-    if PROJECT_ROOT.resolve() not in full.parents or not full.is_file():
+    output_root = (PROJECT_ROOT / "outputs").resolve()
+    within_project = PROJECT_ROOT.resolve() in full.parents
+    within_outputs = rel.as_posix().startswith("outputs/") and output_root in full.parents
+    if not (within_project or within_outputs) or not full.is_file():
         raise HTTPException(status_code=404, detail="Không tìm thấy tệp.")
     return FileResponse(full)
 

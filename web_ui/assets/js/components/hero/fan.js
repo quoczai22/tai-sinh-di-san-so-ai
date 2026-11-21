@@ -3,7 +3,7 @@
 // Vào: data.heritage() + data.passports(). Ra: libraryVisual(root) → bộ điều khiển trình chiếu (destroy/pause/go).
 import { h } from '../../core/dom.js';
 import * as data from '../../core/data.js';
-import { latestOf, patternOf, pickPassport } from '../../core/designs.js';
+import { assetUrl, latestOf, patternOf, pickPassport } from '../../core/designs.js';
 import { cycle, reduced } from '../../core/motion.js';
 import { aiMark } from '../badges.js';
 
@@ -45,8 +45,8 @@ export async function libraryVisual(root) {
     const dots = h('div', { class: 'fan-dots', role: 'group', 'aria-label': 'Chọn hiện vật trình chiếu' });
     const setEls = sets.map(({ it, d }) => h('div', { class: 'fan-set' },
         fanCard('c1', 'Hiện vật', it.image, false, true),
-        fanCard('c2', 'Hoa văn', `./${patternOf(d)}`, true),
-        fanCard('c3', 'Áo dài', `./${latestOf(d)}`, true)));
+        fanCard('c2', 'Hoa văn', assetUrl(patternOf(d)), true),
+        fanCard('c3', 'Áo dài', assetUrl(latestOf(d)), true)));
     stage.append(...setEls);
     const dotEls = sets.map(({ it }, k) => h('button', { type: 'button', 'aria-label': it.name, onclick: () => ctl.go(k) }));
     dots.append(...dotEls);

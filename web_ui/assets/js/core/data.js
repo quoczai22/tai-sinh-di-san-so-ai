@@ -7,7 +7,15 @@
 // Chế độ được xác định một lần khi mở trang bằng /health (chờ tối đa 2,5 giây).
 
 const API = (window.DH_API_BASE || '').replace(/\/$/, '');
-const state = { mode: 'demo', health: null, meta: null, cache: new Map() };
+const state = { mode: 'demo', health: null, meta: null, cache: new Map(), latestResult: null, preloads: [] };
+const LIVE_RUN_KEY = 'dh:last-live-run';
+
+function savedLiveRun() {
+    try {
+        const saved = JSON.parse(localStorage.getItem(LIVE_RUN_KEY) || 'null');
+        return saved?.heritageId && saved?.runId ? saved : null;
+    } catch { return null; }
+}
 
 async function getJson(url, opts = {}) {
     const res = await fetch(url, { cache: 'no-store', ...opts });
@@ -27,27 +35,60 @@ async function cached(key, loader) {
 }
 
 export async function init() {
+    const resultId = location.hash.match(/^#\/result\/([^/]+)$/)?.[1];
+    const saved = savedLiveRun();
+    state.mode = resultId && decodeURIComponent(resultId) === saved?.heritageId ? 'live' : 'demo';
     if (API) {
         try {
             const ctrl = new AbortController();
             const t = setTimeout(() => ctrl.abort(), 2500);
             state.health = await getJson(`${API}/health`, { signal: ctrl.signal });
             clearTimeout(t);
-            state.mode = 'live';
-        } catch { state.mode = 'demo'; }
+        } catch { state.health = null; }
     }
     try { state.meta = await getJson('./data/meta.json'); } catch { state.meta = null; }
     return { mode: state.mode, health: state.health, meta: state.meta };
 }
 
 export const isLive = () => state.mode === 'live';
-export const canGenerate = () => state.mode === 'live' && Boolean(state.health?.generation_available);
+export const canGenerate = () => Boolean(state.health?.generation_available);
+export function liveRunFor(heritageId) {
+    const saved = savedLiveRun();
+    return saved?.heritageId === heritageId ? saved.runId : null;
+}
+export function activateLive(heritageId, runId, variants = []) {
+    state.mode = 'live';
+    if (heritageId && runId) {
+        try { localStorage.setItem(LIVE_RUN_KEY, JSON.stringify({ heritageId, runId })); } catch {}
+    }
+    state.cache.delete('live:passports');
+    const designs = variants.filter((variant) => variant.status === 'completed' && variant.image_url)
+        .map((variant) => ({
+            passport_id: variant.passport_id,
+            run_id: variant.run_id,
+            heritage_id: heritageId,
+            thumb: variant.image_url,
+            final_path: variant.image_url,
+            latest_path: variant.image_url,
+        }));
+    state.latestResult = designs.length ? { heritageId, runId, designs } : null;
+    state.preloads = typeof Image === 'undefined' ? [] : designs.map((design) => {
+        const image = new Image();
+        image.src = `${API}${design.thumb}`;
+        return image;
+    });
+}
+export function liveDesignsFor(heritageId) {
+    return state.latestResult?.heritageId === heritageId &&
+        state.latestResult.runId === liveRunFor(heritageId) ? state.latestResult.designs : null;
+}
 export function invalidate(prefix = '') { for (const k of [...state.cache.keys()]) if (k.startsWith(prefix)) state.cache.delete(k); }
 
 // Ảnh: demo dùng bản WebP đã xuất; live lấy tệp gốc qua API (đã kiểm đường dẫn)
 export function media(artifactOrPath, display) {
     if (state.mode === 'live' && artifactOrPath) {
         const path = typeof artifactOrPath === 'string' ? artifactOrPath : artifactOrPath.path;
+        if (typeof path === 'string' && path.startsWith('/media/run/')) return `${API}${path}`;
         return `${API}/media/artifact?path=${encodeURIComponent(path)}`;
     }
     if (display) return `./${display}`;
@@ -66,7 +107,7 @@ const plain = (h) => ({ ...h, items: h.items.map((it) => ({ ...it, name: plainNa
 export async function heritage() {
     const demo = await cached('demo:heritage', () => getJson('./data/heritage.json'));
     if (state.mode !== 'live') return plain(demo);
-    return plain(await cached('live:heritage', async () => {
+    try { return plain(await cached('live:heritage', async () => {
         const items = await getJson(`${API}/heritage?include_retired=true`);
         const byId = Object.fromEntries(demo.items.map((x) => [x.id, x]));
         return {
@@ -74,11 +115,14 @@ export async function heritage() {
             items: items.map((it) => ({ ...byId[it.id], ...it, image: `${API}${it.image}`,
                 selection: byId[it.id]?.selection, rights: byId[it.id]?.rights })),
         };
-    }));
+    })); } catch { return plain(demo); }
 }
 
 export async function passports() {
-    if (state.mode === 'live') return cached('live:passports', () => getJson(`${API}/passports`));
+    if (state.mode === 'live') {
+        try { return await cached('live:passports', () => getJson(`${API}/passports`)); }
+        catch { state.mode = 'demo'; }
+    }
     return cached('demo:passports', () => getJson('./data/passports.json'));
 }
 
@@ -88,7 +132,8 @@ export async function startGeneration(heritageId, seed) {
         body: JSON.stringify({ heritage_id: heritageId, seed }),
     });
 }
-export const jobStatus = (jobId) => getJson(`${API}/generate/${jobId}`);
+export const jobStatus = (jobId, heritageId) =>
+    getJson(`${API}/generate/${encodeURIComponent(jobId)}?heritage_id=${encodeURIComponent(heritageId)}`);
 
 export function audit(event, extra = {}) {
     if (state.mode !== 'live') return;

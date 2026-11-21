@@ -8,7 +8,8 @@ import * as data from './data.js';
 export const PREF = ['pending_expert_review', 'qa_warning', 'revision_requested', 'approved', 'qa_failed'];
 
 export const latestOf = (d) => (d.latest_version_kind === 'system_repair' && d.repair_thumb ? d.repair_thumb : d.thumb);
-export const patternOf = (d) => (d.thumb ? d.thumb.replace(/final_img2img\.webp$/, 'pattern.webp') : null);
+export const patternOf = (d) => d.pattern_thumb || (d.thumb ? d.thumb.replace(/final_img2img\.webp$/, 'pattern.webp') : null);
+export const assetUrl = (path) => !path ? '' : (/^(https?:)?\/\//.test(path) || path.startsWith('/') ? path : './' + path);
 export const byPref = (a, b) => (PREF.indexOf(a.approval.status) - PREF.indexOf(b.approval.status)) || a.passport_id.localeCompare(b.passport_id);
 
 export function pickPassport(list) {
