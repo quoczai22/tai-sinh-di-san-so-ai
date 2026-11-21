@@ -57,7 +57,7 @@ export function openArtifactBook(item, opener) {
     // Dấu X nằm ngoài phần cuộn của sổ (màn hẹp cuộn cả cuốn sổ) để luôn nhìn thấy
     const book = h('div', { class: 'bk-book' }, leftPage(item), rightPage(item));
     const overlay = h('div', { class: 'book-overlay', role: 'dialog', 'aria-modal': 'true', 'aria-label': `Sổ hoa văn: ${item.name}` },
-        h('div', { class: 'bk-wrap' }, book, closeBtn));
+        h('div', { class: 'bk-wrap' }, h('div', { class: 'bk-sheet' }, book), closeBtn));
     overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
     const onKey = (e) => {
         if (e.key === 'Escape') { close(); return; }

@@ -51,21 +51,82 @@ body.book-open {
     width: min(1040px, 96vw);
 }
 
-/* Cuốn sổ: hai trang giấy, gáy ở giữa, mép giấy xếp chồng phía sau */
+/* Lớp bao cuốn sổ: bóng đổ đặt ở đây (filter) để bóng chạy theo hình viền đã bị mẻ của sổ.
+   Hai drop-shadow đầu không làm mờ, tạo mép giấy xếp chồng phía sau; cái cuối là bóng đổ mềm. */
+.bk-sheet {
+    filter:
+        drop-shadow(3px 4px 0 #D6C8A4)
+        drop-shadow(3px 4px 0 #C4B38B)
+        drop-shadow(0 34px 40px rgba(0, 0, 0, .55));
+}
+
+/* Cuốn sổ cũ: giấy ngả vàng có hạt, vết ố và đốm mốc; hai trang, gáy ở giữa; vài vết mẻ ở viền.
+   Màu mực nâu đậm và phông chữ viết tay (Playwrite VN, nạp ở index.html) cho cảm giác giấy cổ. */
 .bk-book {
+    --bk-ink: #3B2A17;
+    --bk-ink-soft: #7A6548;
+    --bk-accent: #85511F;
+    --bk-line: rgba(120, 85, 35, .32);
+    --bk-hand: "Playwrite VN", "Noto Serif Display", "Noto Serif", Georgia, serif;
+
     position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     width: 100%;
     height: min(680px, 90vh);
     perspective: 2200px;
-    background: var(--paper);
-    border-radius: 4px;
+    border-radius: 3px;
+    background:
+        /* đốm mốc nâu nhỏ rải trên giấy */
+        radial-gradient(circle at 12% 18%, rgba(130, 80, 25, .34) 0 2px, transparent 7px),
+        radial-gradient(circle at 83% 71%, rgba(130, 80, 25, .28) 0 2px, transparent 6px),
+        radial-gradient(circle at 27% 86%, rgba(130, 80, 25, .26) 0 1px, transparent 5px),
+        radial-gradient(circle at 66% 24%, rgba(130, 80, 25, .24) 0 2px, transparent 6px),
+        radial-gradient(circle at 93% 9%, rgba(130, 80, 25, .30) 0 2px, transparent 7px),
+        radial-gradient(circle at 6% 61%, rgba(130, 80, 25, .26) 0 1px, transparent 5px),
+        radial-gradient(circle at 41% 7%, rgba(130, 80, 25, .22) 0 1px, transparent 4px),
+        /* vết ố loang lớn */
+        radial-gradient(ellipse 200px 120px at 80% 90%, rgba(150, 100, 40, .20), transparent 70%),
+        radial-gradient(ellipse 240px 140px at 16% 10%, rgba(150, 100, 40, .16), transparent 70%),
+        radial-gradient(ellipse 160px 200px at 52% 55%, rgba(170, 120, 50, .10), transparent 70%),
+        /* hạt giấy */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .40 0 0 0 0 .28 0 0 0 0 .12 0 0 0 .55 -.14'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+        linear-gradient(115deg, #EFE3C4, #E6D5AC 55%, #EADBB6);
+    /* mép giấy sẫm dần (cháy nâu) */
     box-shadow:
-        0 0 0 1px rgba(60, 40, 10, .12),
-        4px 5px 0 -1px #E8E0CE,
-        8px 10px 0 -2px #DCD2BC,
-        0 40px 90px -30px rgba(0, 0, 0, .75);
+        inset 0 0 80px rgba(120, 75, 20, .34),
+        inset 0 0 16px rgba(95, 58, 14, .40);
+    /* Vết mẻ ở viền: mỗi lớp là một hình tròn hoặc elip trong suốt đặt sát mép; giao các lớp lại */
+    -webkit-mask-image:
+        radial-gradient(circle at 0 0, transparent 14px, #000 15px),
+        radial-gradient(circle at 100% 100%, transparent 11px, #000 12px),
+        radial-gradient(circle at 0 24%, transparent 6px, #000 7px),
+        radial-gradient(ellipse 5px 9px at 0 71%, transparent 96%, #000 100%),
+        radial-gradient(circle at 100% 13%, transparent 7px, #000 8px),
+        radial-gradient(ellipse 4px 11px at 100% 58%, transparent 96%, #000 100%),
+        radial-gradient(circle at 100% 86%, transparent 5px, #000 6px),
+        radial-gradient(ellipse 12px 5px at 17% 0, transparent 96%, #000 100%),
+        radial-gradient(circle at 64% 0, transparent 6px, #000 7px),
+        radial-gradient(circle at 88% 0, transparent 4px, #000 5px),
+        radial-gradient(ellipse 10px 4px at 36% 100%, transparent 96%, #000 100%),
+        radial-gradient(circle at 79% 100%, transparent 7px, #000 8px),
+        radial-gradient(circle at 8% 100%, transparent 5px, #000 6px);
+    mask-image:
+        radial-gradient(circle at 0 0, transparent 14px, #000 15px),
+        radial-gradient(circle at 100% 100%, transparent 11px, #000 12px),
+        radial-gradient(circle at 0 24%, transparent 6px, #000 7px),
+        radial-gradient(ellipse 5px 9px at 0 71%, transparent 96%, #000 100%),
+        radial-gradient(circle at 100% 13%, transparent 7px, #000 8px),
+        radial-gradient(ellipse 4px 11px at 100% 58%, transparent 96%, #000 100%),
+        radial-gradient(circle at 100% 86%, transparent 5px, #000 6px),
+        radial-gradient(ellipse 12px 5px at 17% 0, transparent 96%, #000 100%),
+        radial-gradient(circle at 64% 0, transparent 6px, #000 7px),
+        radial-gradient(circle at 88% 0, transparent 4px, #000 5px),
+        radial-gradient(ellipse 10px 4px at 36% 100%, transparent 96%, #000 100%),
+        radial-gradient(circle at 79% 100%, transparent 7px, #000 8px),
+        radial-gradient(circle at 8% 100%, transparent 5px, #000 6px);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
     animation: bk-rise .45s var(--ease-out) both;
 }
 
@@ -87,7 +148,7 @@ body.book-open {
     flex-direction: column;
     min-height: 0;
     padding: 40px 44px 26px;
-    color: var(--ink);
+    color: var(--bk-ink);
     font-size: 15px;
     line-height: 1.6;
 }
@@ -112,7 +173,7 @@ body.book-open {
     font-weight: 600;
     letter-spacing: .2em;
     text-transform: uppercase;
-    color: var(--dat);
+    color: var(--bk-accent);
 }
 
 .bk-h {
@@ -129,8 +190,8 @@ body.book-open {
     aspect-ratio: 4 / 3.9;
     max-height: 360px;
     margin: 0 auto;
-    background: var(--vitrine);
-    outline: 1px solid rgba(176, 138, 69, .4);
+    background: rgba(150, 110, 50, .12);
+    outline: 1px solid rgba(120, 85, 35, .5);
     outline-offset: -10px;
 }
 
@@ -138,7 +199,7 @@ body.book-open {
     max-height: 84%;
     max-width: 74%;
     object-fit: contain;
-    filter: drop-shadow(0 14px 14px rgba(40, 28, 10, .2));
+    filter: sepia(.22) drop-shadow(0 14px 14px rgba(40, 28, 10, .25));
 }
 
 .bk-figure figcaption {
@@ -149,36 +210,40 @@ body.book-open {
 }
 
 .bk-name {
-    font-family: var(--font-display);
-    font-size: 24px;
-    line-height: 1.25;
+    font-family: var(--bk-hand);
+    font-size: 22px;
+    line-height: 1.5;
 }
 
 .bk-cap {
-    font-size: 13px;
-    color: var(--ink-3);
+    font-family: var(--bk-hand);
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--bk-ink-soft);
 }
 
 .bk-text {
     margin: 0;
-    font-family: var(--font-display);
-    font-size: 19px;
-    line-height: 1.65;
+    font-family: var(--bk-hand);
+    font-size: 16.5px;
+    line-height: 2;
     text-wrap: pretty;
 }
 
 .bk-block {
     margin-top: 20px;
     padding-top: 16px;
-    border-top: 1px solid var(--line-2);
+    border-top: 1px dashed var(--bk-line);
 }
 
+/* Khối "Nguồn ảnh" giữ phông chữ in như cũ (không dùng chữ viết tay), dễ đọc DOI và giấy phép */
 .bk-block p {
     margin: 0 0 6px;
 }
 
 .bk-link {
-    color: var(--lam-strong);
+    color: var(--bk-accent);
+    text-decoration-color: rgba(133, 81, 31, .5);
 }
 
 .bk-link svg {
@@ -192,10 +257,9 @@ body.book-open {
 .bk-folio {
     margin: auto 0 0;
     padding-top: 14px;
-    font-family: var(--font-display);
+    font-family: var(--bk-hand);
     font-size: 13px;
-    font-style: italic;
-    color: var(--ink-3);
+    color: var(--bk-ink-soft);
 }
 
 .bk-right .bk-folio {
@@ -214,13 +278,13 @@ body.book-open {
     border: 0;
     border-radius: 50%;
     background: transparent;
-    color: var(--ink);
+    color: #3B2A17;
     cursor: pointer;
 }
 
 .bk-close:hover,
 .bk-close:focus-visible {
-    background: rgba(29, 42, 54, .08);
+    background: rgba(59, 42, 23, .12);
 }
 
 .bk-close svg {
@@ -272,7 +336,7 @@ body.book-open {
     .bk-right {
         overflow: visible;
         padding-top: 18px;
-        border-top: 1px solid var(--line-2);
+        border-top: 1px dashed rgba(120, 85, 35, .32);
         animation: bk-fade .4s ease .1s both;
     }
 
