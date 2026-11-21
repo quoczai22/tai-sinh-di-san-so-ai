@@ -1,0 +1,35 @@
+/* components/viewer3d.css — KHUNG 3D và thanh điều khiển (.viewer-controls, .lock-btn). JS: components/viewer3d.js, components/viewer-controls.js. */
+
+/* Thanh điều khiển xem hiện vật 3D ở Studio (đồng bộ 100% phong cách nút vuông phẳng như lightbox trên main) */
+.viewer-controls.lb-zoomrow {
+    margin: 14px auto 0;
+    justify-content: center;
+}
+
+/* Khung xem 3D của hiện vật (trang Studio): canvas phủ kín khung be, ảnh phẳng ẩn đi khi 3D chạy được */
+.io-artifact .viewer3d {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    outline: none;
+}
+
+.io-artifact .viewer3d:active {
+    cursor: grabbing;
+}
+
+/* Thẻ trong lưới: canvas 3D thay ảnh phẳng, nằm dưới góc hồi văn, bấm vào vẫn mở trang Studio */
+.ac-stage .viewer3d, .artifact .pic .viewer3d {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transition: transform 1s var(--ease-out);
+}
+
+.artifact-card:hover .ac-stage .viewer3d {
+    transform: translateY(-6px) scale(1.03);
+}

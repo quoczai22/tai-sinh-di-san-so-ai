@@ -28,7 +28,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from api.audit import append_audit_event, get_output_dir
-from streamlit_ui.heritage_data import load_heritage_metadata
+from provenance.heritage import load_heritage_metadata
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent

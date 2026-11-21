@@ -1,0 +1,233 @@
+/* components/menu.css — MENU TOÀN MÀN HÌNH (.menu-overlay, .menu-chapter) và nút bật/tắt chuyển động (.motion-toggle). JS: components/nav.js. */
+
+body.menu-open {
+    overflow: hidden;
+}
+
+/* ---------- Menu toàn màn hình: 4 chương ---------- */
+.menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    color: var(--cream);
+    overflow-y: auto;
+    background: radial-gradient(1200px 700px at 85% -10%, rgba(36, 80, 138, .55), transparent 60%), var(--cobalt-950);
+    clip-path: circle(0% at calc(100% - 60px) 34px);
+    transition: clip-path .65s var(--ease-io);
+}
+
+.menu-overlay.open {
+    clip-path: circle(150% at calc(100% - 60px) 34px);
+}
+
+.menu-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: calc(var(--nav-h) + 40px) var(--gutter) 48px;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+}
+
+.menu-chapters {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 40px 32px;
+}
+
+.menu-chapter {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity .6s ease, transform .8s var(--ease-out);
+    transition-delay: calc(var(--i) * 80ms + 120ms);
+}
+
+.menu-overlay.open .menu-chapter {
+    opacity: 1;
+    transform: none;
+}
+
+.menu-group {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(28px, 2.6vw, 38px);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.menu-note {
+    font-size: 14px;
+    line-height: 1.6;
+    opacity: .65;
+    margin: 8px 0 18px;
+    min-height: 3.2em;
+}
+
+.menu-chapter ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid rgba(244, 240, 230, .16);
+}
+
+.menu-chapter li {
+    border-bottom: 1px solid rgba(244, 240, 230, .16);
+}
+
+.menu-chapter a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 4px;
+    color: inherit;
+    text-decoration: none;
+    font-size: 16.5px;
+    transition: transform .35s var(--ease-out), color .2s ease;
+}
+
+.menu-chapter a svg {
+    width: 18px;
+    height: 18px;
+    flex: none;
+    opacity: .7;
+}
+
+.menu-chapter a .go {
+    margin-left: auto;
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: opacity .25s ease, transform .35s var(--ease-out);
+}
+
+.menu-chapter a:hover, .menu-chapter a[aria-current="page"] {
+    transform: translateX(6px);
+    color: var(--gold);
+}
+
+.menu-chapter a:hover .go, .menu-chapter a[aria-current="page"] .go {
+    opacity: 1;
+    transform: none;
+}
+
+html.motion-off .menu-overlay {
+    clip-path: none;
+}
+
+html.motion-off .menu-chapter {
+    opacity: 1;
+    transform: none;
+}
+
+@media (max-width: 1100px) {
+    .menu-chapters {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+}
+
+@media (max-width: 640px) {
+    .menu-chapters {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 28px;
+        }
+    .menu-note {
+            min-height: 0;
+        }
+}
+
+/* Menu: không còn đoạn mô tả dưới tên chương */
+.menu-group {
+    margin-bottom: 18px;
+}
+
+.menu-group {
+    font-family: var(--font-display);
+}
+
+/* ---------- Menu toàn màn hình: mục chạy chữ khi hover ---------- */
+.menu-chapter a span {
+    position: relative;
+}
+
+.menu-chapter a span::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: 100% 50%;
+    transition: transform .5s var(--ease-out);
+}
+
+.menu-chapter a:hover span::after {
+    transform: scaleX(1);
+    transform-origin: 0 50%;
+}
+
+.menu-chapter a {
+    font-family: var(--font-display);
+    font-size: 19px;
+}
+
+/* Nút bật/tắt chuyển động trong menu */
+.motion-toggle {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    font: italic 15px var(--font-ui);
+    opacity: .75;
+    transition: opacity .3s ease;
+}
+
+.motion-toggle:hover {
+    opacity: 1;
+}
+
+.motion-toggle .sw {
+    position: relative;
+    width: 34px;
+    height: 18px;
+    border: 1px solid currentColor;
+    border-radius: 99px;
+}
+
+.motion-toggle .sw::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--gold);
+    transition: transform .35s var(--ease-out);
+}
+
+.motion-toggle[aria-pressed="true"] .sw::after {
+    transform: translateX(16px);
+}
+
+/* =====================================================================
+   Bản rút gọn cho người xem (19/11/2026)
+   ===================================================================== */
+/* Menu ☰: hai nhóm — Khám phá / Khu chuyên môn */
+.menu-chapters {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    max-width: 980px;
+}
+
+.menu-note {
+    min-height: 0;
+    margin: 6px 0 16px;
+    font-style: italic;
+}

@@ -89,7 +89,7 @@ Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang ch
 ├── scripts/              01–04 cài đặt & kiểm GPU · 07 mô tả hoa văn · 08 chuyển schema, trích LR3D · 09 nạp ảnh hiện vật, tạo phần tử
 │                         · 10 tạo hiện vật từ LR3D · 11 xuất dữ liệu giao diện, lọc VietFashion · 12 sơ đồ BPMN/Use Case, xuất tập LoRA
 │                         · 13 huấn luyện LoRA · 14 sinh bộ demo
-├── streamlit_ui/, app.py Công cụ kiểm chứng pipeline nội bộ (Streamlit)
+├── streamlit_ui/, app.py Công cụ kiểm chứng pipeline nội bộ (Streamlit; app.py ở gốc chỉ gọi streamlit_ui/app.py)
 ├── tests/                249 ca pytest
 ├── docs/
 │   ├── finals/           Hồ sơ vòng chung kết 01–11 + diagrams/ (BPMN 2.0, Use Case)
@@ -140,7 +140,7 @@ uv run python scripts/09_ingest_heritage_image.py --file <ảnh> --candidate <m�
 
 **E. Công cụ kiểm chứng nội bộ:** `uv run streamlit run app.py`
 
-**Triển khai giao diện:** `vercel.json` chuyển `/` tới `web_ui/index.html`. Khi có API GPU công khai, đặt `window.DH_API_BASE` trong `web_ui/assets/js/config.js`. Mỗi lần phát hành giao diện, đổi chuỗi phiên bản `finals-N` trong `web_ui/index.html` (thẻ link, script và import map) để trình duyệt không dùng lại tệp cũ.
+**Triển khai giao diện:** `vercel.json` chuyển `/` tới `web_ui/index.html`. Khi có API GPU công khai, đặt `window.DH_API_BASE` trong `web_ui/assets/js/config.js`. Mỗi lần phát hành giao diện, chạy `python scripts/ui_index.py finals-N` để đổi phiên bản ở mọi thẻ CSS, script và import map (trình duyệt không dùng lại tệp cũ). Cấu trúc thư mục giao diện: `docs/UI_ARCHITECTURE.md`.
 
 ## 6. Biến môi trường
 

@@ -1,0 +1,51 @@
+/* base/motion.css — CHUYỂN ĐỘNG TOÀN CỤC: tắt chuyển động (html.motion-off), máy yếu (html.calm), chuyển trang
+   (View Transitions) và keyframes dùng ở nhiều component. Nạp CUỐI để các luật tắt chuyển động thắng. */
+
+/* Tắt chuyển động: do người xem chọn trong menu (html.motion-off). Khi hệ điều hành bật
+   "giảm chuyển động", chỉ các chuyển động TỰ CHẠY bị dừng (html.calm, luật nằm trong file CSS của từng component);
+   hiệu ứng gắn với thao tác cuộn/rê chuột của chính người xem vẫn giữ. */
+html.motion-off *, html.motion-off *::before, html.motion-off *::after { animation: none !important; transition: none !important; }
+
+html.motion-off {
+    scroll-behavior: auto;
+}
+
+html.motion-off::view-transition-old(root), html.motion-off::view-transition-new(root) {
+    animation: none;
+}
+
+@keyframes ring {
+    0% {
+        transform: scale(1);
+        opacity: .45;
+    }
+
+    70%,
+    100% {
+        transform: scale(1.72);
+        opacity: 0;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: .6;
+    }
+
+    70%,
+    100% {
+        transform: scale(3.6);
+        opacity: 0;
+    }
+}
+
+@keyframes draw {
+    from {
+        transform: scaleX(0);
+    }
+
+    to {
+        transform: scaleX(1);
+    }
+}

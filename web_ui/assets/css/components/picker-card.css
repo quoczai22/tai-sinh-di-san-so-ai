@@ -1,0 +1,248 @@
+/* components/picker-card.css — THẺ CHỌN HIỆN VẬT ở Studio: lưới .artifact-grid, .artifact (.pic, .body). JS: components/picker-card.js. */
+
+/* ---------- Thư viện ---------- */
+.artifact-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+
+.artifact {
+    display: flex; flex-direction: column; background: var(--porcelain); border: 1px solid var(--line);
+    border-radius: var(--radius-l); overflow: hidden; text-align: left; cursor: pointer; padding: 0; color: inherit;
+}
+
+.artifact:hover { border-color: var(--ink-3); }
+
+.artifact .pic { aspect-ratio: 4 / 5; background: var(--porcelain-2); display: grid; place-items: center; padding: 18px; }
+
+.artifact .pic img { max-height: 90%; max-width: 85%; object-fit: contain; object-position: center 42%; }
+
+.artifact .body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line-2); }
+
+.artifact .code { font-size: 12.5px; color: var(--ink-3); }
+
+.artifact .name { font-family: var(--font-serif); font-size: 18px; font-weight: 500; line-height: 1.35; }
+
+.design .pic { aspect-ratio: 1; background: var(--porcelain-2); position: relative; }
+
+.design .pic img { width: 100%; height: 100%; object-fit: cover; }
+
+.design .body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+
+.ac-body .code {
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+
+.ac-body .name {
+    font-family: var(--font-serif);
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 1.32;
+}
+
+/* Studio: thẻ chọn hiện vật và thẻ thiết kế */
+.artifact {
+    border-radius: 22px;
+    transition: translate .5s var(--ease-out), box-shadow .5s ease, border-color .3s ease;
+}
+
+.artifact .pic {
+    background: radial-gradient(circle at 50% 42%, #fff 0, #F1EADB 52%, #E1D3B6 100%);
+    overflow: hidden;
+}
+
+.artifact .pic img {
+    filter: drop-shadow(0 14px 14px rgba(0, 0, 0, .16));
+    transition: transform 1s var(--ease-out);
+}
+
+.artifact:hover {
+    translate: 0 -8px;
+    box-shadow: 0 26px 46px -28px rgba(29, 42, 54, .5);
+}
+
+.artifact:hover .pic img {
+    transform: translateY(-10px) scale(1.05);
+}
+
+.design .pic {
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+}
+
+.design .pic img {
+    transition: transform 1.2s var(--ease-out);
+}
+
+.design:hover .pic img {
+    transform: scale(1.06);
+}
+
+html.motion-off .reveal .design .pic img, html.motion-off .reveal .artifact .pic img {
+    clip-path: none;
+    scale: 1;
+}
+
+.artifact {
+    border-radius: 4px;
+}
+
+.ac-body .code, .artifact .code {
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+
+.ac-body .name, .artifact .name {
+    font-family: var(--font-caption);
+    font-weight: 500;
+    font-size: 25px;
+    line-height: 1.18;
+    letter-spacing: .002em;
+    color: var(--ink);
+}
+
+.artifact .body, .design .body {
+    gap: 8px;
+}
+
+.reveal .design .pic img, .reveal .artifact .pic img {
+    clip-path: inset(18% 0 0 0);
+    scale: 1.08;
+    transition: clip-path 1.4s var(--ease-out), scale 1.8s var(--ease-out), transform 1s var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 90ms + 120ms);
+}
+
+.reveal.in .design .pic img, .reveal.in .artifact .pic img {
+    clip-path: inset(0 0 0 0);
+    scale: 1;
+}
+
+.reveal.in:hover .design .pic img, .reveal.in:hover .artifact .pic img {
+    transition-delay: 0s;
+}
+
+.design .pic img {
+    transition-duration: 1.6s;
+}
+
+.design:hover .pic img {
+    transform: scale(1.035);
+}
+
+.design .pic, .artifact, .artifact .pic {
+    border-radius: 0;
+}
+
+.artifact .body {
+    align-items: center;
+    text-align: center;
+}
+
+.ac-body .code, .artifact .code {
+    font-family: var(--font-ui);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    color: var(--dat);
+}
+
+.ac-body .name, .artifact .name {
+    transition: color .3s ease;
+}
+
+.artifact-card:hover .name, .artifact:hover .name {
+    color: var(--dat);
+}
+
+.artifact .pic::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #000;
+    opacity: 0;
+    transition: opacity .5s ease;
+    pointer-events: none;
+}
+
+.artifact .pic {
+    position: relative;
+}
+
+.artifact:hover .pic::after {
+    opacity: .06;
+}
+
+.artifact .name {
+    font-variant-numeric: lining-nums;
+}
+
+.design .body {
+    padding: 14px 2px 4px;
+}
+
+.ac-body .code {
+    font-family: var(--font-ui);
+}
+
+.ac-body .code {
+    font-family: var(--font-ui);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--dat);
+}
+
+.ac-body .name {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 1.22;
+}
+
+.artifact .pic {
+    background: var(--vitrine);
+}
+
+.artifact .pic::before {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    z-index: 1;
+    pointer-events: none;
+    opacity: .75;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M1 23V1h22M5 19V5h14M9 15V9h6'/%3E%3C/svg%3E") left top / 22px no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M23 23V1H1M19 19V5H5M15 15V9H9'/%3E%3C/svg%3E") right top / 22px no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M1 1v22h22M5 5v14h14M9 9v6h6'/%3E%3C/svg%3E") left bottom / 22px no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B08A45' stroke-width='1'%3E%3Cpath d='M23 1v22H1M19 5v14H5M15 9v6H9'/%3E%3C/svg%3E") right bottom / 22px no-repeat;
+}
+
+.ac-body .name {
+    text-wrap: balance;
+}
+
+.out-card .pic {
+    aspect-ratio: 3 / 4;
+}
+
+/* Studio: 6 hiện vật xếp đều, 3 hình trên 3 hình dưới (màn hẹp: 2 cột, 3 hàng) */
+.artifact-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+    align-items: stretch;
+}
+
+@media (max-width: 900px) {
+    .artifact-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+}
+
+.artifact .pic.has-3d img {
+    display: none !important;
+}
