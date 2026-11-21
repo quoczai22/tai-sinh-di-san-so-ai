@@ -7,7 +7,7 @@
 // Chế độ được xác định một lần khi mở trang bằng /health (chờ tối đa 2,5 giây).
 
 const API = (window.DH_API_BASE || '').replace(/\/$/, '');
-const state = { mode: 'demo', health: null, meta: null, cache: new Map() };
+const state = { mode: 'demo', health: null, meta: null, cache: new Map(), latestResult: null, preloads: [] };
 const LIVE_RUN_KEY = 'dh:last-live-run';
 
 function savedLiveRun() {
@@ -56,13 +56,31 @@ export function liveRunFor(heritageId) {
     const saved = savedLiveRun();
     return saved?.heritageId === heritageId ? saved.runId : null;
 }
-export function activateLive(heritageId, runId) {
+export function activateLive(heritageId, runId, variants = []) {
     state.mode = 'live';
     if (heritageId && runId) {
         try { localStorage.setItem(LIVE_RUN_KEY, JSON.stringify({ heritageId, runId })); } catch {}
     }
-    state.cache.delete('live:heritage');
     state.cache.delete('live:passports');
+    const designs = variants.filter((variant) => variant.status === 'completed' && variant.image_url)
+        .map((variant) => ({
+            passport_id: variant.passport_id,
+            run_id: variant.run_id,
+            heritage_id: heritageId,
+            thumb: variant.image_url,
+            final_path: variant.image_url,
+            latest_path: variant.image_url,
+        }));
+    state.latestResult = designs.length ? { heritageId, runId, designs } : null;
+    state.preloads = typeof Image === 'undefined' ? [] : designs.map((design) => {
+        const image = new Image();
+        image.src = `${API}${design.thumb}`;
+        return image;
+    });
+}
+export function liveDesignsFor(heritageId) {
+    return state.latestResult?.heritageId === heritageId &&
+        state.latestResult.runId === liveRunFor(heritageId) ? state.latestResult.designs : null;
 }
 export function invalidate(prefix = '') { for (const k of [...state.cache.keys()]) if (k.startsWith(prefix)) state.cache.delete(k); }
 
@@ -70,6 +88,7 @@ export function invalidate(prefix = '') { for (const k of [...state.cache.keys()
 export function media(artifactOrPath, display) {
     if (state.mode === 'live' && artifactOrPath) {
         const path = typeof artifactOrPath === 'string' ? artifactOrPath : artifactOrPath.path;
+        if (typeof path === 'string' && path.startsWith('/media/run/')) return `${API}${path}`;
         return `${API}/media/artifact?path=${encodeURIComponent(path)}`;
     }
     if (display) return `./${display}`;

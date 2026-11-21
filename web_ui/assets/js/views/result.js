@@ -14,7 +14,8 @@ import { stateBox } from '../components/layout.js';
 export async function render([heritageId]) {
     const { items } = await data.heritage();
     const item = items.find((i) => i.id === heritageId);
-    const all = (await data.passports()).filter((p) => p.heritage_id === heritageId && p.thumb);
+    const all = data.liveDesignsFor(heritageId) ||
+        (await data.passports()).filter((p) => p.heritage_id === heritageId && p.thumb);
     const savedRun = data.isLive() ? data.liveRunFor(heritageId) : null;
     const run = savedRun && all.some((p) => p.run_id === savedRun)
         ? savedRun : [...new Set(all.map((p) => p.run_id))].sort().reverse()[0];
