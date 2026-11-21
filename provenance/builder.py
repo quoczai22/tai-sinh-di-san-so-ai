@@ -121,7 +121,7 @@ def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict,
         P.add_step(pp, step="describe_motif", label="Viết mô tả hoa văn tiếng Anh ≤21 token",
                    actor_type="ai" if terms.get("source") == "llm_vision" else "human",
                    actor=terms.get("llm_model") or terms.get("author") or "Nhóm dự án",
-                   tool="scripts/07_describe_heritage.py" if terms.get("source") == "llm_vision" else "Soạn tay",
+                   tool="scripts/data_prep/describe_heritage.py" if terms.get("source") == "llm_vision" else "Soạn tay",
                    at=f"{terms['generated_on']}T00:00:00+00:00" if terms.get("generated_on") else None,
                    note=terms.get("review_note"))
     P.add_step(pp, step="preprocess", label="Tách nền, letterbox 512, Canny chỉ giữ hoa văn",

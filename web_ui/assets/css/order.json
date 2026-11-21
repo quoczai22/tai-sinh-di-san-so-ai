@@ -1,5 +1,5 @@
 {
-  "_note": "Thứ tự nạp CSS = thứ tự cascade: base → components → decor → views → base/motion (cuối). Thêm file CSS: thêm vào đây rồi chạy python scripts/ui_index.py.",
+  "_note": "Thứ tự nạp CSS = thứ tự cascade: base → components → decor → views → base/motion (cuối). Thêm file CSS: thêm vào đây rồi chạy python scripts/web/ui_index.py.",
   "files": [
     "base/tokens.css",
     "base/reset.css",

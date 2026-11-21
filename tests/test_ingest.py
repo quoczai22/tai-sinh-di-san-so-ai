@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 @pytest.fixture
 def ingest_mod(monkeypatch, tmp_path):
-    spec = importlib.util.spec_from_file_location("ingest", ROOT / "scripts" / "09_ingest_heritage_image.py")
+    spec = importlib.util.spec_from_file_location("ingest", ROOT / "scripts" / "data_prep" / "ingest_heritage_image.py")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     monkeypatch.setattr(mod, "PREVIEW", tmp_path / "preview")

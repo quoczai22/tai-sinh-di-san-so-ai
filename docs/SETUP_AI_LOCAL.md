@@ -20,17 +20,17 @@ Mở **PowerShell** tại thư mục gốc project:
 # 1. Cài môi trường (~10 phút, tải ~3GB)
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 python -m venv venv                    # bỏ qua nếu venv đã có
-.\scripts\01_setup_env.ps1
+.\scripts\setup\setup_env.ps1
 
 # 2. Xác nhận PyTorch thấy GPU
 .\venv\Scripts\Activate.ps1
-python scripts/02_check_gpu.py
+python scripts/setup/check_gpu.py
 
 # 3. Tải model (~3.5GB, chỉ bản fp16)
-python scripts/03_download_models.py
+python scripts/setup/download_models.py
 
 # 4. Smoke test pipeline
-python scripts/04_test_controlnet.py
+python scripts/setup/smoke_controlnet.py
 ```
 
 Kết quả mong đợi ở bước 4: 4 ảnh trong `outputs/`.
@@ -63,7 +63,7 @@ trường **trước khi** gọi script:
 $env:HF_HOME       = "E:\AI_Models\huggingface"
 $env:PIP_CACHE_DIR = "E:\AI_Models\pip-cache"
 $env:TMP = $env:TEMP = "E:\AI_Models\tmp"   # pip giải nén wheel torch cần ~5 GB tạm
-.\scripts\01_setup_env.ps1
+.\scripts\setup\setup_env.ps1
 ```
 
 Cách này chỉ có tác dụng trong phiên PowerShell hiện tại — đúng thứ ta muốn, vì
@@ -84,9 +84,9 @@ Gỡ bỏ: đặt lại `$null` cho hai biến trên.
 Script tự đọc `nvidia-smi` và chọn kênh CUDA phù hợp. Ghi đè khi cần:
 
 ```powershell
-.\scripts\01_setup_env.ps1 -CudaChannel cu128    # RTX 50xx (Blackwell)
-.\scripts\01_setup_env.ps1 -CudaChannel cu118    # driver cu
-.\scripts\01_setup_env.ps1 -CudaChannel cpu      # khong co GPU NVIDIA
+.\scripts\setup\setup_env.ps1 -CudaChannel cu128    # RTX 50xx (Blackwell)
+.\scripts\setup\setup_env.ps1 -CudaChannel cu118    # driver cu
+.\scripts\setup\setup_env.ps1 -CudaChannel cpu      # khong co GPU NVIDIA
 ```
 
 Quy tắc tự chọn:
@@ -103,8 +103,8 @@ Quy tắc tự chọn:
 Script pin sẵn `torch==2.13.0`. Muốn đổi:
 
 ```powershell
-.\scripts\01_setup_env.ps1 -TorchVersion "2.12.0"
-.\scripts\01_setup_env.ps1 -TorchVersion ""       # lay ban moi nhat, KHONG pin
+.\scripts\setup\setup_env.ps1 -TorchVersion "2.12.0"
+.\scripts\setup\setup_env.ps1 -TorchVersion ""       # lay ban moi nhat, KHONG pin
 ```
 
 `requirements.txt` chỉ khai báo **khoảng** phiên bản — đủ để dựng một môi trường chạy
@@ -118,7 +118,7 @@ ngay trên máy đó:
 python -m pip freeze > requirements-lock.txt
 ```
 
-Máy khác dựng lại: chạy `01_setup_env.ps1` để có torch đúng kênh CUDA, rồi
+Máy khác dựng lại: chạy `scripts/setup/setup_env.ps1` để có torch đúng kênh CUDA, rồi
 `pip install -r requirements-lock.txt` đè lên.
 
 ### Giới hạn của tính tái lập
@@ -159,17 +159,17 @@ Smoke test chạy cả hai với **cùng seed = 42** để xác nhận tính tá
 | Triệu chứng | Nguyên nhân & cách sửa |
 |---|---|
 | `torch.cuda.is_available()` = False | Cài nhầm bản CPU. `pip uninstall -y torch torchvision` rồi cài lại với `--index-url https://download.pytorch.org/whl/cu126` |
-| `CUDA out of memory` | Bỏ comment `pipe.enable_model_cpu_offload()` trong `04_test_controlnet.py` (chậm hơn ~30%, chỉ tốn ~3 GB) |
+| `CUDA out of memory` | Bỏ comment `pipe.enable_model_cpu_offload()` trong `scripts/setup/smoke_controlnet.py` (chậm hơn ~30%, chỉ tốn ~3 GB) |
 | Ảnh trả về toàn đen | Safety checker hoặc NaN của fp16. Đã tắt safety checker; nếu vẫn đen, thử `torch_dtype=torch.float32` để khoanh vùng |
 | `No such file: ...fp16.safetensors` | Repo đó không có bản fp16 → bỏ `variant="fp16"` cho riêng repo đó |
 | `TypeError` / `unexpected keyword` lúc `from_pretrained` | Lệch phiên bản `diffusers` ↔ `transformers`. Hạ transformers về nhánh 4.x |
 | Hết chỗ giữa chừng khi cài | Xem mục "Nếu ổ hệ thống của bạn sắp đầy" ở trên |
 | OOM sau nhiều lần generate liên tiếp | Thiếu `torch.cuda.empty_cache()` giữa các lần — spec mục 19 yêu cầu rõ điều này khi làm UI Streamlit |
-| Tải model đứt giữa chừng | Chạy lại `03_download_models.py`, nó tải tiếp chứ không tải lại từ đầu |
+| Tải model đứt giữa chừng | Chạy lại `scripts/setup/download_models.py`, nó tải tiếp chứ không tải lại từ đầu |
 
 ## Định nghĩa hoàn thành (Ngày 2)
 
-- [ ] `02_check_gpu.py` in ra đúng tên GPU + `cuda.is_available: True`
-- [ ] `04_test_controlnet.py` chạy hết không OOM, sinh đủ 2 ảnh
+- [ ] `scripts/setup/check_gpu.py` in ra đúng tên GPU + `cuda.is_available: True`
+- [ ] `scripts/setup/smoke_controlnet.py` chạy hết không OOM, sinh đủ 2 ảnh
 - [ ] Peak VRAM ghi nhận < 6 GB (còn dư biên cho Streamlit + BGE-M3 sau này)
 - [ ] Chạy lại lần 2 cùng seed cho ra ảnh giống hệt → pipeline tái lập được

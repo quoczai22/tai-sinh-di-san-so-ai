@@ -32,7 +32,7 @@ def test_every_route_has_a_view():
 
 
 def test_demo_data_matches_repo():
-    # Trang Kết quả dùng bộ riêng data/result/ (xuất bằng scripts/11_export_demo_data.py --only-result): phải khớp outputs/passports
+    # Trang Kết quả dùng bộ riêng data/result/ (xuất bằng scripts/demo/export_demo_data.py --only-result): phải khớp outputs/passports
     stored = sorted(p.stem for p in (ROOT / "outputs" / "passports").glob("DP-*.json"))
     result = json.loads((WEB / "data" / "result" / "passports.json").read_text(encoding="utf-8"))
     assert sorted(p["passport_id"] for p in result) == stored
@@ -81,17 +81,17 @@ def test_every_active_heritage_has_a_valid_glb_model():
 
 def _ui_index():
     import importlib.util
-    spec = importlib.util.spec_from_file_location("ui_index", ROOT / "scripts" / "ui_index.py")
+    spec = importlib.util.spec_from_file_location("ui_index", ROOT / "scripts" / "web" / "ui_index.py")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
 
 
 def test_index_html_matches_modules_and_css_order():
-    """Thẻ CSS và import map trong index.html phải đúng như scripts/ui_index.py sinh ra (chạy script đó sau khi thêm/đổi file)."""
+    """Thẻ CSS và import map trong index.html phải đúng như scripts/web/ui_index.py sinh ra (chạy script đó sau khi thêm/đổi file)."""
     ui = _ui_index()
     html = (WEB / "index.html").read_text(encoding="utf-8")
-    assert ui.build(html, ui.current_version(html)) == html, "Chạy: python scripts/ui_index.py"
+    assert ui.build(html, ui.current_version(html)) == html, "Chạy: python scripts/web/ui_index.py"
 
 
 def test_ui_files_stay_small_and_documented():

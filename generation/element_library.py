@@ -1,6 +1,6 @@
 """Chọn phần tử họa tiết từ kho (data/elements/) làm ảnh nét đầu vào cho ControlNet.
 
-Kho do scripts/09_build_elements.py dựng ngoại tuyến (SAM chỉ chạy lúc đó). Lúc sinh ảnh,
+Kho do scripts/data_prep/build_elements.py dựng ngoại tuyến (SAM chỉ chạy lúc đó). Lúc sinh ảnh,
 module này chỉ đọc index.json và chọn vài phần tử theo một quy tắc cố định, không chạy SAM.
 
 Quy tắc chọn (tự động, tất định):

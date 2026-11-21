@@ -11,7 +11,7 @@ Tài liệu này ghi **mỗi file làm gì** và **nằm ở bước nào của 
 - **View** (`views/*.js`) chỉ lấy dữ liệu từ `core/data.js` rồi ghép component. View không tự định nghĩa component (có kiểm thử chặn: `tests/test_frontend.py::test_views_do_not_define_components`).
 - **Mỗi component có file CSS cùng tên** trong `assets/css/components/`. Tên class bắt đầu bằng tên component (`.journey-card`, `.jc-img`…).
 - **Mỗi file ≤ 500 dòng** và mở đầu bằng chú thích vai trò. Có kiểm thử chặn: `test_ui_files_stay_small_and_documented`.
-- **`index.html` không sửa tay ở hai chỗ:** thẻ `<link>` CSS và import map. Thêm, đổi tên hay xoá file JS/CSS thì chạy `python scripts/ui_index.py`. Phát hành bản mới thì chạy `python scripts/ui_index.py finals-N`.
+- **`index.html` không sửa tay ở hai chỗ:** thẻ `<link>` CSS và import map. Thêm, đổi tên hay xoá file JS/CSS thì chạy `python scripts/web/ui_index.py`. Phát hành bản mới thì chạy `python scripts/web/ui_index.py finals-N`.
 - **Không `innerHTML` với dữ liệu, không số viết cứng.** Có sẵn kiểm thử từ trước.
 
 ## 2. Luồng một lần mở trang
@@ -47,7 +47,7 @@ Nhãn AI (`components/badges.js#aiMark`) có trên **mọi** ảnh do AI hỗ tr
 ```
 web_ui/
 ├── index.html                 khung trang tĩnh (thanh trên, ảnh bìa, #main, chân trang) + CSS/import map do script sinh
-├── data/                      dữ liệu THẬT cho chế độ trình diễn (scripts/11_export_demo_data.py xuất)
+├── data/                      dữ liệu THẬT cho chế độ trình diễn (scripts/demo/export_demo_data.py xuất)
 └── assets/
     ├── js/
     │   ├── app.js             điểm khởi động (3 bước ở mục 2)
@@ -123,7 +123,7 @@ streamlit_ui/
    - tạo `assets/css/components/ten-moi.css`, class bắt đầu bằng `.ten-moi`;
    - thêm vào `assets/css/order.json`, đặt trước `views/` và `base/motion.css`.
 3. `import` trong view cần dùng.
-4. Chạy `python scripts/ui_index.py`, rồi `pytest tests/test_frontend.py`.
+4. Chạy `python scripts/web/ui_index.py`, rồi `pytest tests/test_frontend.py`.
 
 ## 7. Đợt tách ngày 20/11/2026: đã làm gì, kiểm chứng ra sao
 

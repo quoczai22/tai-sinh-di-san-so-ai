@@ -79,18 +79,28 @@ Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang ch
 │   ├── heritage/         Ảnh hiện vật, metadata.json (schema 2.0), sources/ (ứng viên ảnh CC0 thay thế)
 │   ├── garment/          Bố cục hoa văn (layouts.json); ảnh áo mẫu cũ chỉ dùng để chạy lại thí nghiệm cũ
 │   ├── lora/             Trọng số LoRA dáng áo dài (CC BY-NC 4.0, chỉ dùng phi thương mại)
+│   ├── raw/              Dữ liệu gốc thô, không commit: lr3d_src/ (mô hình LR3D-CULT2), vietfashion/, file zip tải về
 │   ├── archive/          Siêu dữ liệu schema 1 (đầu vào của bước chuyển đổi)
 │   └── prompt_terms.json
 ├── outputs/
 │   ├── runs/             Mỗi lần chạy một thư mục + manifest SHA-256 (bộ demo 24 thiết kế)
 │   ├── passports/        24 Design Passport
-│   └── experiments/      Kế hoạch và kết quả EXP-A đến EXP-E, gói chấm mù (ảnh thô không đưa vào repo)
+│   ├── experiments/      Kế hoạch và kết quả EXP-A đến EXP-G (ảnh thô không đưa vào repo)
+│   ├── review/           Gói chấm mù gửi người đánh giá (blind_review*), không commit
+│   ├── logs/             Nhật ký các lần chạy thí nghiệm và sinh demo, không commit
+│   └── archive/          Bản lưu cũ (ví dụ Passport của lượt sinh trước)
 ├── web_ui/               Giao diện 3 trang: index.html, assets/ (css, js/lib, js/views), data/ (dữ liệu chế độ ngoại tuyến)
-├── scripts/              01–04 cài đặt & kiểm GPU · 07 mô tả hoa văn · 08 chuyển schema, trích LR3D · 09 nạp ảnh hiện vật, tạo phần tử
-│                         · 10 tạo hiện vật từ LR3D · 11 xuất dữ liệu giao diện, lọc VietFashion · 12 sơ đồ BPMN/Use Case, xuất tập LoRA
-│                         · 13 huấn luyện LoRA · 14 sinh bộ demo
+├── scripts/              Chia theo mục đích (chạy từ gốc repo: uv run python scripts/<nhóm>/<tên>.py)
+│   ├── setup/            Cài môi trường, kiểm GPU, tải mô hình, thử nhanh ControlNet
+│   ├── data_prep/        Chuẩn bị dữ liệu: mô tả hoa văn, trích LR3D, nạp ảnh, tạo hiện vật, lọc VietFashion, xuất tập LoRA, tách nền
+│   ├── train/            Huấn luyện LoRA dáng áo dài
+│   ├── demo/             Sinh bộ demo (generate_demo_set) và xuất dữ liệu cho web_ui (export_demo_data)
+│   ├── web/              Phát hành giao diện: ui_index (index.html), xuất và nén mô hình 3D
+│   ├── docs/             Dựng sơ đồ BPMN và Use Case
+│   ├── eval/             Gói chấm mù, đo tốc độ sinh, đo backend
+│   └── deploy/           Gói Hugging Face Space, cổng thử nghiệm cục bộ
 ├── streamlit_ui/, app.py Công cụ kiểm chứng pipeline nội bộ (Streamlit; app.py ở gốc chỉ gọi streamlit_ui/app.py)
-├── tests/                249 ca pytest
+├── tests/                Ca pytest; manual/ là các script kiểm thử chạy tay (không thuộc pytest)
 ├── docs/
 │   ├── finals/           Hồ sơ vòng chung kết 01–11 + diagrams/ (BPMN 2.0, Use Case)
 │   └── SETUP_AI_LOCAL.md Cài môi trường GPU
@@ -121,26 +131,26 @@ uv run pytest     # 249 ca; không cần GPU (1 ca dành cho máy không có PyT
 **C. Sinh ảnh và thí nghiệm (cần GPU NVIDIA ≥ 6 GB, xem [`docs/SETUP_AI_LOCAL.md`](docs/SETUP_AI_LOCAL.md))**
 
 ```powershell
-uv run python scripts/03_download_models.py                                  # tải SD 1.5 và ControlNet; CLIP và SAM tự tải lần đầu khi chạy
-uv run python scripts/14_generate_demo_set.py                                # sinh bộ demo (khoảng 15 phút); thêm mã hiện vật để chạy riêng một vật
-uv run python scripts/18_build_blind_review.py                              # dựng gói đánh giá mù 24 thiết kế (trang HTML phiếu chấm + khóa giải mã riêng) vào outputs/blind_review/
-uv run python scripts/15_cutout_heritage.py                                  # tách nền ảnh 6 hiện vật (SAM) thành PNG trong suốt, chỉ dùng để hiển thị
-uv run python scripts/16_export_heritage_glb.py                              # nén mô hình 3D 6 hiện vật thành GLB nhẹ cho khung xoay 360 độ ở trang Studio
-uv run python scripts/11_export_demo_data.py                                 # cập nhật web_ui/data cho chế độ ngoại tuyến
+uv run python scripts/setup/download_models.py                                  # tải SD 1.5 và ControlNet; CLIP và SAM tự tải lần đầu khi chạy
+uv run python scripts/demo/generate_demo_set.py                                # sinh bộ demo (khoảng 15 phút); thêm mã hiện vật để chạy riêng một vật
+uv run python scripts/eval/build_blind_review.py                              # dựng gói đánh giá mù 24 thiết kế (trang HTML phiếu chấm + khóa giải mã riêng) vào outputs/review/blind_review/
+uv run python scripts/data_prep/cutout_heritage.py                                  # tách nền ảnh 6 hiện vật (SAM) thành PNG trong suốt, chỉ dùng để hiển thị
+uv run python scripts/web/export_heritage_glb.py                              # nén mô hình 3D 6 hiện vật thành GLB nhẹ cho khung xoay 360 độ ở trang Studio
+uv run python scripts/demo/export_demo_data.py                                 # cập nhật web_ui/data cho chế độ ngoại tuyến
 uv run python -m evaluation.experiment run evaluation/experiments/EXP-A_controlnet_weight.json   # chưa chạy, 120 lượt
 ```
 
-Trọng số LoRA có sẵn ở `data/lora/aodai_r16_512/`; huấn luyện lại bằng `scripts/13_train_lora.py`.
+Trọng số LoRA có sẵn ở `data/lora/aodai_r16_512/`; huấn luyện lại bằng `scripts/train/train_lora.py`.
 
 **D. Nạp ảnh hiện vật mới** (kiểm SHA-1, tách nền, chấm C1–C4, ghi ở trạng thái chờ rà soát)
 
 ```powershell
-uv run python scripts/09_ingest_heritage_image.py --file <ảnh> --candidate <mã Commons> --heritage-id <mã> --name "<tên>" --dry-run
+uv run python scripts/data_prep/ingest_heritage_image.py --file <ảnh> --candidate <mã Commons> --heritage-id <mã> --name "<tên>" --dry-run
 ```
 
 **E. Công cụ kiểm chứng nội bộ:** `uv run streamlit run app.py`
 
-**Triển khai giao diện:** `vercel.json` chuyển `/` tới `web_ui/index.html`. Khi có API GPU công khai, đặt `window.DH_API_BASE` trong `web_ui/assets/js/config.js`. Mỗi lần phát hành giao diện, chạy `python scripts/ui_index.py finals-N` để đổi phiên bản ở mọi thẻ CSS, script và import map (trình duyệt không dùng lại tệp cũ). Cấu trúc thư mục giao diện: `docs/UI_ARCHITECTURE.md`.
+**Triển khai giao diện:** `vercel.json` chuyển `/` tới `web_ui/index.html`. Khi có API GPU công khai, đặt `window.DH_API_BASE` trong `web_ui/assets/js/config.js`. Mỗi lần phát hành giao diện, chạy `python scripts/web/ui_index.py finals-N` để đổi phiên bản ở mọi thẻ CSS, script và import map (trình duyệt không dùng lại tệp cũ). Cấu trúc thư mục giao diện: `docs/UI_ARCHITECTURE.md`.
 
 ## 6. Biến môi trường
 
@@ -150,7 +160,7 @@ uv run python scripts/09_ingest_heritage_image.py --file <ảnh> --candidate <m�
 |---|---|---|
 | `HF_HOME` | Tải model | Tuỳ chọn |
 | `SD15_MODEL_ID`, `CONTROLNET_CANNY_ID` | Pipeline sinh ảnh | Id repo model |
-| `GEMINI_API_KEY` | Chỉ `scripts/07_describe_heritage.py` | Chạy offline một lần |
+| `GEMINI_API_KEY` | Chỉ `scripts/data_prep/describe_heritage.py` | Chạy offline một lần |
 | `WEB_UI_ORIGINS` | API khi triển khai | Danh sách domain giao diện, phân tách bằng dấu phẩy |
 | `TSDS_WRITE_KEY` | API khi chạy công khai | Thao tác ghi phải gửi header `X-API-Key` |
 | `TSDS_GENERATE_PER_HOUR` | API | Giới hạn số lần sinh mỗi giờ cho một IP (mặc định 6) |

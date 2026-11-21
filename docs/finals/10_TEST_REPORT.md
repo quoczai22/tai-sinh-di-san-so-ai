@@ -57,7 +57,7 @@ Nguyên tắc: kiểm thử **không sửa dữ liệu thật**. Các ca ghi (th
 
 ## Chưa kiểm thử tự động
 
-- Sinh ảnh thật trên GPU (`generation/`, `evaluation/experiment.py::run_gpu`): cần máy có GPU NVIDIA và mô hình đã tải. Kiểm thử thủ công bằng `uv run python scripts/14_generate_demo_set.py LR3D_61`, rồi kiểm tra thư mục `outputs/runs/` mới có `manifest.json` và 4 Passport hợp lệ.
+- Sinh ảnh thật trên GPU (`generation/`, `evaluation/experiment.py::run_gpu`): cần máy có GPU NVIDIA và mô hình đã tải. Kiểm thử thủ công bằng `uv run python scripts/demo/generate_demo_set.py LR3D_61`, rồi kiểm tra thư mục `outputs/runs/` mới có `manifest.json` và 4 Passport hợp lệ.
 - Hiển thị trên trình duyệt: trang Kết quả và trang chấm mù (gói nhiều seed, mã `CG01` thấy đủ 24 thiết kế và 48 ảnh) đã được xem trên trình duyệt thật ngày 20/11/2026. Trang chủ, Studio và Thư viện **chưa được xem lại bằng trình duyệt sau khi gộp nhánh** (kiểm thử chỉ kiểm cú pháp và dữ liệu).
 - Lúc sinh bộ seed 43 và 44, tiến trình Python bị segmentation fault (lỗi bộ nhớ, mã thoát 139) một lần ở mỗi seed khi sinh LR3D_97, ở hai bước polish khác nhau; chạy lại riêng hai hiện vật đó thì hoàn tất, nên chưa rõ nguyên nhân (nghi lỗi GPU hoặc bộ nhớ không ổn định, không phải lỗi mã). Chưa có phép kiểm tự động.
 - Cổng G2 mù với trường hợp bình choán đầy khung ô hoa văn: `vessel_leakage` nhân tỉ lệ viền nền trơn với độ trùng bóng nên đo gần 0 dù ô là cả chiếc bình (LR3D_33, cách điều khiển bằng ảnh bình cũ đo 0,0001). Chưa có chỉ số bắt được lỗi này.

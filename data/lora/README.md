@@ -12,4 +12,4 @@ Trọng số học từ 226 ảnh đã lọc của bộ VietFashion, theo giấy
 
 Trích dẫn: Cao, Bui, Vo, Tran, Le. VietFashion: Benchmarking Sketch-Text Composed Image Retrieval for Cultural Outfits. ICMR 2026. doi:10.1145/3805622.3810590
 
-Huấn luyện bằng `scripts/13_train_lora.py`. Mỗi thư mục có `config.json` ghi cấu hình và `train_log.csv` ghi đường loss.
+Huấn luyện bằng `scripts/train/train_lora.py`. Mỗi thư mục có `config.json` ghi cấu hình và `train_log.csv` ghi đường loss.

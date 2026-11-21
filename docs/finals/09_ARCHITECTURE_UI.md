@@ -83,7 +83,7 @@ Web chỉ dành cho người xem: **Trang chủ · Studio · Kết quả**. Các
 |---|---|
 | Kiểm định chất lượng G2/G3 | `quality/`, `config/quality_gate.json`, `GET /quality/designs` |
 | Thí nghiệm EXP-A đến EXP-G | `evaluation/experiment.py`, `evaluation/exp_g.py`, `outputs/experiments/`, `GET /experiments` |
-| Thẩm định chuyên gia | `config/expert_rubric.json`, `POST /passports/{id}/reviews`, gói chấm mù nhiều seed `outputs/blind_review/` (`scripts/18_build_blind_review.py`) |
+| Thẩm định chuyên gia | `config/expert_rubric.json`, `POST /passports/{id}/reviews`, gói chấm mù nhiều seed `outputs/review/blind_review/` (`scripts/eval/build_blind_review.py`) |
 | Design Passport | `outputs/passports/`, `GET /passports/{id}`, `GET /passports/{id}/export` |
 | Nguồn và bản quyền | `data/heritage/metadata.json`, `GET /provenance/catalog`, [07](07_PROVENANCE_COPYRIGHT.md) |
 | KPI, BPMN, Use Case | [08](08_KPI.md), [03](03_BPMN.md), [04](04_USE_CASE.md), `docs/finals/diagrams/` |
@@ -91,7 +91,7 @@ Web chỉ dành cho người xem: **Trang chủ · Studio · Kết quả**. Các
 ### Hai chế độ
 
 - **Trực tiếp**: có API chạy cùng máy (`localhost`) → đọc và ghi qua API. Nhãn góc phải cho biết có GPU hay không.
-- **Trình diễn**: không có API (ví dụ bản đưa lên Vercel) → đọc dữ liệu đã xuất trong `web_ui/data/` bằng `scripts/11_export_demo_data.py` từ dữ liệu thật. Riêng trang Kết quả đọc bộ riêng `web_ui/data/result/` và `web_ui/assets/images/result/` (xuất bằng `--only-result`, qua `data.resultPassports()`), nên bộ demo seed 42 mới chỉ đổi ở trang này; trang chủ, Thư viện, Studio và bảng chất lượng giữ dữ liệu cũ. Chạy lệnh không có cờ sẽ ghi lại toàn bộ `web_ui/data/`. Các nút ghi (phiếu thẩm định, quyết định QC) không giả vờ ghi: chúng xuất tệp JSON để nhóm nhập sau, và giao diện nói rõ điều đó.
+- **Trình diễn**: không có API (ví dụ bản đưa lên Vercel) → đọc dữ liệu đã xuất trong `web_ui/data/` bằng `scripts/demo/export_demo_data.py` từ dữ liệu thật. Riêng trang Kết quả đọc bộ riêng `web_ui/data/result/` và `web_ui/assets/images/result/` (xuất bằng `--only-result`, qua `data.resultPassports()`), nên bộ demo seed 42 mới chỉ đổi ở trang này; trang chủ, Thư viện, Studio và bảng chất lượng giữ dữ liệu cũ. Chạy lệnh không có cờ sẽ ghi lại toàn bộ `web_ui/data/`. Các nút ghi (phiếu thẩm định, quyết định QC) không giả vờ ghi: chúng xuất tệp JSON để nhóm nhập sau, và giao diện nói rõ điều đó.
 
 Không có nút nào bấm mà không làm gì. Chức năng chưa có máy chủ (sinh ảnh, ghi chỉnh sửa) hiện lý do bị khoá.
 
@@ -108,14 +108,14 @@ Không có nút nào bấm mà không làm gì. Chức năng chưa có máy ch�
 pip install -r requirements.txt            # máy có GPU: đủ để sinh ảnh
 uvicorn api.main:app --port 8000           # API
 python -m http.server 5500                 # mở http://localhost:5500/web_ui/
-python scripts/11_export_demo_data.py      # cập nhật dữ liệu cho chế độ trình diễn
+python scripts/demo/export_demo_data.py      # cập nhật dữ liệu cho chế độ trình diễn
 pip install -r requirements-dev.txt && pytest   # kiểm thử, không cần GPU
 ```
 
 ## Khung xem 3D (trang Studio của từng hiện vật)
 
 - `web_ui/assets/js/components/viewer3d.js` dựng khung xoay 3D bằng Three.js (bản chép sẵn trong `assets/js/vendor/three/`, giấy phép MIT, nạp qua importmap trong `index.html`). Thư viện chỉ tải khi mở trang Studio của một hiện vật.
-- Mô hình là `assets/models/<mã hiện vật>.glb`, tạo bằng `scripts/16_export_heritage_glb.py` từ mô hình gốc trong `data/lr3d_src/` (thư mục này bị `.gitignore`).
+- Mô hình là `assets/models/<mã hiện vật>.glb`, tạo bằng `scripts/web/export_heritage_glb.py` từ mô hình gốc trong `data/raw/lr3d_src/` (thư mục này bị `.gitignore`).
 - Thao tác: kéo chuột để xoay, lăn chuột để thu phóng, tự xoay nhẹ và dừng khi đang kéo. Nền canvas trong suốt nên khung nền be của trang hiện phía sau.
 - Thẻ trong lưới (Thư viện và lưới chọn của Studio): `hoverSpin()` dựng bình 3D đứng yên khi thẻ sắp vào màn hình (trong lúc chờ vẫn hiện ảnh phẳng). Bình tự xoay cùng tốc độ như trang riêng khi rê chuột hoặc focus bàn phím vào thẻ, rê ra thì dừng vòng vẽ và canvas giữ nguyên góc đang xoay. Thẻ không kéo xoay được để bấm vào vẫn mở Studio. Bật "giảm chuyển động" thì bình vẫn hiện 3D nhưng không xoay khi rê chuột.
 - Dự phòng: không có WebGL hoặc không có file GLB thì giữ ảnh phẳng đã tách nền. Ảnh bìa, thẻ Hành trình và trang Kết quả không dùng 3D.
@@ -124,6 +124,6 @@ pip install -r requirements-dev.txt && pytest   # kiểm thử, không cần GPU
 
 - Bấm vào một trong 4 ảnh (hoặc Enter, phím cách khi đang chọn ảnh) thì mở cửa sổ phóng to ảnh đó, có nhãn AI.
 - Phóng to thu nhỏ từ 100% đến 400%: kéo thanh trượt dưới ảnh, bấm nút − hoặc + ở hai đầu thanh (mỗi lần 25%), hoặc lăn chuột trên ảnh (phóng về phía con trỏ, nhanh hơn thanh trượt). Bấm đúp để phóng 2 lần, bấm đúp lần nữa để về 100%. Khi đã phóng thì kéo chuột để xê dịch ảnh, ảnh không rời khỏi khung. Thanh trượt cũng dùng được bằng bàn phím.
-- Nút TẢI XUỐNG (vàng, có biểu tượng tải bên trái) lấy ảnh dạng blob rồi lưu về máy với tên `thiet-ke-<mã hiện vật>-<số thứ tự>`. File tải về luôn là PNG (hoặc JPEG), không bao giờ là WebP. Chế độ trực tiếp: bản PNG gốc từ máy chủ. Chế độ trình diễn: bản PNG gốc do `scripts/11_export_demo_data.py` chép vào `web_ui/assets/images/variants/`. Nếu chỉ có bản WebP (thiết kế đã được hệ thống sửa) thì trình duyệt đổi sang PNG trước khi lưu. Nếu trình duyệt không cho lấy ảnh thì mở ảnh ở thẻ mới để lưu tay.
+- Nút TẢI XUỐNG (vàng, có biểu tượng tải bên trái) lấy ảnh dạng blob rồi lưu về máy với tên `thiet-ke-<mã hiện vật>-<số thứ tự>`. File tải về luôn là PNG (hoặc JPEG), không bao giờ là WebP. Chế độ trực tiếp: bản PNG gốc từ máy chủ. Chế độ trình diễn: bản PNG gốc do `scripts/demo/export_demo_data.py` chép vào `web_ui/assets/images/variants/`. Nếu chỉ có bản WebP (thiết kế đã được hệ thống sửa) thì trình duyệt đổi sang PNG trước khi lưu. Nếu trình duyệt không cho lấy ảnh thì mở ảnh ở thẻ mới để lưu tay.
 - Nút QUAY LẠI (viền) và dấu X ở góc trên bên phải đều đóng cửa sổ và trở về 4 mẫu. Esc và bấm ra ngoài cũng đóng. Tiêu điểm bàn phím nằm trong cửa sổ khi mở và trở về ảnh đã bấm khi đóng.
 

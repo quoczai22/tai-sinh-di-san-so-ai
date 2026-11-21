@@ -16,7 +16,7 @@ export function pickPassport(list) {
     return [...list].filter((d) => d.thumb).sort(byPref)[0];
 }
 
-// Ảnh gốc đầy đủ của thiết kế. Chế độ trực tiếp: tệp PNG từ máy chủ. Chế độ trình diễn: bản PNG gốc scripts/11_export_demo_data.py
+// Ảnh gốc đầy đủ của thiết kế. Chế độ trực tiếp: tệp PNG từ máy chủ. Chế độ trình diễn: bản PNG gốc scripts/demo/export_demo_data.py
 // chép vào assets/images/variants/<mã hiện vật>_V<số>_aodai.png (thiết kế đã được hệ thống sửa thì chỉ có bản WebP nén).
 export function fullImage(d, heritageId, fallback) {
     if (data.isLive() || latestOf(d) !== d.thumb) return fallback;

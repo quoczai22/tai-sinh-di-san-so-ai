@@ -22,7 +22,7 @@ export async function render() {
     // ---- 1. Lời mở: câu văn sáng dần theo nhịp cuộn ----
     const statement = h('section', { class: 'statement', 'data-scene': '' },
         litWords(h('p', { class: 'statement-text' }),
-            'Mỗi chiếc bình gốm Bát Tràng giữ một câu chuyện trong nét vẽ. Chúng tôi lần theo nét vẽ ấy, để nó sống tiếp trên tà áo dài.'));
+            'Mỗi chiếc bình gốm Bát Tràng giữ một câu chuyện trong nét vẽ. Chúng tôi lần theo nét vẽ ấy, để những câu chuyện được sống tiếp trên tà áo dài.'));
 
     // ---- 2. Hành trình: khối dính, cuộn dọc thì các chặng trượt ngang ----
     const sample = [...passports].sort(byPref)[0];

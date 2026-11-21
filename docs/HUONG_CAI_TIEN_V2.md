@@ -12,7 +12,7 @@
 | 1 | Nhóm có ảnh áo dài trơn thật (tự chụp, có đồng ý người mẫu) trong 1 đến 2 ngày không? | Dùng làm nền chính (mục 6) | Dùng nền AI 1024px, ghi rõ giới hạn chân thực |
 | 2 | Ngày chung kết thật là ngày nào? File cũ từng ghi 20 đến 22/11, chưa xác nhận | Nếu sớm hơn 25/11, nén lịch ở mục 10 | Giữ lịch 18 đến 25/11 |
 | 3 | Có người am hiểu di sản hoặc thiết kế ngoài nhóm không? | Gửi phiếu thẩm định (mục 8.4) | Ghi rõ "chưa có chuyên gia", không tuyên bố đã thẩm định |
-| 4 | Môi trường Python: CLAUDE.md quy định `uv` và `pyproject.toml`, repo hiện dùng `requirements.txt` và `scripts/01_setup_env.ps1` | Làm theo CLAUDE.md, chuyển sang uv | Giữ hiện trạng và ghi lệch quy ước |
+| 4 | Môi trường Python: CLAUDE.md quy định `uv` và `pyproject.toml`, repo hiện dùng `requirements.txt` và `scripts/setup/setup_env.ps1` | Làm theo CLAUDE.md, chuyển sang uv | Giữ hiện trạng và ghi lệch quy ước |
 | 5 | Ngưỡng loại (mục 8.2) | Chốt sau khi đo thực tế trên 6 hiện vật | Dùng ngưỡng đề xuất |
 | 6 | Ai liên hệ nhóm tác giả LR3D-CULT2 (FPT University, Hà Nội) và nhóm VietFashion để hỏi xuất xứ, giấy phép, phạm vi dùng? | Có phản hồi bằng văn bản: cập nhật mục 2 và dùng được rộng hơn | Không có: giữ trạng thái "chưa xác minh", chỉ dùng nội bộ |
 | 7 | Thay 6 hiện vật gốc bằng 6 mảng LR3D (phương án B) | **Đã chọn ngày 19/11/2026.** Ghi rõ thay đổi trong hồ sơ nộp (danh mục nguồn); nên hỏi ban tổ chức xem họ chấp nhận không nếu liên hệ được | Nếu ban tổ chức không chấp nhận: quay về bộ gốc làm bộ chính (phương án A), giữ 6 mảng LR3D làm bộ mở rộng. Bản thay nằm ở commit `3a849df`, dễ hoàn lại |
@@ -57,7 +57,7 @@ Design Passport, nhãn "có hỗ trợ AI", nhật ký chỉnh sửa
 
 ### 2.1. Sáu hiện vật đang dùng, nguồn thật và hiện trạng giấy phép
 
-**Cập nhật 18/11/2026: 6 hiện vật dưới đây đã được thay trong dữ liệu chạy bằng 6 vật thể từ LR3D-CULT2** (ảnh hiện vật mặc định là ảnh render cả bình, mảng texture phẳng là nhánh so sánh, xem mục 4.1) (vật #33, #61, #50, #38, #97, #124, mã `LR3D_<số>` trong `data/heritage/`). Ảnh được cắt tự động bằng `scripts/10_make_heritage_from_lr3d.py`, khung cắt ghi ở `data/heritage/lr3d_crops.json`. Nhãn hiển thị là "Gốm men lam · LR3D-CULT2 (Bát Tràng, Thanh Hà)", lặp lại mô tả của bộ dữ liệu và không khẳng định từng vật là Bát Tràng. Nhóm đã chọn phương án B (giữ bản thay) ngày 19/11/2026. Danh mục nguồn, giấy phép, cách ghi công và lịch sử các bước do người làm nằm ở `docs/DANH_MUC_NGUON_HIEN_VAT.md`. Sáu ảnh cũ vẫn còn trong thư mục (chưa xóa), bản dữ liệu cũ nằm trong lịch sử git. Phần bảng và hai vấn đề dưới đây mô tả sáu hiện vật cũ, giữ lại để đối chiếu. Chất lượng ảnh biến thể sinh từ hiện vật mới giống hệ thống cũ: họa tiết được diễn giải lại, chưa giữ được rõ (ví dụ con rồng của vật #61 mất ở mức 1). Việc cần làm là cải thiện đầu vào cho vẽ lại (mục 4.1), không phải dán nguyên.
+**Cập nhật 18/11/2026: 6 hiện vật dưới đây đã được thay trong dữ liệu chạy bằng 6 vật thể từ LR3D-CULT2** (ảnh hiện vật mặc định là ảnh render cả bình, mảng texture phẳng là nhánh so sánh, xem mục 4.1) (vật #33, #61, #50, #38, #97, #124, mã `LR3D_<số>` trong `data/heritage/`). Ảnh được cắt tự động bằng `scripts/data_prep/make_heritage_from_lr3d.py`, khung cắt ghi ở `data/heritage/lr3d_crops.json`. Nhãn hiển thị là "Gốm men lam · LR3D-CULT2 (Bát Tràng, Thanh Hà)", lặp lại mô tả của bộ dữ liệu và không khẳng định từng vật là Bát Tràng. Nhóm đã chọn phương án B (giữ bản thay) ngày 19/11/2026. Danh mục nguồn, giấy phép, cách ghi công và lịch sử các bước do người làm nằm ở `docs/DANH_MUC_NGUON_HIEN_VAT.md`. Sáu ảnh cũ vẫn còn trong thư mục (chưa xóa), bản dữ liệu cũ nằm trong lịch sử git. Phần bảng và hai vấn đề dưới đây mô tả sáu hiện vật cũ, giữ lại để đối chiếu. Chất lượng ảnh biến thể sinh từ hiện vật mới giống hệ thống cũ: họa tiết được diễn giải lại, chưa giữ được rõ (ví dụ con rồng của vật #61 mất ở mức 1). Việc cần làm là cải thiện đầu vào cho vẽ lại (mục 4.1), không phải dán nguyên.
 
 Thông tin lấy từ `data/metadata.json` (file có đường dẫn nguồn). Cả 6 ảnh có `license: unverified` và ghi chú "chỉ dùng nội bộ MVP".
 
@@ -134,7 +134,7 @@ Mục tiêu: lấy các phần tử họa tiết nét từ ảnh gốm, giữ ng
 
 ### 3.1. Các bước
 
-Với mảng texture phẳng của LR3D-CULT2, bước 2 và 3 (silhouette, trải trụ) không cần, vì texture đã phẳng và mô hình 3D cho sẵn vùng hợp lệ (UV). Hai bước đó chỉ cần nếu quay lại dùng ảnh chụp bình cong. Phần đã có: `generation/elements.py`, `scripts/08_extract_lr3d.py`, `09_build_elements.py`, `10_make_heritage_from_lr3d.py`.
+Với mảng texture phẳng của LR3D-CULT2, bước 2 và 3 (silhouette, trải trụ) không cần, vì texture đã phẳng và mô hình 3D cho sẵn vùng hợp lệ (UV). Hai bước đó chỉ cần nếu quay lại dùng ảnh chụp bình cong. Phần đã có: `generation/elements.py`, `scripts/data_prep/extract_lr3d.py`, `scripts/data_prep/build_elements.py`, `scripts/data_prep/make_heritage_from_lr3d.py`.
 
 1. **Kiểm tra ảnh nguồn:** độ phân giải, có kênh trong suốt (alpha) không, bình có bị che khuất không. Ghi kết quả vào hồ sơ.
 2. **Tách silhouette** (viền ngoài của bình): dùng alpha nếu có. Nếu không, dùng Grounded SAM. Grounding DINO là mô hình phát hiện vật theo mô tả chữ (ví dụ "ceramic vase"), cho ra khung chữ nhật. SAM (Segment Anything) nhận khung đó và cho ra mask chính xác theo viền.

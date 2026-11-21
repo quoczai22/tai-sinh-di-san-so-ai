@@ -82,7 +82,7 @@ Mọi lần bị loại ghi vào `outputs/qc/pattern_rejects.csv` và `outputs/q
 
 ## Kết quả bộ demo hiện tại (20/11/2026, seed 42)
 
-Bộ 24 thiết kế (6 hiện vật LR3D-CULT2 × 4 mức sáng tạo) sinh bằng `scripts/14_generate_demo_set.py`. Cả bộ dùng **một seed duy nhất (42)** cho hoa văn, polish và áo LoRA, nên chạy lại ra đúng bộ này và cả 6 hiện vật dùng chung một áo trắng. Ảnh nạp là mảng hoa văn phẳng; 4 thiết kế của mỗi hiện vật nằm ở **4 vị trí khác nhau trên áo** (CLIP xếp hạng các bố cục, mỗi biến thể lấy một bố cục chưa dùng); polish chỉ vùng áo 0,20 kèm khoá họa tiết. Áo LoRA phải trắng trơn (`color_ok`: loại ứng viên có hơn 5% vùng áo bão hòa cao; áo trắng đo được 0 đến 3%, áo đỏ của LR3D_124 là 27%, áo cam của LR3D_38 là 16%). Prompt áo không còn chữ "waist" và có cụm tư thế "arms slightly away from the body, wide sleeves, standing straight"; negative prompt chặn `belt, sash, waistband, bow, tie, hands on hips, arms crossed, hands in pockets`. Áo dài không có dây buộc ở bụng (bản trước có dây ở nhiều áo); tay rời thân để khe giữa tay và thân hở. Mặt nạ áo còn qua bước bỏ khe nền (mục "Khe nền trong mặt nạ áo"). Kết quả đọc từ Passport (`GET /quality/designs`).
+Bộ 24 thiết kế (6 hiện vật LR3D-CULT2 × 4 mức sáng tạo) sinh bằng `scripts/demo/generate_demo_set.py`. Cả bộ dùng **một seed duy nhất (42)** cho hoa văn, polish và áo LoRA, nên chạy lại ra đúng bộ này và cả 6 hiện vật dùng chung một áo trắng. Ảnh nạp là mảng hoa văn phẳng; 4 thiết kế của mỗi hiện vật nằm ở **4 vị trí khác nhau trên áo** (CLIP xếp hạng các bố cục, mỗi biến thể lấy một bố cục chưa dùng); polish chỉ vùng áo 0,20 kèm khoá họa tiết. Áo LoRA phải trắng trơn (`color_ok`: loại ứng viên có hơn 5% vùng áo bão hòa cao; áo trắng đo được 0 đến 3%, áo đỏ của LR3D_124 là 27%, áo cam của LR3D_38 là 16%). Prompt áo không còn chữ "waist" và có cụm tư thế "arms slightly away from the body, wide sleeves, standing straight"; negative prompt chặn `belt, sash, waistband, bow, tie, hands on hips, arms crossed, hands in pockets`. Áo dài không có dây buộc ở bụng (bản trước có dây ở nhiều áo); tay rời thân để khe giữa tay và thân hở. Mặt nạ áo còn qua bước bỏ khe nền (mục "Khe nền trong mặt nạ áo"). Kết quả đọc từ Passport (`GET /quality/designs`).
 
 | | PASS | WARN | FAIL |
 |---|---|---|---|
@@ -107,7 +107,7 @@ Bộ 24 thiết kế (6 hiện vật LR3D-CULT2 × 4 mức sáng tạo) sinh b�
 
 ### Bộ nhiều seed (42, 43, 44)
 
-Bộ seed 43 và 44 sinh bằng `scripts/14_generate_demo_set.py --seed N --out outputs/multiseed` (cùng cấu hình, seed áo bằng seed hoa văn) để làm gói chấm mù nhiều seed. Dữ liệu thô ở `outputs/multiseed/` (không đưa lên git); giao diện web chỉ dùng bộ seed 42. Seed áo thực dùng: bộ 42 dùng áo 42, bộ 43 dùng áo 43, bộ 44 dùng áo 45 (áo 44 bị loại vì khe nền), nên ba bộ dùng ba áo khác nhau.
+Bộ seed 43 và 44 sinh bằng `scripts/demo/generate_demo_set.py --seed N --out outputs/multiseed` (cùng cấu hình, seed áo bằng seed hoa văn) để làm gói chấm mù nhiều seed. Dữ liệu thô ở `outputs/multiseed/` (không đưa lên git); giao diện web chỉ dùng bộ seed 42. Seed áo thực dùng: bộ 42 dùng áo 42, bộ 43 dùng áo 43, bộ 44 dùng áo 45 (áo 44 bị loại vì khe nền), nên ba bộ dùng ba áo khác nhau.
 
 | Seed | G2 đạt | G2 cảnh báo | G2 lỗi | G3 |
 |---|---|---|---|---|
@@ -186,7 +186,7 @@ Việc xem xét của chuyên gia là một bước **ngoài hệ thống**: nh�
 
 ## Gói đánh giá mù cho chuyên gia
 
-`scripts/18_build_blind_review.py` dựng gói chấm mù nhiều seed: 72 thiết kế = 24 **ô** (một ô là cặp hiện vật và mức sáng tạo) × 3 seed (42, 43, 44), kể cả 4 thiết kế mà cổng chất lượng đã loại (để đo mức đồng thuận giữa cổng tự động và chuyên gia). Nguồn: Passport ở `outputs/passports/` (seed 42) và `outputs/multiseed/passports/` (seed 43, 44). Kết quả nằm trong `outputs/blind_review/` (ảnh, không đưa lên git).
+`scripts/eval/build_blind_review.py` dựng gói chấm mù nhiều seed: 72 thiết kế = 24 **ô** (một ô là cặp hiện vật và mức sáng tạo) × 3 seed (42, 43, 44), kể cả 4 thiết kế mà cổng chất lượng đã loại (để đo mức đồng thuận giữa cổng tự động và chuyên gia). Nguồn: Passport ở `outputs/passports/` (seed 42) và `outputs/multiseed/passports/` (seed 43, 44). Kết quả nằm trong `outputs/review/blind_review/` (ảnh, không đưa lên git).
 
 - `GOI_GUI/` (và `GOI_GUI.zip`, 26 MB) gửi người chấm. Gồm một trang `index.html` mở offline bằng trình duyệt, ảnh thiết kế đã đổi tên mã ngẫu nhiên và ảnh hiện vật đối chiếu. Không có mã Passport, mức sáng tạo, seed, điểm hay quyết định của cổng.
 - `GIU_RIENG/` nhóm giữ: `key.csv` (mã trỏ về Passport, `run_id`, hiện vật, mức sáng tạo, seed, ô, kết quả G2 và G3, trạng thái duyệt) và `HUONG_DAN_NOI_BO.md` (cách gửi, thu, giải mã).
@@ -207,5 +207,5 @@ Việc xem xét của chuyên gia là một bước **ngoài hệ thống**: nh�
 | Bằng chứng BTC yêu cầu | Ở đâu |
 |---|---|
 | Bộ hiện vật, hoa văn, thiết kế cuối | `outputs/runs/R<thời điểm>-<mã>/`: `00_reference.png` (ảnh nạp), `V<n>_pattern.png`, `V<n>_aodai_raw.png`, `V<n>_aodai.png`, `garment.png`; Passport `outputs/passports/DP-*.json` (mục `quality`) |
-| Phiếu nhận xét của người am hiểu | **Chưa có phiếu thật.** Gói chấm mù nhiều seed: `outputs/blind_review/` (72 thiết kế, ảnh không đưa vào repo); gói EXP-D cũ không còn dùng được |
+| Phiếu nhận xét của người am hiểu | **Chưa có phiếu thật.** Gói chấm mù nhiều seed: `outputs/review/blind_review/` (72 thiết kế, ảnh không đưa vào repo); gói EXP-D cũ không còn dùng được |
 | Ví dụ bị loại và được sửa | Bảng "Ví dụ bị loại và được sửa" ở trên; `outputs/qc/rejects.csv` và ảnh bị loại trong commit `900ee09`; `evaluation/polish_finish_trial.csv` |

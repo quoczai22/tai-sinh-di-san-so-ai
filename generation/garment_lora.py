@@ -3,7 +3,7 @@
 Quy trình: sinh tối đa `tries` ứng viên (seed liên tiếp) → tách vùng áo bằng SAM → nhận ứng viên đầu tiên có
 mặt nạ hợp lệ (`mask_ok`) và áo trắng trơn (`color_ok`). Không ứng viên nào đạt thì ném `GarmentError`; nơi gọi quay về áo mẫu cố định.
 
-LoRA do scripts/13_train_lora.py huấn luyện từ VietFashion (CC BY-NC 4.0, chỉ dùng phi thương mại).
+LoRA do scripts/train/train_lora.py huấn luyện từ VietFashion (CC BY-NC 4.0, chỉ dùng phi thương mại).
 """
 from __future__ import annotations
 
@@ -88,7 +88,7 @@ def generate_garment(out_dir: Path, seed: int = 42, lora_dir: Path | None = None
 
     lora_dir = Path(lora_dir or DEFAULT_LORA)
     if not (lora_dir / "pytorch_lora_weights.safetensors").exists():
-        raise GarmentError(f"Chưa có LoRA tại {lora_dir}. Chạy scripts/13_train_lora.py trước.")
+        raise GarmentError(f"Chưa có LoRA tại {lora_dir}. Chạy scripts/train/train_lora.py trước.")
     load_env()
     out_dir.mkdir(parents=True, exist_ok=True)
     pipe = StableDiffusionPipeline.from_pretrained(

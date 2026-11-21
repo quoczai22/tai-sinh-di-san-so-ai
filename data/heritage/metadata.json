@@ -420,7 +420,7 @@
           512
         ],
         "image_mode": "RGB",
-        "derived_from": "Ảnh render cả bình từ mô hình 3D (scripts/10_make_heritage_from_lr3d.py)",
+        "derived_from": "Ảnh render cả bình từ mô hình 3D (scripts/data_prep/make_heritage_from_lr3d.py)",
         "dating": null,
         "dating_source": null,
         "description_origin": "team_written",
@@ -510,7 +510,7 @@
           512
         ],
         "image_mode": "RGB",
-        "derived_from": "Ảnh render cả bình từ mô hình 3D (scripts/10_make_heritage_from_lr3d.py)",
+        "derived_from": "Ảnh render cả bình từ mô hình 3D (scripts/data_prep/make_heritage_from_lr3d.py)",
         "dating": null,
         "dating_source": null,
         "description_origin": "team_written",
@@ -599,7 +599,7 @@
           512
         ],
         "image_mode": "RGB",
-        "derived_from": "Ảnh render cả bình từ mô hình 3D (scripts/10_make_heritage_from_lr3d.py)",
+        "derived_from": "Ảnh render cả bình từ mô hình 3D (scripts/data_prep/make_heritage_from_lr3d.py)",
         "dating": null,
         "dating_source": null,
         "description_origin": "team_written",
@@ -681,7 +681,7 @@
           512
         ],
         "image_mode": "RGB",
-        "derived_from": "Ảnh render cả bình từ mô hình 3D (scripts/10_make_heritage_from_lr3d.py)",
+        "derived_from": "Ảnh render cả bình từ mô hình 3D (scripts/data_prep/make_heritage_from_lr3d.py)",
         "dating": null,
         "dating_source": null,
         "description_origin": "team_written",
@@ -746,7 +746,7 @@
           512
         ],
         "image_mode": "RGB",
-        "derived_from": "Ảnh render cả bình từ mô hình 3D (scripts/10_make_heritage_from_lr3d.py)",
+        "derived_from": "Ảnh render cả bình từ mô hình 3D (scripts/data_prep/make_heritage_from_lr3d.py)",
         "dating": null,
         "dating_source": null,
         "description_origin": "team_written",
@@ -843,7 +843,7 @@
           512
         ],
         "image_mode": "RGB",
-        "derived_from": "Ảnh render cả bình từ mô hình 3D (scripts/10_make_heritage_from_lr3d.py)",
+        "derived_from": "Ảnh render cả bình từ mô hình 3D (scripts/data_prep/make_heritage_from_lr3d.py)",
         "dating": null,
         "dating_source": null,
         "description_origin": "team_written",

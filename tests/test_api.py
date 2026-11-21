@@ -18,7 +18,7 @@ OLD_HERITAGE_KEYS = {"id", "name", "dynasty", "description", "conditioningMode",
 
 def _ids(api_client) -> list[str]:
     ids = sorted(p["passport_id"] for p in api_client.get("/passports").json())
-    assert len(ids) >= 3, "cần ít nhất 3 Passport thật (chạy scripts/14_generate_demo_set.py)"
+    assert len(ids) >= 3, "cần ít nhất 3 Passport thật (chạy scripts/demo/generate_demo_set.py)"
     return ids
 
 

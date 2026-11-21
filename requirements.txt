@@ -19,7 +19,7 @@ numpy>=1.26.0
 # Cổng chất lượng (CIELAB, GrabCut đã có trong OpenCV) và thống kê thí nghiệm
 scikit-image>=0.22
 scipy>=1.11
-# Chỉ dùng cho scripts/16_export_heritage_glb.py (nén mô hình 3D hiện vật thành GLB)
+# Chỉ dùng cho scripts/web/export_heritage_glb.py (nén mô hình 3D hiện vật thành GLB)
 trimesh>=4.0
 pymeshlab>=2023.12
 
@@ -30,6 +30,6 @@ pdfplumber>=0.11.10
 python-dotenv>=1.0.1
 tqdm>=4.66.0
 
-# LLM co thi giac — CHI dung cho scripts/07_describe_heritage.py (chay offline
+# LLM co thi giac — CHI dung cho scripts/data_prep/describe_heritage.py (chay offline
 # mot lan de viet mo ta hoa van). Pipeline sinh anh KHONG goi LLM.
 # google-genai>=1.0

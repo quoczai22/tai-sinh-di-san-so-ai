@@ -1,6 +1,6 @@
 # 04. UML Use Case
 
-Tệp: `diagrams/use_case.svg` (ảnh), `diagrams/use_case.puml` (PlantUML, mở và sửa được). Cả hai sinh từ `scripts/12_build_diagrams.py`.
+Tệp: `diagrams/use_case.svg` (ảnh), `diagrams/use_case.puml` (PlantUML, mở và sửa được). Cả hai sinh từ `scripts/docs/build_diagrams.py`.
 
 Ranh giới hệ thống: **Nền tảng Tái Sinh Di Sản Số (web + API)**. Máy GPU chạy mô hình là tác nhân phụ nằm ngoài ranh giới, vì nó là hệ thống riêng mà nền tảng gọi đến và có thể vắng mặt (khi đó API trả lỗi 503 rõ ràng, giao diện chuyển sang chế độ trình diễn).
 
@@ -35,7 +35,7 @@ Vì sao dùng **generalization** cho tác nhân: mọi vai trò nội bộ đề
 | UC09 | Chỉnh sửa thiết kế | Nhà thiết kế | Đã chạy | `POST /passports/{id}/edits` (chưa có giao diện web) |
 | UC10 | Đánh giá chất lượng thiết kế | QC Officer, Hệ thống AI | Đã chạy | `quality/` (tự động trong mỗi lượt sinh); QC Officer dùng `POST /passports/{id}/qc` (chưa có giao diện web) |
 | UC11 | So sánh các phiên bản | (extend UC15) | Đã chạy | Trường `versions` của `GET /passports/{id}` (chưa có giao diện web) |
-| UC12 | Thẩm định chuyên gia | Chuyên gia di sản | Đã chạy | `POST /passports/{id}/reviews`; gói chấm mù `scripts/18_build_blind_review.py` (chưa có giao diện web) |
+| UC12 | Thẩm định chuyên gia | Chuyên gia di sản | Đã chạy | `POST /passports/{id}/reviews`; gói chấm mù `scripts/eval/build_blind_review.py` (chưa có giao diện web) |
 | UC13 | Phê duyệt thiết kế | QC Officer (và phiếu chuyên gia) | Đã chạy | Trạng thái `approved` trong Passport |
 | UC14 | Quản lý Design Passport | Nhà thiết kế | Đã chạy | `provenance/passport.py`, `GET /passports/{id}` (chưa có giao diện web) |
 | UC15 | Xem lịch sử chỉnh sửa | Người dùng đã đăng ký | Đã chạy | Trường `timeline` của `GET /passports/{id}` (chưa có giao diện web) |

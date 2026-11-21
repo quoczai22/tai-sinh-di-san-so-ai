@@ -6,7 +6,7 @@ Hiện trạng: từ 19/11/2026 dữ liệu chính là 6 hiện vật của bộ
 
 ## 1. Danh mục nguồn (schema 2.0)
 
-Tệp `data/heritage/metadata.json`. Bản cũ (schema 1) lưu ở `data/archive/2026-09_schema1/`, chuyển đổi bằng `scripts/08_migrate_heritage_metadata_v2.py`.
+Tệp `data/heritage/metadata.json`. Bản cũ (schema 1) lưu ở `data/archive/2026-09_schema1/`, chuyển đổi bằng `scripts/data_prep/migrate_heritage_metadata_v2.py`.
 
 Mười trường nguồn gốc bắt buộc (`provenance/registry.py::REQUIRED_PROVENANCE`): tên hiện vật, nguồn, URL, đơn vị lưu giữ hoặc đăng ảnh, tác giả ảnh, tình trạng quyền, giấy phép, cách ghi công, ngày thu thập, phiên bản dữ liệu gốc (mã băm ảnh gốc). Hệ thống **không tự điền** trường nào nhóm không biết. Độ đầy đủ hiện là 8/10 ở cả 6 hiện vật đang dùng (thiếu giấy phép từng vật và ngày thu thập).
 
@@ -85,7 +85,7 @@ Kế hoạch này có trước khi nhóm chuyển sang bộ LR3D-CULT2 và vẫn
 | DSC05328 | Bình vẽ tích "Ngư ông đắc lợi", thế kỷ 19 | Bảo tàng Mỹ thuật Việt Nam | 3509×5000 | HV05 |
 | DSC05637 hoặc DSC05641 | Chậu hoa lam / hiện vật hoa lam thời Gia Long | Bảo tàng Lịch sử Quốc gia | 3558×3519 / 3562×4055 | HV06 |
 
-Trạng thái: **chưa nạp vào thư viện**. Máy dựng bản này không tải được tệp từ Commons (mạng bị chặn), nên cần nhóm tải 4 tệp và chạy công cụ nạp `scripts/09_ingest_heritage_image.py`:
+Trạng thái: **chưa nạp vào thư viện**. Máy dựng bản này không tải được tệp từ Commons (mạng bị chặn), nên cần nhóm tải 4 tệp và chạy công cụ nạp `scripts/data_prep/ingest_heritage_image.py`:
 
 1. Kiểm SHA-1 tệp khớp mã Commons công bố; sai là dừng.
 2. Lưu bản gốc vào `data/heritage/sources/originals/` (không commit).
@@ -96,7 +96,7 @@ Trạng thái: **chưa nạp vào thư viện**. Máy dựng bản này không t
 7. Chỉ chuyển sang `active` (`--activate`) khi đã có mô tả prompt do nhóm viết, tóm tắt thị giác, và mọi cờ rà soát đã đóng. Sau đó chạy pipeline trên máy GPU.
 
 ```bash
-python scripts/09_ingest_heritage_image.py --file TSDS_DSC05640.jpg --candidate DSC05640 \
+python scripts/data_prep/ingest_heritage_image.py --file TSDS_DSC05640.jpg --candidate DSC05640 \
     --heritage-id BT_Chum_GiaLong --name "Chum vẽ sơn thuỷ và linh vật" \
     --dating "Thời Nguyễn, niên hiệu Gia Long (1802–1819)" --replaces HSBT_XP-300x300 --dry-run
 ```
@@ -168,7 +168,7 @@ Khi xuất ảnh (`GET /passports/{id}/export`), `provenance/labeling.py` thêm:
 
 | Mục | Nội dung |
 |---|---|
-| Dữ liệu huấn luyện | Bộ VietFashion, lọc còn 226 ảnh áo dài (cổ trụ, tay dài, dài quá gối; `scripts/11_filter_vietfashion.py`, `scripts/12_export_lora_set.py`). Ảnh nguồn nhỏ (256×344), do mô hình sinh tổng hợp |
+| Dữ liệu huấn luyện | Bộ VietFashion, lọc còn 226 ảnh áo dài (cổ trụ, tay dài, dài quá gối; `scripts/data_prep/filter_vietfashion.py`, `scripts/data_prep/export_lora_set.py`). Ảnh nguồn nhỏ (256×344), do mô hình sinh tổng hợp |
 | Giấy phép | CC BY-NC 4.0: **chỉ dùng phi thương mại**. Tác giả bộ dữ liệu đồng ý bằng email cho nhóm sử dụng |
 | Ghi công | Cao, Bui, Vo, Tran, Le. VietFashion: Benchmarking Sketch-Text Composed Image Retrieval for Cultural Outfits. ICMR 2026. doi:10.1145/3805622.3810590 |
 | Trọng số | `data/lora/aodai_r16_512/` (hạng 16, 400 bước, ảnh 512×688) dùng trong sản phẩm; `data/lora/aodai_r32_768/` (hạng 32, ảnh 768×1032) chỉ để đối chứng vì cho nền áo có sọc. Ghi chú giấy phép nằm ở `data/lora/README.md` và `config.json` của từng bản |
