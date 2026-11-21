@@ -68,11 +68,7 @@
         "url": "https://collections.artsmia.org/art/102199/bottle-vase-vietnam"
       }
     },
-<<<<<<< ours
-    "artifact_info_note": "artifact_info: thông tin cho người xem (dáng, kỹ thuật, hoa văn, phong cách, đối chiếu bảo tàng). Ý nghĩa hoa văn chỉ ghi khi có nguồn (khóa trong artifact_info_sources); 'tương đồng' là so sánh phong cách, không khẳng định niên đại hay nơi làm của vật. Chưa qua chuyên gia thẩm định."
-=======
     "artifact_info_note": "artifact_info: thông tin cho người xem. motif_text là đoạn mô tả hoa văn hiện trong sổ hoa văn ở Studio; các trường còn lại (dáng, kỹ thuật, phong cách, từng hoa văn kèm nguồn, đối chiếu bảo tàng) là căn cứ biên soạn. Ý nghĩa hoa văn chỉ ghi khi có nguồn (khóa trong artifact_info_sources); 'tương đồng' là so sánh phong cách, không khẳng định niên đại hay nơi làm của vật. Chưa qua chuyên gia thẩm định."
->>>>>>> theirs
   },
   "items": {
     "BT_Hac_XP": {
@@ -438,10 +434,7 @@
       },
       "artifact_info": {
         "summary": "Hũ vai rộng, hai quai đắp hình đầu thú. Hoa văn xếp thành từng băng: vai có các ô vân như ý chứa hoa lá, thân là mẫu đơn dây, chân là hàng ô cánh sen.",
-<<<<<<< ours
-=======
         "motif_text": "Quanh vai là các ô vân như ý hình mây cụm chứa hoa lá, cùng dạng với hoa văn cổ áo mây trên vải vóc xưa. Thân bình phủ một băng mẫu đơn dây, loài hoa tượng trưng cho điềm may và vẻ đẹp nữ tính. Chân bình là hàng ô cánh sen, biểu tượng của sự thanh khiết trong Phật giáo.",
->>>>>>> theirs
         "form": "Hũ thân phình, vai rộng, cổ ngắn, hai quai đầu thú",
         "technique": "Vẽ lam dưới men (hoa lam): vẽ màu lam cô-ban lên xương gốm rồi phủ men trong.",
         "style": "Tương đồng gốm hoa lam Trung Hoa thời Nguyên (thế kỷ 14)",
@@ -531,10 +524,7 @@
       },
       "artifact_info": {
         "summary": "Hũ thân tròn, vai đầy. Một con rồng thân dài phủ vảy uốn quanh bình giữa những dải mây xoắn; chân bình là hàng cánh sen dài.",
-<<<<<<< ours
-=======
         "motif_text": "Một con rồng thân dài phủ vảy uốn quanh bình giữa những dải mây xoắn. Rồng tượng trưng cho trời và hoàng đế, mây là điềm lành và hạnh phúc. Chân bình là hàng cánh sen dài, biểu tượng của sự thanh khiết trong Phật giáo.",
->>>>>>> theirs
         "form": "Hũ thân tròn, vai đầy, cổ thẳng ngắn",
         "technique": "Vẽ lam dưới men (hoa lam): vẽ màu lam cô-ban lên xương gốm rồi phủ men trong.",
         "style": "Tương đồng gốm hoa lam Trung Hoa đầu thời Minh (thế kỷ 15)",
@@ -623,10 +613,7 @@
       },
       "artifact_info": {
         "summary": "Bình cổ cao, thân cầu. Dây hoa cuộn, chủ yếu là hoa sen, phủ kín cổ và thân; chân bình viền một hàng ô cánh sen nhỏ.",
-<<<<<<< ours
-=======
         "motif_text": "Dây hoa cuộn, chủ yếu là hoa sen, phủ kín cổ và thân bình; chân bình viền một hàng ô cánh sen nhỏ. Hoa sen gắn với Phật giáo, tượng trưng cho sự thanh khiết, đồng thời là biểu tượng của sự trường thọ và thanh nhã.",
->>>>>>> theirs
         "form": "Bình cổ cao, thân cầu, miệng hơi loe",
         "technique": "Vẽ lam dưới men (hoa lam): vẽ màu lam cô-ban lên xương gốm rồi phủ men trong.",
         "style": "Tương đồng gốm hoa lam Trung Hoa thời Thanh (cuối thế kỷ 17 – thế kỷ 18)",
@@ -708,10 +695,7 @@
       },
       "artifact_info": {
         "summary": "Bình trụ cao, thân thon. Những khóm cây hoa thân mảnh, hoa nhỏ kết chùm, vươn từ chân lên vai trên nền lam nhạt.",
-<<<<<<< ours
-=======
         "motif_text": "Những khóm cây hoa thân mảnh, hoa nhỏ kết chùm, vươn thẳng từ chân lên vai bình trên nền men xanh nhạt.",
->>>>>>> theirs
         "form": "Bình trụ cao, thân thon dài, vai xuôi",
         "technique": "Men xanh xám nhạt; lá vẽ lam, hoa nhỏ màu trắng. Chưa xác định được kỹ thuật từ mô hình.",
         "style": "Chưa xác định",
@@ -776,10 +760,7 @@
       },
       "artifact_info": {
         "summary": "Bình dáng quả lê, cổ thắt, men trắng ngà rạn, miệng có vết sứt. Lá chuối dưới miệng, mây xoắn ở cổ, thân chia ô vẽ hoa lá cách điệu, chân là hàng cánh sen.",
-<<<<<<< ours
-=======
         "motif_text": "Dưới miệng bình là băng lá chuối, cổ vẽ mây xoắn, thân chia ô vẽ hoa lá cách điệu, chân là hàng cánh sen. Mây là điềm lành, sen tượng trưng cho sự thanh khiết. Cách chia băng này gần với những bình hoa lam Việt Nam thế kỷ 15.",
->>>>>>> theirs
         "form": "Bình dáng tỳ bà (ngọc hồ xuân): thân hình quả lê, cổ thắt, miệng loe",
         "technique": "Vẽ lam dưới men (hoa lam): vẽ màu lam cô-ban lên xương gốm rồi phủ men trong.",
         "style": "Tương đồng gốm hoa lam Việt Nam thế kỷ 15. Theo Bảo tàng Lịch sử Quốc gia, gốm hoa lam Việt xuất hiện từ thời Trần (thế kỷ 14) và phát triển rực rỡ ở thế kỷ 15.",
@@ -876,10 +857,7 @@
       },
       "artifact_info": {
         "summary": "Bình vuông bốn mặt, cổ thẳng ngắn. Vai viền vân như ý, giữa mặt bình là ô tròn có rồng cuộn, chân là băng lá chuối.",
-<<<<<<< ours
-=======
         "motif_text": "Vai bình viền một băng vân như ý; giữa thân là ô tròn có con rồng cuộn mình, biểu tượng của trời và hoàng đế; chân bình là băng lá chuối.",
->>>>>>> theirs
         "form": "Bình vuông bốn mặt, cổ thẳng ngắn",
         "technique": "Vẽ lam dưới men (hoa lam): vẽ màu lam cô-ban lên xương gốm rồi phủ men trong.",
         "style": "Chưa xác định; cách vẽ gần gốm hoa lam Trung Hoa",

@@ -79,17 +79,10 @@ def test_heritage_list_keeps_old_shape(api_client):
 
 
 def test_heritage_info_for_viewers(api_client):
-<<<<<<< ours
-    """Ô "Về hiện vật" ở Studio: mọi hiện vật đang dùng có info; ý nghĩa hoa văn luôn kèm nguồn đã tra được."""
-    for it in api_client.get("/heritage").json():
-        info = it["info"]
-        assert info and info["summary"] and info["origin"].startswith("Chưa xác định"), it["id"]
-=======
     """Sổ hoa văn ở Studio: mọi hiện vật đang dùng có info; ý nghĩa hoa văn luôn kèm nguồn đã tra được."""
     for it in api_client.get("/heritage").json():
         info = it["info"]
         assert info and info["summary"] and info["motifText"] and info["origin"].startswith("Chưa xác định"), it["id"]
->>>>>>> theirs
         keys = {s["key"] for s in info["sources"]}
         assert all(s["url"].startswith("https://") for s in info["sources"])
         for m in info["motifs"]:

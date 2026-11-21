@@ -47,19 +47,11 @@ URL đầy đủ của sáu ảnh cũ nằm trong lịch sử của file `data/m
 
 Thông số đầy đủ (phương pháp mặt nạ, độ phủ UV, số đảo tìm được) ở `data/heritage/lr3d_crops.json`. Kho phần tử cắt từ các mảng này ở `data/elements/` (không commit), mỗi phần tử có bản ghi trong `index.json` kèm mã vật nguồn, DOI và trạng thái giấy phép.
 
-<<<<<<< ours
-## 3b. Thông tin cho người xem: ô "Về hiện vật" ở Studio (21/11/2026)
-
-**Lưu ở đâu.** Khối `artifact_info` của từng hiện vật trong `data/heritage/metadata.json` (danh mục duy nhất mà API và giao diện đọc). Nguồn dùng chung nằm ở `_meta.artifact_info_sources`, mỗi ý nghĩa hoa văn trỏ tới một khóa nguồn. API `/heritage` trả trường `info`; `scripts/11_export_demo_data.py` xuất trường này sang `web_ui/data/heritage.json`. Không ghi vào `data/archive/2026-09_schema1/items_v1.json` hay `metadata_v1.json`: đó là bản lưu trữ, không mã nào đọc. Nội dung của hai tệp đó (mô tả của nhóm, đường dẫn bộ dữ liệu, ghi chú giấy phép) đã có sẵn trong danh mục chuẩn ở `team_description`, `provenance` và `license_note`.
-
-**Ô gồm:** mô tả ngắn; dáng; kỹ thuật; phong cách; xuất xứ; hoa văn (vị trí, ý nghĩa khi có nguồn); hiện vật bảo tàng tương đồng; nguồn ảnh và quyền dùng; nguồn tham khảo; ghi chú "chưa qua chuyên gia gốm thẩm định".
-=======
 ## 3b. Thông tin cho người xem: sổ hoa văn ở Studio (21/11/2026)
 
 **Lưu ở đâu.** Khối `artifact_info` của từng hiện vật trong `data/heritage/metadata.json` (danh mục duy nhất mà API và giao diện đọc). Nguồn dùng chung nằm ở `_meta.artifact_info_sources`, mỗi ý nghĩa hoa văn trỏ tới một khóa nguồn. API `/heritage` trả trường `info`; `scripts/11_export_demo_data.py` xuất trường này sang `web_ui/data/heritage.json`. Không ghi vào `data/archive/2026-09_schema1/items_v1.json` hay `metadata_v1.json`: đó là bản lưu trữ, không mã nào đọc. Nội dung của hai tệp đó (mô tả của nhóm, đường dẫn bộ dữ liệu, ghi chú giấy phép) đã có sẵn trong danh mục chuẩn ở `team_description`, `provenance` và `license_note`.
 
 **Hiển thị ra sao:** ở Studio, dưới tên hiện vật có nút "Xem ý nghĩa hoa văn". Bấm vào mở một cuốn sổ hai trang nổi trên trang (không chuyển trang): trang trái là ảnh tĩnh của hiện vật (ảnh tách nền từ `data/heritage/cutouts/`, không dùng khung 3D), tên và dáng bình; trang phải là một đoạn mô tả ngắn về hoa văn và ý nghĩa (`motif_text`), nguồn ảnh (bộ dữ liệu, DOI) và giấy phép CC BY 4.0. Sổ không hiện nguồn của từng ý nghĩa, đối chiếu bảo tàng hay ghi chú kỹ thuật; các căn cứ đó vẫn lưu trong `artifact_info` (từng hoa văn kèm khóa nguồn, `comparison`, `origin`, `origin_note`) và trong mục này, để kiểm chứng khi cần.
->>>>>>> theirs
 
 **Nguyên tắc biên soạn.**
 
