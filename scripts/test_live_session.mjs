@@ -14,8 +14,12 @@ entries.set('dh:pending-generation', JSON.stringify({
 }));
 
 let posts = 0;
+let healthFails = false;
 globalThis.fetch = async (url, options = {}) => {
-    if (url === '/api/live/health') return Response.json({ generation_available: true });
+    if (url === '/api/live/health') {
+        if (healthFails) throw new Error('Health temporarily unavailable');
+        return Response.json({ generation_available: true });
+    }
     if (url === './data/meta.json') return Response.json({});
     if (url.startsWith('/api/live/generate/job123')) {
         return Response.json({ status: 'completed', progress: 100, run_id: 'R-new' });
@@ -41,6 +45,7 @@ assert.equal(posts, 0, 'reload must resume instead of creating another GPU job')
 assert.equal(entries.has('dh:pending-generation'), false);
 
 location.hash = '#/result/LR3D_33';
+healthFails = true;
 await data.init();
 assert.equal(data.isLive(), true);
 assert.equal(data.liveRunFor('LR3D_33'), 'R-new');

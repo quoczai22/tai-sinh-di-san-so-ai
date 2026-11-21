@@ -35,17 +35,16 @@ async function cached(key, loader) {
 }
 
 export async function init() {
+    const resultId = location.hash.match(/^#\/result\/([^/]+)$/)?.[1];
+    const saved = savedLiveRun();
+    state.mode = resultId && decodeURIComponent(resultId) === saved?.heritageId ? 'live' : 'demo';
     if (API) {
         try {
             const ctrl = new AbortController();
             const t = setTimeout(() => ctrl.abort(), 2500);
             state.health = await getJson(`${API}/health`, { signal: ctrl.signal });
             clearTimeout(t);
-            const resultId = location.hash.match(/^#\/result\/([^/]+)$/)?.[1];
-            const saved = savedLiveRun();
-            state.mode = state.health?.generation_available && resultId &&
-                decodeURIComponent(resultId) === saved?.heritageId ? 'live' : 'demo';
-        } catch { state.mode = 'demo'; }
+        } catch { state.health = null; }
     }
     try { state.meta = await getJson('./data/meta.json'); } catch { state.meta = null; }
     return { mode: state.mode, health: state.health, meta: state.meta };
