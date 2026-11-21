@@ -1,6 +1,6 @@
 // views/studio.js — TRANG STUDIO (#/studio, #/studio/<mã hiện vật>): bước 1–2 của pipeline GUI.
 //  · Chưa chọn hiện vật: lưới picker-card để chọn đầu vào.
-//  · Đã chọn: khung 3D + thanh điều khiển, nút Tạo thiết kế.
+//  · Đã chọn: khung 3D + thanh điều khiển, nút "Xem ý nghĩa hoa văn" (mở sổ hai trang, components/artifact-book.js), nút Tạo thiết kế.
 //    Có máy chủ GPU (data.canGenerate): bấm Tạo là sinh thật (core/generation.js), có thanh tiến độ, xong sang #/result.
 //    Không có GPU: không giả lập việc sinh — bấm Tạo mở trang Kết quả với bộ thiết kế đã tạo trước đó trên GPU.
 // View chỉ lấy dữ liệu và ghép component; không tự định nghĩa component.
@@ -11,6 +11,7 @@ import { pendingGeneration, runGeneration } from '../core/generation.js';
 import { section, stateBox } from '../components/layout.js';
 import { pickerCard } from '../components/picker-card.js';
 import { mountViewer } from '../components/viewer3d.js';
+import { bookButton } from '../components/artifact-book.js';
 import { viewerControls } from '../components/viewer-controls.js';
 
 function picker(items) {
@@ -70,6 +71,7 @@ export async function render([heritageId]) {
             artifactBox,
             viewerControls(artifactImg, viewerPromise, artifactBox),
             h('h2', { class: 'io-name' }, item.name),
+            bookButton(item),
             h('a', { class: 'io-change', href: '#/studio' }, 'Đổi hiện vật')),
         h('div', { class: 'io-action' },
             genBtn,

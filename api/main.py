@@ -22,7 +22,7 @@ from api import jobs, store
 from api.audit import AUDIT_EVENTS, append_audit_event
 from provenance import passport as P
 from provenance.registry import (all_items, assess_selection, completeness, get_item,
-                                 load_selection_config, rights_gate)
+                                 load_registry, load_selection_config, rights_gate)
 from provenance.heritage import load_heritage_metadata
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -113,8 +113,27 @@ def heritage_items(include_retired: bool = False) -> list[dict]:
     return load_heritage_metadata(PROJECT_ROOT, include_retired=include_retired)
 
 
+def _artifact_info(item: dict, sources: dict) -> dict | None:
+    """Sổ hoa văn ở Studio: khối artifact_info trong metadata.json, nguồn tra sẵn theo khóa ở _meta.artifact_info_sources."""
+    info = item.get("artifact_info")
+    if not info:
+        return None
+    keys = list(dict.fromkeys([*(info.get("sources") or []),
+                               *(m["source"] for m in info.get("motifs", []) if m.get("source"))]))
+    return {
+        "summary": info.get("summary"), "motifText": info.get("motif_text"), "form": info.get("form"), "technique": info.get("technique"),
+        "style": info.get("style"), "origin": info.get("origin"),
+        "motifs": [{"name": m["name"], "where": m.get("where"), "meaning": m.get("meaning"), "source": m.get("source")}
+                   for m in info.get("motifs", [])],
+        "comparison": info.get("comparison"),
+        "sources": [{"key": k, **sources[k]} for k in keys if k in sources],
+        "note": info.get("origin_note"),
+    }
+
+
 def ui_items(include_retired: bool = False) -> list[dict]:
     result = []
+    info_sources = load_registry(PROJECT_ROOT).get("_meta", {}).get("artifact_info_sources", {})
     for item in heritage_items(include_retired):
         prov = item.get("provenance") or {}
         demo_gate = rights_gate(item, "demo_display", PROJECT_ROOT)
@@ -150,6 +169,8 @@ def ui_items(include_retired: bool = False) -> list[dict]:
             },
             "completeness": completeness(item),
             "rightsGate": demo_gate.as_dict(),
+            # Sổ hoa văn ở Studio: hoa văn và ý nghĩa (có nguồn), nguồn ảnh, đối chiếu bảo tàng
+            "info": _artifact_info(item, info_sources),
         })
     return result
 

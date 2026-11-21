@@ -17,6 +17,7 @@ const ICONS = {
     external: '<path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/>',
     maximize: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
     download: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+    book: '<path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5z"/><path d="M12 6.5v13"/>',
     close: '<path d="M6 6l12 12M18 6L6 18"/>',
     chev: '<path d="M9 6l6 6-6 6"/>',
     arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',

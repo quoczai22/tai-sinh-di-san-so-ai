@@ -21,6 +21,7 @@
     "components/design-card.css",
     "components/lightbox.css",
     "components/viewer3d.css",
+    "components/artifact-book.css",
     "components/footer.css",
     "decor/phoenix.css",
     "decor/drum.css",

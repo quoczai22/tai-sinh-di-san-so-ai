@@ -140,3 +140,24 @@
 .io-artifact.has-3d img {
     display: none;
 }
+
+/* Nút mở sổ hoa văn (components/artifact-book.css): một dòng riêng dưới tên hiện vật */
+.io-input .book-btn {
+    display: flex;
+    width: fit-content;
+    margin: 14px auto 0;
+}
+
+/* Màn hẹp: nút mở sổ nằm cạnh ảnh, dưới tên; thanh điều khiển 3D thành hàng riêng dưới ảnh (trước đây bị dồn lên trên) */
+@media (max-width: 640px) {
+    .io-input .book-btn {
+        grid-area: s;
+        margin: 6px 0 0;
+    }
+
+    .io-input .viewer-controls.lb-zoomrow {
+        grid-column: 1 / -1;
+        grid-row: 5;
+        margin-top: 12px;
+    }
+}

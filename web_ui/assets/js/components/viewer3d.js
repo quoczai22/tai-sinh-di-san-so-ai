@@ -2,7 +2,7 @@
 // Dùng chung một renderer, dựng lần lượt từng khung (hàng đợi) để không giật; lỗi WebGL thì giữ ảnh phẳng.
 // Ra: mountViewer(box, mã) → { spin, toggleSpin, setZoom } | false; hoverSpin(thẻ, box, mã). Mô hình: assets/models/<mã>.glb.
 const MODEL_DIR = './assets/models/';
-const MODEL_VERSION = 'finals-79';
+const MODEL_VERSION = 'finals-82';
 const AUTO_ROTATE_SPEED = 1.4;
 const RESUME_AFTER_MS = 3500;
 const live = new Set(), models = new Map(), queue = [];

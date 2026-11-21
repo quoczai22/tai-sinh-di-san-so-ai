@@ -78,6 +78,20 @@ def test_heritage_list_keeps_old_shape(api_client):
     assert len(api_client.get("/heritage", params={"include_retired": True}).json()) == 12
 
 
+def test_heritage_info_for_viewers(api_client):
+    """Sổ hoa văn ở Studio: mọi hiện vật đang dùng có info; ý nghĩa hoa văn luôn kèm nguồn đã tra được."""
+    for it in api_client.get("/heritage").json():
+        info = it["info"]
+        assert info and info["summary"] and info["motifText"] and info["origin"].startswith("Chưa xác định"), it["id"]
+        keys = {s["key"] for s in info["sources"]}
+        assert all(s["url"].startswith("https://") for s in info["sources"])
+        for m in info["motifs"]:
+            assert (m["meaning"] is None) == (m["source"] is None), (it["id"], m["name"])
+            assert m["source"] is None or m["source"] in keys, (it["id"], m["name"])
+        if info["comparison"]:
+            assert info["comparison"]["url"].startswith("https://") and info["comparison"]["holder"]
+
+
 def test_heritage_detail_and_media(api_client):
     assert api_client.get("/heritage/BT_Hac_XP").json()["id"] == "BT_Hac_XP"
     assert api_client.get("/heritage/khong-co").status_code == 404
