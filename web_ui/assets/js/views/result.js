@@ -7,7 +7,6 @@ import { icon } from '../core/icons.js';
 import * as data from '../core/data.js';
 import { fullImage, latestOf } from '../core/designs.js';
 import { downloadImage } from '../core/download.js';
-import { demoNotice } from '../components/badges.js';
 import { designCard } from '../components/design-card.js';
 import { stateBox } from '../components/layout.js';
 

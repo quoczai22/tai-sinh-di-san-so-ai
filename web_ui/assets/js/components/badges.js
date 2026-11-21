@@ -9,7 +9,3 @@ export function aiMark() {
 }
 
 /** Nhãn bắt buộc khi chạy chế độ trình diễn (không có GPU trực tuyến): ảnh là kết quả thật đã sinh sẵn. */
-export const DEMO_LABEL = 'Kết quả đã sinh sẵn — không phải sinh trực tiếp';
-export function demoNotice() {
-    return null;
-}
