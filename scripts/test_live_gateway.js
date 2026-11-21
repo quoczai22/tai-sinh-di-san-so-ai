@@ -37,6 +37,9 @@ async function main() {
         requests.push({ url, options });
         if (url === 'https://alert.mock') { alerts++; return new Response(null, { status: 204 }); }
         if (url.endsWith('/generate') && options.method === 'POST') {
+            if (JSON.parse(options.body).seed === 48) {
+                return Response.json({ detail: 'Unauthorized' }, { status: 401 });
+            }
             if (JSON.parse(options.body).seed === 47) {
                 return Response.json({ detail: 'Hàng chờ đầy' }, { status: 429 });
             }
@@ -76,6 +79,10 @@ async function main() {
     result = await call('generate', 'POST', { heritage_id: 'LR3D_61', seed: 47 });
     assert.equal(result.code, 429);
     assert.equal(result.body.backend, undefined, 'full queue must not be labeled demo');
+
+    result = await call('generate', 'POST', { heritage_id: 'LR3D_61', seed: 48 });
+    assert.equal(result.code, 503, 'authentication failure must be visible, not demo');
+    assert.equal(result.body.backend, undefined);
 
     result = await call('passports');
     assert.equal(result.body.length, 1);

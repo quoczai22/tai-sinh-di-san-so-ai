@@ -106,6 +106,11 @@ module.exports = async function handler(req, res) {
                     detail: 'Hàng chờ tạo thiết kế đã đầy. Vui lòng thử lại sau.',
                 });
             }
+            if (upstream.status === 401 || upstream.status === 403) {
+                return res.status(503).json({
+                    detail: 'Máy sinh ảnh chưa xác thực được. Vui lòng báo nhóm vận hành.',
+                });
+            }
             if (!upstream.ok) throw new Error('HTTP ' + upstream.status);
             const job = await upstream.json();
             logGatewayAudit({ step: 3, event: 'gateway_generate', heritage_id: heritageId,
