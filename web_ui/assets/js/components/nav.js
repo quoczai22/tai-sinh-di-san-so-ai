@@ -4,6 +4,7 @@
 // Có nút bật/tắt chuyển động (core/motion.setMotion) trong menu.
 import { clear, h } from '../core/dom.js';
 import { icon } from '../core/icons.js';
+import { drum } from '../decor/drum.js';
 import { reduced, setMotion } from '../core/motion.js';
 import { CHAPTER_NOTE, ROUTES } from '../core/routes.js';
 
@@ -35,6 +36,9 @@ export function renderNav(active) {
     const foot = clear(document.getElementById('foot-links'));
     groups.forEach((g) => foot.append(h('div', {}, h('p', { class: 'foot-group' }, g),
         shown.filter((r) => r.group === g).map((r) => h('a', { href: `#/${r.id}` }, r.label)))));
+    // Mặt trống đồng trang trí ở góc phải chân trang (chỉ gắn một lần)
+    const siteFoot = document.querySelector('.site-foot');
+    if (siteFoot && !siteFoot.querySelector('.foot-drum')) siteFoot.append(h('div', { class: 'foot-drum', 'aria-hidden': 'true' }, drum()));
 }
 
 const menuBtn = document.getElementById('menu-btn');
