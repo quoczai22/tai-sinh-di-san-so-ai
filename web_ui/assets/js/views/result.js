@@ -48,7 +48,6 @@ export async function render([heritageId]) {
         h('div', { class: 'result-head' },
             h('div', { class: 'result-artifact' }, h('img', { src: item.image, alt: '' })),
             h('h2', { class: 'io-name' }, item.name)),
-        data.isLive() ? null : demoNotice(),
         grid,
         h('div', { class: 'result-actions' },
             h('a', { class: 'btn hero-btn primary', href: studio }, 'Tạo lại'),

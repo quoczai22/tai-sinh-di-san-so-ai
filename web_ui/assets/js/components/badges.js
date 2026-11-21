@@ -11,6 +11,5 @@ export function aiMark() {
 /** Nhãn bắt buộc khi chạy chế độ trình diễn (không có GPU trực tuyến): ảnh là kết quả thật đã sinh sẵn. */
 export const DEMO_LABEL = 'Kết quả đã sinh sẵn — không phải sinh trực tiếp';
 export function demoNotice() {
-    return h('p', { class: 'demo-notice', role: 'note' },
-        h('strong', {}, DEMO_LABEL));
+    return null;
 }
