@@ -48,9 +48,7 @@ export async function render([heritageId]) {
         try {
             await runGeneration(heritageId, null, (pct, job) => {
                 progressBar.style.width = `${pct}%`;
-                note.textContent = job.status === 'queued'
-                    ? `Đang chờ tạo ảnh · Vị trí ${job.queue_position || 1}/2`
-                    : 'Đang tạo ảnh';
+                note.textContent = job.status === 'queued' ? 'Đang chờ tạo ảnh' : 'Đang tạo ảnh';
             });
             goToResult();
         } catch (err) {
