@@ -1,6 +1,6 @@
 # Hướng dẫn Triển khai Có Failover — Tái Sinh Di Sản Số
 
-> Với giao diện mới sau refactor, đọc DEPLOY_LIVE.md. Các route /api/generate, /api/status và /api/media dưới đây mô tả gateway cũ; không dùng để deploy UI mới. Project Vercel chính thức đã chốt là tai-sinh-di-san-so-ai.
+> Với giao diện mới sau refactor, đọc `docs/DEPLOY_LIVE.md`. Các route `/api/generate`, `/api/status` và `/api/media` dưới đây mô tả gateway cũ; không dùng để deploy UI mới. Project Vercel chính thức đã chốt là `tai-sinh-di-san-so-ai`.
 
 Tài liệu vận hành kiến trúc triển khai 2 lớp có khả năng tự động chuyển đổi (**Modal GPU → Demo Mode kết quả thật**) cho vòng Chung kết Cuộc thi Sáng tạo trẻ 2026.
 
@@ -21,19 +21,19 @@ flowchart LR
         Static --> Gateway
     end
 
-    Gateway -->|"① Ưu tiên 1 (X-API-Key)"| Modal["① Modal GPU (T4)\nScale-to-zero sau 15p · có usage limit"]
+    Gateway -->|"① Ưu tiên 1 (X-API-Key)"| Modal["① Modal GPU (T4)\nScale-to-zero sau 7p (cấu hình 420s, chưa đo) · có usage limit"]
     Gateway -->|"② Khi ① lỗi/timeout hoặc vượt rate limit"| DemoData
 
     Uptime["UptimeRobot (5–15 phút/lần)"] -->|"GET /health (CPU, không chạm GPU)"| Gateway
     Uptime -->|"Báo lỗi"| Alert["Email nhóm"]
 ```
 
-### Luồng xử lý một lần bấm "Tạo bộ 4 thiết kế"
-1. **Mở trang**: `web_ui/assets/js/app.js` gọi ngầm `GET /api/warmup` để đánh thức container Modal trong lúc giám khảo xem hiện vật.
+### Luồng xử lý một lần bấm "Tạo bộ 4 thiết kế" (gateway cũ)
+1. **Mở trang**: `web_ui/assets/js/app.js` (bản cũ) gọi ngầm `GET /api/warmup` để đánh thức container Modal trong lúc giám khảo xem hiện vật.
 2. **Bấm tạo thiết kế**: Frontend gửi `POST /api/generate { "heritage_id": "..." }`.
 3. **Kiểm tra Rate Limit**: Cổng Vercel kiểm tra giới hạn theo IP (`RATE_LIMIT_PER_HOUR=10`). Nếu vượt ngưỡng, cổng trả ngay kết quả từ `demo_variants.json` kèm thông báo và nhãn **"Kết quả đã sinh sẵn — không phải sinh trực tiếp"**.
 4. **Gọi Modal GPU (Backend ①)**: Gửi `POST ${MODAL_URL}/generate` kèm header `X-API-Key: ${MODAL_KEY}` với timeout `MODAL_TIMEOUT_MS` (mặc định `25000` ms). Nếu nhận `job_id`, trả ngay cho frontend kèm `backend: "modal"`.
-5. **Failover sang Demo Mode (Backend ②)**: Nếu Modal lỗi hoặc quá thời gian chờ (hoặc khi cả 2 backend GPU không khả dụng), cổng chuyển thẳng sang `backend: "demo"` cùng 4 thiết kế thật đã xuất từ `evaluation/variants.csv`.
+5. **Failover sang Demo Mode (Backend ②)**: Nếu Modal lỗi hoặc quá thời gian chờ (hoặc khi cả 2 backend GPU không khả dụng), cổng chuyển thẳng sang `backend: "demo"` cùng 4 thiết kế thật đã xuất từ `evaluation/variants.csv`. *(Lưu ý: trên giao diện mới `/api/live/generate`, lỗi xác thực 401/403 từ Modal sẽ trả HTTP 503 báo lỗi xác thực thay vì chuyển sang Demo — xem `docs/DEPLOY_LIVE.md`.)*
 6. **Polling & Proxy ảnh**: Frontend hỏi `GET /api/status?job_id=...&backend=...` mỗi `1.2` giây. Khi hoàn tất, mọi đường dẫn ảnh thiết kế được chuẩn hoá qua `/api/media?backend=...&file=...` để cổng Vercel gắn token ở phía server, tuyệt đối không lộ `MODAL_KEY` ra trình duyệt.
 
 ---
@@ -41,14 +41,13 @@ flowchart LR
 ## 2. Biến môi trường từng thành phần
 
 ### 2.1. Trên Vercel (Project Settings → Environment Variables)
-> **Cách deploy hiện tại**: project Vercel `tai-sinh-di-san-so-design` **chưa nối GitHub**. Deploy bằng CLI từ thư mục `web_ui` (khi đó Root Directory của project để `.`):
-> ```powershell
-> cd web_ui
-> vercel deploy --prod --yes
-> ```
-> Vì chưa nối Git nên **không có mục "Production Branch"** trong Settings, và push lên GitHub **không** tự deploy. Muốn tự deploy theo nhánh thì phải nối Git (`vercel git connect` hoặc Settings → Git), đổi **Root Directory = `web_ui`** và đặt **Production Branch = `deploy/failover`** — cần nhóm thống nhất trước.
+
+> **Project Vercel chính thức để nộp**: `tai-sinh-di-san-so-ai`, đã nối GitHub `quoczai22/tai-sinh-di-san-so-ai`, **Production Branch = `main`** ⇒ push lên `main` là tự deploy production.
 >
-> Mỗi lần thêm/sửa biến môi trường phải **Redeploy** thì biến mới có hiệu lực.
+> - **Cấu hình build**: **Root Directory = `web_ui`**, **Framework = Other**. Trước ngày 20/11/2026, mọi bản build của project này đều lỗi do Vercel nhận nhầm gốc repo là ứng dụng FastAPI (vì gốc có `requirements.txt` và `api/main.py`) và cố cài thư viện GPU (`pymeshlab` thất bại). Không đổi lại Root Directory = `web_ui`, nếu đổi thì build sẽ hỏng lại.
+> - **Link công khai duy nhất để đưa giám khảo**: `https://tai-sinh-di-san-so-ai.vercel.app`. Các địa chỉ khác của project (có `-quoczai22s-projects`, có `-git-main-`, hoặc link từng bản deploy) bị Vercel Authentication chặn (yêu cầu đăng nhập Vercel) — không đưa cho giám khảo.
+> - Project cũ `tai-sinh-di-san-so-design` (deploy tay bằng CLI) **không còn dùng để nộp**.
+> - Mỗi lần thêm/sửa biến môi trường trên Vercel phải **Redeploy** thì biến mới có hiệu lực.
 
 **Biến bắt buộc (Kiến trúc 2 lớp mặc định):**
 
@@ -79,7 +78,7 @@ flowchart LR
 | `HF_HOME` | `/cache/huggingface` | Model đã tải sẵn trong image (Dockerfile); `modal_app.py` tự đặt, không dùng Volume cho model |
 | `DH_OUTPUT_DIR` | `/data/outputs` | Tự động gắn vào Modal Volume `tai-sinh-di-san-outputs` trong `modal_app.py` |
 
-> **Tóm tắt 8 biến cố định**: trên **Vercel** đặt `MODAL_URL`, `MODAL_KEY`, `MODAL_TIMEOUT_MS` (25000), `RATE_LIMIT_PER_HOUR` (10), `ALERT_DISCORD_WEBHOOK_URL`, `ALERT_COOLDOWN_MIN` (30). Trên **Modal**: `DH_API_KEY` (secret `tai-sinh-di-san-secret`) và `DH_REQUIRE_API_KEY=1` (đã có sẵn trong image).
+> **Tóm tắt 8 biến cố định**: trên **Vercel** đặt `MODAL_URL`, `MODAL_KEY`, `MODAL_TIMEOUT_MS` (25000), `RATE_LIMIT_PER_HOUR` (10), `ALERT_DISCORD_WEBHOOK_URL`, `ALERT_COOLDOWN_MIN` (30). Trên **Modal**: `DH_API_KEY` (secret `tai-sinh-di-san-secret`) và `DH_REQUIRE_API_KEY=1` (đã có sẵn trong image và `modal_app.py`).
 
 ### 2.3. Trên Hugging Face Space (Settings → Variables and secrets) — hiện KHÔNG dùng
 > Lớp HF Space đã bỏ khỏi kiến trúc chính thức (xem ghi chú đầu tài liệu). Mục này chỉ giữ lại để tham khảo khi bật lại.
@@ -153,7 +152,7 @@ modal deploy modal_app.py
 
 | Thao tác | Cách thực hiện |
 |---|---|
-| **Giả lập Modal sập (chuyển sang Demo)** | Chạy `modal app stop tai-sinh-di-san-so-api` hoặc đổi tạm `MODAL_KEY` trên Vercel rồi Redeploy |
+| **Giả lập Modal sập (chuyển sang Demo)** | Chạy `modal app stop tai-sinh-di-san-so-api`. Lưu ý: **không** dùng cách đổi sai `MODAL_KEY` trên giao diện mới (`/api/live/generate`), vì lỗi 401/403 sẽ trả HTTP 503 báo lỗi xác thực thay vì chuyển sang Demo |
 | **Bật lại Modal** | Chạy `modal deploy modal_app.py` |
 | **Đổi Modal từ T4 sang L4 (buổi phản biện)** | `$env:MODAL_GPU="L4"; modal deploy modal_app.py` |
 | **Ép chạy Demo Mode** | Dừng app Modal (`modal app stop tai-sinh-di-san-so-api`), hoặc xoá `MODAL_URL` trên Vercel rồi Redeploy |
@@ -172,9 +171,9 @@ Hệ thống kết hợp 2 kênh giám sát:
 1. Đăng nhập [UptimeRobot](https://uptimerobot.com/) → **Add New Monitor**:
    - **Monitor Type**: `HTTP(s)`
    - **Friendly Name**: `Tái Sinh Di Sản Số — Web & Gateway CPU Health`
-   - **URL**: `https://<domain-vercel-cua-nhom>.vercel.app/health`
+   - **URL**: `https://tai-sinh-di-san-so-ai.vercel.app/health`
    - **Monitoring Interval**: `5 minutes`
-   > **Lưu ý**: Tuyệt đối chỉ ping `/health` trên domain Vercel (chỉ kiểm tra CPU/RAM gateway), **KHÔNG** ping `/health/gpu` hay `/generate` để tránh đánh thức GPU làm tiêu hao credit.
+   > **Lưu ý**: Tuyệt đối chỉ ping `/health` trên domain Vercel (chỉ kiểm tra CPU/RAM gateway), **KHÔNG** ping `/health/gpu` hay `/generate` để tránh đánh thức GPU làm tiêu hao credit. Endpoint `/api/live/health` cũng chạy trên CPU và chỉ kiểm tra biến môi trường đã cấu hình hay chưa, không chứng minh khoá đúng hay GPU sẵn sàng.
 2. Trong phần **Alert Contacts to Notify**:
    - Chọn Email của 2–3 thành viên cốt cán trong đội thi (những người sẽ theo dõi hòm thư trong giai đoạn chấm thi 25–29/11).
 
@@ -188,7 +187,7 @@ Khi có giám khảo truy cập và Modal gặp sự cố (lỗi mạng, timeout
 3. Chọn **New Webhook** (Tạo Webhook mới):
    - Đặt tên bot: `CanhBaoDiSanSo`
    - Chọn đúng kênh chat của nhóm.
-4. Bấm **Copy Webhook URL** (Đường dẫn có dạng `https://discord.com/api/webhooks/134.../...`).
+4. Bấm **Copy Webhook URL** (Đường dẫn có dạng `https://discord.com/api/webhooks/...`).
 5. Vào **Vercel Project Settings → Environment Variables**:
    - Thêm biến `ALERT_DISCORD_WEBHOOK_URL` = `<URL webhook vừa copy>`.
    - Thêm biến `ALERT_COOLDOWN_MIN` = `30` (giới hạn tối đa 1 tin/30 phút để chống spam).
@@ -203,13 +202,13 @@ Khi có giám khảo truy cập và Modal gặp sự cố (lỗi mạng, timeout
 
 | Nội dung cảnh báo nhận được | Nguyên nhân khả dĩ | Hành động xử lý ngay |
 |---|---|---|
-| **Email UptimeRobot: `/health` của Vercel lỗi** (web sập) | Bản deploy Vercel hỏng hoặc Vercel gặp sự cố | 1. Vercel Dashboard → **Deployments** → chọn bản **Ready** gần nhất trước đó → **Promote to Production** (hoặc Redeploy).<br>2. Hoặc chạy lại `vercel deploy --prod --yes` từ thư mục `web_ui` trên nhánh `deploy/failover`.<br>3. Mở lại `https://<app>.vercel.app/health` kiểm tra. |
+| **Email UptimeRobot: `/health` của Vercel lỗi** (web sập) | Bản deploy Vercel hỏng hoặc Vercel gặp sự cố | 1. Vercel Dashboard (project `tai-sinh-di-san-so-ai`) → **Deployments** → chọn bản **Ready** gần nhất trước đó → **Promote to Production** (hoặc Redeploy).<br>2. Kiểm tra cấu hình build (Root Directory = `web_ui`, Framework = Other, Production Branch = `main`); nếu cần sửa code thì push bản sửa lên nhánh `main` để tự deploy lại production.<br>3. Mở lại `https://tai-sinh-di-san-so-ai.vercel.app/health` kiểm tra. |
 | `⚠️ Modal lỗi ...` lặp lại liên tục, dashboard Modal báo hết credit / chạm usage limit | Đã dùng hết credit hoặc chạm hạn mức chi đã đặt | 1. Modal dashboard → **Usage/Billing** kiểm tra mức đã dùng.<br>2. Chỉ nâng limit khi cả nhóm đồng ý chi thêm.<br>3. Trong lúc chờ, giám khảo vẫn thấy bản Demo kết quả thật (có nhãn "đã sinh sẵn"). |
 | `⚠️ Modal lỗi (lỗi kết nối / HTTP 404) lúc ...` sau khi sửa code | App Modal đã dừng hoặc lỗi build | Chạy `modal deploy modal_app.py` từ **gốc repo**, đọc log build; sửa lỗi rồi deploy lại. |
 | Sự cố chưa sửa kịp trước buổi phản biện trực tiếp | — | Chuyển sang **Laptop nhóm + Cloudflare Tunnel** (Mục 4): chạy `uvicorn` + `cloudflared tunnel --url http://localhost:8000`, đổi `MODAL_URL` trên Vercel, **Redeploy**. |
 | `⚠️ Modal lỗi (timeout 25s) lúc ...` | Container Modal bị cold start lâu hoặc quá tải | 1. Mở dashboard Modal hoặc chạy `modal app list` kiểm tra trạng thái.<br>2. Nếu cold start thường xuyên chạm 25s: tăng `MODAL_TIMEOUT_MS` lên `35000` trên Vercel.<br>3. Giám khảo không thấy lỗi vì đã được hiển thị bản demo kết quả thật. |
 | `⚠️ Modal lỗi (lỗi kết nối) lúc ...` | Container Modal bị dừng, chưa deploy hoặc URL sai | 1. Chạy lại `modal deploy modal_app.py` trên máy local.<br>2. Kiểm tra lại biến `MODAL_URL` trên Vercel. |
-| `⚠️ Modal lỗi (HTTP 401) lúc ...` | Sai khóa xác thực giữa Vercel và Modal | Kiểm tra secret `DH_API_KEY` trong Modal secret (`tai-sinh-di-san-secret`) phải khớp 100% với biến `MODAL_KEY` trên Vercel. |
+| **Modal lỗi (HTTP 401 / 403)**: trên giao diện mới (`/api/live/generate`), gateway trả HTTP **503** kèm thông báo *"Máy sinh ảnh chưa xác thực được. Vui lòng báo nhóm vận hành."* (không âm thầm chuyển sang Demo); gateway cũ gửi `⚠️ Modal lỗi (HTTP 401) lúc ...` | Khoá `MODAL_KEY` trên Vercel không khớp `DH_API_KEY` trong secret Modal `tai-sinh-di-san-secret` | 1. Người vận hành tự nhập lại khoá giống nhau cho `DH_API_KEY` (Modal secret `tai-sinh-di-san-secret`) và `MODAL_KEY` (Vercel) trên giao diện web hoặc terminal riêng — **không dán khoá vào chat, tài liệu hay commit**.<br>2. Deploy lại Modal (`modal deploy modal_app.py`) để container nạp secret mới.<br>3. **Redeploy** Vercel.<br>4. Kiểm tra bằng một lượt sinh thật (xem chi tiết tại `docs/DEPLOY_LIVE.md`). |
 | `⚠️ Modal lỗi (HTTP 500 / 502) lúc ...` | Lỗi bộ nhớ GPU hoặc crash trong container | 1. Xem log container: `modal app logs tai-sinh-di-san-so-api`.<br>2. Nếu chưa khắc phục kịp mà giám khảo đang chấm trực tiếp: chuyển sang phương án **Laptop nhóm + Cloudflare Tunnel** (Mục 4). |
 
 ---
@@ -220,8 +219,8 @@ Khi có giám khảo truy cập và Modal gặp sự cố (lỗi mạng, timeout
 
 | Hạng mục đo | Môi trường | Giá trị ghi nhận | Ghi chú |
 |---|---|---|---|
-| **Modal Cold Start** (từ 0 container → sẵn sàng) | Modal NVIDIA T4 | *(chưa đo)* | Image đã nạp sẵn SD1.5 + ControlNet + CLIP (đọc thẳng từ image) |
+| **Modal Cold Start** (từ 0 container → sẵn sàng) | Modal NVIDIA T4 | *(chưa đo)* | Image đã nạp sẵn SD1.5 + ControlNet + CLIP + SAM (đọc thẳng từ image) |
 | **Thời gian sinh 1 bộ 4 thiết kế** | Modal NVIDIA T4 | *(chưa đo)* | Gồm 4 biến thể SD1.5 ControlNet + chấm điểm 7 bố cục CLIP + img2img polish |
-| **Thời gian Scale-down về 0** | Modal NVIDIA T4 | *(chưa đo)* — giá trị **cấu hình** là `420s` (7 phút) | `scaledown_window=420` trong `modal_app.py`; số đo thật lấy từ thời điểm container dừng trên dashboard Modal |
+| **Thời gian Scale-down về 0** | Modal NVIDIA T4 | *(chưa đo)* — giá trị **cấu hình** là `420s` (7 phút) | `SCALEDOWN_SECONDS = 420` (`scaledown_window=420`) trong `modal_app.py` (giá trị cấu hình, chưa đo); số đo thật lấy từ thời điểm container dừng trên dashboard Modal |
 | **HF Space tự thức khi nhận API request** | HF Space Docker T4 (Private) | Không áp dụng (đã bỏ HF Space) | — |
 | **Thời gian thức dậy của HF Space** | HF Space Docker T4 (Private) | Không áp dụng (đã bỏ HF Space) | — |
