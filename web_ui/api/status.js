@@ -5,7 +5,7 @@ const {
     fetchWithTimeout,
     getDemoVariants,
     logGatewayAudit,
-    notifyAlert,
+    alertModalIssue,
 } = require('./_shared');
 
 function rewriteVariantsMedia(variants, backend) {
@@ -65,6 +65,7 @@ module.exports = async function handler(req, res) {
         const maxWarmupMs = parseInt(process.env.HF_WARMUP_MAX_MS || '180000', 10);
 
         if (!config.hfSpaceUrl || Date.now() - ts > maxWarmupMs) {
+            await alertModalIssue('máy dự phòng không khả dụng', '/api/status', resolvedHeritageId, 'bản demo');
             return res.status(200).json({
                 job_id: jobId,
                 heritage_id: resolvedHeritageId,
@@ -134,6 +135,8 @@ module.exports = async function handler(req, res) {
                     label: 'Máy dự phòng đã sẵn sàng. Đang tạo thiết kế...',
                 });
             }
+            await alertModalIssue(`máy dự phòng HTTP ${genRes.status}`, '/api/status',
+                resolvedHeritageId, 'bản demo');
         } catch (_) {
             // Nếu lỗi mạng tạm thời trong lúc Space đang thức
             return res.status(200).json({
@@ -153,6 +156,7 @@ module.exports = async function handler(req, res) {
     const timeoutMs = backend === 'hf' ? config.hfTimeoutMs : config.modalTimeoutMs;
 
     if (!baseUrl) {
+        await alertModalIssue('thiếu cấu hình backend', '/api/status', heritageId, heritageId ? 'bản demo' : 'lỗi');
         if (heritageId) {
             return res.status(200).json({
                 job_id: jobId,
@@ -171,12 +175,10 @@ module.exports = async function handler(req, res) {
     }
 
     async function alertModalFailure(reason) {
-        if (backend !== 'modal' || !heritageId || jobId.startsWith('warming_')) return;
-        const vnTime = new Date().toLocaleTimeString('vi-VN', {
-            timeZone: 'Asia/Ho_Chi_Minh',
-            hour: '2-digit', minute: '2-digit', hour12: false,
-        });
-        await notifyAlert(`⚠️ Modal lỗi giữa chừng (${reason}) lúc ${vnTime} (giờ VN) — giám khảo đang thấy bản demo. Hiện vật: ${heritageId}`).catch(() => {});
+        if (jobId.startsWith('warming_')) return;
+        const source = backend === 'modal' ? 'giữa chừng' : 'máy dự phòng';
+        await alertModalIssue(source + ' (' + reason + ')', '/api/status', heritageId,
+            heritageId ? 'bản demo' : 'lỗi');
     }
 
     try {
@@ -204,10 +206,15 @@ module.exports = async function handler(req, res) {
                     variants: getDemoVariants(heritageId),
                 });
             }
+            await alertModalFailure(`HTTP ${upstream.status}`);
             return res.status(upstream.status).json({ detail: `Upstream status ${upstream.status}` });
         }
 
         const data = await upstream.json();
+        if (data.status === 'failed') {
+            await alertModalIssue(backend === 'modal' ? 'job failed' : 'job dự phòng failed',
+                '/api/status', heritageId, 'lỗi');
+        }
         return res.status(200).json({
             ...data,
             job_id: jobId,
@@ -232,6 +239,7 @@ module.exports = async function handler(req, res) {
                 variants: getDemoVariants(heritageId),
             });
         }
-        return res.status(504).json({ detail: error.message || 'Backend status timeout' });
+        await alertModalFailure('timeout hoặc lỗi mạng');
+        return res.status(504).json({ detail: 'Máy sinh thiết kế không phản hồi.' });
     }
 };

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { getBackendConfig, buildBackendHeaders, fetchWithTimeout } = require('./_shared');
+const { getBackendConfig, buildBackendHeaders, fetchWithTimeout, alertModalIssue,
+    upstreamErrorType } = require('./_shared');
 
 const SAFE_FILENAME_RE = /^[A-Za-z0-9._-]+$/;
 
@@ -37,6 +38,7 @@ module.exports = async function handler(req, res) {
     const baseUrl = backend === 'hf' ? config.hfSpaceUrl : config.modalUrl;
     const timeoutMs = backend === 'hf' ? config.hfTimeoutMs : config.modalTimeoutMs;
 
+    let failure = baseUrl ? null : 'thiếu MODAL_URL';
     if (baseUrl) {
         try {
             const upstream = await fetchWithTimeout(
@@ -54,13 +56,19 @@ module.exports = async function handler(req, res) {
                 res.setHeader('Cache-Control', 'public, max-age=3600');
                 return res.status(200).send(Buffer.from(arrayBuffer));
             }
-        } catch (_) {
+            failure = `HTTP ${upstream.status}`;
+        } catch (error) {
+            failure = upstreamErrorType(error);
             // Fallback sang ảnh tĩnh nếu backend vừa tắt sau khi sinh xong
         }
     }
 
     const served = tryServeLocalVariant(filename, res);
     if (served) return served;
+
+    if (backend === 'modal') {
+        await alertModalIssue(failure || 'ảnh không có trong backend', '/api/media', null, 'lỗi');
+    }
 
     return res.status(404).json({ detail: 'Không tìm thấy ảnh thiết kế.' });
 };

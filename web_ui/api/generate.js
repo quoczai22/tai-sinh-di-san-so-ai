@@ -5,7 +5,7 @@ const {
     fetchWithTimeout,
     getDemoVariants,
     logGatewayAudit,
-    notifyAlert,
+    alertModalIssue,
 } = require('./_shared');
 
 function buildDemoResponse(heritageId, reason, waitMs, extra = {}) {
@@ -202,16 +202,7 @@ module.exports = async function handler(req, res) {
     }
 
     // Bước 6: Cả hai backend đều lỗi -> gửi cảnh báo Discord (nếu cấu hình) và trả Demo mode
-    const vnTime = new Date().toLocaleTimeString('vi-VN', {
-        timeZone: 'Asia/Ho_Chi_Minh',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-    });
-    const alertMsg = `⚠️ Modal lỗi (${modalFailureReason || 'không khả dụng'}) lúc ${vnTime} (giờ VN) — giám khảo đang thấy bản demo. Hiện vật: ${heritageId}`;
-    if (config.modalUrl) {
-        await notifyAlert(alertMsg).catch(() => {});
-    }
+    await alertModalIssue(modalFailureReason || 'không khả dụng', '/api/generate', heritageId, 'bản demo');
 
     return res.status(200).json(buildDemoResponse(heritageId, 'all_backends_unavailable', Date.now() - t0));
 };

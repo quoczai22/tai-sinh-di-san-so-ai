@@ -150,10 +150,23 @@ async function notifyAlert(message) {
             },
             3000
         );
-    } catch (err) {
+    } catch (_) {
         // Lỗi gửi cảnh báo KHÔNG được làm hỏng request của người dùng
-        console.warn('[ALERT] Không thể gửi cảnh báo Discord:', err.message || err);
+        console.warn('[ALERT] Không thể gửi cảnh báo Discord.');
     }
+}
+
+function alertModalIssue(type, endpoint, heritageId, viewerState) {
+    const safeId = /^[A-Za-z0-9_-]{1,80}$/.test(String(heritageId || ''))
+        ? String(heritageId) : 'không có';
+    const time = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+    return notifyAlert(`⚠️ Modal lỗi: ${type} | Endpoint: ${endpoint} | Hiện vật: ${safeId} | ` +
+        `${time} (giờ VN) | giám khảo đang thấy ${viewerState}.`);
+}
+
+function upstreamErrorType(error) {
+    return error?.name === 'AbortError' || /timeout/i.test(String(error?.message || ''))
+        ? 'timeout' : 'lỗi mạng';
 }
 
 module.exports = {
@@ -165,5 +178,7 @@ module.exports = {
     getDemoVariants,
     logGatewayAudit,
     notifyAlert,
+    alertModalIssue,
+    upstreamErrorType,
     _resetAlertCooldown,
 };
