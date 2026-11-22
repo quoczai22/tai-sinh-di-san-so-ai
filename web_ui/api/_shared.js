@@ -147,10 +147,15 @@ function _resetAlertCooldown() {
  * - Timeout 3s, bọc try/catch, không bao giờ làm hỏng request của người dùng.
  * - Tuyệt đối không gửi token, key hay IP người dùng.
  */
+let lastPersonalChatId = '';
+
 async function notifyAlert(message) {
     const webhookUrl = (process.env.ALERT_DISCORD_WEBHOOK_URL || '').trim();
     const zaloToken = (process.env.ALERT_ZALO_BOT_TOKEN || '').trim();
-    const zaloChatId = (process.env.ALERT_ZALO_CHAT_ID || '').trim();
+    const allowGroup = (process.env.ALERT_ZALO_ALLOW_GROUP || '0').trim() === '1';
+    const userChatId = (process.env.ALERT_ZALO_USER_CHAT_ID || lastPersonalChatId || '').trim();
+    const groupChatId = (process.env.ALERT_ZALO_CHAT_ID || '').trim();
+    const zaloChatId = userChatId || (allowGroup ? groupChatId : '');
     const zaloBase = (process.env.ALERT_ZALO_API_BASE || 'https://bot-api.zapps.me').trim().replace(/\/$/, '');
     const hasZalo = Boolean(zaloToken && zaloChatId);
     if (!webhookUrl && !hasZalo) return;
@@ -220,21 +225,22 @@ async function callChatModel(provider, systemPrompt, userPrompt, timeoutMs = 800
     const url = isGroq
         ? 'https://api.groq.com/openai/v1/chat/completions'
         : 'https://openrouter.ai/api/v1/chat/completions';
+    const bodyPayload = {
+        model,
+        messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt },
+        ],
+        max_tokens: isGroq ? 1024 : 350,
+        temperature: 0.2,
+    };
     const res = await fetchWithTimeout(url, {
         method: 'POST',
         headers: {
             Authorization: `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            model,
-            messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: userPrompt },
-            ],
-            max_tokens: 320,
-            temperature: 0.2,
-        }),
+        body: JSON.stringify(bodyPayload),
     }, timeoutMs);
     if (!res.ok) throw new Error(`${provider} HTTP ${res.status}`);
     const data = await res.json();
@@ -248,10 +254,19 @@ async function probeAndRemedateModal(isFixMode) {
     if (!config.modalUrl || !config.modalKey) {
         return { configured: false, ok: false, summary: 'Thiếu biến MODAL_URL hoặc MODAL_KEY trên Vercel.' };
     }
-    if (isFixMode) _resetAlertCooldown();
+    if (!isFixMode) {
+        return {
+            configured: true,
+            ok: !lastModalIssue,
+            summary: lastModalIssue
+                ? `Cấu hình Vercel đầy đủ; đang có ghi nhận sự cố gần nhất cần lưu ý.`
+                : 'Hệ thống Vercel và Modal đã cấu hình đầy đủ, hoạt động bình thường. GPU T4 trên Modal đang ở chế độ chờ tiết kiệm credit (tự động thức dậy khi có người bấm Tạo thiết kế hoặc khi bạn nhắn "đánh thức GPU").',
+        };
+    }
+    _resetAlertCooldown();
     const t0 = Date.now();
     try {
-        const timeout = isFixMode ? Math.max(15000, config.modalTimeoutMs) : 6000;
+        const timeout = Math.max(20000, config.modalTimeoutMs);
         const healthRes = await fetchWithTimeout(`${config.modalUrl}/health`, {
             headers: buildBackendHeaders('modal', config),
         }, timeout);
@@ -266,6 +281,7 @@ async function probeAndRemedateModal(isFixMode) {
             };
         }
         const health = await healthRes.json().catch(() => ({}));
+        lastModalIssue = null;
         return {
             configured: true,
             ok: true,
@@ -273,7 +289,7 @@ async function probeAndRemedateModal(isFixMode) {
             elapsedMs,
             cuda: health.cuda,
             device: health.device,
-            summary: `Modal GPU phản hồi 200 OK sau ${elapsedMs}ms (CUDA=${health.cuda}, GPU=${health.device || 'T4'}).`,
+            summary: `Đã đánh thức và kiểm tra Modal GPU thành công: phản hồi 200 OK sau ${elapsedMs}ms (CUDA=${health.cuda}, GPU=${health.device || 'T4'}).`,
         };
     } catch (error) {
         const elapsedMs = Date.now() - t0;
@@ -288,13 +304,27 @@ async function probeAndRemedateModal(isFixMode) {
 
 async function handleZaloBotWebhook(body) {
     const zaloToken = (process.env.ALERT_ZALO_BOT_TOKEN || '').trim();
-    const zaloChatId = (process.env.ALERT_ZALO_CHAT_ID || '').trim();
+    const allowedChatIds = [
+        (process.env.ALERT_ZALO_CHAT_ID || '').trim(),
+        (process.env.ALERT_ZALO_USER_CHAT_ID || '').trim(),
+    ].filter(Boolean);
+    const allowGroup = (process.env.ALERT_ZALO_ALLOW_GROUP || '0').trim() === '1';
     const zaloBase = (process.env.ALERT_ZALO_API_BASE || 'https://bot-api.zapps.me').trim().replace(/\/$/, '');
     const msg = body?.message || body?.result?.message || null;
     const chatId = msg?.chat?.id ? String(msg.chat.id) : '';
+    const chatType = String(msg?.chat?.chat_type || '').toUpperCase();
     const text = String(msg?.text || '').trim();
-    if (!zaloToken || !zaloChatId || !chatId || chatId !== zaloChatId || !text) {
+    if (!zaloToken || !chatId || !text) {
         return { ok: true, ignored: true };
+    }
+    if (chatType === 'GROUP' && !allowGroup) {
+        return { ok: true, ignored: 'group_disabled' };
+    }
+    if (chatType === 'GROUP' && allowedChatIds.length && !allowedChatIds.includes(chatId)) {
+        return { ok: true, ignored: true };
+    }
+    if (chatType !== 'GROUP') {
+        lastPersonalChatId = chatId;
     }
 
     const isFixMode = /\b(sửa|sua|fix|khắc phục|khac phuc|giải quyết|giai quyet|đánh thức|danh thuc|warmup|wake|khởi động|khoi dong|thử lại|thu lai|retry|cứu|cuu)\b/i.test(text);
@@ -328,7 +358,7 @@ async function handleZaloBotWebhook(body) {
     await fetchWithTimeout(`${zaloBase}/bot${zaloToken}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: zaloChatId, text: replyText }),
+        body: JSON.stringify({ chat_id: chatId, text: replyText }),
     }, 5000).catch(() => {});
 
     return { ok: true, mode: isFixMode ? 'fix' : 'summary', probeOk: probe.ok };
