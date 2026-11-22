@@ -1,6 +1,7 @@
 name: Modal backend checks
 
 on:
+  workflow_call:
   pull_request:
     paths:
       - "modal_app.py"
