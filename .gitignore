@@ -91,3 +91,6 @@ dist/
 .ai/
 /.vercel/
 /.env.local
+
+# Tài liệu nội bộ, không đưa lên git
+docs/HUONG_CAI_TIEN_V2.md
