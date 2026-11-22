@@ -204,7 +204,7 @@ body.book-open {
 
 .bk-figure figcaption {
     display: grid;
-    gap: 2px;
+    gap: 14px;
     margin-top: 14px;
     text-align: center;
 }
@@ -212,7 +212,7 @@ body.book-open {
 .bk-name {
     font-family: var(--bk-hand);
     font-size: 22px;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 .bk-cap {
