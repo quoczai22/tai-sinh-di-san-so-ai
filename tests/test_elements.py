@@ -1,11 +1,11 @@
-"""Kiểm thử generation/elements.py bằng ảnh tổng hợp và bộ phân đoạn giả (không cần GPU, không cần SAM)."""
+"""Kiểm thử tsds/generation/pattern/elements.py bằng ảnh tổng hợp và bộ phân đoạn giả (không cần GPU, không cần SAM)."""
 import json
 from pathlib import Path
 
 import cv2
 import numpy as np
 
-from generation import elements as el
+from tsds.generation.pattern import elements as el
 
 # Hai hình bất đối xứng dùng làm "họa tiết" thử. Đa giác theo tọa độ (x, y).
 HINH_L = np.array([[0, 0], [80, 0], [80, 30], [40, 30], [40, 90], [0, 90]])

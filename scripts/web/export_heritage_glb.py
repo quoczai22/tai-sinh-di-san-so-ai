@@ -12,7 +12,7 @@ Mỗi hiện vật:
     uv run python scripts/web/export_heritage_glb.py LR3D_61    # chọn hiện vật
 
 Ra: web_ui/assets/models/<mã hiện vật>.glb
-Thư viện chỉ dùng cho script này: trimesh, pymeshlab (cài bằng uv pip install, ghi trong requirements.txt).
+Thư viện chỉ dùng cho script này: trimesh, pymeshlab (khai báo trong pyproject.toml, cài bằng uv sync).
 """
 import io
 import re
@@ -104,7 +104,7 @@ def export(hid: str, max_faces: int = MAX_FACES) -> Path:
 
 
 def main(argv: list[str]) -> int:
-    from provenance.registry import all_items                          # noqa: PLC0415
+    from tsds.provenance.registry import all_items                          # noqa: PLC0415
     ids = argv or [it["heritage_id"] for it in all_items(ROOT) if it.get("status", "active") == "active"]
     for hid in ids:
         export(hid)

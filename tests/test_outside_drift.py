@@ -1,8 +1,8 @@
 """Kiểm thử chỉ số M2 (quality.metrics.outside_drift): trôi ngoài vùng áo."""
 import numpy as np
 
-from quality import gate as QG
-from quality import metrics as M
+from tsds.quality import gate as QG
+from tsds.quality import metrics as M
 
 
 def mat_na(size=64):

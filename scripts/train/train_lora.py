@@ -80,7 +80,7 @@ def main(argv: list[str] | None = None) -> int:
     from transformers import CLIPTextModel, CLIPTokenizer           # noqa: PLC0415
 
     sys.path.insert(0, str(ROOT))
-    from generation.stable_diffusion import load_env                # noqa: PLC0415
+    from tsds.generation.stable_diffusion import load_env                # noqa: PLC0415
 
     args = parse_args(argv)
     if args.width % 8 or args.height % 8:

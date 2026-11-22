@@ -65,7 +65,7 @@ APQC PCF chỉ dùng làm **khung phân loại** để gọi tên và xếp nhó
 | Hiện vật có quyền sử dụng đã xác minh | 0/6 | 0/6 |
 | Trường nguồn gốc điền được | 7/10 ở cả 6 hiện vật | 8/10 ở cả 6 hiện vật (thiếu giấy phép từng vật và ngày thu thập) |
 
-Nguồn của bộ demo: Passport trong `outputs/passports/` (`GET /quality/designs`); nguồn của bản 06/09/2026: `evaluation/quality_gate_legacy.csv` ở commit `b1192b0`.
+Nguồn của bộ demo: Passport trong `outputs/passports/` (`GET /quality/designs`); nguồn của bản 06/09/2026: `tsds/evaluation/quality_gate_legacy.csv` ở commit `b1192b0`.
 
 ## Lớp C. Sản phẩm bàn giao
 

@@ -9,9 +9,9 @@ from pathlib import Path
 
 import pytest
 
-from provenance import passport as P
-from provenance import registry as R
-from provenance.hashing import canonical_json, sha256_bytes, sha256_json
+from tsds.provenance import passport as P
+from tsds.provenance import registry as R
+from tsds.provenance.hashing import canonical_json, sha256_bytes, sha256_json
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -98,7 +98,7 @@ def test_passport_id_format():
 def test_label_roundtrip(tmp_path):
     from PIL import Image
 
-    from provenance.labeling import label_image, read_label
+    from tsds.provenance.labeling import label_image, read_label
     data, _ = label_image(Image.new("RGB", (320, 480), "white"), passport_id="DP-HV01-20261118-V1",
                           design_sha256="e" * 64, heritage_name="Bình", attribution="Ảnh: X", rights_warning=True)
     meta = read_label(data)

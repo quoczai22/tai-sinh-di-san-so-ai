@@ -4,7 +4,7 @@ Trả lời yêu cầu cải tiến 2 của BTC: **đối chứng có kiểm so�
 
 ## Vấn đề của bộ 4 biến thể cũ
 
-Bốn biến thể V1 đến V4 của bản 06/09/2026 khác nhau ở **bốn** yếu tố cùng lúc (`evaluation/variants.csv`). Luồng sản phẩm hiện nay vẫn giữ cách đặt này (bốn mức sáng tạo đổi nhiều yếu tố cùng lúc):
+Bốn biến thể V1 đến V4 của bản 06/09/2026 khác nhau ở **bốn** yếu tố cùng lúc (`tsds/evaluation/variants.csv`). Luồng sản phẩm hiện nay vẫn giữ cách đặt này (bốn mức sáng tạo đổi nhiều yếu tố cùng lúc):
 
 | Yếu tố | V1 | V2 | V3 | V4 |
 |---|---|---|---|---|
@@ -20,7 +20,7 @@ Từ 20/11/2026 bộ demo dùng **một seed duy nhất (42)** nhưng vẫn đ�
 
 ## Module Experiment Management
 
-Tệp `evaluation/experiment.py`. Mỗi thí nghiệm là một tệp JSON trong `evaluation/experiments/`:
+Tệp `tsds/evaluation/experiment.py`. Mỗi thí nghiệm là một tệp JSON trong `tsds/evaluation/experiments/`:
 
 | Trường | Ý nghĩa |
 |---|---|
@@ -35,10 +35,10 @@ Tệp `evaluation/experiment.py`. Mỗi thí nghiệm là một tệp JSON trong
 Quy trình chạy:
 
 ```bash
-python -m evaluation.experiment plan    evaluation/experiments/EXP-A_controlnet_weight.json   # sinh kế hoạch, KIỂM TRA đơn biến
-python -m evaluation.experiment run     evaluation/experiments/EXP-A_controlnet_weight.json   # chạy (EXP-A, B, D, E, F cần GPU; EXP-C chạy trên CPU; EXP-G chạy bằng python -m evaluation.exp_g plan|run|analyze)
-python -m evaluation.experiment blind   outputs/experiments/EXP-A --raters CG01,CG02,CG03     # gói chấm mù
-python -m evaluation.experiment analyze outputs/experiments/EXP-A                            # thống kê
+python -m tsds.evaluation.experiment plan    tsds/evaluation/experiments/EXP-A_controlnet_weight.json   # sinh kế hoạch, KIỂM TRA đơn biến
+python -m tsds.evaluation.experiment run     tsds/evaluation/experiments/EXP-A_controlnet_weight.json   # chạy (EXP-A, B, D, E, F cần GPU; EXP-C chạy trên CPU; EXP-G chạy bằng python -m tsds.evaluation.exp_g plan|run|analyze)
+python -m tsds.evaluation.experiment blind   outputs/experiments/EXP-A --raters CG01,CG02,CG03     # gói chấm mù
+python -m tsds.evaluation.experiment analyze outputs/experiments/EXP-A                            # thống kê
 ```
 
 ### Kiểm soát được thực thi bằng mã
@@ -67,7 +67,7 @@ Hai thí nghiệm thêm ngày 20/11/2026, cùng cố định: áo LoRA, bố c�
 | | EXP-F | EXP-G |
 |---|---|---|
 | Câu hỏi | Nếu pipeline nhận thẳng ảnh bình render thay vì mảng hoa văn phẳng, thiết kế cuối giữ họa tiết, dáng áo và màu tốt hơn hay kém hơn? | Trích hoa văn từ mảng phẳng bằng cách dán nguyên, vẽ lại nhẹ hoặc cắt phần tử SAM có giữ họa tiết gốc hơn cách SD vẽ lại hoàn toàn không? |
-| Biến độc lập | Nguồn ảnh nạp: mảng phẳng / ảnh render (`evaluation/experiments/EXP-F_vessel_vs_panel.json`) | Cách tạo ô hoa văn, 7 mức: `sd_controlnet` (đối chứng), `paste_direct`, `img2img_low`, `elements_sam`, `paste_boost`, `elements_clip`, `elements_boost` (`EXP-G_pattern_method.json`, mã `evaluation/exp_g.py`) |
+| Biến độc lập | Nguồn ảnh nạp: mảng phẳng / ảnh render (`tsds/evaluation/experiments/EXP-F_vessel_vs_panel.json`) | Cách tạo ô hoa văn, 7 mức: `sd_controlnet` (đối chứng), `paste_direct`, `img2img_low`, `elements_sam`, `paste_boost`, `elements_clip`, `elements_boost` (`EXP-G_pattern_method.json`, mã `tsds/evaluation/exp_g.py`) |
 | Số lượt | 36 (6 hiện vật × 2 × 3 seed) | 126 (6 hiện vật × 7 × 3 seed) |
 | Trạng thái | **Đã chạy 36/36** | **Đã chạy 126/126**; hai mức phần tử chạy lại sau khi sửa lỗi nền in cả mảng (`ground_alpha`) |
 | Chấm mù | Chưa | Chưa |
@@ -199,7 +199,7 @@ EXP-C ghép trên áo mẫu cố định của 6 hiện vật cũ nên **không 
 
 ## Thử hoàn thiện ảnh trên bộ demo hiện tại
 
-Ngoài EXP-B, nhóm thử riêng cách hoàn thiện trên bản ghép thô của bộ demo ngày 19/11/2026: `evaluation/polish_finish_trial.py` (cần GPU), kết quả ở `evaluation/polish_finish_trial.csv`. Với mỗi bản ghép thô, polish chỉ vùng áo ở 2 độ nhiễu rồi (a) giữ nguyên, (b) khoá họa tiết với `dog_sigma_low` = 1,2 (cũ), (c) khoá họa tiết với `dog_sigma_low` = 0,3 (hiện tại).
+Ngoài EXP-B, nhóm thử riêng cách hoàn thiện trên bản ghép thô của bộ demo ngày 19/11/2026: `tsds/evaluation/polish_finish_trial.py` (cần GPU), kết quả ở `tsds/evaluation/polish_finish_trial.csv`. Với mỗi bản ghép thô, polish chỉ vùng áo ở 2 độ nhiễu rồi (a) giữ nguyên, (b) khoá họa tiết với `dog_sigma_low` = 1,2 (cũ), (c) khoá họa tiết với `dog_sigma_low` = 0,3 (hiện tại).
 
 12 thiết kế (6 hiện vật × 2 mức sáng tạo), cùng seed polish 42, không có vòng thử lại. Cột "Giữ chi tiết mịn" là chỉ số `detail_ratio` (bản cuối so với bản ghép thô, cao là tốt, ngưỡng lỗi 0,6).
 

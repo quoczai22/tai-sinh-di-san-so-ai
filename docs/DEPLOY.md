@@ -33,7 +33,7 @@ flowchart LR
 2. **Bấm tạo thiết kế**: Frontend gửi `POST /api/generate { "heritage_id": "..." }`.
 3. **Kiểm tra Rate Limit**: Cổng Vercel kiểm tra giới hạn theo IP (`RATE_LIMIT_PER_HOUR=10`). Nếu vượt ngưỡng, cổng trả ngay kết quả từ `demo_variants.json` kèm thông báo và nhãn **"Kết quả đã sinh sẵn — không phải sinh trực tiếp"**.
 4. **Gọi Modal GPU (Backend ①)**: Gửi `POST ${MODAL_URL}/generate` kèm header `X-API-Key: ${MODAL_KEY}` với timeout `MODAL_TIMEOUT_MS` (mặc định `25000` ms). Nếu nhận `job_id`, trả ngay cho frontend kèm `backend: "modal"`.
-5. **Failover sang Demo Mode (Backend ②)**: Nếu Modal lỗi hoặc quá thời gian chờ (hoặc khi cả 2 backend GPU không khả dụng), cổng chuyển thẳng sang `backend: "demo"` cùng 4 thiết kế thật đã xuất từ `evaluation/variants.csv`.
+5. **Failover sang Demo Mode (Backend ②)**: Nếu Modal lỗi hoặc quá thời gian chờ (hoặc khi cả 2 backend GPU không khả dụng), cổng chuyển thẳng sang `backend: "demo"` cùng 4 thiết kế thật đã xuất từ `tsds/evaluation/variants.csv`.
 6. **Polling & Proxy ảnh**: Frontend hỏi `GET /api/status?job_id=...&backend=...` mỗi `1.2` giây. Khi hoàn tất, mọi đường dẫn ảnh thiết kế được chuẩn hoá qua `/api/media?backend=...&file=...` để cổng Vercel gắn token ở phía server, tuyệt đối không lộ `MODAL_KEY` ra trình duyệt.
 
 ---
@@ -75,7 +75,7 @@ flowchart LR
 | Biến môi trường | Giá trị | Mô tả |
 |---|---|---|
 | `DH_API_KEY` | `<chuỗi_bí_mật>` | Khớp với `MODAL_KEY` trên Vercel; chặn truy cập trái phép vào GPU. **Chỉ** đặt trong secret Modal, không đặt trên Vercel |
-| `DH_REQUIRE_API_KEY` | `1` (đã đặt sẵn) | Bật chế độ **fail-closed**: nếu `DH_API_KEY` trống thì `api/main.py` báo lỗi và **từ chối khởi động**, không mở GPU cho truy cập tự do. Đã đặt sẵn trong `Dockerfile` (`ENV`) và `modal_app.py`, không cần thêm vào secret. Chạy local không đặt biến này thì giữ hành vi cũ (không bắt khoá) |
+| `DH_REQUIRE_API_KEY` | `1` (đã đặt sẵn) | Bật chế độ **fail-closed**: nếu `DH_API_KEY` trống thì `tsds/api/main.py` báo lỗi và **từ chối khởi động**, không mở GPU cho truy cập tự do. Đã đặt sẵn trong `Dockerfile` (`ENV`) và `modal_app.py`, không cần thêm vào secret. Chạy local không đặt biến này thì giữ hành vi cũ (không bắt khoá) |
 | `HF_HOME` | `/cache/huggingface` | Model đã tải sẵn trong image (Dockerfile); `modal_app.py` tự đặt, không dùng Volume cho model |
 | `DH_OUTPUT_DIR` | `/data/outputs` | Tự động gắn vào Modal Volume `tai-sinh-di-san-outputs` trong `modal_app.py` |
 
@@ -97,7 +97,7 @@ flowchart LR
 
 ## 3. Lệnh triển khai và kiểm thử từng bước
 
-### 3.1. Xuất lại dữ liệu Demo từ `evaluation/variants.csv`
+### 3.1. Xuất lại dữ liệu Demo từ `tsds/evaluation/variants.csv`
 ```powershell
 python scripts/demo/export_demo_data_legacy.py
 ```
@@ -157,7 +157,7 @@ modal deploy modal_app.py
 | **Bật lại Modal** | Chạy `modal deploy modal_app.py` |
 | **Đổi Modal từ T4 sang L4 (buổi phản biện)** | `$env:MODAL_GPU="L4"; modal deploy modal_app.py` |
 | **Ép chạy Demo Mode** | Dừng app Modal (`modal app stop tai-sinh-di-san-so-api`), hoặc xoá `MODAL_URL` trên Vercel rồi Redeploy |
-| **Chuyển sang Laptop nhóm + Cloudflare Tunnel (dự phòng buổi phản biện)** | 1. Trên laptop có GPU NVIDIA của nhóm, chạy:<br>`$env:DH_API_KEY="<MODAL_KEY>"; python -m uvicorn api.main:app --host 127.0.0.1 --port 8000`<br>2. Mở terminal thứ 2 chạy:<br>`cloudflared tunnel --url http://localhost:8000`<br>3. Copy URL `https://*.trycloudflare.com` vừa sinh ra, dán vào biến `MODAL_URL` trên Vercel và Redeploy. |
+| **Chuyển sang Laptop nhóm + Cloudflare Tunnel (dự phòng buổi phản biện)** | 1. Trên laptop có GPU NVIDIA của nhóm, chạy:<br>`$env:DH_API_KEY="<MODAL_KEY>"; python -m uvicorn tsds.api.main:app --host 127.0.0.1 --port 8000`<br>2. Mở terminal thứ 2 chạy:<br>`cloudflared tunnel --url http://localhost:8000`<br>3. Copy URL `https://*.trycloudflare.com` vừa sinh ra, dán vào biến `MODAL_URL` trên Vercel và Redeploy. |
 
 ---
 

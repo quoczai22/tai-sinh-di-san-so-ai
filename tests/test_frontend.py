@@ -98,7 +98,7 @@ def test_ui_files_stay_small_and_documented():
     """Mỗi file giao diện (JS, CSS, Streamlit) ≤ 500 dòng và mở đầu bằng chú thích vai trò."""
     files = [p for p in (WEB / "assets" / "js").rglob("*.js") if "vendor" not in p.parts]
     files += list((WEB / "assets" / "css").rglob("*.css"))
-    files += list((ROOT / "streamlit_ui").rglob("*.py"))
+    files += list((ROOT / "tsds" / "streamlit_ui").rglob("*.py"))
     for p in files:
         text = p.read_text(encoding="utf-8")
         assert text.count("\n") <= 500, (p.relative_to(ROOT).as_posix(), text.count("\n"))

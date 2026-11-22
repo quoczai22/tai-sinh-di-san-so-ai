@@ -27,10 +27,10 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from provenance.hashing import sha256_file  # noqa: E402
+from tsds.provenance.hashing import sha256_file  # noqa: E402
 
 TODAY = "2026-11-18"
-FIRST_SEEN = "2026-09-06"   # ngày sớm nhất ảnh xuất hiện trong evaluation/variants.csv
+FIRST_SEEN = "2026-09-06"   # ngày sớm nhất ảnh xuất hiện trong tsds/evaluation/variants.csv
 
 # Đo bằng cụm 8 từ liên tiếp giữa team_description và văn bản nhóm chép kèm từng
 # URL trong tệp Drive "Nguồn ảnh.docx" (đo ngày 2026-11-18).
@@ -116,7 +116,7 @@ def main() -> int:
                                 "cho nghiên cứu và trình diễn trong cuộc thi.") if url else None,
                 "collected_on": None,
                 "collected_before": FIRST_SEEN,
-                "collected_note": "Không có nhật ký ngày tải ảnh; ngày sớm nhất ảnh được dùng là 2026-09-06 (evaluation/variants.csv).",
+                "collected_note": "Không có nhật ký ngày tải ảnh; ngày sớm nhất ảnh được dùng là 2026-09-06 (tsds/evaluation/variants.csv).",
                 "data_version": f"orig-sha256:{sha256_file(img)[:12]}",
                 "image_sha256": sha256_file(img),
                 "image_bytes": img.stat().st_size,

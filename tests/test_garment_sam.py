@@ -1,9 +1,9 @@
-"""Kiểm thử phần không cần mô hình của generation/garment_sam.py và việc truyền vùng áo tính sẵn."""
+"""Kiểm thử phần không cần mô hình của tsds/generation/garment/garment_sam.py và việc truyền vùng áo tính sẵn."""
 import numpy as np
 import pytest
 from PIL import Image
 
-from generation import garment, garment_sam as gs
+from tsds.generation.garment import garment, garment_sam as gs
 
 
 def test_diem_goi_y_dung_toa_do_va_nhan():
@@ -196,7 +196,7 @@ def _ao_co_khe(slit=True, shadow=False, speck=False):
 
 
 def test_khe_nen_trong_mat_na_bi_bo():
-    from generation import garment_sam as GS
+    from tsds.generation.garment import garment_sam as GS
     img, mask = _ao_co_khe()
     out = GS.remove_background_gaps(img, mask)
     assert out[150, 100] == 0                                    # giữa khe: đã bỏ
@@ -206,20 +206,20 @@ def test_khe_nen_trong_mat_na_bi_bo():
 
 
 def test_bong_do_tren_vai_va_dom_nho_khong_bi_coi_la_khe():
-    from generation import garment_sam as GS
+    from tsds.generation.garment import garment_sam as GS
     img, mask = _ao_co_khe(slit=False, shadow=True, speck=True)
     out = GS.remove_background_gaps(img, mask)
     assert (out == mask).all()                                   # không có khe thì giữ nguyên từng điểm
 
 
 def test_khong_khe_thi_tra_lai_dung_mat_na():
-    from generation import garment_sam as GS
+    from tsds.generation.garment import garment_sam as GS
     img, mask = _ao_co_khe(slit=False)
     assert (GS.remove_background_gaps(img, mask) == mask).all()
 
 
 def test_expected_wall_noi_suy_giua_hai_ben_ao():
-    from generation import garment_sam as GS
+    from tsds.generation.garment import garment_sam as GS
     img, mask = _ao_co_khe(slit=False)
     est = GS.expected_wall(img, mask)
     # tại hàng 150, nền trái ~ 100 + 30*(50/199) = 107,5; phải ~ 100 + 30*(150/199) = 122,6; giữa áo nội suy ~ 115
@@ -227,7 +227,7 @@ def test_expected_wall_noi_suy_giua_hai_ben_ao():
 
 
 def test_phan_khe_trong_bong_noi_voi_loi_khe_cung_bi_bo():
-    from generation import garment_sam as GS
+    from tsds.generation.garment import garment_sam as GS
     img, mask = _ao_co_khe()
     img[170:220, 95:105] = 60                                    # nửa dưới của khe nằm trong bóng: tối hơn nền (100 đến 130)
     out = GS.remove_background_gaps(img, mask)
@@ -236,7 +236,7 @@ def test_phan_khe_trong_bong_noi_voi_loi_khe_cung_bi_bo():
 
 
 def test_vung_toi_xa_loi_khe_khong_bi_noi_toi():
-    from generation import garment_sam as GS
+    from tsds.generation.garment import garment_sam as GS
     img, mask = _ao_co_khe()
     img[80:250, 95:105] = 60                                     # cả khe tối hơn nền: không có lõi khe, không có gì để neo
     out = GS.remove_background_gaps(img, mask)
@@ -244,7 +244,7 @@ def test_vung_toi_xa_loi_khe_khong_bi_noi_toi():
 
 
 def test_vai_trang_trong_bong_nep_gap_sang_hon_nen_khong_bi_bo():
-    from generation import garment_sam as GS
+    from tsds.generation.garment import garment_sam as GS
     img, mask = _ao_co_khe(slit=False)
     img[60:260, 70:90] = 150                                     # nếp gấp tối nhưng vẫn sáng hơn nền 100 đến 130 từ 20 mức
     out = GS.remove_background_gaps(img, mask)
@@ -252,7 +252,7 @@ def test_vai_trang_trong_bong_nep_gap_sang_hon_nen_khong_bi_bo():
 
 
 def test_max_gap_frac_la_nguong_hop_ly():
-    from generation import garment_sam as GS
+    from tsds.generation.garment import garment_sam as GS
     img, mask = _ao_co_khe()
     out = GS.remove_background_gaps(img, mask)
     removed = 1.0 - float(out.sum()) / float(mask.sum())

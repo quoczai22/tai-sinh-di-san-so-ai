@@ -1,12 +1,12 @@
-"""Kiểm thử vòng sinh lại hoa văn khi cổng G2 LỖI (quality/pattern_retry.py) bằng bộ sinh giả, không cần GPU."""
+"""Kiểm thử vòng sinh lại hoa văn khi cổng G2 LỖI (tsds/quality/pattern_retry.py) bằng bộ sinh giả, không cần GPU."""
 import csv
 
 import numpy as np
 import pytest
 from PIL import Image
 
-from quality import gate as QG
-from quality import pattern_retry as PR
+from tsds.quality import gate as QG
+from tsds.quality import pattern_retry as PR
 
 
 def g2_gia(seam=1.0, vls=0.0):

@@ -6,9 +6,9 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
-from provenance import passport as P
-from provenance.builder import build_design_passport
-from provenance.registry import get_item
+from tsds.provenance import passport as P
+from tsds.provenance.builder import build_design_passport
+from tsds.provenance.registry import get_item
 
 ROOT = Path(__file__).resolve().parent.parent
 

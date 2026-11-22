@@ -23,7 +23,7 @@ Hồ sơ đầy đủ cho Ban tổ chức (BTC) nằm ở [`docs/finals/`](docs/
 | # | BTC yêu cầu | Đã làm | Xem ở |
 |---|---|---|---|
 | 1 | Đánh giá **thiết kế cuối**, không chỉ hoa văn trung gian | Cổng **G2** (hoa văn: rò dáng bình, đường nối) và **G3** (thiết kế cuối: giữ họa tiết PPS, IoU dáng áo, độ nét, giữ chi tiết mịn, lệch màu ΔE); vòng thử lại polish (đổi seed, hạ độ nhiễu, trả bản ghép thô); khoá họa tiết `pattern_lock_v1`; bộ tiêu chí chuyên gia 5 mục chấm mù. Không chỉ số nào tự phê duyệt thiết kế. | `quality/`, `config/quality_gate.json`, `config/expert_rubric.json`, [05](docs/finals/05_QUALITY_ASSURANCE.md) |
-| 2 | **Đối chứng có kiểm soát**, nhiều seed, chấm mù | Module thí nghiệm từ chối kế hoạch đổi hơn một yếu tố; EXP-A (trọng số ControlNet, chưa chạy), EXP-B (bước hoàn thiện, 126 lượt), EXP-C (từng bước ghép), EXP-D (nguồn áo nền, 60 lượt), EXP-E (nguồn ảnh nạp, 36 lượt); gói chấm mù; thống kê KTC 95%, hệ số biến thiên, Krippendorff α, Wilcoxon, Friedman | `evaluation/experiment.py`, `evaluation/experiments/`, [06](docs/finals/06_EXPERIMENTS.md) |
+| 2 | **Đối chứng có kiểm soát**, nhiều seed, chấm mù | Module thí nghiệm từ chối kế hoạch đổi hơn một yếu tố; EXP-A (trọng số ControlNet, chưa chạy), EXP-B (bước hoàn thiện, 126 lượt), EXP-C (từng bước ghép), EXP-D (nguồn áo nền, 60 lượt), EXP-E (nguồn ảnh nạp, 36 lượt); gói chấm mù; thống kê KTC 95%, hệ số biến thiên, Krippendorff α, Wilcoxon, Friedman | `tsds/evaluation/experiment.py`, `tsds/evaluation/experiments/`, [06](docs/finals/06_EXPERIMENTS.md) |
 | 3 | **Bản quyền, nguồn gốc, truy vết** | Danh mục nguồn schema 2.0; cổng quyền theo 4 mục đích sử dụng; Design Passport có sổ cái băm nối chuỗi, phiên bản có băm cha, chỉnh sửa tay chạy lại G3; nhãn "Thiết kế hỗ trợ bởi AI" trên ảnh xuất | `provenance/`, `data/heritage/metadata.json`, `outputs/passports/`, [07](docs/finals/07_PROVENANCE_COPYRIGHT.md) |
 
 Kết quả bộ demo hiện tại (24 thiết kế, 6 hiện vật × 4 mức sáng tạo, ngày 19/11/2026, đọc từ Passport): G2 đạt 16, cảnh báo 5, loại 3 (cả 3 do đường nối, hiện vật LR3D_124); G3 đạt 14, cảnh báo 10, loại 0; PPS trung bình 0,943; giữ chi tiết mịn trung vị 0,87. Cả 10 cảnh báo G3 do chi tiết mịn dưới 0,85: bản cuối vẫn mất khoảng 13 đến 14% nét mảnh so với bản ghép thô. PPS cao một phần do chính cách làm (khoá họa tiết chép lại nét bản ghép), nên phải chờ chuyên gia chấm mù mới kết luận được bản nào đẹp hơn. Mốc so sánh bản 06/09/2026: G3 đạt 0/24, PPS trung vị 0,36 (số liệu lịch sử, xem [05](docs/finals/05_QUALITY_ASSURANCE.md)).
@@ -60,7 +60,7 @@ Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang ch
 |---|---|
 | Sinh ảnh | Stable Diffusion 1.5 + ControlNet v1.1 Canny + LoRA dáng áo dài (`diffusers`, `peft`, PyTorch CUDA), SAM (tách vùng áo), CLIP (`transformers`) |
 | Xử lý ảnh, phép đo | OpenCV, Pillow, NumPy, scikit-image, SciPy |
-| API | FastAPI + Uvicorn (`api/main.py`); PyTorch chỉ nạp khi cần, máy không GPU thì `/generate` trả 503 |
+| API | FastAPI + Uvicorn (`tsds/api/main.py`); PyTorch chỉ nạp khi cần, máy không GPU thì `/generate` trả 503 |
 | Giao diện | HTML/CSS/JS thuần (ES modules), không framework; 3 trang cho người xem (Trang chủ, Studio, Kết quả) |
 | Dữ liệu | Tệp JSON/CSV trong repo, không dùng cơ sở dữ liệu |
 | Kiểm thử | pytest (249 ca, không cần GPU) |
@@ -69,11 +69,17 @@ Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang ch
 
 ```text
 .
-├── api/                  FastAPI: hiện vật, sinh thiết kế, Passport, QC, thẩm định, chỉnh sửa, xuất bản, thí nghiệm
-├── generation/           Pipeline hai giai đoạn (controlnet, pattern, palette, layout_select, garment, garment_lora, garment_sam, streamlit_runner)
-├── quality/              Cổng G2/G3, phép đo, khoá họa tiết
-├── provenance/           Danh mục nguồn, cổng quyền, Design Passport, băm, nhãn AI
-├── evaluation/           Thí nghiệm có kiểm soát (experiment.py, experiments/), thử cách hoàn thiện ảnh (polish_finish_trial)
+├── tsds/                 Gói Python duy nhất của dự án (import: from tsds.generation.pattern import controlnet)
+│   ├── core/             Tầng thấp nhất, không import gói nào khác: paths.py (mọi đường dẫn), align.py, pattern_lock.py (khoá họa tiết)
+│   ├── generation/       Sinh ảnh. stable_diffusion (nạp Stable Diffusion) và prompt_template (prompt hoa văn và áo) dùng chung cho cả hai giai đoạn, nằm ngay ở đây
+│   │   ├── pattern/      Giai đoạn 1, hoa văn: pattern, controlnet, palette, elements, element_library
+│   │   └── garment/      Giai đoạn 2, áo: garment (ghép, hoàn thiện), garment_lora (áo nền), garment_sam (tách vùng áo), layout_select (chọn bố cục)
+│   ├── quality/          Cổng G2/G3, phép đo, thử lại
+│   ├── provenance/       Danh mục nguồn, cổng quyền, Design Passport, băm, nhãn AI
+│   ├── evaluation/       Thí nghiệm có kiểm soát (experiment.py, experiments/), thử cách hoàn thiện ảnh (polish_finish_trial)
+│   ├── pipeline/         run.py: điều phối end-to-end một lần sinh (generate_design_set)
+│   ├── api/              FastAPI: hiện vật, sinh thiết kế, Passport, QC, thẩm định, chỉnh sửa, xuất bản, thí nghiệm
+│   └── streamlit_ui/     Công cụ kiểm chứng pipeline nội bộ (Streamlit; app.py ở gốc chỉ gọi tsds/streamlit_ui/app.py)
 ├── config/               Ngưỡng cổng QG-1.0, tiêu chí tuyển ảnh, bộ tiêu chí chuyên gia (có phiên bản)
 ├── data/
 │   ├── heritage/         Ảnh hiện vật, metadata.json (schema 2.0), sources/ (ứng viên ảnh CC0 thay thế)
@@ -99,15 +105,19 @@ Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang ch
 │   ├── docs/             Dựng sơ đồ BPMN và Use Case
 │   ├── eval/             Gói chấm mù, đo tốc độ sinh, đo backend
 │   └── deploy/           Gói Hugging Face Space, cổng thử nghiệm cục bộ
-├── streamlit_ui/, app.py Công cụ kiểm chứng pipeline nội bộ (Streamlit; app.py ở gốc chỉ gọi streamlit_ui/app.py)
+├── app.py                Điểm chạy Streamlit nội bộ (streamlit run app.py)
 ├── tests/                Ca pytest; manual/ là các script kiểm thử chạy tay (không thuộc pytest)
 ├── docs/
 │   ├── finals/           Hồ sơ vòng chung kết 01–11 + diagrams/ (BPMN 2.0, Use Case)
 │   └── SETUP_AI_LOCAL.md Cài môi trường GPU
 ├── archive/              Lưu trữ bản 09/2026 (giao diện, đặc tả MVP, smoke test), không thuộc bản chung kết
-├── requirements.txt · requirements-dev.txt · pytest.ini · vercel.json
+├── pyproject.toml · uv.lock · requirements-api.txt (chỉ cho ảnh Docker) · pytest.ini · vercel.json
 └── README.md
 ```
+
+**Phân tầng import** (tầng dưới không được import ngược lên tầng trên; `tests/test_layering.py` kiểm tra tự động, kể cả import đặt trong hàm):
+`tsds.core` < `tsds.generation` < `tsds.quality` < `tsds.provenance` < `tsds.evaluation` < `tsds.pipeline` < `tsds.api`, `tsds.streamlit_ui`.
+Mã Python nằm hết trong `tsds/` nên `Dockerfile` và `COPY_DIRS` của `scripts/deploy/build_hf_space.py` chỉ cần `tsds/`, `config/`, `data/` (`tests/test_deploy_files.py` kiểm tra). Thư viện khai báo trong `pyproject.toml` (cài bằng `uv sync`); `requirements-api.txt` chỉ dành cho ảnh Docker.
 
 ## 5. Cài đặt và chạy
 
@@ -116,7 +126,7 @@ Lệnh chạy bằng PowerShell tại thư mục gốc.
 **A. Giao diện + API**
 
 ```powershell
-uv run python -m uvicorn api.main:app --host 127.0.0.1 --port 8000     # cửa sổ 1 (sinh ảnh thật cần GPU)
+uv run python -m uvicorn tsds.api.main:app --host 127.0.0.1 --port 8000     # cửa sổ 1 (sinh ảnh thật cần GPU)
 uv run python -m http.server 5500 --directory web_ui                    # cửa sổ 2
 ```
 
@@ -137,7 +147,7 @@ uv run python scripts/eval/build_blind_review.py                              # 
 uv run python scripts/data_prep/cutout_heritage.py                                  # tách nền ảnh 6 hiện vật (SAM) thành PNG trong suốt, chỉ dùng để hiển thị
 uv run python scripts/web/export_heritage_glb.py                              # nén mô hình 3D 6 hiện vật thành GLB nhẹ cho khung xoay 360 độ ở trang Studio
 uv run python scripts/demo/export_demo_data.py                                 # cập nhật web_ui/data cho chế độ ngoại tuyến
-uv run python -m evaluation.experiment run evaluation/experiments/EXP-A_controlnet_weight.json   # chưa chạy, 120 lượt
+uv run python -m tsds.evaluation.experiment run tsds/evaluation/experiments/EXP-A_controlnet_weight.json   # chưa chạy, 120 lượt
 ```
 
 Trọng số LoRA có sẵn ở `data/lora/aodai_r16_512/`; huấn luyện lại bằng `scripts/train/train_lora.py`.

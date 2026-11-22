@@ -134,7 +134,7 @@ Mục tiêu: lấy các phần tử họa tiết nét từ ảnh gốm, giữ ng
 
 ### 3.1. Các bước
 
-Với mảng texture phẳng của LR3D-CULT2, bước 2 và 3 (silhouette, trải trụ) không cần, vì texture đã phẳng và mô hình 3D cho sẵn vùng hợp lệ (UV). Hai bước đó chỉ cần nếu quay lại dùng ảnh chụp bình cong. Phần đã có: `generation/elements.py`, `scripts/data_prep/extract_lr3d.py`, `scripts/data_prep/build_elements.py`, `scripts/data_prep/make_heritage_from_lr3d.py`.
+Với mảng texture phẳng của LR3D-CULT2, bước 2 và 3 (silhouette, trải trụ) không cần, vì texture đã phẳng và mô hình 3D cho sẵn vùng hợp lệ (UV). Hai bước đó chỉ cần nếu quay lại dùng ảnh chụp bình cong. Phần đã có: `tsds/generation/pattern/elements.py`, `scripts/data_prep/extract_lr3d.py`, `scripts/data_prep/build_elements.py`, `scripts/data_prep/make_heritage_from_lr3d.py`.
 
 1. **Kiểm tra ảnh nguồn:** độ phân giải, có kênh trong suốt (alpha) không, bình có bị che khuất không. Ghi kết quả vào hồ sơ.
 2. **Tách silhouette** (viền ngoài của bình): dùng alpha nếu có. Nếu không, dùng Grounded SAM. Grounding DINO là mô hình phát hiện vật theo mô tả chữ (ví dụ "ceramic vase"), cho ra khung chữ nhật. SAM (Segment Anything) nhận khung đó và cho ra mask chính xác theo viền.
@@ -227,7 +227,7 @@ Ba nguồn này là ba nhánh của thí nghiệm E1 (mục 8.3). Kết quả xe
 
 ControlNet là mạng phụ nhận điều kiện hình ảnh để điều khiển Stable Diffusion. Hệ thống hiện dùng điều kiện Canny (ảnh đường nét) với bốn mức trọng số cố định: 0,85, 0,65, 0,45, 0,25 cho các mức sáng tạo. Giữ nguyên bốn mức này để so sánh có kiểm soát.
 
-Áp dụng cho cả bốn mức, kể cả mức 1 (trọng số 0,85, giữ bảng màu gốc, vẫn vẽ lại nhưng bám sát nhất). Thay đổi chính: ảnh Canny lấy từ **phần tử trong kho** (mục 3), không lấy từ cả hiện vật. Lý do: hệ thống hiện thu cả hiện vật về 512 px (`letterbox` trong `generation/controlnet.py`), nên họa tiết nhỏ có thể mất nét, ví dụ con rồng của vật #61 biến thành sọc (nguyên nhân này là nghi ngờ, kiểm chứng bằng thí nghiệm E1 ở mục 8.3). Phần tử cắt ra có thể đưa vào ở độ phân giải cao hơn nhiều so với một họa tiết nhỏ nằm trong cả hiện vật. Chỉnh `prepare` để nhận phần tử là việc cần làm, chưa có.
+Áp dụng cho cả bốn mức, kể cả mức 1 (trọng số 0,85, giữ bảng màu gốc, vẫn vẽ lại nhưng bám sát nhất). Thay đổi chính: ảnh Canny lấy từ **phần tử trong kho** (mục 3), không lấy từ cả hiện vật. Lý do: hệ thống hiện thu cả hiện vật về 512 px (`letterbox` trong `tsds/generation/pattern/controlnet.py`), nên họa tiết nhỏ có thể mất nét, ví dụ con rồng của vật #61 biến thành sọc (nguyên nhân này là nghi ngờ, kiểm chứng bằng thí nghiệm E1 ở mục 8.3). Phần tử cắt ra có thể đưa vào ở độ phân giải cao hơn nhiều so với một họa tiết nhỏ nằm trong cả hiện vật. Chỉnh `prepare` để nhận phần tử là việc cần làm, chưa có.
 
 ### 4.2. Tileable pattern (lát liền mạch)
 
@@ -259,7 +259,7 @@ Noise rolling (dịch vòng nhiễu để các mép nối liền ngay khi sinh),
 ### 6.1. Nền áo
 
 - **Hướng chính nếu có ảnh thật** (câu hỏi 1 ở mục 0): ảnh áo dài trơn nhóm tự chụp, độ phân giải cao (thân áo rộng hàng trăm pixel), có đồng ý người mẫu, giấy phép sạch. Ghi nguồn vào Passport.
-- **Dự phòng:** ảnh áo AI 1024 px sinh bằng hàm `make_template` trong `generation/garment.py`. Đã sinh được trong khoảng 23 giây, VRAM đỉnh 7,1 GB, nhưng **chưa kiểm tra chất lượng bằng mắt**. Cần xem trước khi dựa vào.
+- **Dự phòng:** ảnh áo AI 1024 px sinh bằng hàm `make_template` trong `tsds/generation/garment/garment.py`. Đã sinh được trong khoảng 23 giây, VRAM đỉnh 7,1 GB, nhưng **chưa kiểm tra chất lượng bằng mắt**. Cần xem trước khi dựa vào.
 
 ### 6.2. Ghép theo vật lý, tất định
 
@@ -295,7 +295,7 @@ Giới hạn:
 
 ## 7. Polish nhẹ có mặt nạ
 
-Hiện tại `polish()` trong `generation/garment.py` chạy img2img (sinh ảnh từ ảnh có sẵn, thêm nhiễu rồi khử nhiễu) trên toàn ảnh với strength 0,40, không có mask.
+Hiện tại `polish()` trong `tsds/generation/garment/garment.py` chạy img2img (sinh ảnh từ ảnh có sẵn, thêm nhiễu rồi khử nhiễu) trên toàn ảnh với strength 0,40, không có mask.
 
 Phiên bản mới:
 
@@ -411,7 +411,7 @@ Vai trò gợi ý, nhóm tự gán người: **AI** (mô hình và pipeline), **
 Mục tiêu: ban tổ chức bấm vào đường dẫn và tạo được áo dài, không cần cài đặt.
 
 - **Lớp giao diện:** `web_ui` là trang tĩnh, đặt trên dịch vụ lưu trang tĩnh (ví dụ Vercel).
-- **Lớp sinh ảnh:** API trong `api/main.py` chạy trên máy có GPU của nhóm, mở ra ngoài bằng một tunnel (đường hầm HTTPS, ví dụ Cloudflare Tunnel).
+- **Lớp sinh ảnh:** API trong `tsds/api/main.py` chạy trên máy có GPU của nhóm, mở ra ngoài bằng một tunnel (đường hầm HTTPS, ví dụ Cloudflare Tunnel).
 - **Hạn chế:** khi máy tắt hoặc mất mạng thì không sinh ảnh được. Vì vậy cần thêm chế độ xem lại mẫu đã sinh sẵn (thư viện ảnh tĩnh cùng Passport) để ban tổ chức vẫn xem được kết quả.
 - Việc cần xác nhận bằng cách chạy thử: giới hạn thời gian của tunnel, một người dùng một lúc do GPU 8 GB, và ghi chú rõ thời gian chờ mỗi ảnh.
 

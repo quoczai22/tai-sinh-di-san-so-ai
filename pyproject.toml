@@ -1,0 +1,76 @@
+[project]
+name = "tai-sinh-di-san-so"
+version = "0.1.0"
+description = "Tái Sinh Di Sản Số: chuyển hoa văn gốm Bát Tràng thành thiết kế áo dài bằng AI, có truy vết nguồn gốc."
+requires-python = ">=3.11"
+# Ghim đúng phiên bản của môi trường đang chạy tốt (đã kiểm: GPU + toàn bộ pytest).
+# Muốn nâng phiên bản: uv add <tên>@<phiên bản> rồi chạy lại pytest.
+dependencies = [
+    "streamlit==1.67.0",
+    "fastapi==0.163.2",
+    "uvicorn[standard]==0.54.0",
+    "pydantic==2.14.3",
+    "torch==2.13.0+cu126",
+    "torchvision==0.28.0+cu126",
+    "diffusers==0.43.0",
+    "transformers==5.23.0",
+    "accelerate==1.16.0",
+    "peft==0.21.3",
+    "safetensors==0.8.0",
+    "huggingface-hub==2.4.0",
+    "opencv-python==5.1.0.95",
+    "pillow==13.0.0",
+    "numpy==2.4.6",
+    "scikit-image==0.26.0",
+    "scipy==1.17.1",
+    "trimesh==5.2.1",
+    "pymeshlab==2025.7.post1",
+    "pdfplumber==0.11.10",
+    "pyarrow==26.0.1",
+    "python-dotenv==1.2.4",
+    "tqdm==4.66.5",
+    # gói đang có trong môi trường, giữ lại để uv sync không gỡ (pymeshlab trên Windows cần msvc-runtime)
+    "fast-simplification==0.2.0",
+    "msvc-runtime==14.44.35112; sys_platform == 'win32'",
+]
+
+[dependency-groups]
+# Chỉ dùng cho kiểm thử: uv add --dev <tên>
+dev = [
+    "pytest==9.2.0",
+    "httpx2==2.3.0",
+]
+
+[tool.uv]
+# Không cài chính dự án vào môi trường: mã (gói tsds/) được import trực tiếp từ gốc repo, như cách Dockerfile đang chạy.
+package = false
+# Cả máy Windows có GPU của nhóm và máy chủ Linux (Docker, Modal).
+environments = ["sys_platform == 'win32'", "sys_platform == 'linux'"]
+# Ghim các thư viện phụ theo đúng môi trường đang chạy tốt, để uv run không tự nâng phiên bản.
+constraint-dependencies = [
+    "annotated-doc==0.0.6",
+    "certifi==2022.12.7",
+    "charset-normalizer==2.1.1",
+    "filelock==4.2.4",
+    "idna==3.4",
+    "importlib-metadata==7.1.0",
+    "markupsafe==3.0.3",
+    "packaging==24.1",
+    "pyyaml==6.0.3",
+    "regex==2026.11.15",
+    "requests==2.28.1",
+    "setuptools==78.1.0",
+    "typer==0.29.1",
+    "urllib3==1.26.13",
+    "watchdog==7.1.0",
+    "zipp==3.19.2",
+]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu126" }
+torchvision = { index = "pytorch-cu126" }
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true

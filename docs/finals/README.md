@@ -28,16 +28,16 @@ Bộ tài liệu này chỉ phục vụ vòng chung kết và tập trung vào b
 | BTC yêu cầu | Đã làm | Bằng chứng |
 |---|---|---|
 | Đo mức giữ hoa văn và hình dáng áo sau khi hoàn thiện ảnh | Cổng G3: PPS (giữ họa tiết), IoU dáng áo, độ nét, giữ chi tiết mịn, lệch màu, đo trên thiết kế cuối; 24 thiết kế bộ demo (seed 42) và 48 thiết kế seed 43, 44 đều có kết quả; G3: 55/72 đạt, 17 cảnh báo (giữ chi tiết mịn), 0 lỗi | `quality/`, `outputs/passports/` (mục `quality`), `GET /quality/designs` |
-| Tiêu chí loại hoặc thử lại | Ngưỡng PASS/WARN/FAIL có giải thích; vòng thử lại polish (đổi seed, hạ độ nhiễu, trả bản ghép thô); kiểm tra áo nền (tối đa 6 ứng viên, phải trắng trơn: `color_ok` loại áo có mảng đỏ hoặc cam; mặt nạ áo bỏ khe nền giữa tay và thân); G2 lỗi tự sinh lại hoa văn (đổi seed, tối đa 3 lần, giữ bản ít lỗi nhất) | `config/quality_gate.json`, `quality/retry.py`, `quality/pattern_retry.py`, `generation/garment_lora.py` |
+| Tiêu chí loại hoặc thử lại | Ngưỡng PASS/WARN/FAIL có giải thích; vòng thử lại polish (đổi seed, hạ độ nhiễu, trả bản ghép thô); kiểm tra áo nền (tối đa 6 ứng viên, phải trắng trơn: `color_ok` loại áo có mảng đỏ hoặc cam; mặt nạ áo bỏ khe nền giữa tay và thân); G2 lỗi tự sinh lại hoa văn (đổi seed, tối đa 3 lần, giữ bản ít lỗi nhất) | `config/quality_gate.json`, `tsds/quality/retry.py`, `tsds/quality/pattern_retry.py`, `tsds/generation/garment/garment_lora.py` |
 | Chuyên gia di sản và thiết kế đánh giá | Bộ tiêu chí 5 mục, phiếu chấm, gói chấm mù, API ghi phiếu (`POST /passports/{id}/reviews`). Giao diện web không còn trang thẩm định (gỡ 19/11/2026); việc xem xét là bước ngoài hệ thống, kết quả đưa vào báo cáo. **Chưa có phiếu của người thật** | `config/expert_rubric.json`, `outputs/review/blind_review/` |
 | Bộ hiện vật – hoa văn – thiết kế cuối kèm phiếu | 24 thiết kế (seed 42; thêm 48 thiết kế seed 43, 44), mỗi lần chạy có ảnh hiện vật (`00_reference.png`), hoa văn (`V<n>_pattern.png`), bản ghép thô và thiết kế cuối (`V<n>_aodai.png`); 24 Passport | `outputs/runs/`, `outputs/passports/` |
-| Ví dụ bị loại và được sửa | 2 thiết kế của hiện vật HV12 (LR3D_124 mức 2 và 3) bị G2 loại (đường nối) sau 4 lần sinh lại; áo LoRA có mảng đỏ hoặc cam bị `color_ok` loại; polish 0,30 làm mất họa tiết được đổi sang 0,20 kèm khoá họa tiết; khoá họa tiết cũ làm mất nét mảnh được sửa (`dog_sigma_low` 0,3) | [05](05_QUALITY_ASSURANCE.md) mục "Ví dụ", `evaluation/polish_finish_trial.csv` |
+| Ví dụ bị loại và được sửa | 2 thiết kế của hiện vật HV12 (LR3D_124 mức 2 và 3) bị G2 loại (đường nối) sau 4 lần sinh lại; áo LoRA có mảng đỏ hoặc cam bị `color_ok` loại; polish 0,30 làm mất họa tiết được đổi sang 0,20 kèm khoá họa tiết; khoá họa tiết cũ làm mất nét mảnh được sửa (`dog_sigma_low` 0,3) | [05](05_QUALITY_ASSURANCE.md) mục "Ví dụ", `tsds/evaluation/polish_finish_trial.csv` |
 
 ### 2. Đối chứng có kiểm soát và nhiều seed
 
 | BTC yêu cầu | Đã làm | Bằng chứng |
 |---|---|---|
-| Cố định prompt và bảng màu, chỉ đổi một yếu tố | EXP-A chỉ đổi ControlNet; EXP-B bước hoàn thiện; EXP-C bước ghép; EXP-D nguồn áo nền; EXP-E và EXP-F nguồn ảnh nạp (bình render hay mảng phẳng); EXP-G cách tạo ô hoa văn. Kế hoạch đổi hơn một yếu tố bị mã từ chối | `evaluation/experiments/`, `tests/test_experiment.py` |
+| Cố định prompt và bảng màu, chỉ đổi một yếu tố | EXP-A chỉ đổi ControlNet; EXP-B bước hoàn thiện; EXP-C bước ghép; EXP-D nguồn áo nền; EXP-E và EXP-F nguồn ảnh nạp (bình render hay mảng phẳng); EXP-G cách tạo ô hoa văn. Kế hoạch đổi hơn một yếu tố bị mã từ chối | `tsds/evaluation/experiments/`, `tests/test_experiment.py` |
 | Nhiều seed | EXP-A 5 seed, EXP-B 3, EXP-D 5, EXP-E 3, EXP-F 3, EXP-G 3; bộ demo ba seed (42, 43, 44) cho gói chấm mù | `outputs/experiments/EXP-*/plan.csv` |
 | Đánh giá mù | Gói chấm mù riêng cho EXP-A (48 ảnh, chỉ đổi trọng số ControlNet, `outputs/review/blind_review_EXP-A/`) cho yêu cầu 2. Gói chấm mù nhiều seed: 72 thiết kế (24 ô × 3 seed), mã ẩn danh, mỗi người chấm thấy 24 thiết kế (một mỗi ô, seed xoay theo mã người chấm), thứ tự xáo theo người chấm; ảnh của gói không đưa vào repo | `outputs/review/blind_review/` |
 | CSV cấu hình, bảng điểm người chấm, thống kê độ phân tán | `plan.csv`, `results.csv`, `ratings_*.csv`, `summary.json` (trung bình, độ lệch chuẩn, KTC 95%, hệ số biến thiên, alpha, kiểm định cặp) | `outputs/experiments/` |
@@ -48,7 +48,7 @@ Bộ tài liệu này chỉ phục vụ vòng chung kết và tập trung vào b
 | BTC yêu cầu | Đã làm | Bằng chứng |
 |---|---|---|
 | Nguồn và giấy phép của 6 hiện vật đang dùng (LR3D-CULT2) và của LoRA | Danh mục 10 trường, trường thiếu được ghi là thiếu; Passport ghi nguồn dữ liệu và giấy phép CC BY-NC 4.0 của LoRA, trích dẫn VietFashion | `data/heritage/metadata.json`, `data/lora/README.md`, `GET /provenance/catalog` |
-| Ghi công | Câu ghi công từng hiện vật, in vào nhãn khi xuất | `attribution`, `provenance/labeling.py` |
+| Ghi công | Câu ghi công từng hiện vật, in vào nhãn khi xuất | `attribution`, `tsds/provenance/labeling.py` |
 | Lịch sử biên tập thủ công | Mỗi lần sửa là phiên bản mới có băm cha, ghi người sửa, công cụ, nội dung; chạy lại G3 | `POST /passports/{id}/edits`, mục `edits`, `versions` |
 | Nhãn "có hỗ trợ AI" | Dải nhãn nhìn thấy được + siêu dữ liệu PNG | `GET /passports/{id}/export` |
 | Danh mục nguồn và Design Passport nguồn → sản phẩm | Passport có chuỗi truy vết và sổ cái băm; 24/24 hợp lệ ở bộ demo (72/72 kể cả bộ nhiều seed). Giao diện web không còn trang Passport (gỡ 19/11/2026); Passport đọc qua API và tệp JSON | `outputs/passports/`, `GET /passports/{id}` |

@@ -3,9 +3,9 @@ import pytest
 import numpy as np
 from PIL import Image
 
-from generation import garment_lora as gl
-from generation import layout_select
-from quality import retry as R
+from tsds.generation.garment import garment_lora as gl
+from tsds.generation.garment import layout_select
+from tsds.quality import retry as R
 
 
 def ao(h=688, w=512, y0=40, y1=660, x0=150, x1=370):
@@ -52,7 +52,7 @@ def test_bo_do_g3_dung_ao_va_vung_ao_tinh_san(tmp_path):
 
 
 def test_pick_seed_ngau_nhien_khi_khong_chi_dinh_va_giu_nguyen_khi_co():
-    from generation import garment_lora as gl
+    from tsds.generation.garment import garment_lora as gl
     assert gl.pick_seed(7) == 7 and gl.pick_seed(0) == 0          # seed 0 vẫn là seed hợp lệ
     seeds = {gl.pick_seed() for _ in range(20)}
     assert len(seeds) > 1 and all(0 <= s < 2**31 for s in seeds)  # không còn mặc định cố định 42
@@ -106,13 +106,13 @@ def test_mat_na_rong_bi_loai_o_color_ok():
 
 
 def test_bien_the_mac_dinh_khong_khoa_bo_cuc_de_clip_chon_bon_vi_tri_khac_nhau():
-    from generation import streamlit_runner as sr
+    from tsds.pipeline import run as sr
     assert [v["level"] for v in sr.DEFAULT_VARIANTS] == [1, 2, 3, 4]
     assert not any("layout" in v for v in sr.DEFAULT_VARIANTS)      # không khóa: mỗi biến thể lấy bố cục chưa dùng
 
 
 def test_prompt_ao_co_tu_the_tay_va_chan_day_buoc_va_vua_77_token():
-    from generation import prompt_template as PT
+    from tsds.generation import prompt_template as PT
     pos, neg = PT.GARMENT_PROMPT, PT.GARMENT_NEG + gl.NEG_EXTRA
     assert "arms slightly away from the body" in pos and "waist" not in pos      # tay rời thân; bỏ chữ waist kéo dây buộc
     for w in ("belt", "sash", "waistband", "hands on hips", "arms crossed"):

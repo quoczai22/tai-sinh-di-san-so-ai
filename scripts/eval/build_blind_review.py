@@ -57,7 +57,7 @@ def default_passport_dirs(root: Path = ROOT) -> list[Path]:
 
 def collect(root: Path = ROOT, passport_dirs: list[Path] | None = None) -> list[dict]:
     """Mọi thiết kế có ảnh: passport_id, hiện vật, ảnh, mức sáng tạo, seed, kết quả cổng. Sắp theo passport_id."""
-    from provenance import passport as P                                 # noqa: PLC0415
+    from tsds.provenance import passport as P                                 # noqa: PLC0415
 
     rows = []
     for d in passport_dirs if passport_dirs is not None else default_passport_dirs(root):
@@ -113,7 +113,7 @@ def collect_experiment(exp_dir: Path, seeds: list[int] | None = None) -> tuple[l
 
 
 def build(out: Path, root: Path = ROOT, designs: list[dict] | None = None, criteria_keys: list[str] | None = None) -> dict:
-    from api.main import ui_items                                        # noqa: PLC0415
+    from tsds.api.main import ui_items                                        # noqa: PLC0415
 
     rubric = json.loads((root / "config" / "expert_rubric.json").read_text(encoding="utf-8"))
     if criteria_keys:                                                    # thí nghiệm chỉ chấm các tiêu chí nêu trong đặc tả

@@ -2,7 +2,7 @@
 
 Trả lời yêu cầu cải tiến 1 của BTC: **đánh giá thiết kế cuối, không chỉ hoa văn trung gian**.
 
-Nguyên tắc: máy đo những gì đo được bằng kỹ thuật (họa tiết còn không, dáng áo còn không, ảnh nét không, màu lệch không) và chỉ quyết định *đường đi tiếp*. Văn hoá và thẩm mỹ do chuyên gia quyết định. Không chỉ số nào tự phê duyệt thiết kế; hàm `approval_from_assessment` trong `quality/assess.py` không bao giờ trả trạng thái "đã phê duyệt".
+Nguyên tắc: máy đo những gì đo được bằng kỹ thuật (họa tiết còn không, dáng áo còn không, ảnh nét không, màu lệch không) và chỉ quyết định *đường đi tiếp*. Văn hoá và thẩm mỹ do chuyên gia quyết định. Không chỉ số nào tự phê duyệt thiết kế; hàm `approval_from_assessment` trong `tsds/quality/assess.py` không bao giờ trả trạng thái "đã phê duyệt".
 
 ## Chuỗi cổng
 
@@ -19,7 +19,7 @@ Nguyên tắc: máy đo những gì đo được bằng kỹ thuật (họa ti�
 
 ## Định nghĩa phép đo
 
-Tất cả nằm trong `quality/metrics.py`. Ảnh được chuyển sang không gian màu CIELAB. "Bản ghép" là ảnh ghép tất định hoa văn lên áo, trước polish.
+Tất cả nằm trong `tsds/quality/metrics.py`. Ảnh được chuyển sang không gian màu CIELAB. "Bản ghép" là ảnh ghép tất định hoa văn lên áo, trước polish.
 
 | Phép đo | Cách tính | Ý nghĩa |
 |---|---|---|
@@ -54,19 +54,19 @@ Quyết định của một cổng là mức tệ nhất trong các phép đo c�
 
 ## Hoàn thiện ảnh: polish chỉ vùng áo, khoá họa tiết, vòng thử lại
 
-Bước hoàn thiện (`generation/garment.py::polish_locked`) gồm ba việc nối tiếp:
+Bước hoàn thiện (`tsds/generation/garment/garment.py::polish_locked`) gồm ba việc nối tiếp:
 
 1. **Polish chỉ vùng áo** (Stable Diffusion 1.5 img2img, độ nhiễu 0,20): ảnh polish chỉ được dùng trong mặt nạ áo; ngoài áo giữ nguyên từng pixel của bản ghép (trôi ngoài áo bằng 0). Mặc định cũ là polish toàn ảnh độ nhiễu 0,40; EXP-B cho thấy cách này làm PPS tụt còn 0,30 và làm lệch dáng áo (IoU 0,956 so với 0,993 ở polish chỉ vùng áo), vì nền và tay cũng bị vẽ lại.
-2. **Khoá họa tiết** (`quality/repair.py`, `pattern_lock_v1`): giữ phần tần thấp của ảnh polish (bóng nếp vải, ánh sáng) và trả lại nét vẽ và màu của họa tiết từ bản ghép, chỉ trong vùng họa tiết (mặt nạ làm mềm 3 px). Kênh sáng trả lại mọi tần số mịn hơn σ = 4 px của bản ghép (`dog_sigma_low` = 0,3, `dog_sigma_high` = 4,0); kênh màu kéo về bản ghép với trọng số 0,85. Sau cùng ép phần ngoài áo về đúng bản ghép.
-3. **Vòng thử lại** (`quality/retry.py`): đo cổng G3 trên ảnh vừa hoàn thiện. Nếu **PPS dưới 0,40 hoặc IoU dưới 0,92** (hai chỉ số ở mức lỗi) thì thử lại theo thứ tự: seed gốc, rồi 3 seed kế tiếp cùng độ nhiễu 0,20, rồi hạ độ nhiễu xuống 0,12 một lần; vẫn lỗi thì **trả bản ghép thô** kèm nhãn "chưa qua bước hoàn thiện". Tối đa 5 lần polish. Mọi lần bị loại ghi vào `outputs/qc/rejects.csv` kèm ảnh. Các chỉ số khác (độ nét, chi tiết mịn, lệch màu) chỉ cảnh báo, không kích hoạt thử lại.
+2. **Khoá họa tiết** (`tsds/core/pattern_lock.py`, `pattern_lock_v1`): giữ phần tần thấp của ảnh polish (bóng nếp vải, ánh sáng) và trả lại nét vẽ và màu của họa tiết từ bản ghép, chỉ trong vùng họa tiết (mặt nạ làm mềm 3 px). Kênh sáng trả lại mọi tần số mịn hơn σ = 4 px của bản ghép (`dog_sigma_low` = 0,3, `dog_sigma_high` = 4,0); kênh màu kéo về bản ghép với trọng số 0,85. Sau cùng ép phần ngoài áo về đúng bản ghép.
+3. **Vòng thử lại** (`tsds/quality/retry.py`): đo cổng G3 trên ảnh vừa hoàn thiện. Nếu **PPS dưới 0,40 hoặc IoU dưới 0,92** (hai chỉ số ở mức lỗi) thì thử lại theo thứ tự: seed gốc, rồi 3 seed kế tiếp cùng độ nhiễu 0,20, rồi hạ độ nhiễu xuống 0,12 một lần; vẫn lỗi thì **trả bản ghép thô** kèm nhãn "chưa qua bước hoàn thiện". Tối đa 5 lần polish. Mọi lần bị loại ghi vào `outputs/qc/rejects.csv` kèm ảnh. Các chỉ số khác (độ nét, chi tiết mịn, lệch màu) chỉ cảnh báo, không kích hoạt thử lại.
 
-Căn cứ chọn cấu hình là `evaluation/polish_finish_trial.csv` (xem [06](06_EXPERIMENTS.md)): trên 12 thiết kế, khoá họa tiết cũ (`dog_sigma_low` 1,2) cho PPS cao (0,91) nhưng chi tiết mịn thấp (0,61); `dog_sigma_low` 0,3 giữ chi tiết mịn 0,83 và không thiết kế nào bị loại.
+Căn cứ chọn cấu hình là `tsds/evaluation/polish_finish_trial.csv` (xem [06](06_EXPERIMENTS.md)): trên 12 thiết kế, khoá họa tiết cũ (`dog_sigma_low` 1,2) cho PPS cao (0,91) nhưng chi tiết mịn thấp (0,61); `dog_sigma_low` 0,3 giữ chi tiết mịn 0,83 và không thiết kế nào bị loại.
 
 **Lưu ý quan trọng**: PPS của bản có khoá họa tiết cao *do cách làm* (nét vẽ được chép lại từ bản ghép). PPS cao vì vậy **không chứng minh** bản khoá đẹp hơn hay giống vải in hơn. Với khoá họa tiết, bản cuối rất gần bản ghép thô; phần polish còn lại chủ yếu chỉnh ánh sáng. Câu hỏi "bản nào đẹp hơn" được giao cho chuyên gia chấm mù.
 
 ## Sinh lại hoa văn khi G2 lỗi
 
-Vòng này (`quality/pattern_retry.py`, gọi từ `generation/streamlit_runner.py`) đo G2 ngay sau khi sinh hoa văn, trước khi ghép lên áo, để không phí công polish và cổng G3 cho một hoa văn chắc chắn bị loại.
+Vòng này (`tsds/quality/pattern_retry.py`, gọi từ `tsds/pipeline/run.py`) đo G2 ngay sau khi sinh hoa văn, trước khi ghép lên áo, để không phí công polish và cổng G3 cho một hoa văn chắc chắn bị loại.
 
 1. Sinh hoa văn với seed gốc rồi đo G2 (trên đúng ảnh sẽ dùng, sau khi khớp bảng màu).
 2. Chỉ **LỖI** mới kích hoạt: VLS từ 0,40 hoặc đường nối từ 2,0. Cảnh báo (WARN) dùng luôn, giống vòng polish.
@@ -127,7 +127,7 @@ Bộ seed 43 và 44 sinh bằng `scripts/demo/generate_demo_set.py --seed N --ou
 
 **Nguyên nhân (đã đo):** bước lấp lỗ `clean_mask` không thêm điểm nào; chính mặt nạ SAM chứa khe. Áo sinh với prompt cũ có tay buông sát thân tạo khe hẹp, tối: đo bằng màu nền nội suy cùng hàng, 2,1% đến 5,1% mặt nạ là khe nền, so với 0,36% ở áo bản trước. Trên bản sinh trước khi sửa mặt nạ, trong đúng vùng khe 19% đến 67% điểm bị đổi (hoa văn hoặc polish), đo ở 3 hiện vật.
 
-**Cách sửa** (`generation/garment_sam.py::remove_background_gaps`, gọi cuối `garment_mask_sam`):
+**Cách sửa** (`tsds/generation/garment/garment_sam.py::remove_background_gaps`, gọi cuối `garment_mask_sam`):
 - **Lõi khe:** điểm trong mặt nạ có màu gần màu nền dự đoán cùng hàng (nội suy giữa nền ngay trái và ngay phải của áo), khoảng cách RGB dưới 16, vùng từ 80 điểm.
 - **Nới có giới hạn:** phần khe trong bóng (tối hơn nền) được nới ra tối đa 90 điểm quanh lõi, chỉ ở thung lũng ngang hẹp (dưới 61 điểm) và sâu (ít nhất 45 mức sáng); bóng đổ rộng trên vải trắng không bị nới tới.
 - **Giới hạn loại áo:** nếu bỏ khe cắt quá 8% mặt nạ thì coi bộ phát hiện không tin được và loại áo (vòng sinh áo thử seed kế). Cách chỉ so độ sáng một phía đã thử và bỏ, vì cắt cả bóng đổ trên vải ở áo nền sáng (tới 17% mặt nạ).
@@ -139,7 +139,7 @@ Bộ seed 43 và 44 sinh bằng `scripts/demo/generate_demo_set.py --seed N --ou
 
 ### Mốc so sánh: bản 06/09/2026 (số liệu lịch sử)
 
-Trên 24 thiết kế cũ (6 hiện vật × 4, áo mẫu cố định, polish toàn ảnh 0,40): G2 đạt 21, cảnh báo 1, lỗi 2; G3 đạt 0, cảnh báo 4, lỗi 20; PPS trung vị 0,36 (thấp nhất 0,16); IoU thấp nhất 0,93; lệch màu lớn nhất ΔE 8,1; sau khoá họa tiết (σ 1,2) 19 thiết kế được sửa: đạt 10, cảnh báo 9. Đó là bằng chứng chính cho nhận xét của BTC rằng polish toàn ảnh làm biến dạng hoa văn. Ảnh, Passport và bảng đo của bộ này đã xoá khỏi cây làm việc ngày 19/11/2026 (nhóm chỉ dùng ảnh do LoRA sinh); khôi phục từ commit `b1192b0` (`evaluation/quality_gate_legacy.csv`, `docs/evidence/quality_gate/`).
+Trên 24 thiết kế cũ (6 hiện vật × 4, áo mẫu cố định, polish toàn ảnh 0,40): G2 đạt 21, cảnh báo 1, lỗi 2; G3 đạt 0, cảnh báo 4, lỗi 20; PPS trung vị 0,36 (thấp nhất 0,16); IoU thấp nhất 0,93; lệch màu lớn nhất ΔE 8,1; sau khoá họa tiết (σ 1,2) 19 thiết kế được sửa: đạt 10, cảnh báo 9. Đó là bằng chứng chính cho nhận xét của BTC rằng polish toàn ảnh làm biến dạng hoa văn. Ảnh, Passport và bảng đo của bộ này đã xoá khỏi cây làm việc ngày 19/11/2026 (nhóm chỉ dùng ảnh do LoRA sinh); khôi phục từ commit `b1192b0` (`tsds/evaluation/quality_gate_legacy.csv`, `docs/evidence/quality_gate/`).
 
 ### Ví dụ bị loại và được sửa
 
@@ -149,12 +149,12 @@ Trên 24 thiết kế cũ (6 hiện vật × 4, áo mẫu cố định, polish t
 | `DP-HV12-20261120T143124-V1` | Đường nối 2,71, 5,94 và 5,90 ở seed 42, 43, 44 | Sinh lại: đạt ở lần thử thứ 4 (seed 45, đường nối 1,54, còn cảnh báo) | như trên |
 | `DP-HV10-20261120T142700-V1`, `V2` và `DP-HV07-20261120T142053-V1` | VLS 0,221, 0,203 và 0,201, lọt nhẹ hình vật chứa | G2 cảnh báo, chờ QC xem | Passport hiện tại |
 | Hoa văn in lên khe nền giữa tay và thân (lượt sinh 20/11/2026 trước khi sửa mặt nạ) | Hoa văn và polish phủ lên nền xám nhìn thấy qua khe; không có điểm nào ngoài mặt nạ bị đổi nên chỉ số `outside_drift` không bắt được | `remove_background_gaps` bỏ khe khỏi mặt nạ, giới hạn 8% | mục "Khe nền trong mặt nạ áo", `tests/test_garment_sam.py` |
-| Áo LoRA có mảng đỏ hoặc cam (bộ demo trước: LR3D_124 đỏ 27% vùng áo, LR3D_38 cam 16%) | Hoa văn xanh lam mất nổi bật, áo không còn trắng trơn | `color_ok` loại ứng viên có trên 5% vùng áo bão hòa cao; bộ hiện tại cả 6 áo đều đạt ở lần thử đầu | `generation/garment_lora.py`, `tests/test_garment_lora.py` |
+| Áo LoRA có mảng đỏ hoặc cam (bộ demo trước: LR3D_124 đỏ 27% vùng áo, LR3D_38 cam 16%) | Hoa văn xanh lam mất nổi bật, áo không còn trắng trơn | `color_ok` loại ứng viên có trên 5% vùng áo bão hòa cao; bộ hiện tại cả 6 áo đều đạt ở lần thử đầu | `tsds/generation/garment/garment_lora.py`, `tests/test_garment_lora.py` |
 | Hoa văn mang dáng cả chiếc bình khi nạp ảnh render (LR3D_33, 50, 97, 124 ở mức 1 và 2; LR3D_124 ra ba vật rời) | G2 **không bắt được**: LR3D_33 đo VLS 0,0001 vì bình choán đầy khung | Quay về nguồn mảng phẳng làm mặc định; EXP-F, EXP-G ghi lại | [06](06_EXPERIMENTS.md), `docs/KET_QUA_EXP_G.md` |
 | Bộ demo trước (polish 0,30, chưa khoá họa tiết): HV07 V3 | PPS 0,36, 0,3995, 0,3983, 0,3756 ở 4 seed (seed 42 đến 45) đều dưới 0,40 | Hạ độ nhiễu xuống 0,22 và thử lần 5: đạt | `outputs/qc/rejects.csv` và ảnh bị loại trong commit `900ee09` |
 | Bộ demo trước: HV11 V3 và V4 | PPS 0,23 đến 0,37 ở cả 5 lần thử | Trả bản ghép thô kèm nhãn "chưa qua bước hoàn thiện" | như trên |
 | Bộ demo trước: HV12 V1 | PPS 0,3997 và 0,3976 ở seed 42 và 43 | Đạt ở seed 44 | như trên |
-| Khoá họa tiết cũ (σ 1,2) | PPS cao (0,91) nhưng mất nét mảnh, giữ chi tiết mịn 0,61; 6/12 thiết kế loại theo chỉ số mới | Đổi `dog_sigma_low` 0,3, thêm chỉ số `detail_ratio` | `evaluation/polish_finish_trial.csv` |
+| Khoá họa tiết cũ (σ 1,2) | PPS cao (0,91) nhưng mất nét mảnh, giữ chi tiết mịn 0,61; 6/12 thiết kế loại theo chỉ số mới | Đổi `dog_sigma_low` 0,3, thêm chỉ số `detail_ratio` | `tsds/evaluation/polish_finish_trial.csv` |
 | Bản 06/09/2026: HV01 V1, V2 | Hoa văn là ảnh nguyên chiếc bình (VLS 0,56 và 0,67) | G2 loại (lịch sử); nay mặc định nạp mảng phẳng nên VLS lớn nhất của bộ seed 42 chỉ 0,22 | commit `b1192b0` |
 
 ### Giới hạn đã biết
@@ -208,4 +208,4 @@ Việc xem xét của chuyên gia là một bước **ngoài hệ thống**: nh�
 |---|---|
 | Bộ hiện vật, hoa văn, thiết kế cuối | `outputs/runs/R<thời điểm>-<mã>/`: `00_reference.png` (ảnh nạp), `V<n>_pattern.png`, `V<n>_aodai_raw.png`, `V<n>_aodai.png`, `garment.png`; Passport `outputs/passports/DP-*.json` (mục `quality`) |
 | Phiếu nhận xét của người am hiểu | **Chưa có phiếu thật.** Gói chấm mù nhiều seed: `outputs/review/blind_review/` (72 thiết kế, ảnh không đưa vào repo); gói EXP-D cũ không còn dùng được |
-| Ví dụ bị loại và được sửa | Bảng "Ví dụ bị loại và được sửa" ở trên; `outputs/qc/rejects.csv` và ảnh bị loại trong commit `900ee09`; `evaluation/polish_finish_trial.csv` |
+| Ví dụ bị loại và được sửa | Bảng "Ví dụ bị loại và được sửa" ở trên; `outputs/qc/rejects.csv` và ảnh bị loại trong commit `900ee09`; `tsds/evaluation/polish_finish_trial.csv` |

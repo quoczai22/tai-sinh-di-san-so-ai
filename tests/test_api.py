@@ -31,8 +31,8 @@ def _theo_trang_thai(api_client, status: str) -> str | None:
 
 def _ep_trang_thai(api_client, status: str) -> str:
     """Passport ở đúng trạng thái `status`: lấy cái có sẵn trong dữ liệu thật, không có thì ép trên bản sao."""
-    from api import store
-    from provenance import passport as P
+    from tsds.api import store
+    from tsds.provenance import passport as P
     pid = _theo_trang_thai(api_client, status)
     if pid is None:
         pid = _ids(api_client)[0]
@@ -103,7 +103,7 @@ def test_generate_without_gpu_is_explicit(api_client, monkeypatch):
     import json
     from pathlib import Path
 
-    import api.main as main
+    import tsds.api.main as main
     try:
         import torch  # noqa: F401
         # Phải bỏ qua TRƯỚC khi gửi /generate: máy có torch sẽ bắt đầu một lượt sinh ảnh thật ở nền
@@ -121,7 +121,7 @@ def test_generate_without_gpu_is_explicit(api_client, monkeypatch):
 
 
 def test_generate_rate_limited(api_client, monkeypatch):
-    import api.main as main
+    import tsds.api.main as main
     main._rate.clear()
     monkeypatch.setattr(main, "GENERATE_LIMIT_PER_HOUR", 2)
     codes = [api_client.post("/generate", json={"heritage_id": "khong-co"}).status_code for _ in range(3)]
@@ -131,7 +131,7 @@ def test_generate_rate_limited(api_client, monkeypatch):
 
 # ----------------------------------------------------------- bảo mật ---
 
-@pytest.mark.parametrize("path", ["../README.md", "outputs/../api/main.py", "/etc/passwd", "config/quality_gate.json",
+@pytest.mark.parametrize("path", ["../README.md", "outputs/../tsds/api/main.py", "/etc/passwd", "config/quality_gate.json",
                                   "outputs/passports/../../.env"])
 def test_artifact_path_traversal_blocked(api_client, path):
     assert api_client.get("/media/artifact", params={"path": path}).status_code in (403, 404)
@@ -155,7 +155,7 @@ def test_audit_whitelist(api_client):
 
 
 def test_write_key_enforced(api_client, monkeypatch):
-    import api.main as main
+    import tsds.api.main as main
     monkeypatch.setattr(main, "WRITE_KEY", "khoa-bi-mat")
     body = {"officer_id": "QC01", "decision": "forward_to_expert"}
     pid = _warn_id(api_client)
@@ -215,7 +215,7 @@ def test_publish_needs_review_then_allowed_for_open_license(api_client):
 
 
 def test_export_is_labeled(api_client):
-    from provenance.labeling import read_label
+    from tsds.provenance.labeling import read_label
     pid = _ids(api_client)[0]
     r = api_client.get(f"/passports/{pid}/export")
     assert r.status_code == 200 and r.headers["content-type"] == "image/png"

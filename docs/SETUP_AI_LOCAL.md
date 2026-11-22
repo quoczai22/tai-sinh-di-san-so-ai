@@ -19,18 +19,16 @@ Mở **PowerShell** tại thư mục gốc project:
 ```powershell
 # 1. Cài môi trường (~10 phút, tải ~3GB)
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-python -m venv venv                    # bỏ qua nếu venv đã có
-.\scripts\setup\setup_env.ps1
+.\scripts\setup\setup_env.ps1          # chạy uv sync (theo pyproject.toml, uv.lock), tạo .venv và .env
 
 # 2. Xác nhận PyTorch thấy GPU
-.\venv\Scripts\Activate.ps1
-python scripts/setup/check_gpu.py
+uv run python scripts/setup/check_gpu.py
 
 # 3. Tải model (~3.5GB, chỉ bản fp16)
-python scripts/setup/download_models.py
+uv run python scripts/setup/download_models.py
 
 # 4. Smoke test pipeline
-python scripts/setup/smoke_controlnet.py
+uv run python scripts/setup/smoke_controlnet.py
 ```
 
 Kết quả mong đợi ở bước 4: 4 ảnh trong `outputs/`.
@@ -81,45 +79,23 @@ Gỡ bỏ: đặt lại `$null` cho hai biến trên.
 
 ## Nếu máy bạn khác cấu hình
 
-Script tự đọc `nvidia-smi` và chọn kênh CUDA phù hợp. Ghi đè khi cần:
+PyTorch được ghim ở bản CUDA 12.6 (`torch 2.13.0+cu126`, kênh `pytorch-cu126` trong `pyproject.toml`). Đây là bản đã chạy được trên RTX 4060 Laptop của nhóm.
 
-```powershell
-.\scripts\setup\setup_env.ps1 -CudaChannel cu128    # RTX 50xx (Blackwell)
-.\scripts\setup\setup_env.ps1 -CudaChannel cu118    # driver cu
-.\scripts\setup\setup_env.ps1 -CudaChannel cpu      # khong co GPU NVIDIA
-```
-
-Quy tắc tự chọn:
-
-| Điều kiện | Kênh |
+| Máy | Việc cần làm |
 |---|---|
-| Tên GPU khớp `RTX 5xxx` | `cu128` — Blackwell (sm_120) **không chạy được** wheel cu126 |
-| Driver hỗ trợ CUDA ≥ 12.6 | `cu126` |
-| Driver hỗ trợ CUDA ≥ 11.8 | `cu118` |
-| Không có `nvidia-smi` | `cpu` — chậm hơn 20–50 lần, chỉ đủ để kiểm tra code chạy |
+| RTX 50xx (Blackwell, sm_120) | Wheel cu126 **không chạy được**. Đổi kênh sang `cu128` trong `pyproject.toml` (mục `[[tool.uv.index]]` và `torch`, `torchvision`), chạy `uv lock`, rồi kiểm tra `torch.cuda.is_available()` |
+| Không có GPU NVIDIA | Chạy được kiểm thử (`uv run pytest`), không sinh ảnh được: CPU chậm hơn 20 đến 50 lần |
+| Driver cũ (CUDA dưới 12.6) | Cập nhật driver NVIDIA, hoặc đổi kênh sang `cu118` tương tự như trên |
 
 ## Khóa phiên bản
 
-Script pin sẵn `torch==2.13.0`. Muốn đổi:
+Phiên bản mọi thư viện được ghim trong `pyproject.toml` và `uv.lock` ở gốc repo (kể cả `torch 2.13.0+cu126` lấy từ kênh `cu126`). Máy khác dựng lại đúng môi trường đã cho ra số đo:
 
 ```powershell
-.\scripts\setup\setup_env.ps1 -TorchVersion "2.12.0"
-.\scripts\setup\setup_env.ps1 -TorchVersion ""       # lay ban moi nhat, KHONG pin
+uv sync
 ```
 
-`requirements.txt` chỉ khai báo **khoảng** phiên bản — đủ để dựng một môi trường chạy
-được, nhưng hai máy cài cách nhau vài tuần có thể ra hai bộ thư viện khác nhau.
-
-Khi cần tái lập **chính xác** môi trường đã cho ra số đo ở bảng trên, sinh lock file
-ngay trên máy đó:
-
-```powershell
-.\venv\Scripts\Activate.ps1
-python -m pip freeze > requirements-lock.txt
-```
-
-Máy khác dựng lại: chạy `scripts/setup/setup_env.ps1` để có torch đúng kênh CUDA, rồi
-`pip install -r requirements-lock.txt` đè lên.
+Thêm thư viện: `uv add <tên>`; thư viện chỉ dùng cho kiểm thử: `uv add --dev <tên>`. Nhớ commit cả `uv.lock`.
 
 ### Giới hạn của tính tái lập
 

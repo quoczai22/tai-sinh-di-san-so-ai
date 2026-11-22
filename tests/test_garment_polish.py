@@ -1,9 +1,9 @@
-"""Kiểm thử phần ghép mặt nạ của polish có mặt nạ (generation/garment.py), không cần GPU."""
+"""Kiểm thử phần ghép mặt nạ của polish có mặt nạ (tsds/generation/garment/garment.py), không cần GPU."""
 import numpy as np
 import pytest
 from PIL import Image
 
-from generation import garment
+from tsds.generation.garment import garment
 
 
 def anh_ngau_nhien(size=64, seed=0):

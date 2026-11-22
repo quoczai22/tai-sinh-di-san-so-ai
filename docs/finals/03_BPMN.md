@@ -35,7 +35,7 @@ Kiểm tra: cả hai tệp `.bpmn` được nạp bằng `bpmn-moddle` (thư vi�
 | 6. Kiểm tra chất lượng họa tiết | Cổng G2 → "Hoa văn đạt?" | Service Task + Exclusive Gateway | QC |
 | 7–8. Chuyển sang thiết kế, ghép vào áo | Chọn bố cục (CLIP), ghép hoa văn lên áo do LoRA sinh → Hoàn thiện chỉ vùng áo, khoá họa tiết | Service Task | AI |
 | 9–10. Kiểm tra thiết kế cuối, đo giữ họa tiết và dáng áo | Cổng G3 → "Kết quả G3?" (Đạt / Cảnh báo / Không đạt) | Service Task + Exclusive Gateway | QC |
-| 11. Không đạt thì quay lại bước phù hợp | G2 không đạt → sinh lại với seed kế tiếp (dưới 3 lần); đủ 3 lần → giữ bản ít lỗi nhất, gắn cờ `qa_failed` (`quality/pattern_retry.py`). G3 không đạt → thử lại hoàn thiện: đổi seed, hạ độ nhiễu, cuối cùng trả bản ghép thô (`quality/retry.py`); vẫn lỗi → QC Officer xem | Vòng lặp | AI, QC |
+| 11. Không đạt thì quay lại bước phù hợp | G2 không đạt → sinh lại với seed kế tiếp (dưới 3 lần); đủ 3 lần → giữ bản ít lỗi nhất, gắn cờ `qa_failed` (`tsds/quality/pattern_retry.py`). G3 không đạt → thử lại hoàn thiện: đổi seed, hạ độ nhiễu, cuối cùng trả bản ghép thô (`tsds/quality/retry.py`); vẫn lỗi → QC Officer xem | Vòng lặp | AI, QC |
 | 12. Đạt thì chuyển chuyên gia | Xem bộ 4 thiết kế (trang Kết quả) → Lập gói chấm mù, gửi chuyên gia (`scripts/eval/build_blind_review.py`) | User Task + Send Task, message flow | Nhà thiết kế, QC |
 | 13. Chuyên gia đánh giá | Nhận yêu cầu → Chấm mù 5 tiêu chí → Ghi quyết định và lý do → Gửi phiếu | Message Start, User Task, Message End | Pool chuyên gia |
 | 14. Không đạt thì ghi lý do, sửa, thẩm định lại | "Kết quả thẩm định?" → Cần sửa → Ghi lý do vào Passport → Chỉnh sửa thủ công → Tải bản sửa lên → quay lại cổng G3 | Service Task, **Manual Task**, User Task | QC, Nhà thiết kế |
@@ -51,10 +51,10 @@ Mỗi gateway tương ứng một quyết định có thật trong mã hoặc tr
 
 | Gateway | Điều kiện | Ở đâu trong mã |
 |---|---|---|
-| Đạt tiêu chí tuyển ảnh? | C1, C2 không FAIL | `provenance/registry.py::assess_selection` |
-| Tình trạng quyền? | `rights_status`: bị từ chối → kết thúc; chưa xác minh → gửi thư xin phép, gắn nhãn phi thương mại, vẫn được thử nghiệm; hợp lệ → đi tiếp | `provenance/registry.py::rights_gate` |
-| Hoa văn đạt? | G2; đếm số lần, dưới 3 lần thì sinh lại với seed kế tiếp, đủ 3 lần thì giữ bản ít lỗi nhất và gắn cờ `qa_failed` | `quality/gate.py::evaluate_pattern`, `quality/pattern_retry.py`, `config/quality_gate.json` (`max_retries`) |
-| Kết quả G3? | PASS / WARN / FAIL | `quality/gate.py::evaluate_final` |
+| Đạt tiêu chí tuyển ảnh? | C1, C2 không FAIL | `tsds/provenance/registry.py::assess_selection` |
+| Tình trạng quyền? | `rights_status`: bị từ chối → kết thúc; chưa xác minh → gửi thư xin phép, gắn nhãn phi thương mại, vẫn được thử nghiệm; hợp lệ → đi tiếp | `tsds/provenance/registry.py::rights_gate` |
+| Hoa văn đạt? | G2; đếm số lần, dưới 3 lần thì sinh lại với seed kế tiếp, đủ 3 lần thì giữ bản ít lỗi nhất và gắn cờ `qa_failed` | `tsds/quality/gate.py::evaluate_pattern`, `tsds/quality/pattern_retry.py`, `config/quality_gate.json` (`max_retries`) |
+| Kết quả G3? | PASS / WARN / FAIL | `tsds/quality/gate.py::evaluate_final` |
 | QC quyết định? | Chuyển chuyên gia (chỉ thiết kế ở mức cảnh báo; API chặn thiết kế `qa_failed`) hoặc trả về sửa | `POST /passports/{id}/qc` |
 | Kết quả thẩm định? | approve / revise / reject | `POST /passports/{id}/reviews` |
 | Quyền cho phép xuất bản? | Cổng quyền mục đích `publish_public` | `POST /passports/{id}/publish` |
@@ -63,7 +63,7 @@ Hai gateway không nhãn trong sơ đồ là **gateway hợp nhất** (merge): n
 
 ## Nhánh lỗi và vòng lặp
 
-- **Boundary error event** trên "Sinh họa tiết": máy hết bộ nhớ GPU hoặc mô hình lỗi → kết thúc lỗi, job ghi trạng thái `failed` và loại lỗi vào nhật ký. Mã: `generation/streamlit_runner.py` bắt lỗi theo từng biến thể, một biến thể lỗi không làm hỏng ba biến thể còn lại.
+- **Boundary error event** trên "Sinh họa tiết": máy hết bộ nhớ GPU hoặc mô hình lỗi → kết thúc lỗi, job ghi trạng thái `failed` và loại lỗi vào nhật ký. Mã: `tsds/pipeline/run.py` bắt lỗi theo từng biến thể, một biến thể lỗi không làm hỏng ba biến thể còn lại.
 - **Vòng G2**: sinh lại tối đa 3 lần, mỗi lần seed tăng 1, giữ nguyên prompt, trọng số ControlNet và bảng màu; quá 3 lần thì giữ bản ít lỗi nhất, Passport ghi `qa_failed` (mã không có bước người chỉnh tham số).
 - **Vòng G3**: khoá họa tiết là bước mặc định của luồng; vòng thử lại polish (đổi seed, hạ độ nhiễu, cuối cùng trả bản ghép thô) rồi đo lại; vẫn lỗi thì QC Officer xem và chỉ được trả về sửa.
 - **Vòng thẩm định**: chuyên gia yêu cầu sửa → sửa tay → **quay lại G3** → thẩm định lại. API thực hiện đúng vòng này: tải bản sửa lên thì hệ thống chạy G3 trên bản sửa trước khi đưa về hàng đợi.
@@ -79,10 +79,10 @@ Sơ đồ TO-BE được sửa để khớp mã hiện tại. Những chỗ đã
 
 | Trước | Mã thực tế | Sửa trong sơ đồ |
 |---|---|---|
-| Ghép lên "áo mẫu" cố định | Áo dài nền sinh mới bằng LoRA mỗi lượt, vùng áo tách bằng SAM (`generation/garment_lora.py`, `generation/streamlit_runner.py`) | Thêm bước "Sinh áo dài nền (LoRA), tách vùng áo (SAM)" |
+| Ghép lên "áo mẫu" cố định | Áo dài nền sinh mới bằng LoRA mỗi lượt, vùng áo tách bằng SAM (`tsds/generation/garment/garment_lora.py`, `tsds/pipeline/run.py`) | Thêm bước "Sinh áo dài nền (LoRA), tách vùng áo (SAM)" |
 | "Hoàn thiện img2img" toàn ảnh | Hoàn thiện chỉ vùng áo, khoá họa tiết (`garment.polish_locked`) | Đổi tên bước |
-| G2 lỗi đủ 3 lần → Nhà thiết kế điều chỉnh tham số | Hệ thống giữ bản ít lỗi nhất, gắn cờ `qa_failed` (`quality/pattern_retry.py`) | Thay bằng Service Task ở lane Kiểm soát chất lượng |
-| "Sửa: khoá họa tiết hoặc giảm strength" | Thử lại hoàn thiện: đổi seed, hạ độ nhiễu, cuối cùng trả bản ghép thô (`quality/retry.py`) | Đổi tên; G3 vẫn lỗi sau thử lại thì chuyển QC Officer |
+| G2 lỗi đủ 3 lần → Nhà thiết kế điều chỉnh tham số | Hệ thống giữ bản ít lỗi nhất, gắn cờ `qa_failed` (`tsds/quality/pattern_retry.py`) | Thay bằng Service Task ở lane Kiểm soát chất lượng |
+| "Sửa: khoá họa tiết hoặc giảm strength" | Thử lại hoàn thiện: đổi seed, hạ độ nhiễu, cuối cùng trả bản ghép thô (`tsds/quality/retry.py`) | Đổi tên; G3 vẫn lỗi sau thử lại thì chuyển QC Officer |
 | QC "trả về sửa" → sửa tự động | `POST /passports/{id}/qc` ghi `qa_failed` kèm lý do, chờ sửa tay rồi tải lên (`POST /passports/{id}/edits`) | Nhánh "Trả về sửa" đi tới "Ghi lý do yêu cầu sửa vào Passport" |
 | "Chọn phương án đề cử", "Gửi yêu cầu thẩm định ẩn danh" | Mã không có bước đề cử; gói chấm mù lập bằng `scripts/eval/build_blind_review.py` | Đổi tên hai bước |
 
@@ -91,7 +91,7 @@ Những điểm sơ đồ cố ý không vẽ vì là chi tiết kỹ thuật, k
 - **Hàng chờ GPU**: `POST /generate` nhận tối đa 3 lượt đang chờ hoặc đang chạy (`TSDS_MAX_ACTIVE_JOBS`), quá thì trả 429; giới hạn 6 lượt/giờ/IP ở API, 10 lượt/giờ/IP ở cổng Vercel.
 - **Dự phòng khi máy GPU lỗi**: cổng `web_ui/api/live.js` trả bộ thiết kế đã sinh sẵn, trang Kết quả ghi rõ "Kết quả đã sinh sẵn — không phải sinh trực tiếp".
 - **Seed**: web không cho nhập seed. Áo nền dùng seed ngẫu nhiên mỗi lượt (`garment_lora.pick_seed`), hoa văn dùng seed mặc định 42 rồi tăng dần khi sinh lại; cả hai ghi vào Passport.
-- **C1–C4** chạy khi nạp ảnh (`scripts/data_prep/ingest_heritage_image.py`); hiện vật không đạt ở trạng thái `retired` nên không xuất hiện ở Studio. Kiểm tra quyền mục đích "thử nghiệm" chạy lại ở đầu mỗi lượt sinh (`streamlit_runner.py`; quyền bị từ chối thì job thất bại).
+- **C1–C4** chạy khi nạp ảnh (`scripts/data_prep/ingest_heritage_image.py`); hiện vật không đạt ở trạng thái `retired` nên không xuất hiện ở Studio. Kiểm tra quyền mục đích "thử nghiệm" chạy lại ở đầu mỗi lượt sinh (`tsds/pipeline/run.py.py`; quyền bị từ chối thì job thất bại).
 
 Khoảng trống còn lại giữa quy trình và giao diện web (không sửa trong đợt này):
 

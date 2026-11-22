@@ -242,7 +242,7 @@ def next_code(items: dict) -> str:
 
 
 def ingest(args) -> int:
-    from provenance.registry import assess_selection
+    from tsds.provenance.registry import assess_selection
 
     src = Path(args.file).expanduser()
     if not src.is_file():

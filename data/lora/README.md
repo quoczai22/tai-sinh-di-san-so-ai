@@ -4,7 +4,7 @@ LoRA là lớp nhỏ gắn thêm vào mô hình Stable Diffusion 1.5 để mô h
 
 | Thư mục | Cấu hình | Dùng trong sản phẩm |
 |---|---|---|
-| `aodai_r16_512/` | rank 16, ảnh 512x688 | có (mặc định, `generation/garment_lora.py`) |
+| `aodai_r16_512/` | rank 16, ảnh 512x688 | có (mặc định, `tsds/generation/garment/garment_lora.py`) |
 | `aodai_r32_768/` | rank 32, ảnh 768x1032 | không (nền áo có sọc, chỉ giữ để đối chứng) |
 
 ## Giấy phép: chỉ dùng phi thương mại

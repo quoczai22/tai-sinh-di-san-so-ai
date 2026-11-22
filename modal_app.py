@@ -69,9 +69,9 @@ def fastapi_app():
     os.environ["HF_HOME"] = BAKED_HF_CACHE
     os.environ["DH_OUTPUT_DIR"] = OUTPUT_VOLUME_MOUNT
     os.environ.setdefault("TSDS_GENERATE_PER_HOUR", "1000")
-    # Fail-closed: thiếu DH_API_KEY trong secret thì api.main từ chối khởi động.
+    # Fail-closed: thiếu DH_API_KEY trong secret thì tsds.api.main từ chối khởi động.
     os.environ["DH_REQUIRE_API_KEY"] = "1"
 
-    from api.main import app as web_app
+    from tsds.api.main import app as web_app
 
     return web_app

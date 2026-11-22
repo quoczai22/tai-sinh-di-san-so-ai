@@ -27,13 +27,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from api.audit import append_audit_event, get_output_dir
-from api import store
-from provenance.heritage import load_heritage_metadata
+from tsds.api.audit import append_audit_event, get_output_dir
+from tsds.api import store
+from tsds.provenance.heritage import load_heritage_metadata
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-CSV_PATH = PROJECT_ROOT / "evaluation" / "variants.csv"
+CSV_PATH = PROJECT_ROOT / "tsds" / "evaluation" / "variants.csv"
 WEB_VARIANTS_DIR = PROJECT_ROOT / "web_ui" / "assets" / "images" / "variants"
 
 app = FastAPI(title="Tái sinh Di sản Số — Mock GPU Backend", version="0.2.0")
@@ -102,7 +102,7 @@ def verify_auth(
 
 
 def heritage_items() -> list[dict]:
-    # Mock trả số liệu từ evaluation/variants.csv (bộ hiện vật cũ, nay đã "retired" trong
+    # Mock trả số liệu từ tsds/evaluation/variants.csv (bộ hiện vật cũ, nay đã "retired" trong
     # metadata bản chung kết), nên phải chấp nhận cả hiện vật retired.
     return load_heritage_metadata(PROJECT_ROOT, include_retired=True)
 

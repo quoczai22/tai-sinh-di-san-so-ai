@@ -30,12 +30,12 @@ def fake_generate(heritage_id: str, progress, seed: int) -> list[dict]:
              "design_path": "V1_aodai.png"}]
 
 
-fake_module = types.ModuleType("generation.streamlit_runner")
+fake_module = types.ModuleType("tsds.pipeline.run")
 fake_module.SEED = 42
 fake_module.generate_design_set = fake_generate
-sys.modules["generation.streamlit_runner"] = fake_module
+sys.modules["tsds.pipeline.run"] = fake_module
 
-from api import main  # noqa: E402
+from tsds.api import main  # noqa: E402
 
 main.append_audit_event = lambda *_args, **_kwargs: True
 
@@ -51,7 +51,7 @@ def wait_for(job_id: str) -> dict:
 
 
 def test_queue() -> None:
-    from api.main import GenerateRequest
+    from tsds.api.main import GenerateRequest
 
     first = main.generate_designs(GenerateRequest(heritage_id="LR3D_33", seed=1))
     assert started.wait(5)

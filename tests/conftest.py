@@ -36,8 +36,8 @@ def api_client(monkeypatch, tmp_path):
     """TestClient trên bản sao Passport; nhật ký audit ghi vào danh sách thay vì tệp."""
     from fastapi.testclient import TestClient
 
-    import api.main as main
-    from api import store
+    import tsds.api.main as main
+    from tsds.api import store
 
     passports = tmp_path / "passports"
     shutil.copytree(store.PASSPORTS, passports)

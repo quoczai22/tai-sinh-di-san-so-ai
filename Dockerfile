@@ -40,7 +40,7 @@ RUN python -m pip install --no-cache-dir --upgrade pip && \
 
 # Tải sẵn các model (SD1.5 fp16, ControlNet Canny fp16, CLIP ViT-B/32, SAM ViT-B) vào image
 # để rút ngắn tối đa thời gian cold start trên cả Modal và HF Space.
-# SAM dùng trong generation/garment_sam.py (tách dáng áo của ảnh LoRA).
+# SAM dùng trong tsds/generation/garment/garment_sam.py (tách dáng áo của ảnh LoRA).
 RUN mkdir -p "${HF_HOME}" && \
     python -c "\
 from huggingface_hub import snapshot_download; \
@@ -50,15 +50,12 @@ snapshot_download('openai/clip-vit-base-patch32', allow_patterns=['*.json', '*.t
 snapshot_download('facebook/sam-vit-base', allow_patterns=['*.json', '*.txt', '*.safetensors']); \
 " && chmod -R 777 "${HF_HOME}"
 
-COPY api/ /app/api/
-COPY generation/ /app/generation/
-COPY evaluation/ /app/evaluation/
-COPY provenance/ /app/provenance/
-COPY quality/ /app/quality/
+# Toàn bộ mã Python nằm trong gói tsds/ (api, core, pipeline, generation, evaluation, provenance, quality)
+COPY tsds/ /app/tsds/
 COPY config/ /app/config/
 # data/ gồm cả trọng số LoRA dáng áo dài (data/lora/**/*.safetensors, ~37 MB)
 COPY data/ /app/data/
 
 EXPOSE 7860
 
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["uvicorn", "tsds.api.main:app", "--host", "0.0.0.0", "--port", "7860"]

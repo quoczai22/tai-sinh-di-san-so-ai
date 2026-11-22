@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from evaluation import exp_g as G
-from evaluation import experiment as E
+from tsds.evaluation import exp_g as G
+from tsds.evaluation import experiment as E
 
 
 def test_largest_rect_known_cases():
@@ -112,7 +112,7 @@ def test_make_seamless_keeps_center_pixels():
 
 def test_gate_runs_on_nonsquare_tile_resized_to_reference():
     """Lỗi đã gặp: ô 644x1024 không khớp ảnh tham chiếu 512x512 trong vessel_leakage. Đo trên bản 512x512 thì chạy được."""
-    from quality import gate as QG
+    from tsds.quality import gate as QG
     tile = _textured(4, 400).resize((250, 400))
     ref = np.asarray(_textured(5, 512))
     qa = np.asarray(tile.resize((512, 512), Image.LANCZOS))
