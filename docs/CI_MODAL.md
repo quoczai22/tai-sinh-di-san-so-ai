@@ -11,9 +11,12 @@ Workflow `Modal backend checks` chạy khi mở pull request, push lên `main` v
 
 CI không xác nhận GPU, model tải được, Modal Volume hoặc credit. Bài thử live sau deploy mới xác nhận các phần đó. Nếu live lỗi, xem log Modal và gateway; giao diện có thể dùng dữ liệu demo theo cơ chế dự phòng đã thiết kế. Không đưa khóa API vào workflow hoặc log.
 
-## Phát hành Modal thủ công từ GitHub Actions
+## Phát hành Modal qua AWS CodeBuild
 
-1. Người quản lý repo đặt `MODAL_TOKEN_ID` và `MODAL_TOKEN_SECRET` trong GitHub Actions secrets. Tạo token trong đúng Modal workspace của nhóm; giữ `DH_API_KEY` trong Modal secret `tai-sinh-di-san-secret`. Không đưa các giá trị này vào commit hoặc log.
-2. Sau khi merge vào `main`, mở Actions → **Deploy Modal backend** → **Run workflow**, chọn `main`. Workflow từ chối nhánh khác và chạy lại toàn bộ kiểm tra CI trên đúng commit được checkout. Chỉ khi cả hai nhóm kiểm tra đạt, nó mới deploy `modal_app.py` lên T4.
-3. Workflow xác nhận app tồn tại bằng `modal app info` và ghi commit vào Job Summary. Bước này không gọi `/health`, không khởi động GPU và không chứng minh sinh ảnh thành công. Nếu cần xác nhận live, người vận hành thử `/health` Modal và một lượt sinh bốn ảnh qua Vercel vào thời điểm được phép dùng credit.
-4. Nếu deploy thất bại, xem log workflow và lịch sử app trên Modal. Việc quay về bản trước thực hiện thủ công bằng `modal app rollback tai-sinh-di-san-so-api` sau khi xác định phiên bản cần khôi phục. Không tự rollback khi chưa biết trạng thái các job đang chạy.
+Token Modal không được lưu trên GitHub. Cấu hình CodeBuild nằm tại `scripts/deploy/aws-modal-cd.yaml`. Build chỉ chạy khi người vận hành bấm **Start build** trong AWS Console; không có EC2 chạy liên tục hay webhook tự deploy.
+
+1. AWS Parameter Store giữ hai `SecureString` chuẩn: `/tai-sinh-di-san-so-ai/modal-cd/token-id` và `/tai-sinh-di-san-so-ai/modal-cd/token-secret`. Dùng token Modal riêng cho CD trong đúng workspace của nhóm; không chép token cá nhân đang lưu trên máy. Chỉ role CodeBuild của stack được đọc hai parameter này.
+2. Sau khi merge vào `main`, xác nhận workflow **Modal backend checks** xanh. Có thể bấm **Check before AWS Modal deploy** trên `main` để chạy lại CI và lấy link CodeBuild. GitHub không nhận token Modal hoặc thông tin đăng nhập AWS.
+3. Trong AWS Console, chọn project `tai-sinh-di-san-so-ai-modal-deploy` ở region `ap-southeast-2`, bấm **Start build**. CodeBuild lấy commit mới nhất của `main`, xác nhận CI đạt cho đúng SHA, rồi `modal deploy modal_app.py` trên T4 và xác nhận app tồn tại. Nếu CI chưa đạt, build dừng trước deploy.
+4. CodeBuild không gọi `/health` hoặc tạo ảnh nên không tự đánh thức GPU. Bài thử live qua Vercel chỉ làm khi nhóm chấp nhận dùng credit. Nếu deploy lỗi, xem log CodeBuild. Quay về bản trước bằng `modal app rollback tai-sinh-di-san-so-api` sau khi kiểm tra job đang chạy.
+5. Stack tạo Budget toàn tài khoản AWS tại 5 USD/tháng, gửi email khi chi phí thực tế vượt 80% và 100%. Budget là **cảnh báo, không khóa cứng chi tiêu**. CodeBuild chỉ cho một build đồng thời và tối đa 30 phút mỗi build; người vận hành vẫn cần theo dõi phí AWS và Modal riêng.

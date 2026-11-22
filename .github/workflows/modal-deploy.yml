@@ -1,4 +1,4 @@
-name: Deploy Modal backend
+name: Check before AWS Modal deploy
 
 on:
   workflow_dispatch:
@@ -15,40 +15,14 @@ jobs:
     if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/modal-backend.yml
 
-  deploy:
-    name: Deploy checked commit to Modal
+  ready:
+    name: Show manual deployment link
     needs: checks
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-    env:
-      MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
-      MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
     steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Require Modal deployment credentials
+      - name: Summarize next action
         run: |
-          if [ -z "$MODAL_TOKEN_ID" ] || [ -z "$MODAL_TOKEN_SECRET" ]; then
-            echo 'Missing MODAL_TOKEN_ID or MODAL_TOKEN_SECRET in GitHub Actions secrets.' >&2
-            exit 1
-          fi
-      - name: Install Modal CLI
-        run: python -m pip install 'modal>=1.3,<2'
-      - name: Deploy T4 backend
-        env:
-          MODAL_GPU: T4
-        run: modal deploy modal_app.py --tag "$GITHUB_SHA"
-      - name: Verify deployed app exists
-        run: modal app info tai-sinh-di-san-so-api --json > modal-app-info.json
-      - name: Summarize deployment
-        if: always()
-        run: |
-          echo "## Modal Production" >> "$GITHUB_STEP_SUMMARY"
-          echo "Commit: \`$GITHUB_SHA\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "Deployment result: **${{ job.status }}**" >> "$GITHUB_STEP_SUMMARY"
-          echo 'This check confirms the Modal deployment exists. It does not start a GPU or prove image generation.' >> "$GITHUB_STEP_SUMMARY"
-          echo 'For a live smoke test, check Modal /health and generate four images through Vercel during an approved GPU test.' >> "$GITHUB_STEP_SUMMARY"
+          echo "## Ready for manual AWS CodeBuild deployment" >> "$GITHUB_STEP_SUMMARY"
+          echo "Checked commit: \`$GITHUB_SHA\`" >> "$GITHUB_STEP_SUMMARY"
+          echo '[Open CodeBuild in AWS Console](https://ap-southeast-2.console.aws.amazon.com/codesuite/codebuild/projects/tai-sinh-di-san-so-ai-modal-deploy/history?region=ap-southeast-2) and choose Start build.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Modal credentials remain in AWS Parameter Store. GitHub has no Modal or AWS deployment credentials.' >> "$GITHUB_STEP_SUMMARY"
