@@ -17,8 +17,8 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def _fresh() -> dict:
-    p = P.new_passport(passport_id="DP-HV01-20261118-V1", design_id="R20261118T000000-HV01.V1",
-                       run_id="R20261118T000000-HV01", heritage=R.get_item("BT_Hac_XP"),
+    p = P.new_passport(passport_id="DP-HV07-20261118-V1", design_id="R20261118T000000-HV07.V1",
+                       run_id="R20261118T000000-HV07", heritage=R.get_item("LR3D_33"),
                        created_at="2026-11-18T00:00:00+00:00")
     art = {"role": "final_img2img", "path": "x.png", "sha256": "a" * 64}
     P.add_version(p, kind="ai_generated", artifact=art, created_by="pipeline", actor_type="ai", at="2026-11-18T00:00:01+00:00")
@@ -92,17 +92,17 @@ def test_no_stored_passport_is_auto_approved():
 
 
 def test_passport_id_format():
-    assert P.passport_id_for("HV03", "20260906", 2) == "DP-HV03-20260906-V2"
+    assert P.passport_id_for("HV09", "20261120", 2) == "DP-HV09-20261120-V2"
 
 
 def test_label_roundtrip(tmp_path):
     from PIL import Image
 
     from tsds.provenance.labeling import label_image, read_label
-    data, _ = label_image(Image.new("RGB", (320, 480), "white"), passport_id="DP-HV01-20261118-V1",
+    data, _ = label_image(Image.new("RGB", (320, 480), "white"), passport_id="DP-HV07-20261118-V1",
                           design_sha256="e" * 64, heritage_name="Bình", attribution="Ảnh: X", rights_warning=True)
     meta = read_label(data)
-    assert meta["passport_id"] == "DP-HV01-20261118-V1"
+    assert meta["passport_id"] == "DP-HV07-20261118-V1"
     assert meta["design_sha256"] == "e" * 64
     assert meta["rights_warning"] == "true"
     with Image.open(__import__("io").BytesIO(data)) as im:

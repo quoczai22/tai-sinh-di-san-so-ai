@@ -157,12 +157,12 @@ def vessel_leakage(pattern: np.ndarray, reference: np.ndarray, border: int = 24)
     """Vessel Leakage Score (VLS) cho hoa văn giai đoạn 1, thang [0, 1], THẤP là tốt.
 
     Lỗi đã biết: ở trọng số ControlNet cao, "hoa văn" sinh ra là ảnh nguyên chiếc
-    bình trên nền trơn (BT_Hac_XP V1/V2). Một tile hoa văn đúng nghĩa thì phủ kín
+    bình trên nền trơn. Một tile hoa văn đúng nghĩa thì phủ kín
     khung. VLS = (tỉ lệ viền khung là nền trơn) × (IoU dáng vật thể trong hoa văn
     với dáng hiện vật gốc). Cả hai cùng cao → hoa văn đang vẽ lại cái bình.
 
     Giới hạn đã biết: KHÔNG bắt được dạng "mảnh ghép thân bình" phủ kín khung
-    (ví dụ hiện vật sen dát vàng V1/V2) — đó là lý do vẫn cần người rà soát.
+    (mảnh thân bình choán đầy ô) — đó là lý do vẫn cần người rà soát.
     """
     from tsds.generation.pattern import controlnet as cn                # noqa: PLC0415
 

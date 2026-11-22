@@ -289,7 +289,7 @@ def apply(pattern: Image.Image, layout: str | None = None, opacity: float = 0.92
     canvas = big[oy:oy + H, ox:ox + W]
 
     # Uốn theo nếp vải — biến dạng HÌNH HỌC
-    # `displace`/`shading` chỉ để THÍ NGHIỆM tắt từng bước (EXP-C, ablation giai
+    # `displace`/`shading` chỉ để THÍ NGHIỆM tắt từng bước (ablation giai
     # đoạn 2). Giá trị mặc định giữ nguyên hành vi cũ.
     mx, my = displacement_map(tpl, strength=lay.get("displace", 14.0) if displace is None else displace)
     warped_all = cv2.remap(canvas, mx, my, cv2.INTER_LINEAR,

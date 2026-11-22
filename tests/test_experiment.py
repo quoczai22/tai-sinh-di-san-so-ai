@@ -16,7 +16,6 @@ SPECS = sorted((ROOT / "tsds" / "evaluation" / "experiments").glob("EXP-*.json")
 
 
 @pytest.mark.parametrize("path,n", [("EXP-A_controlnet_weight.json", 120), ("EXP-B_stage2_finish.json", 126),
-                                    ("EXP-C_composite_ablation.json", 48),
                                     ("EXP-D_garment_source.json", 60),
                                     ("EXP-E_pattern_source.json", 36)])
 def test_specs_expand_and_pass_validation(path, n):
@@ -50,8 +49,8 @@ def test_legacy_v1_v4_design_is_rejected():
 
 
 def test_plan_without_iv_variation_is_rejected():
-    spec = copy.deepcopy(E.load_spec(ROOT / "tsds" / "evaluation" / "experiments" / "EXP-C_composite_ablation.json"))
-    spec["independent_variable"]["levels"] = ["full"]
+    spec = copy.deepcopy(E.load_spec(ROOT / "tsds" / "evaluation" / "experiments" / "EXP-B_stage2_finish.json"))
+    spec["independent_variable"]["levels"] = spec["independent_variable"]["levels"][:1]
     with pytest.raises(E.PlanError):
         E.expand_plan(spec)
 

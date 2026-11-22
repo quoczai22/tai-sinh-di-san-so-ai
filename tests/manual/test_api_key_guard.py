@@ -29,7 +29,7 @@ IMPORT_ONLY = "import tsds.api.main; print('STARTED')"
 IMPORT_AND_401 = (
     "from fastapi.testclient import TestClient; import tsds.api.main as m; "
     "c = TestClient(m.app); "
-    "r = c.post('/generate', json={'heritage_id': 'BT_Hac_XP'}); "
+    "r = c.post('/generate', json={'heritage_id': 'LR3D_33'}); "
     "assert r.status_code == 401, r.status_code; "
     "print('STARTED_401')"
 )

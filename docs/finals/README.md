@@ -37,7 +37,7 @@ Bộ tài liệu này chỉ phục vụ vòng chung kết và tập trung vào b
 
 | BTC yêu cầu | Đã làm | Bằng chứng |
 |---|---|---|
-| Cố định prompt và bảng màu, chỉ đổi một yếu tố | EXP-A chỉ đổi ControlNet; EXP-B bước hoàn thiện; EXP-C bước ghép; EXP-D nguồn áo nền; EXP-E và EXP-F nguồn ảnh nạp (bình render hay mảng phẳng); EXP-G cách tạo ô hoa văn. Kế hoạch đổi hơn một yếu tố bị mã từ chối | `tsds/evaluation/experiments/`, `tests/test_experiment.py` |
+| Cố định prompt và bảng màu, chỉ đổi một yếu tố | EXP-A chỉ đổi ControlNet; EXP-B bước hoàn thiện; EXP-D nguồn áo nền; EXP-E và EXP-F nguồn ảnh nạp (bình render hay mảng phẳng); EXP-G cách tạo ô hoa văn. Kế hoạch đổi hơn một yếu tố bị mã từ chối | `tsds/evaluation/experiments/`, `tests/test_experiment.py` |
 | Nhiều seed | EXP-A 5 seed, EXP-B 3, EXP-D 5, EXP-E 3, EXP-F 3, EXP-G 3; bộ demo ba seed (42, 43, 44) cho gói chấm mù | `outputs/experiments/EXP-*/plan.csv` |
 | Đánh giá mù | Gói chấm mù riêng cho EXP-A (48 ảnh, chỉ đổi trọng số ControlNet, `outputs/review/blind_review_EXP-A/`) cho yêu cầu 2. Gói chấm mù nhiều seed: 72 thiết kế (24 ô × 3 seed), mã ẩn danh, mỗi người chấm thấy 24 thiết kế (một mỗi ô, seed xoay theo mã người chấm), thứ tự xáo theo người chấm; ảnh của gói không đưa vào repo | `outputs/review/blind_review/` |
 | CSV cấu hình, bảng điểm người chấm, thống kê độ phân tán | `plan.csv`, `results.csv`, `ratings_*.csv`, `summary.json` (trung bình, độ lệch chuẩn, KTC 95%, hệ số biến thiên, alpha, kiểm định cặp) | `outputs/experiments/` |
@@ -64,7 +64,7 @@ Bộ tài liệu này chỉ phục vụ vòng chung kết và tập trung vào b
 | UML | 7 tác nhân, 19 ca, include/extend có lý do | 3 ca mới là kế hoạch hoặc chạy một phần |
 | APQC | Tham chiếu PCF 7.4 ở cấp hạng mục và nhóm, có AS-IS/TO-BE, chủ, kiểm soát, KPI | Mã PCF sâu hơn cần đối chiếu bản chính thức |
 | Chất lượng AI | Đo được thiết kế cuối, có chỉ số giữ chi tiết mịn, có định tuyến và vòng thử lại | Ngưỡng chưa hiệu chỉnh với chuyên gia; còn mất khoảng 11 đến 12% chi tiết mịn so với bản ghép thô; 17/72 thiết kế cảnh báo G3 do giữ chi tiết mịn |
-| Thí nghiệm | Có kiểm soát bằng mã, bảy thí nghiệm đã chạy (A đến G) | phiếu chấm mù chưa có |
+| Thí nghiệm | Có kiểm soát bằng mã, sáu thí nghiệm đã chạy (A, B, D, E, F, G) | phiếu chấm mù chưa có |
 | Nguồn gốc | Truy vết đầy đủ, phát hiện sửa trái phép | Băm đầu chuỗi chưa neo ra ngoài |
 | Bản quyền | Minh bạch, hệ thống tự chặn | Chưa có giấy phép từng vật; LoRA chỉ dùng phi thương mại |
 | Độ tin cậy | Không vỡ endpoint cũ, 322 ca kiểm thử | Sinh ảnh GPU chỉ kiểm thử thủ công |

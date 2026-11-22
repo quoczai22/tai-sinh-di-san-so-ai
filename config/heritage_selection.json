@@ -14,10 +14,9 @@
     "C2_ornament_density": {
       "label": "Mật độ nét hoa văn",
       "rule": "Số pixel cạnh hoa văn (Canny 100/200, đã bỏ nền và bóc đường bao 14 px) ≥ 60% mốc 20.092 px, tức ≥ 12.055 px.",
-      "baseline_heritage_id": "BT_Hac_XP",
       "baseline_edge_px": 20092,
       "ratio": 0.6,
-      "why": "Giữ nguyên tiêu chí mục 4.2 của đặc tả MVP. Mốc 20.092 px là ảnh đã kiểm ở mục 4.1."
+      "why": "Giữ nguyên tiêu chí mục 4.2 của đặc tả MVP. Mốc 20.092 px là mức chuẩn nhóm đặt ban đầu."
     },
     "C3_rights": {
       "label": "Nguồn và quyền sử dụng",

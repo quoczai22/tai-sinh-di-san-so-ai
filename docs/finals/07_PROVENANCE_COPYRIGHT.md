@@ -6,7 +6,7 @@ Hiện trạng: từ 19/11/2026 dữ liệu chính là 6 hiện vật của bộ
 
 ## 1. Danh mục nguồn (schema 2.0)
 
-Tệp `data/heritage/metadata.json`. Bản cũ (schema 1) lưu ở `data/archive/2026-09_schema1/`, chuyển đổi bằng `scripts/data_prep/migrate_heritage_metadata_v2.py`.
+Tệp `data/heritage/metadata.json`.
 
 Mười trường nguồn gốc bắt buộc (`tsds/provenance/registry.py::REQUIRED_PROVENANCE`): tên hiện vật, nguồn, URL, đơn vị lưu giữ hoặc đăng ảnh, tác giả ảnh, tình trạng quyền, giấy phép, cách ghi công, ngày thu thập, phiên bản dữ liệu gốc (mã băm ảnh gốc). Hệ thống **không tự điền** trường nào nhóm không biết. Độ đầy đủ hiện là 8/10 ở cả 6 hiện vật đang dùng (thiếu giấy phép từng vật và ngày thu thập).
 
@@ -25,19 +25,6 @@ Nguồn: bộ dữ liệu LR3D-CULT2 "Vietnamese Ceramic Cultural Artifacts" (Ng
 
 Mỗi hiện vật có hai ảnh: ảnh render cả bình từ mô hình 3D (`data/heritage/LR3D_xx.png`, 512×512, để hiển thị và nhận diện) và **mảng hoa văn phẳng** là texture UV trải phẳng của mô hình (`data/heritage/panels/LR3D_xx.png`, cạnh dài khoảng 2.048 px, đưa vào mô hình sinh). Mô tả hiện vật do nhóm viết (`description_origin: team_written`). Ngày thu thập chưa có nhật ký (trường `collected_on` để trống và được ghi là cần điền).
 
-### Sáu hiện vật cũ (ngừng dùng)
-
-| Mã | Hiện vật | Trạng thái | Đơn vị đăng ảnh | Quyền |
-|---|---|---|---|---|
-| HV01 | Bình gốm dáng tỏi hút lộc | Ngừng dùng | fullhome-decor.com | Chưa xác minh |
-| HV02 | Bình gốm hoa sen mực đen | Ngừng dùng | fullhome-decor.com | Chưa xác minh |
-| HV03 | Bình gốm chim công phong thuỷ | Ngừng dùng | fullhome-decor.com | Chưa xác minh |
-| HV04 | Bình gốm thuyền buồm | Ngừng dùng | fullhome-decor.com | Chưa xác minh |
-| HV05 | Bình gốm cúc vạn thọ | Ngừng dùng | battrangceramica.com.vn | Chưa xác minh |
-| HV06 | Bình hoa sứ trắng sen dát vàng 24k | Ngừng dùng | xuonggomsuviet.vn | Chưa xác minh |
-
-Ngày thu thập không còn biết chính xác; danh mục ghi "trước 06/09/2026" (ngày lần chạy đầu tiên) thay vì bịa một ngày. HV02 có đoạn mô tả trùng 121/121 cụm 8 từ với văn bản trang nguồn, nên được đánh dấu là **trích từ trang nguồn** (`description_origin: source_page_text`). HV01 được mô tả là "peacock" (chim công) trong khi đường dẫn nguồn ghi "bach-hac" (bạch hạc); cờ rà soát này vẫn mở nhưng không còn ảnh hưởng đến sản phẩm vì HV01 đã ngừng dùng.
-
 ## 2. Tiêu chí tuyển ảnh và kết quả rà soát
 
 Tệp `config/heritage_selection.json` (HS-2.0), chạy bằng `tsds/provenance/registry.py::assess_selection`.
@@ -45,7 +32,7 @@ Tệp `config/heritage_selection.json` (HS-2.0), chạy bằng `tsds/provenance/
 | Tiêu chí | Quy tắc | Loại |
 |---|---|---|
 | C1. Độ phân giải | Cạnh ngắn ảnh gốc ≥ 512 px **và** cạnh dài vùng hiện vật ≥ 512 px (cảnh báo nếu < 768), để không phải phóng to khi đưa về 512×512 | Bắt buộc |
-| C2. Mật độ nét hoa văn | Số pixel cạnh Canny ≥ 60% mốc 20.092 px của HV01, tức ≥ 12.055 px | Bắt buộc |
+| C2. Mật độ nét hoa văn | Số pixel cạnh Canny ≥ 60% mốc 20.092 px (mức chuẩn nhóm đặt ban đầu), tức ≥ 12.055 px | Bắt buộc |
 | C3. Quyền | Có URL, đơn vị đăng ảnh, tình trạng quyền; chỉ phạm vi công cộng, giấy phép mở, đã được cấp phép, hoặc ảnh tự chụp mới được xuất bản | Bắt buộc |
 | C4. Tính di sản | Ưu tiên hiện vật do bảo tàng lưu giữ, có niên đại công bố; sản phẩm thương mại đương đại chỉ dùng khi có phép của cơ sở sản xuất | Khuyến nghị |
 
@@ -61,45 +48,6 @@ Tệp `config/heritage_selection.json` (HS-2.0), chạy bằng `tsds/provenance/
 | HV12 | 129×309, phóng ×1,58 | **Không đạt** | 7.968 | **Không đạt** | Cảnh báo | Cảnh báo |
 
 **Cần nói rõ giới hạn của kết quả này:** C1 và C2 được đo trên **ảnh render cả bình** (512×512), nên cả 6 hiện vật đều trượt C1 và 3 hiện vật trượt C2. Nhưng ảnh đưa vào mô hình sinh từ 19/11/2026 là **mảng hoa văn phẳng** (khoảng 2.048 px), chưa được chấm C1 và C2. Chưa có phép đo C1, C2 cho mảng phẳng; đây là việc còn lại. Cả 6 hiện vật ở mức cảnh báo C3 (quyền chưa xác minh) và C4 (nguồn là bộ dữ liệu nghiên cứu, không phải bảo tàng).
-
-### Kết quả cho 6 ảnh cũ (ngừng dùng)
-
-| Mã | Ảnh gốc | Vùng hiện vật | C1 | Nét (C2) | C2 | Kết luận |
-|---|---|---|---|---|---|---|
-| HV01 | 1746×1746 | 1344×1546 | Đạt | 20.092 | Đạt | Mốc chuẩn của C2 |
-| HV02 | 300×300 | 138×242 | **Không đạt** (phải phóng to ×1,98) | 15.525 | Đạt | Ngừng dùng |
-| HV03 | 600×600 | 313×527 | Cảnh báo (< 768) | 31.000 | Đạt | Ngừng dùng |
-| HV04 | 1191×1191 | 519×1074 | Đạt | 23.838 | Đạt | Ngừng dùng |
-| HV05 | 324×617, JPEG 32 KB | 311×599 | **Không đạt** (cạnh ngắn < 512) | 14.915 | Đạt | Ngừng dùng |
-| HV06 | 1024×1024 | 721×886 | Đạt | 14.479 | Đạt | Ngừng dùng (C4: sản phẩm thương mại đương đại) |
-
-"Ngừng dùng" nghĩa là không chạy sản phẩm mới, không hiển thị như hiện vật đang có. Ảnh gốc của 6 hiện vật này vẫn ở `data/heritage/`; các thiết kế dựng từ chúng (bản 06/09/2026) đã xoá khỏi cây làm việc ngày 19/11/2026 và khôi phục được từ commit `b1192b0`.
-
-### Ảnh thay thế (kế hoạch trước khi chuyển sang LR3D-CULT2)
-
-Kế hoạch này có trước khi nhóm chuyển sang bộ LR3D-CULT2 và vẫn **chưa thực hiện**. Ứng viên tra cứu ngày 18/11/2026 qua API của Wikimedia Commons, lưu ở `data/heritage/sources/commons_candidates_2026-11-18.json`. Tất cả là ảnh hiện vật Bát Tràng trưng bày tại bảo tàng ở Hà Nội, do Daderot chụp và phát hành **CC0 1.0**; hiện vật thời Nguyễn (thế kỷ 19) đủ cũ để thuộc phạm vi công cộng. Mỗi ứng viên có mã SHA-1 do Commons công bố để kiểm tra tệp tải về.
-
-| Ứng viên | Hiện vật | Bảo tàng | Kích thước | Dự kiến thay |
-|---|---|---|---|---|
-| DSC05640 | Chum vẽ sơn thuỷ và linh vật, thời Gia Long | Bảo tàng Lịch sử Quốc gia | 3648×5472 | HV02 |
-| DSC05328 | Bình vẽ tích "Ngư ông đắc lợi", thế kỷ 19 | Bảo tàng Mỹ thuật Việt Nam | 3509×5000 | HV05 |
-| DSC05637 hoặc DSC05641 | Chậu hoa lam / hiện vật hoa lam thời Gia Long | Bảo tàng Lịch sử Quốc gia | 3558×3519 / 3562×4055 | HV06 |
-
-Trạng thái: **chưa nạp vào thư viện**. Máy dựng bản này không tải được tệp từ Commons (mạng bị chặn), nên cần nhóm tải 4 tệp và chạy công cụ nạp `scripts/data_prep/ingest_heritage_image.py`:
-
-1. Kiểm SHA-1 tệp khớp mã Commons công bố; sai là dừng.
-2. Lưu bản gốc vào `data/heritage/sources/originals/` (không commit).
-3. Tách nền (GrabCut + mô hình nền khớp theo viền ảnh), cắt sát, thu về cạnh dài ≤ 1.600 px, lưu PNG trong suốt; ghi mọi bước biến đổi và mã băm bản gốc, bản dẫn xuất vào `derived_from`.
-4. Xuất ảnh xem trước mặt nạ tách nền vào `docs/evidence/ingest/` để người kiểm tra.
-5. Chạy C1–C4; không đạt C1/C2 thì không nạp.
-6. Ghi danh mục ở trạng thái `pending_ingest` với `holder_type: museum`, `rights_status: public_domain`, ghi công "Ảnh: Daderot / Wikimedia Commons, CC0 1.0. Hiện vật: <tên bảo tàng>".
-7. Chỉ chuyển sang `active` (`--activate`) khi đã có mô tả prompt do nhóm viết, tóm tắt thị giác, và mọi cờ rà soát đã đóng. Sau đó chạy pipeline trên máy GPU.
-
-```bash
-python scripts/data_prep/ingest_heritage_image.py --file TSDS_DSC05640.jpg --candidate DSC05640 \
-    --heritage-id BT_Chum_GiaLong --name "Chum vẽ sơn thuỷ và linh vật" \
-    --dating "Thời Nguyễn, niên hiệu Gia Long (1802–1819)" --replaces HSBT_XP-300x300 --dry-run
-```
 
 ## 3. Cổng quyền theo mục đích sử dụng
 

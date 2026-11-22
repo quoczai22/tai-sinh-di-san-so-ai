@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 """Băm SHA-256 ĐẦY ĐỦ (64 ký tự) cho mọi tệp trong chuỗi truy vết.
 
-Bản cũ cắt mã băm còn 16 ký tự trong variants.csv. 16 ký tự hex (64 bit) vẫn đủ
-để phát hiện sai khác ngẫu nhiên, nhưng không phải chuẩn chứng minh toàn vẹn. Từ
-bản chung kết, Passport luôn lưu đủ 64 ký tự; cột 16 ký tự cũ được đối chiếu như
-tiền tố để chứng minh bản mới khớp bản cũ.
+16 ký tự hex (64 bit) đủ để phát hiện sai khác ngẫu nhiên nhưng không phải chuẩn chứng
+minh toàn vẹn, nên Passport luôn lưu đủ 64 ký tự.
 """
 from __future__ import annotations
 

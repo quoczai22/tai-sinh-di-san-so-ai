@@ -75,7 +75,7 @@ def test_heritage_list_keeps_old_shape(api_client):
     for it in items:
         assert OLD_HERITAGE_KEYS <= set(it), OLD_HERITAGE_KEYS - set(it)
         assert it["image"] == f"/media/heritage/{it['id']}"
-    assert len(api_client.get("/heritage", params={"include_retired": True}).json()) == 12
+    assert len(api_client.get("/heritage", params={"include_retired": True}).json()) == 6
 
 
 def test_heritage_info_for_viewers(api_client):
@@ -93,9 +93,9 @@ def test_heritage_info_for_viewers(api_client):
 
 
 def test_heritage_detail_and_media(api_client):
-    assert api_client.get("/heritage/BT_Hac_XP").json()["id"] == "BT_Hac_XP"
+    assert api_client.get("/heritage/LR3D_33").json()["id"] == "LR3D_33"
     assert api_client.get("/heritage/khong-co").status_code == 404
-    r = api_client.get("/media/heritage/BT_Hac_XP")
+    r = api_client.get("/media/heritage/LR3D_33")
     assert r.status_code == 200 and r.headers["content-type"].startswith("image/")
 
 
@@ -115,7 +115,6 @@ def test_generate_without_gpu_is_explicit(api_client, monkeypatch):
     active = next(k for k, v in items.items() if v.get("status") == "active")
     r = api_client.post("/generate", json={"heritage_id": active})
     assert r.status_code == 503 and "PyTorch" in r.json()["detail"]
-    assert api_client.post("/generate", json={"heritage_id": "HSBT_XP-300x300"}).status_code == 404
     assert api_client.post("/generate", json={"heritage_id": "khong-co"}).status_code == 404
     assert api_client.get("/generate/khong-co").status_code == 404
 
@@ -138,10 +137,10 @@ def test_artifact_path_traversal_blocked(api_client, path):
 
 
 def test_artifact_allowed_root(api_client):
-    assert api_client.get("/media/artifact", params={"path": "data/heritage/BT_Hac_XP.png"}).status_code == 200
+    assert api_client.get("/media/artifact", params={"path": "data/heritage/LR3D_33.png"}).status_code == 200
 
 
-@pytest.mark.parametrize("url", ["/media/run/R20000101T000000-HV01/..%2Fmanifest.json", "/media/run/khong-hop-le/a.png",
+@pytest.mark.parametrize("url", ["/media/run/R20000101T000000-HV07/..%2Fmanifest.json", "/media/run/khong-hop-le/a.png",
                                  "/passports/..%2Fsecret", "/runs/R1"])
 def test_bad_ids_rejected(api_client, url):
     assert api_client.get(url).status_code in (404, 422)
@@ -150,7 +149,7 @@ def test_bad_ids_rejected(api_client, url):
 def test_audit_whitelist(api_client):
     assert api_client.post("/audit", json={"step": 3, "event": "rm -rf"}).status_code == 422
     assert api_client.post("/audit", json={"step": 9, "event": "design_viewed"}).status_code == 422
-    r = api_client.post("/audit", json={"step": 4, "event": "design_viewed", "heritage_id": "BT_Hac_XP"})
+    r = api_client.post("/audit", json={"step": 4, "event": "design_viewed", "heritage_id": "LR3D_33"})
     assert r.status_code == 202 and api_client.audit_events[-1]["event"] == "design_viewed"
 
 
@@ -268,6 +267,6 @@ def test_real_passports_untouched(api_client, root):
 def test_quality_experiments_catalog(api_client):
     assert len(api_client.get("/quality/designs").json()) >= 24
     ids = {e["id"] for e in api_client.get("/experiments").json()}
-    assert {"EXP-A", "EXP-B", "EXP-C"} <= ids
+    assert {"EXP-A", "EXP-B", "EXP-D"} <= ids
     cat = api_client.get("/provenance/catalog").json()
     assert cat

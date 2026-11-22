@@ -2,27 +2,12 @@
 
 Tài liệu này trả lời yêu cầu 3 của ban tổ chức: nguồn và quyền sử dụng sáu hiện vật, cách ghi công, lịch sử các bước chỉnh sửa do người làm, và nhãn nội dung có hỗ trợ AI.
 
-## 1. Thay đổi so với hồ sơ gốc
+## 1. Nguồn dữ liệu hiện vật
 
-Hồ sơ gốc dùng sáu ảnh chụp bình gốm lấy từ trang bán hàng, giấy phép chưa xác minh, một số ảnh chưa điền URL trong dữ liệu chạy. Ngày 19/11/2026 nhóm quyết định thay bằng sáu mảng texture phẳng cắt từ bộ dữ liệu LR3D-CULT2, vì bộ dữ liệu này có DOI và giấy phép công bố, nguồn kiểm chứng được hơn.
+Sáu hiện vật là sáu vật của bộ dữ liệu LR3D-CULT2 (mô hình 3D, ảnh render đa góc và texture). Bộ dữ liệu có DOI và giấy phép công bố CC BY 4.0 nên nguồn kiểm chứng được. Mỗi hiện vật có hai ảnh:
 
-Pipeline sinh ảnh (hai giai đoạn) giữ nguyên. Chỉ thay dữ liệu đầu vào và nhãn nguồn. Các điểm khác biệt khi đọc hồ sơ:
-
-- Ảnh hiện vật mặc định là ảnh render cả bình từ mô hình 3D (camera 1, khung 1), gần với ảnh chụp bình của hồ sơ gốc. Mảng texture phẳng của cùng vật là đầu vào thay thế, dùng để so sánh.
-- Sáu ảnh cũ vẫn còn trong thư mục `data/heritage/` và trong lịch sử git để đối chiếu. Bản dữ liệu cũ nằm ở commit trước `3a849df`.
-
-Sáu hiện vật cũ, giữ lại để minh bạch:
-
-| Mã cũ | Tên | Nguồn (trang bán hàng) | Trạng thái |
-|---|---|---|---|
-| `BT_Hac_XP` | Bình gốm dáng Tỏi hút lộc | fullhome-decor.com | Giấy phép chưa xác minh |
-| `HSBT_XP-300x300` | Bình gốm hoa sen mực đen | fullhome-decor.com | Giấy phép chưa xác minh |
-| `BHV_UU_XP1-600x600` | Bình gốm chim công phong thủy | fullhome-decor.com | Giấy phép chưa xác minh |
-| `MB_2C_XP_31` | Bình gốm thuyền buồm | fullhome-decor.com | Giấy phép chưa xác minh |
-| `BT010_2` | Bình gốm cúc vạn thọ | battrangceramica.com.vn | Giấy phép chưa xác minh |
-| `binh-hoa-su-trang-ap-noi-hoa-sen-dat-vang-24k-...` | Bình hoa sứ trắng sen dát vàng 24k | xuonggomsuviet.vn | Giấy phép chưa xác minh |
-
-URL đầy đủ của sáu ảnh cũ nằm trong lịch sử của file `data/metadata.json`.
+- Ảnh render cả bình từ mô hình 3D (camera 1, khung 1), để hiển thị và nhận diện.
+- Mảng texture phẳng của cùng vật, là đầu vào đưa vào mô hình sinh.
 
 ## 2. Bộ dữ liệu nguồn
 
@@ -36,7 +21,7 @@ URL đầy đủ của sáu ảnh cũ nằm trong lịch sử của file `data/m
 
 | Mã trong hệ thống | Vật trong dataset | File texture gốc | Cách cắt mảng phẳng | Kích thước mảng phẳng | Trạng thái |
 |---|---|---|---|---|---|
-| `LR3D_33` | `ceramic_vases_33` | `ceramic_vases_33.png` | Đảo UV nhiều nét mực lam nhất, khung [4000, 3556, 8185, 8151], thu 0,446 lần | 1865×2048 | Giấy phép và xuất xứ từng vật chưa xác minh |
+| `LR3D_33` | `ceramic_vases_33` | `ceramic_vases_33.png` | Đảo UV nhiều nét mực lam nhất, khung [4000, 3556, 8185, 8151], thu 0,446 lần | 1865×2048 | CC BY 4.0 (cấp bộ dữ liệu); xuất xứ từng vật chưa xác minh |
 | `LR3D_61` | `ceramic_vases_61` | `ceramic_vases_61.png` | Khung [38, 2274, 3862, 4057], thu 0,536 lần | 2048×955 | Như trên |
 | `LR3D_50` | `ceramic_vases_50` | `ceramic_vases_50.png` | Khung [96, 2492, 4761, 8123], thu 0,364 lần | 1697×2048 | Như trên |
 | `LR3D_38` | `ceramic_vases_38` | `ceramic_vases_38.png` | Khung [6, 6, 2107, 3253], thu 0,631 lần. Còn dính một đĩa nhỏ có nhãn kiểm kê ở đáy | 1325×2048 | Như trên |
@@ -49,7 +34,7 @@ Thông số đầy đủ (phương pháp mặt nạ, độ phủ UV, số đảo
 
 ## 3b. Thông tin cho người xem: sổ hoa văn ở Studio (21/11/2026)
 
-**Lưu ở đâu.** Khối `artifact_info` của từng hiện vật trong `data/heritage/metadata.json` (danh mục duy nhất mà API và giao diện đọc). Nguồn dùng chung nằm ở `_meta.artifact_info_sources`, mỗi ý nghĩa hoa văn trỏ tới một khóa nguồn. API `/heritage` trả trường `info`; `scripts/demo/export_demo_data.py` xuất trường này sang `web_ui/data/heritage.json`. Không ghi vào `data/archive/2026-09_schema1/items_v1.json` hay `metadata_v1.json`: đó là bản lưu trữ, không mã nào đọc. Nội dung của hai tệp đó (mô tả của nhóm, đường dẫn bộ dữ liệu, ghi chú giấy phép) đã có sẵn trong danh mục chuẩn ở `team_description`, `provenance` và `license_note`.
+**Lưu ở đâu.** Khối `artifact_info` của từng hiện vật trong `data/heritage/metadata.json` (danh mục duy nhất mà API và giao diện đọc). Nguồn dùng chung nằm ở `_meta.artifact_info_sources`, mỗi ý nghĩa hoa văn trỏ tới một khóa nguồn. API `/heritage` trả trường `info`; `scripts/demo/export_demo_data.py` xuất trường này sang `web_ui/data/heritage.json`.
 
 **Hiển thị ra sao:** ở Studio, dưới tên hiện vật có nút "Xem ý nghĩa hoa văn". Bấm vào mở một cuốn sổ hai trang nổi trên trang (không chuyển trang): trang trái là ảnh tĩnh của hiện vật (ảnh tách nền từ `data/heritage/cutouts/`, không dùng khung 3D), tên và dáng bình; trang phải là một đoạn mô tả ngắn về hoa văn và ý nghĩa (`motif_text`), nguồn ảnh (bộ dữ liệu, DOI) và giấy phép CC BY 4.0. Sổ không hiện nguồn của từng ý nghĩa, đối chiếu bảo tàng hay ghi chú kỹ thuật; các căn cứ đó vẫn lưu trong `artifact_info` (từng hoa văn kèm khóa nguồn, `comparison`, `origin`, `origin_note`) và trong mục này, để kiểm chứng khi cần.
 

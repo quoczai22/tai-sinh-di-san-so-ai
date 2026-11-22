@@ -84,8 +84,8 @@ def trim_background(img: Image.Image, thr: int = 245, pad: int = 8,
     """Cắt bỏ nền phông xung quanh món đồ.
 
     Hiện vật thường chỉ chiếm 30% khung ảnh chụp studio; cắt lề rồi mới letterbox
-    thì nó chiếm ~60%, tức gấp đôi số pixel cho hoa văn. Đo trên BT010: mật độ
-    cạnh 3,97% → 7,53%.
+    thì nó chiếm ~60%, tức gấp đôi số pixel cho hoa văn. Đo trên một ảnh chụp
+    studio: mật độ cạnh 3,97% → 7,53%.
 
     Hỏng an toàn: nền không phải trắng thì mask phủ toàn ảnh, hộp bao bằng cả
     ảnh, và hàm trả về ảnh nguyên vẹn thay vì cắt sai.

@@ -13,7 +13,6 @@ Biến môi trường hỗ trợ:
 from __future__ import annotations
 
 from collections import deque
-import csv
 import hashlib
 from pathlib import Path
 import os
@@ -33,7 +32,6 @@ from tsds.provenance.heritage import load_heritage_metadata
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-CSV_PATH = PROJECT_ROOT / "tsds" / "evaluation" / "variants.csv"
 WEB_VARIANTS_DIR = PROJECT_ROOT / "web_ui" / "assets" / "images" / "variants"
 
 app = FastAPI(title="Tái sinh Di sản Số — Mock GPU Backend", version="0.2.0")
@@ -102,9 +100,7 @@ def verify_auth(
 
 
 def heritage_items() -> list[dict]:
-    # Mock trả số liệu từ tsds/evaluation/variants.csv (bộ hiện vật cũ, nay đã "retired" trong
-    # metadata bản chung kết), nên phải chấp nhận cả hiện vật retired.
-    return load_heritage_metadata(PROJECT_ROOT, include_retired=True)
+    return load_heritage_metadata(PROJECT_ROOT)
 
 
 def ui_items() -> list[dict]:
@@ -126,13 +122,8 @@ def ui_items() -> list[dict]:
 
 
 def _load_csv_variants(heritage_id: str) -> list[dict]:
+    # Mock không có số đo thật: mọi trường dùng giá trị mặc định ở dưới.
     rows: list[dict] = []
-    if CSV_PATH.is_file():
-        with CSV_PATH.open("r", encoding="utf-8", newline="") as handle:
-            for row in csv.DictReader(handle):
-                if row.get("heritage_id") == heritage_id:
-                    rows.append(row)
-    rows.sort(key=lambda r: int(r.get("variant_index", 1)))
     out_variants_dir = get_output_dir(PROJECT_ROOT) / "variants"
     out_variants_dir.mkdir(parents=True, exist_ok=True)
     gpu_label = os.getenv("BACKEND_NAME", "NVIDIA T4 16GB (Mock)")

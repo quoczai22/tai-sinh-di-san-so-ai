@@ -121,7 +121,7 @@ def main() -> int:
         # Lần 1: Gọi /api/generate khi Modal sập
         received_messages.clear()
         t0 = time.time()
-        c1, r1 = http_json("http://127.0.0.1:3020/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        c1, r1 = http_json("http://127.0.0.1:3020/api/generate", method="POST", body={"heritage_id": "LR3D_33"})
         elapsed1 = time.time() - t0
 
         assert c1 == 200, f"Lần 1 phải trả 200 Demo, nhận {c1}: {r1}"
@@ -133,13 +133,13 @@ def main() -> int:
         msg_content = received_messages[0].get("content", "")
         print(f"[THỰC TẾ TIN NHẮN 1] {msg_content}")
         assert "⚠️ Modal lỗi" in msg_content, "Tin nhắn phải có biểu tượng và thông báo Modal lỗi"
-        assert "BT_Hac_XP" in msg_content, "Tin nhắn phải nêu hiện vật BT_Hac_XP"
+        assert "LR3D_33" in msg_content, "Tin nhắn phải nêu hiện vật LR3D_33"
         assert "giờ VN" in msg_content, "Tin nhắn phải có mốc giờ VN"
         assert "giám khảo đang thấy bản demo" in msg_content, "Tin nhắn phải thông báo giám khảo đang thấy demo"
         print(f"[PASS 1] Lần 1 Modal lỗi: trả về Demo sau {elapsed1:.2f}s và gửi đúng 1 cảnh báo Discord.")
 
         # Lần 2: Gọi tiếp ngay sau đó (trong 30 phút cooldown)
-        c2, r2 = http_json("http://127.0.0.1:3020/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        c2, r2 = http_json("http://127.0.0.1:3020/api/generate", method="POST", body={"heritage_id": "LR3D_33"})
         assert c2 == 200 and r2.get("backend") == "demo"
         time.sleep(0.3)
         assert len(received_messages) == 1, f"Lần 2 phải bị chặn bởi cooldown 30p, nhưng có {len(received_messages)} tin"
@@ -167,14 +167,14 @@ def main() -> int:
         assert wait_for_url("http://127.0.0.1:3021/health")
 
         # Lượt 1: dùng hết quota
-        c_rl1, _ = http_json("http://127.0.0.1:3021/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        c_rl1, _ = http_json("http://127.0.0.1:3021/api/generate", method="POST", body={"heritage_id": "LR3D_33"})
         assert c_rl1 == 200
         time.sleep(0.2)
         # Reset tin nhắn để kiểm tra lượt 2 vượt quota
         received_messages.clear()
 
         # Lượt 2: Vượt rate limit
-        c_rl2, r_rl2 = http_json("http://127.0.0.1:3021/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        c_rl2, r_rl2 = http_json("http://127.0.0.1:3021/api/generate", method="POST", body={"heritage_id": "LR3D_33"})
         assert c_rl2 == 200
         assert r_rl2.get("reason") == "rate_limit_exceeded"
         assert r_rl2.get("rate_limited") is True
@@ -201,7 +201,7 @@ def main() -> int:
         procs.append(pgw_no_alert)
         assert wait_for_url("http://127.0.0.1:3022/health")
 
-        c4, r4 = http_json("http://127.0.0.1:3022/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        c4, r4 = http_json("http://127.0.0.1:3022/api/generate", method="POST", body={"heritage_id": "LR3D_33"})
         assert c4 == 200
         assert r4.get("backend") == "demo"
         print("[PASS 4] Không cấu hình biến ALERT_DISCORD_WEBHOOK_URL: Gateway rơi về Demo mượt mà, không lỗi.")
@@ -218,9 +218,9 @@ def main() -> int:
         pgw_job = subprocess.Popen(["node", "scripts/deploy/dev_gateway.js"], cwd=str(ROOT), env=env_job)
         procs.append(pgw_job)
         assert wait_for_url("http://127.0.0.1:3030/health")
-        c_job, r_job = http_json("http://127.0.0.1:3030/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        c_job, r_job = http_json("http://127.0.0.1:3030/api/generate", method="POST", body={"heritage_id": "LR3D_33"})
         assert c_job == 202 and r_job.get("backend") == "modal", r_job
-        status_url = f"http://127.0.0.1:3030/api/status?job_id={r_job['job_id']}&backend=modal&heritage_id=BT_Hac_XP"
+        status_url = f"http://127.0.0.1:3030/api/status?job_id={r_job['job_id']}&backend=modal&heritage_id=LR3D_33"
         c_pending, r_pending = http_json(status_url)
         assert c_pending == 200 and r_pending.get("status") in ("queued", "running"), r_pending
         pmodal.kill()
@@ -230,7 +230,7 @@ def main() -> int:
         assert len(r_lost.get("variants", [])) == 4 and r_lost.get("demo_label"), r_lost
         assert len(received_messages) == 1, received_messages
         alert = received_messages[0].get("content", "")
-        assert "giữa chừng" in alert and "BT_Hac_XP" in alert, alert
+        assert "giữa chừng" in alert and "LR3D_33" in alert, alert
         print("[PASS 5] Modal chết giữa job: đúng 1 cảnh báo có mã hiện vật.")
         pgw_job.terminate()
         pgw_job.wait(timeout=5)
@@ -241,7 +241,7 @@ def main() -> int:
         pgw_demo_only = subprocess.Popen(["node", "scripts/deploy/dev_gateway.js"], cwd=str(ROOT), env=env_demo_only)
         procs.append(pgw_demo_only)
         assert wait_for_url("http://127.0.0.1:3031/health")
-        c_only, r_only = http_json("http://127.0.0.1:3031/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        c_only, r_only = http_json("http://127.0.0.1:3031/api/generate", method="POST", body={"heritage_id": "LR3D_33"})
         assert c_only == 200 and r_only.get("backend") == "demo", r_only
         assert len(received_messages) == 0, received_messages
         print("[PASS 6] MODAL_URL trống: Demo thuần, không cảnh báo.")

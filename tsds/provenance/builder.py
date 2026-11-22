@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """Dựng Design Passport từ một BẢN GHI THIẾT KẾ đã chuẩn hoá.
 
-Cùng một hàm cho hai nguồn:
-  · lần chạy cũ (tsds/evaluation/variants.csv) — scripts/10_build_legacy_runs.py
-  · lần chạy mới qua API/Streamlit — tsds/pipeline/run.py
+Hàm dùng chung cho luồng sinh ảnh qua API/Streamlit (tsds/pipeline/run.py).
 Nhờ vậy Passport của luồng sản phẩm có ĐỦ trường như luồng đánh giá (sửa điểm
 lệch #2 của bản rà soát: "luồng API không ghi seed, prompt, model, mã băm").
 """
@@ -29,8 +27,7 @@ def _terms(heritage_id: str, root: Path) -> dict:
 def _garment_block(garment: dict | None, rec: dict) -> dict:
     """Khối `generation.garment` của Passport: áo nền lấy từ đâu và nếu là áo do LoRA sinh thì sinh thế nào.
 
-    Luồng sản phẩm hiện chỉ dùng áo LoRA. Nhánh "fixed" còn lại để dựng Passport cho các lần chạy cũ
-    (scripts/10_build_legacy_runs.py), vốn ghép lên áo mẫu cố định."""
+    Luồng sản phẩm hiện chỉ dùng áo LoRA. Nhánh "fixed" còn lại cho trường hợp ghép lên áo mẫu cố định."""
     if not garment or garment.get("source") != "lora":
         return {"source": "fixed", "template": "data/garment/aodai_template.png",
                 "fallback_reason": (garment or {}).get("fallback_reason")}
@@ -51,7 +48,7 @@ def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict,
                           assessment: dict | None, now: str, root: Path = ROOT,
                           polish_prompt: str = "", polish_negative: str = "",
                           garment: dict | None = None) -> dict:
-    """`rec`: bản ghi chuẩn hoá (khoá giống variants.csv). `paths`: Path tuyệt đối
+    """`rec`: bản ghi chuẩn hoá của một thiết kế. `paths`: Path tuyệt đối
     của source/reference/canny/pattern/raw/final.
 
     `garment`: thông tin áo nền (khóa `garment` trong manifest của runner): source "lora" (luồng hiện tại) hay "fixed" (lần chạy cũ),

@@ -57,7 +57,7 @@ APQC PCF chỉ dùng làm **khung phân loại** để gọi tên và xếp nhó
 
 | Chỉ số | Bản 06/09/2026 (lịch sử, commit `b1192b0`) | Bộ demo 20/11/2026 (seed 42) |
 |---|---|---|
-| Thiết kế đo | 24 (6 hiện vật cũ × 4 biến thể) | 24 (6 hiện vật LR3D-CULT2 × 4 mức sáng tạo) |
+| Thiết kế đo | 24 (6 hiện vật × 4 biến thể) | 24 (6 hiện vật LR3D-CULT2 × 4 mức sáng tạo) |
 | G2 hoa văn: PASS / WARN / FAIL | 21 / 1 / 2 | 16 / 6 / 2 |
 | G3 thiết kế cuối: PASS / WARN / FAIL | 0 / 4 / 20 | 20 / 4 / 0 |
 | PPS (giữ họa tiết) | trung vị 0,36 trước sửa | trung bình 0,952 (khoá họa tiết là bước mặc định) |
@@ -75,7 +75,7 @@ Nguồn của bộ demo: Passport trong `outputs/passports/` (`GET /quality/desi
 |---|---|---|---|---|
 | L-1. Thiết kế từ hiện vật có sẵn | Người dùng chọn hiện vật trong thư viện, hệ thống sinh 4 phương án | Không đo thiết kế cuối; ghi đè ảnh cũ; không có thẩm định | 10: cổng quyền theo mục đích, G2, vòng thử lại polish, G3, QC xem cảnh báo, chấm mù chuyên gia, kiểm tra điểm mâu thuẫn quyết định, cổng xuất bản, nhãn AI khi xuất, sổ cái băm | Đã chạy (sinh ảnh cần máy có GPU) |
 | L-2. Thiết kế từ hiện vật mới | Đưa ảnh hiện vật mới vào thư viện rồi đi tiếp như L-1 | Không có tiêu chí tuyển ảnh; ảnh 300×300 vẫn được dùng | 6 điểm thêm trước L-1: C1 độ phân giải, C2 mật độ nét, C3 quyền, C4 tính xác thực di sản, đủ 10 trường nguồn gốc, SHA-256 ảnh gốc | Một phần: chạy bằng dòng lệnh, chưa có nút tải lên trên giao diện |
-| L-3. Thí nghiệm có kiểm soát | So sánh cấu hình để ra quyết định cải tiến | Bốn yếu tố đổi cùng lúc, một seed | 7: kiểm tra kế hoạch đơn biến, ghi kế hoạch trước khi chạy, ghi cấu hình và SHA-256 từng lượt, che danh tính biến thể, xáo thứ tự theo người chấm, tối thiểu 3 người chấm, đo độ đồng thuận trước khi kết luận | EXP-C đã chạy, chờ phiếu; EXP-A, EXP-B đã lập kế hoạch, chờ GPU |
+| L-3. Thí nghiệm có kiểm soát | So sánh cấu hình để ra quyết định cải tiến | Bốn yếu tố đổi cùng lúc, một seed | 7: kiểm tra kế hoạch đơn biến, ghi kế hoạch trước khi chạy, ghi cấu hình và SHA-256 từng lượt, che danh tính biến thể, xáo thứ tự theo người chấm, tối thiểu 3 người chấm, đo độ đồng thuận trước khi kết luận | Sáu thí nghiệm đã chạy (EXP-A, B, D, E, F, G), chờ phiếu chấm mù |
 | L-4. Biên tập thủ công | Nhà thiết kế sửa ảnh ngoài hệ thống rồi tải lên | Không ghi nhận | 6: chỉ nhận ảnh hợp lệ ≤ 8 MB, khai báo người sửa và nội dung sửa, phiên bản mới mang mã băm bản cha, chạy lại G3, thẩm định lại, sổ cái băm | Đã chạy qua API |
 | L-5. Xuất bản và tải xuống | Đưa thiết kế ra ngoài | Không phân biệt mục đích; không nhãn AI | 4: chỉ thiết kế đã phê duyệt, cổng quyền "xuất bản công khai", nhãn AI nhìn thấy được và nằm trong siêu dữ liệu PNG, ghi công nguồn ảnh | Đã chạy; hiện cổng quyền chặn xuất bản vì chưa hiện vật nào có giấy phép |
 
