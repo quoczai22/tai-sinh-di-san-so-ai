@@ -15,7 +15,14 @@ const reply = () => ({
 
 async function main() {
     let mode = '503';
+    let readAttempts = 0;
     const modal = http.createServer((req, res) => {
+        if (mode === 'transient' && req.url.startsWith('/generate/')) {
+            readAttempts += 1;
+            res.writeHead(readAttempts === 1 ? 503 : 200,
+                { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ status: 'completed', progress: 100 }));
+        }
         if (mode === '503') { res.writeHead(503); res.end('unavailable'); }
         if (mode === '401') { res.writeHead(401); res.end('unauthorized'); }
         if (mode === '429') { res.writeHead(429); res.end('queue full'); }
@@ -75,6 +82,7 @@ async function main() {
             assert.ok(messages[0].includes(failure));
             assert.ok(messages[0].includes('đang thấy lỗi'));
             if (failure === '401') assert.ok(messages[0].includes('sai khóa'));
+            assert.ok(messages[0].includes('Gợi ý:'));
         }
         mode = 'failed';
         messages.length = 0;
@@ -84,6 +92,16 @@ async function main() {
         assert.equal(failed.body.status, 'failed');
         assert.equal(messages.length, 1);
         assert.ok(messages[0].includes('job failed'));
+
+        mode = 'transient';
+        readAttempts = 0;
+        messages.length = 0;
+        _resetAlertCooldown();
+        const recovered = reply();
+        await live({ method: 'GET', query: { route: 'generate/job456', heritage_id: 'LR3D_61' } }, recovered);
+        assert.equal(recovered.body.status, 'completed');
+        assert.equal(readAttempts, 2);
+        assert.equal(messages.length, 0, 'recovered read must not alert');
 
         messages.length = 0;
         _resetAlertCooldown();

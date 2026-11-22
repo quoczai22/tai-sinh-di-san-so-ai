@@ -52,6 +52,8 @@ Tối ưu thời gian hiện ảnh sau khi job hoàn tất: job trả sẵn bố
 
 Hai lớp cảnh báo độc lập: Discord webhook báo lỗi từ gateway; UptimeRobot kiểm tra Vercel khi gateway không thể tự báo. `GET /health` và `GET /api/live/health` chỉ chạy trên CPU, không gọi Modal. Bài thử `node tests/manual/test_health_cpu.js` xác nhận điều này. Webhook có cooldown mặc định 30 phút trong RAM của từng Vercel instance; nhiều instance có thể gửi hơn một tin cho cùng một sự cố.
 
+Tin Discord có gợi ý xử lý theo mã lỗi để nhóm tra cứu nhanh trên điện thoại. Gateway thử lại đúng một lần các yêu cầu đọc GET khi gặp lỗi mạng hoặc HTTP 502/503/504. Không thử lại timeout dài, 401/403, hoặc POST `/generate`; tránh gửi hai lượt sinh ảnh và dùng GPU ngoài ý muốn. Khi vẫn lỗi, giao diện dùng cơ chế dự phòng và gửi cảnh báo như trước.
+
 Nhóm tự cấu hình theo thứ tự:
 
 1. Trong Discord, mở **Edit Channel → Integrations → Webhooks → New Webhook** và sao chép URL trong kênh riêng của nhóm. Không gửi URL vào chat hay commit.

@@ -84,6 +84,8 @@ jobs:
         run: node tests/manual/test_health_cpu.js
       - name: Test alert and demo failover with local mock servers
         run: node tests/manual/test_live_alert_failover.js
+      - name: Test safe retry for read requests
+        run: node tests/manual/test_read_retry.js
       - name: Test legacy gateway Discord cooldown with local webhook
         run: python tests/manual/test_alert_webhook.py
       - name: Test operator alert script with local webhook
