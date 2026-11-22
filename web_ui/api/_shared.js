@@ -142,14 +142,18 @@ function _resetAlertCooldown() {
 }
 
 /**
- * Gửi cảnh báo sự cố tới Discord Webhook khi Modal gặp lỗi/timeout.
+ * Gửi cảnh báo sự cố tới Discord Webhook và/hoặc Zalo Bot Manager khi Modal gặp lỗi/timeout.
  * - Cooldown chống spam: mặc định 30 phút (ALERT_COOLDOWN_MIN) lưu trong RAM instance.
  * - Timeout 3s, bọc try/catch, không bao giờ làm hỏng request của người dùng.
  * - Tuyệt đối không gửi token, key hay IP người dùng.
  */
 async function notifyAlert(message) {
     const webhookUrl = (process.env.ALERT_DISCORD_WEBHOOK_URL || '').trim();
-    if (!webhookUrl) return;
+    const zaloToken = (process.env.ALERT_ZALO_BOT_TOKEN || '').trim();
+    const zaloChatId = (process.env.ALERT_ZALO_CHAT_ID || '').trim();
+    const zaloBase = (process.env.ALERT_ZALO_API_BASE || 'https://bot-api.zapps.me').trim().replace(/\/$/, '');
+    const hasZalo = Boolean(zaloToken && zaloChatId);
+    if (!webhookUrl && !hasZalo) return;
 
     const cooldownMin = Math.max(1, parseInt(process.env.ALERT_COOLDOWN_MIN || '30', 10));
     const cooldownMs = cooldownMin * 60 * 1000;
@@ -159,20 +163,39 @@ async function notifyAlert(message) {
     }
     lastAlertTimestamp = now;
 
-    try {
-        await fetchWithTimeout(
-            webhookUrl,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: String(message || '') }),
-            },
-            3000
+    const text = String(message || '');
+    const tasks = [];
+    if (webhookUrl) {
+        tasks.push(
+            fetchWithTimeout(
+                webhookUrl,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: text }),
+                },
+                3000
+            ).catch(() => {
+                console.warn('[ALERT] Không thể gửi cảnh báo Discord.');
+            })
         );
-    } catch (_) {
-        // Lỗi gửi cảnh báo KHÔNG được làm hỏng request của người dùng
-        console.warn('[ALERT] Không thể gửi cảnh báo Discord.');
     }
+    if (hasZalo) {
+        tasks.push(
+            fetchWithTimeout(
+                `${zaloBase}/bot${zaloToken}/sendMessage`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: zaloChatId, text }),
+                },
+                3000
+            ).catch(() => {
+                console.warn('[ALERT] Không thể gửi cảnh báo Zalo Bot.');
+            })
+        );
+    }
+    await Promise.all(tasks);
 }
 
 function alertModalIssue(type, endpoint, heritageId, viewerState) {

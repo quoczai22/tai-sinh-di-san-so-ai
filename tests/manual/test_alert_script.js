@@ -5,8 +5,7 @@ const { spawnSync } = require('node:child_process');
 const path = require('node:path');
 
 const script = path.resolve(__dirname, '../../scripts/deploy/test_alert.js');
-const noUrl = { ...process.env };
-delete noUrl.ALERT_DISCORD_WEBHOOK_URL;
+const noUrl = { ...process.env, ALERT_DISCORD_WEBHOOK_URL: '', ALERT_ZALO_BOT_TOKEN: '', ALERT_ZALO_CHAT_ID: '' };
 const missing = spawnSync(process.execPath, [script], { env: noUrl, encoding: 'utf8' });
 assert.equal(missing.status, 1);
 assert.match(missing.stderr, /Thiếu ALERT_DISCORD_WEBHOOK_URL/);
