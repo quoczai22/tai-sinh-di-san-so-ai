@@ -152,10 +152,10 @@ let lastPersonalChatId = '';
 async function notifyAlert(message) {
     const webhookUrl = (process.env.ALERT_DISCORD_WEBHOOK_URL || '').trim();
     const zaloToken = (process.env.ALERT_ZALO_BOT_TOKEN || '').trim();
-    const allowGroup = (process.env.ALERT_ZALO_ALLOW_GROUP || '0').trim() === '1';
-    const userChatId = (process.env.ALERT_ZALO_USER_CHAT_ID || lastPersonalChatId || '').trim();
+    const allowGroup = (process.env.ALERT_ZALO_ALLOW_GROUP || '1').trim() !== '0';
+    const userChatId = (process.env.ALERT_ZALO_USER_CHAT_ID || '').trim();
     const groupChatId = (process.env.ALERT_ZALO_CHAT_ID || '').trim();
-    const zaloChatId = userChatId || (allowGroup ? groupChatId : '');
+    const zaloChatId = (allowGroup ? groupChatId : '') || userChatId || lastPersonalChatId;
     const zaloBase = (process.env.ALERT_ZALO_API_BASE || 'https://bot-api.zapps.me').trim().replace(/\/$/, '');
     const hasZalo = Boolean(zaloToken && zaloChatId);
     if (!webhookUrl && !hasZalo) return;
@@ -308,7 +308,7 @@ async function handleZaloBotWebhook(body) {
         (process.env.ALERT_ZALO_CHAT_ID || '').trim(),
         (process.env.ALERT_ZALO_USER_CHAT_ID || '').trim(),
     ].filter(Boolean);
-    const allowGroup = (process.env.ALERT_ZALO_ALLOW_GROUP || '0').trim() === '1';
+    const allowGroup = (process.env.ALERT_ZALO_ALLOW_GROUP || '1').trim() !== '0';
     const zaloBase = (process.env.ALERT_ZALO_API_BASE || 'https://bot-api.zapps.me').trim().replace(/\/$/, '');
     const msg = body?.message || body?.result?.message || null;
     const chatId = msg?.chat?.id ? String(msg.chat.id) : '';
