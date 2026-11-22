@@ -47,3 +47,24 @@ Sau đó bổ sung hàng chờ trong cùng container Modal: một job chạy, t�
 Ngày 21/11: triển khai Preview `https://tai-sinh-di-san-so-25905pxi8-quoczai22s-projects.vercel.app` và Modal `doandt0612`. Qua Preview, hai lượt `8b83857ddd5d4532883fa6a02c13264f` và `aa68e7a41fa94cc19fcced3a2030ca06` được nhận liên tiếp; lúc lượt đầu `running` 10%, lượt sau `queued` vị trí 1. Sau 45 giây không polling, lượt đầu hoàn tất 4/4, lượt sau chuyển sang `running`. Sau đó cả hai hoàn tất 4/4 với run lần lượt `R20261121T110841-HV08` và `R20261121T111024-HV08`. PNG V1 của hai lượt tải qua Preview, chữ ký PNG đúng, SHA-256 tiền tố khác nhau (`E15750E8B8ECE13B`, `C9B3B978FD795890`). Modal Volume có hai tệp JSON job tương ứng. Chưa kiểm tra trực quan UI Preview vì bảo vệ Vercel Authentication; chưa thử ba người dùng thật hoặc khởi động lại container sau khi job xong. Bản production chưa thay đổi.
 
 Tối ưu thời gian hiện ảnh sau khi job hoàn tất: job trả sẵn bốn `variant` và đường ảnh, nên trang Kết quả dùng trực tiếp thay vì quét lại toàn bộ Passport; giữ cache hiện vật đã tải ở Studio, bắt đầu tải bốn PNG song song và đặt ảnh card live ở chế độ eager. Log trước khi sửa có một lượt `GET /passports` mất 7,35 giây và bốn `GET /media/artifact` mất đến 3,20 giây để về đủ. Bài kiểm thử `tests/manual/test_live_session.mjs` xác nhận bốn ảnh bắt đầu tải trước khi điều hướng và đúng URL của run. Chưa đo thời gian hiển thị trực quan sau sửa.
+
+## Cảnh báo vận hành
+
+Hai lớp cảnh báo độc lập: Discord webhook báo lỗi từ gateway; UptimeRobot kiểm tra Vercel khi gateway không thể tự báo. `GET /health` và `GET /api/live/health` chỉ chạy trên CPU, không gọi Modal. Bài thử `node tests/manual/test_health_cpu.js` xác nhận điều này. Webhook có cooldown mặc định 30 phút trong RAM của từng Vercel instance; nhiều instance có thể gửi hơn một tin cho cùng một sự cố.
+
+Nhóm tự cấu hình theo thứ tự:
+
+1. Trong Discord, mở **Edit Channel → Integrations → Webhooks → New Webhook** và sao chép URL trong kênh riêng của nhóm. Không gửi URL vào chat hay commit.
+2. Trong Vercel project `tai-sinh-di-san-so-ai`, đặt biến production `ALERT_DISCORD_WEBHOOK_URL` và `ALERT_COOLDOWN_MIN` bằng `30`, sau đó **Redeploy** để biến mới có hiệu lực.
+3. Trên máy của người vận hành, đặt `ALERT_DISCORD_WEBHOOK_URL` trong môi trường terminal rồi chạy `node scripts/deploy/test_alert.js` đúng một lần. Script chỉ in trạng thái gửi hoặc mã HTTP, không in URL.
+4. Trong UptimeRobot, chọn **Add New Monitor → HTTP(s)**, URL `https://tai-sinh-di-san-so-ai.vercel.app/health`, chu kỳ 5 phút và email cho 2–3 thành viên. Không tạo monitor trỏ vào Modal, `/api/warmup` hoặc endpoint sinh ảnh.
+5. Trên bản Vercel **Preview**, tạm bỏ `MODAL_URL`, redeploy Preview và bấm Tạo. Xác nhận Discord nhận tin và giao diện hiện nhãn bản demo. Khôi phục `MODAL_URL` rồi redeploy Preview. Không thử bằng cách xóa biến production.
+
+| Tín hiệu | Nguyên nhân có thể | Xử lý |
+| --- | --- | --- |
+| Email UptimeRobot | Vercel hoặc route `/health` không phản hồi | Mở Vercel Deployments/Runtime Logs, kiểm tra domain và deployment mới nhất; rollback deployment lỗi nếu cần. |
+| Discord “Modal lỗi” | Timeout, 5xx, lỗi mạng, thiếu cấu hình hoặc job thất bại | Xem endpoint và thời gian trong tin, đối chiếu Vercel Runtime Logs và Modal Logs; kiểm tra container, Volume, secret và trạng thái job trước khi deploy lại. |
+| Discord “sai khóa 401” | `MODAL_KEY` ở Vercel không khớp `DH_API_KEY` trong Modal secret | Người có quyền kiểm tra hai giá trị trong dashboard riêng, cập nhật đúng secret/biến rồi redeploy phần bị đổi; không gửi khóa qua chat. |
+| Modal hết credit | GPU không khởi động hoặc Modal trả lỗi trong lúc sinh | Kiểm tra Billing, Usage, Spend limit và workspace; giữ giao diện demo dự phòng cho người xem, chỉ bật live khi chủ tài khoản xác nhận giới hạn chi tiêu. |
+
+CI `Modal backend checks` kiểm tra bằng mock CPU; nó không xác nhận GPU thật hoặc tự deploy Modal. Trước production, chạy thử 1 job sinh bốn ảnh và kiểm tra đường ảnh trên Vercel sau khi deploy Modal thủ công.

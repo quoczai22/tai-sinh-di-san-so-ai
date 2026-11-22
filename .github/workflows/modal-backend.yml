@@ -15,6 +15,7 @@ on:
       - "tests/test_api.py"
       - "tests/test_deploy_files.py"
       - "tests/manual/**"
+      - "scripts/deploy/test_alert.js"
       - ".github/workflows/modal-backend.yml"
   push:
     branches: [main]
@@ -31,6 +32,7 @@ on:
       - "tests/test_api.py"
       - "tests/test_deploy_files.py"
       - "tests/manual/**"
+      - "scripts/deploy/test_alert.js"
       - ".github/workflows/modal-backend.yml"
   workflow_dispatch:
 
@@ -78,6 +80,14 @@ jobs:
         run: node tests/manual/test_live_gateway_mock.js
       - name: Test session resume without duplicate generation
         run: node --experimental-default-type=module tests/manual/test_live_session.mjs
+      - name: Prove health endpoints do not wake Modal
+        run: node tests/manual/test_health_cpu.js
+      - name: Test alert and demo failover with local mock servers
+        run: node tests/manual/test_live_alert_failover.js
+      - name: Test legacy gateway Discord cooldown with local webhook
+        run: python tests/manual/test_alert_webhook.py
+      - name: Test operator alert script with local webhook
+        run: node tests/manual/test_alert_script.js
 
   next-action:
     name: Next action
