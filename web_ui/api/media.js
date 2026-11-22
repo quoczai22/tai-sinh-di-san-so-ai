@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { getBackendConfig, buildBackendHeaders, fetchWithTimeout, alertModalIssue,
-    upstreamErrorType } = require('./_shared');
+    upstreamErrorType, httpFailureType } = require('./_shared');
 
 const SAFE_FILENAME_RE = /^[A-Za-z0-9._-]+$/;
 
@@ -56,7 +56,7 @@ module.exports = async function handler(req, res) {
                 res.setHeader('Cache-Control', 'public, max-age=3600');
                 return res.status(200).send(Buffer.from(arrayBuffer));
             }
-            failure = `HTTP ${upstream.status}`;
+            failure = httpFailureType(upstream.status);
         } catch (error) {
             failure = upstreamErrorType(error);
             // Fallback sang ảnh tĩnh nếu backend vừa tắt sau khi sinh xong

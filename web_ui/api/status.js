@@ -6,6 +6,7 @@ const {
     getDemoVariants,
     logGatewayAudit,
     alertModalIssue,
+    httpFailureType,
 } = require('./_shared');
 
 function rewriteVariantsMedia(variants, backend) {
@@ -192,7 +193,7 @@ module.exports = async function handler(req, res) {
         );
         if (!upstream.ok) {
             if (heritageId) {
-                await alertModalFailure(`HTTP ${upstream.status}`);
+                await alertModalFailure(httpFailureType(upstream.status));
                 return res.status(200).json({
                     job_id: jobId,
                     heritage_id: heritageId,
@@ -206,7 +207,7 @@ module.exports = async function handler(req, res) {
                     variants: getDemoVariants(heritageId),
                 });
             }
-            await alertModalFailure(`HTTP ${upstream.status}`);
+            await alertModalFailure(httpFailureType(upstream.status));
             return res.status(upstream.status).json({ detail: `Upstream status ${upstream.status}` });
         }
 

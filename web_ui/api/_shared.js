@@ -169,6 +169,11 @@ function upstreamErrorType(error) {
         ? 'timeout' : 'lỗi mạng';
 }
 
+function httpFailureType(status) {
+    return status === 401 || status === 403
+        ? `sai khóa (HTTP ${status})` : `HTTP ${status}`;
+}
+
 module.exports = {
     checkRateLimit,
     getBackendConfig,
@@ -180,5 +185,6 @@ module.exports = {
     notifyAlert,
     alertModalIssue,
     upstreamErrorType,
+    httpFailureType,
     _resetAlertCooldown,
 };

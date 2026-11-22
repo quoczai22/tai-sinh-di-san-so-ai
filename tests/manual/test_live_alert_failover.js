@@ -74,6 +74,7 @@ async function main() {
             assert.ok(messages[0].includes('/api/live/generate'));
             assert.ok(messages[0].includes(failure));
             assert.ok(messages[0].includes('đang thấy lỗi'));
+            if (failure === '401') assert.ok(messages[0].includes('sai khóa'));
         }
         mode = 'failed';
         messages.length = 0;

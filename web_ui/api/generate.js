@@ -6,6 +6,7 @@ const {
     getDemoVariants,
     logGatewayAudit,
     alertModalIssue,
+    httpFailureType,
 } = require('./_shared');
 
 function buildDemoResponse(heritageId, reason, waitMs, extra = {}) {
@@ -103,7 +104,7 @@ module.exports = async function handler(req, res) {
                     status_url: `/api/status?job_id=${encodeURIComponent(data.job_id)}&backend=modal&heritage_id=${encodeURIComponent(heritageId)}`,
                 });
             } else {
-                modalFailureReason = `HTTP ${modalRes.status}`;
+                modalFailureReason = httpFailureType(modalRes.status);
             }
         } catch (err) {
             const isTimeout = (err && (err.name === 'AbortError' || /timeout/i.test(err.message)));

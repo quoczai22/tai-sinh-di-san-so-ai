@@ -5,6 +5,7 @@ const {
     fetchWithTimeout,
     alertModalIssue,
     upstreamErrorType,
+    httpFailureType,
     logGatewayAudit,
 } = require('./_shared');
 
@@ -44,7 +45,7 @@ async function forward(req, res, upstreamPath, options = {}) {
             ...(options.body ? { body: JSON.stringify(options.body) } : {}),
         }, config.modalTimeoutMs);
         if (!upstream.ok) {
-            if (!options.silent) await alertModalIssue('HTTP ' + upstream.status, options.endpoint, options.heritageId, 'lỗi');
+            if (!options.silent) await alertModalIssue(httpFailureType(upstream.status), options.endpoint, options.heritageId, 'lỗi');
             return res.status(upstream.status).json({ detail: 'Máy sinh thiết kế trả mã ' + upstream.status });
         }
         if (options.binary) {
@@ -117,7 +118,7 @@ module.exports = async function handler(req, res) {
                 });
             }
             if (!upstream.ok) {
-                await alertModalIssue('HTTP ' + upstream.status, '/api/live/generate', heritageId, 'bản demo');
+                await alertModalIssue(httpFailureType(upstream.status), '/api/live/generate', heritageId, 'bản demo');
                 return res.status(200).json(demo(null, heritageId, 'modal_unavailable'));
             }
             const job = await upstream.json();
@@ -146,7 +147,7 @@ module.exports = async function handler(req, res) {
                 return res.status(404).json({ detail: 'Lượt sinh không còn trên máy chủ. Vui lòng tạo lại.' });
             }
             if (!upstream.ok) {
-                await alertModalIssue('HTTP ' + upstream.status, '/api/live/generate/:job_id', heritageId, 'bản demo');
+                await alertModalIssue(httpFailureType(upstream.status), '/api/live/generate/:job_id', heritageId, 'bản demo');
                 return res.status(200).json(demo(job[1], heritageId, 'modal_unavailable'));
             }
             const result = await upstream.json();
