@@ -99,6 +99,8 @@ jobs:
         run: node tests/manual/test_alert_script.js
       - name: Test Zalo webhook authorization without external calls
         run: node tests/manual/test_zalo_bot_guard.js
+      - name: Test read-only Zalo CI/CD status
+        run: node tests/manual/test_zalo_ci_status.js
       - name: Test warmup authorization without GPU
         run: node tests/manual/test_warmup_guard.js
       - name: Test alert delivery acknowledgement and cooldown

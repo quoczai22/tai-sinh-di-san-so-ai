@@ -311,6 +311,7 @@ async function probeAndRemedateModal(isFixMode) {
 }
 
 async function handleZaloBotWebhook(body) {
+    const { ciStatusReply } = require('./bot_ci_status');
     const zaloToken = (process.env.ALERT_ZALO_BOT_TOKEN || '').trim();
     const allowedChatIds = [
         (process.env.ALERT_ZALO_CHAT_ID || '').trim(),
@@ -357,6 +358,16 @@ async function handleZaloBotWebhook(body) {
         return { ok: true, ignored: 'rate_limited' };
     }
     lastBotReplyByChat.set(chatId, now);
+    if (/(?:^|[^a-z])(ci|cd|deploy|pipeline)(?=$|[^a-z])/.test(normalizedText) ||
+        normalizedText.includes('trang thai phat hanh')) {
+        const replyText = await ciStatusReply(fetchWithTimeout);
+        await fetchWithTimeout(`${zaloBase}/bot${zaloToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chatId, text: replyText }),
+        }, 5000).catch(() => {});
+        return { ok: true, mode: 'ci_status' };
+    }
     const probe = await probeAndRemedateModal(isFixMode);
     const issueContext = lastModalIssue
         ? `Sự cố gần nhất: ${lastModalIssue.type} tại ${lastModalIssue.endpoint} (hiện vật ${lastModalIssue.heritageId}) lúc ${lastModalIssue.time}. Gợi ý gốc: ${lastModalIssue.action}`
