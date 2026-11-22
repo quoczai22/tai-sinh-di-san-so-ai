@@ -32,7 +32,7 @@ function demo(jobId, heritageId, reason) {
 async function forward(req, res, upstreamPath, options = {}) {
     const config = getBackendConfig();
     if (!config.modalUrl || !config.modalKey) {
-        await alertModalIssue('thiếu MODAL_URL hoặc MODAL_KEY', options.endpoint, options.heritageId, 'lỗi');
+        if (!options.silent) await alertModalIssue('thiếu MODAL_URL hoặc MODAL_KEY', options.endpoint, options.heritageId, 'lỗi');
         return res.status(503).json({ detail: 'Máy sinh thiết kế chưa được cấu hình.' });
     }
     const headers = buildBackendHeaders('modal', config);
@@ -44,7 +44,7 @@ async function forward(req, res, upstreamPath, options = {}) {
             ...(options.body ? { body: JSON.stringify(options.body) } : {}),
         }, config.modalTimeoutMs);
         if (!upstream.ok) {
-            await alertModalIssue('HTTP ' + upstream.status, options.endpoint, options.heritageId, 'lỗi');
+            if (!options.silent) await alertModalIssue('HTTP ' + upstream.status, options.endpoint, options.heritageId, 'lỗi');
             return res.status(upstream.status).json({ detail: 'Máy sinh thiết kế trả mã ' + upstream.status });
         }
         if (options.binary) {
@@ -56,7 +56,7 @@ async function forward(req, res, upstreamPath, options = {}) {
         const payload = await upstream.json();
         return res.status(upstream.status).json(options.transform ? options.transform(payload) : payload);
     } catch (error) {
-        await alertModalIssue(upstreamErrorType(error), options.endpoint, options.heritageId, 'lỗi');
+        if (!options.silent) await alertModalIssue(upstreamErrorType(error), options.endpoint, options.heritageId, 'lỗi');
         return res.status(503).json({ detail: 'Máy sinh thiết kế tạm thời không phản hồi.' });
     }
 }
@@ -181,7 +181,7 @@ module.exports = async function handler(req, res) {
         const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
         if (!Number.isInteger(body.step) || typeof body.event !== 'string' ||
             body.event.length > 80) return res.status(400).json({ detail: 'Audit không hợp lệ.' });
-        try { return await forward(req, res, '/audit', { body, endpoint: '/api/live/audit' }); }
+        try { return await forward(req, res, '/audit', { body, endpoint: '/api/live/audit', silent: true }); }
         catch { return res.status(202).json({ recorded: false }); }
     }
     if (req.method === 'GET' && route === 'media/artifact') {
