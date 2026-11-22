@@ -117,15 +117,15 @@ function formatHelpMenu() {
     return (
         '📖 [DANH MỤC LỆNH BOT TÁI SINH DI SẢN SỐ]\n\n' +
         '🏺 Trải nghiệm hiện vật & Áo dài:\n' +
-        '• Gõ số "1" .. "6" (hoặc "bình 1" .. "bình 6"): Xem ảnh bình gốm thật + đọc Sổ hoa văn & ý nghĩa.\n' +
-        '• Gõ "sinh 1" .. "sinh 6": Gọi GPU Modal T4 sinh mới 4 ảnh áo dài và tự động gửi vào Zalo.\n' +
-        '• Gõ "xem": Nhận lại 4 ảnh áo dài vừa sinh gần nhất từ GPU.\n\n' +
-        '⚙️ Quản trị & Giám sát hệ thống:\n' +
-        '• /usage (hoặc "dung", "chi phi"): Xem mức tiêu thụ theo ngày, tuần & số lượt gọi còn lại.\n' +
-        '• /checkcredit (hoặc "credit", "tien"): Xem số dư credit Modal miễn phí còn lại.\n' +
-        '• /gpu (hoặc "trang thai"): Kiểm tra tình trạng sẵn sàng của cụm GPU T4.\n' +
-        '• /runs (hoặc "lich su"): Xem tổng số lượt sinh và 3 lượt mới nhất.\n' +
-        '• /deploy (hoặc /cd, /ci): Hướng dẫn & link triển khai AWS CodeBuild CD.'
+        '• "1" .. "6" / "bình 1" .. "bình 6": Xem ảnh bình gốm thật + mở Sổ hoa văn.\n' +
+        '• "sinh 1" .. "sinh 6": Gọi GPU Modal T4 sinh mới 4 ảnh áo dài và tự động gửi vào Zalo.\n' +
+        '• "xem": Nhận lại 4 ảnh áo dài vừa sinh gần nhất từ GPU.\n\n' +
+        '⚙️ Quản trị & Giám sát hệ thống (Song ngữ Anh - Việt):\n' +
+        '• /usage (hoặc "mức dùng", "chi phí", "tiêu thụ"): Xem chi phí theo ngày, tuần & số lượt còn lại.\n' +
+        '• /checkcredit (hoặc "số dư", "tiền", "credit"): Xem số dư credit Modal & AWS CD miễn phí.\n' +
+        '• /gpu (hoặc "trạng thái", "thiết bị", "phần cứng"): Kiểm tra tình trạng cụm GPU T4 (online/idle).\n' +
+        '• /runs (hoặc "lịch sử", "danh sách sinh"): Xem tổng số lượt sinh và 3 lượt mới nhất.\n' +
+        '• /deploy (hoặc "triển khai", "phát hành", "/cd"): Hướng dẫn & link triển khai AWS CodeBuild CD.'
     );
 }
 
@@ -205,8 +205,8 @@ async function tryHandleOpsCommand({
         return { ok: true, mode: 'ops_gpu' };
     }
 
-    // 5. Kiểm tra lịch sử runs: /runs, runs, lich su, cac luot sinh
-    if (/^(\/runs|runs|lich su|danh sach sinh|cac luot sinh)$/.test(text)) {
+    // 5. Kiểm tra lịch sử runs: /runs, runs, lich su, danh sach sinh, cac luot sinh
+    if (/^(\/runs|runs|lich su|danh sach sinh|cac luot sinh|lich|nhat ky)$/.test(text)) {
         const config = getBackendConfig();
         let runs = [];
         try {
@@ -224,8 +224,8 @@ async function tryHandleOpsCommand({
         return { ok: true, mode: 'ops_runs' };
     }
 
-    // 6. Hướng dẫn & link triển khai CD: /deploy, /cd, deploy, phat hanh, cd
-    if (/^(\/deploy|\/cd|deploy|phat hanh|cd)$/.test(text)) {
+    // 6. Hướng dẫn & link triển khai CD: /deploy, /cd, deploy, phat hanh, trien khai, cd
+    if (/^(\/deploy|\/cd|deploy|phat hanh|trien khai|cd)$/.test(text)) {
         const reply = formatDeployInstructions();
         await fetchWithTimeout(`${zaloBase}/bot${zaloToken}/sendMessage`, {
             method: 'POST',
