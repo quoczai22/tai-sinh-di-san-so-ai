@@ -314,12 +314,26 @@ async function handleZaloBotWebhook(body) {
     const { ciStatusReply } = require('./bot_ci_status');
     const { tryHandleDesignCommand } = require('./bot_design_preview');
     const zaloToken = (process.env.ALERT_ZALO_BOT_TOKEN || '').trim();
+    const zaloBase = (process.env.ALERT_ZALO_API_BASE || 'https://bot-api.zapps.me').trim().replace(/\/$/, '');
+    if (body?.internal_poll && zaloToken) {
+        return tryHandleDesignCommand({
+            body,
+            text: '',
+            normalizedText: '',
+            chatId: String(body.internal_poll.chatId || ''),
+            chatType: 'PRIVATE',
+            zaloBase,
+            zaloToken,
+            fetchWithTimeout,
+            getBackendConfig,
+            buildBackendHeaders,
+        });
+    }
     const allowedChatIds = [
         (process.env.ALERT_ZALO_CHAT_ID || '').trim(),
         (process.env.ALERT_ZALO_USER_CHAT_ID || '').trim(),
     ].filter(Boolean);
     const allowGroup = (process.env.ALERT_ZALO_ALLOW_GROUP || '1').trim() !== '0';
-    const zaloBase = (process.env.ALERT_ZALO_API_BASE || 'https://bot-api.zapps.me').trim().replace(/\/$/, '');
     const msg = body?.message || body?.result?.message || null;
     const chatId = msg?.chat?.id ? String(msg.chat.id) : '';
     const chatType = String(msg?.chat?.chat_type || '').toUpperCase();
