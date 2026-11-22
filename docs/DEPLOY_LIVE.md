@@ -52,6 +52,12 @@ Tối ưu thời gian hiện ảnh sau khi job hoàn tất: job trả sẵn bố
 
 Hai lớp cảnh báo độc lập: Discord webhook báo lỗi từ gateway; UptimeRobot kiểm tra Vercel khi gateway không thể tự báo. `GET /health` và `GET /api/live/health` chỉ chạy trên CPU, không gọi Modal. Bài thử `node tests/manual/test_health_cpu.js` xác nhận điều này. Webhook có cooldown mặc định 30 phút trong RAM của từng Vercel instance; nhiều instance có thể gửi hơn một tin cho cùng một sự cố.
 
+Zalo Bot hai chiều chỉ bật khi Vercel có `ALERT_ZALO_WEBHOOK_SECRET`. Khi gọi API `setWebhook` của Zalo, đặt `url` là `https://tai-sinh-di-san-so-ai.vercel.app/api/live/zalo-webhook` và `secret_token` bằng đúng giá trị đó. Zalo gửi secret qua header `X-Bot-Api-Secret-Token`; không đưa secret vào URL. Đặt `ALERT_ZALO_USER_CHAT_ID` cho người vận hành duy nhất được nhắn lệnh kiểm tra/đánh thức GPU; `ALERT_ZALO_CHAT_ID` cho nhóm chỉ được hỏi tình trạng. Thiếu các biến này thì webhook từ chối hoặc bỏ qua tin nhắn. Lệnh “đánh thức GPU” chỉ gọi `/health`, có thể khởi động container và tiêu credit; không tự sửa lỗi hay xác nhận sinh ảnh thành công. Chạy `node tests/manual/test_zalo_bot_guard.js` trước khi phát hành.
+
+Nếu webhook đã được đăng ký và chưa biết ID chat riêng, sau khi phát hành bản có xác thực hãy nhắn riêng bot `/id`. Bot chỉ trả ID của chính cuộc chat đó, không gọi AI hoặc Modal. Dùng ID nhận được để đặt `ALERT_ZALO_USER_CHAT_ID`; không cần xóa webhook hay gọi `getUpdates`.
+
+`/api/warmup` chỉ nhận POST với `X-Warmup-Key` khớp biến `WARMUP_KEY` trên Vercel; nếu chưa đặt khóa thì endpoint từ chối mọi yêu cầu. Không dùng nó làm URL giám sát định kỳ. Chạy `node tests/manual/test_warmup_guard.js` để kiểm tra.
+
 Tin Discord có gợi ý xử lý theo mã lỗi để nhóm tra cứu nhanh trên điện thoại. Gateway thử lại đúng một lần các yêu cầu đọc GET khi gặp lỗi mạng hoặc HTTP 502/503/504. Không thử lại timeout dài, 401/403, hoặc POST `/generate`; tránh gửi hai lượt sinh ảnh và dùng GPU ngoài ý muốn. Khi vẫn lỗi, giao diện dùng cơ chế dự phòng và gửi cảnh báo như trước.
 
 Nhóm tự cấu hình theo thứ tự:

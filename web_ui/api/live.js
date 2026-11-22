@@ -10,6 +10,7 @@ const {
     httpFailureType,
     logGatewayAudit,
 } = require('./_shared');
+const { timingSafeEqual } = require('node:crypto');
 
 const DEMO_LABEL = 'Kết quả đã sinh sẵn — không phải sinh trực tiếp';
 const ID = /^[A-Za-z0-9_-]{1,80}$/;
@@ -79,6 +80,12 @@ module.exports = async function handler(req, res) {
         });
     }
     if (route === 'zalo-webhook' && req.method === 'POST') {
+        const expected = (process.env.ALERT_ZALO_WEBHOOK_SECRET || '').trim();
+        const supplied = String(req.headers?.['x-bot-api-secret-token'] || '');
+        if (!expected || !supplied || Buffer.byteLength(expected) !== Buffer.byteLength(supplied) ||
+            !timingSafeEqual(Buffer.from(expected), Buffer.from(supplied))) {
+            return res.status(403).json({ detail: 'Forbidden' });
+        }
         const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
         const result = await handleZaloBotWebhook(body);
         return res.status(200).json(result);

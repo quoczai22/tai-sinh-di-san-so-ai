@@ -15,13 +15,13 @@ Tài liệu vận hành kiến trúc triển khai 2 lớp có khả năng tự �
 flowchart LR
     Judge["Giám khảo (HTTPS, mọi thiết bị)"] --> Vercel["Vercel (Root: web_ui)"]
     subgraph Vercel["Vercel (Miễn phí)"]
-        Static["Web tĩnh web_ui\nGọi ngầm /api/warmup khi mở trang"]
+        Static["Web tĩnh web_ui\nKiểm tra /health khi mở trang"]
         Gateway["Cổng Serverless /api/*\nRate limit 10 lượt/IP/giờ · Giữ bí mật token"]
         DemoData["Dữ liệu Demo thật\nassets/data/demo_variants.json"]
         Static --> Gateway
     end
 
-    Gateway -->|"① Ưu tiên 1 (X-API-Key)"| Modal["① Modal GPU (T4)\nScale-to-zero sau 15p · có usage limit"]
+    Gateway -->|"① Ưu tiên 1 (X-API-Key)"| Modal["① Modal GPU (T4)\nScale-to-zero sau 7p · có usage limit"]
     Gateway -->|"② Khi ① lỗi/timeout hoặc vượt rate limit"| DemoData
 
     Uptime["UptimeRobot (5–15 phút/lần)"] -->|"GET /health (CPU, không chạm GPU)"| Gateway
@@ -29,7 +29,7 @@ flowchart LR
 ```
 
 ### Luồng xử lý một lần bấm "Tạo bộ 4 thiết kế"
-1. **Mở trang**: `web_ui/assets/js/app.js` gọi ngầm `GET /api/warmup` để đánh thức container Modal trong lúc giám khảo xem hiện vật.
+1. **Mở trang**: `web_ui/assets/js/app.js` đọc `/api/live/health` để chọn chế độ giao diện mà không đánh thức Modal. Chỉ người vận hành có `WARMUP_KEY` mới được gọi `POST /api/warmup` với header `X-Warmup-Key` khi cần chuẩn bị trước buổi demo.
 2. **Bấm tạo thiết kế**: Frontend gửi `POST /api/generate { "heritage_id": "..." }`.
 3. **Kiểm tra Rate Limit**: Cổng Vercel kiểm tra giới hạn theo IP (`RATE_LIMIT_PER_HOUR=10`). Nếu vượt ngưỡng, cổng trả ngay kết quả từ `demo_variants.json` kèm thông báo và nhãn **"Kết quả đã sinh sẵn — không phải sinh trực tiếp"**.
 4. **Gọi Modal GPU (Backend ①)**: Gửi `POST ${MODAL_URL}/generate` kèm header `X-API-Key: ${MODAL_KEY}` với timeout `MODAL_TIMEOUT_MS` (mặc định `25000` ms). Nếu nhận `job_id`, trả ngay cho frontend kèm `backend: "modal"`.

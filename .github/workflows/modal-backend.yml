@@ -90,6 +90,12 @@ jobs:
         run: python tests/manual/test_alert_webhook.py
       - name: Test operator alert script with local webhook
         run: node tests/manual/test_alert_script.js
+      - name: Test Zalo webhook authorization without external calls
+        run: node tests/manual/test_zalo_bot_guard.js
+      - name: Test warmup authorization without GPU
+        run: node tests/manual/test_warmup_guard.js
+      - name: Test alert delivery acknowledgement and cooldown
+        run: node tests/manual/test_alert_delivery.js
 
   next-action:
     name: Next action

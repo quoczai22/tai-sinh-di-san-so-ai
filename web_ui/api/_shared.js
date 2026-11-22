@@ -148,6 +148,7 @@ function _resetAlertCooldown() {
  * - Tuyệt đối không gửi token, key hay IP người dùng.
  */
 let lastPersonalChatId = '';
+const lastBotReplyByChat = new Map();
 
 async function notifyAlert(message) {
     const webhookUrl = (process.env.ALERT_DISCORD_WEBHOOK_URL || '').trim();
@@ -180,8 +181,12 @@ async function notifyAlert(message) {
                     body: JSON.stringify({ content: text }),
                 },
                 3000
-            ).catch(() => {
+            ).then((response) => {
+                if (!response.ok) throw new Error('Discord delivery failed');
+                return true;
+            }).catch(() => {
                 console.warn('[ALERT] Không thể gửi cảnh báo Discord.');
+                return false;
             })
         );
     }
@@ -195,12 +200,17 @@ async function notifyAlert(message) {
                     body: JSON.stringify({ chat_id: zaloChatId, text }),
                 },
                 3000
-            ).catch(() => {
+            ).then((response) => {
+                if (!response.ok) throw new Error('Zalo delivery failed');
+                return true;
+            }).catch(() => {
                 console.warn('[ALERT] Không thể gửi cảnh báo Zalo Bot.');
+                return false;
             })
         );
     }
-    await Promise.all(tasks);
+    const delivered = await Promise.all(tasks);
+    if (!delivered.some(Boolean)) lastAlertTimestamp = 0;
 }
 
 let lastModalIssue = null;
@@ -260,10 +270,9 @@ async function probeAndRemedateModal(isFixMode) {
             ok: !lastModalIssue,
             summary: lastModalIssue
                 ? `Cấu hình Vercel đầy đủ; đang có ghi nhận sự cố gần nhất cần lưu ý.`
-                : 'Hệ thống Vercel và Modal đã cấu hình đầy đủ, hoạt động bình thường. GPU T4 trên Modal đang ở chế độ chờ tiết kiệm credit (tự động thức dậy khi có người bấm Tạo thiết kế hoặc khi bạn nhắn "đánh thức GPU").',
+                : 'Đã thấy cấu hình kết nối Vercel–Modal; chưa kiểm tra trạng thái GPU hoặc khả năng sinh ảnh trong lần hỏi này.',
         };
     }
-    _resetAlertCooldown();
     const t0 = Date.now();
     try {
         const timeout = Math.max(20000, config.modalTimeoutMs);
@@ -281,7 +290,6 @@ async function probeAndRemedateModal(isFixMode) {
             };
         }
         const health = await healthRes.json().catch(() => ({}));
-        lastModalIssue = null;
         return {
             configured: true,
             ok: true,
@@ -289,7 +297,7 @@ async function probeAndRemedateModal(isFixMode) {
             elapsedMs,
             cuda: health.cuda,
             device: health.device,
-            summary: `Đã đánh thức và kiểm tra Modal GPU thành công: phản hồi 200 OK sau ${elapsedMs}ms (CUDA=${health.cuda}, GPU=${health.device || 'T4'}).`,
+            summary: `Modal /health phản hồi 200 sau ${elapsedMs}ms (CUDA=${health.cuda}, thiết bị=${health.device || 'không rõ'}). Chưa kiểm tra một lượt sinh ảnh.`,
         };
     } catch (error) {
         const elapsedMs = Date.now() - t0;
@@ -314,20 +322,41 @@ async function handleZaloBotWebhook(body) {
     const chatId = msg?.chat?.id ? String(msg.chat.id) : '';
     const chatType = String(msg?.chat?.chat_type || '').toUpperCase();
     const text = String(msg?.text || '').trim();
-    if (!zaloToken || !chatId || !text) {
+    if (!zaloToken || !chatId || !text || text.length > 500) {
         return { ok: true, ignored: true };
     }
     if (chatType === 'GROUP' && !allowGroup) {
         return { ok: true, ignored: 'group_disabled' };
     }
-    if (chatType === 'GROUP' && allowedChatIds.length && !allowedChatIds.includes(chatId)) {
+    if (chatType === 'PRIVATE' && text === '/id') {
+        await fetchWithTimeout(`${zaloBase}/bot${zaloToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chatId, text: `ID chat riêng: ${chatId}` }),
+        }, 5000).catch(() => {});
+        return { ok: true, mode: 'chat_id' };
+    }
+    if (!allowedChatIds.includes(chatId)) {
+        return { ok: true, ignored: true };
+    }
+    if (chatType !== 'GROUP' && chatType !== 'PRIVATE') {
         return { ok: true, ignored: true };
     }
     if (chatType !== 'GROUP') {
         lastPersonalChatId = chatId;
     }
 
-    const isFixMode = /\b(sửa|sua|fix|khắc phục|khac phuc|giải quyết|giai quyet|đánh thức|danh thuc|warmup|wake|khởi động|khoi dong|thử lại|thu lai|retry|cứu|cuu)\b/i.test(text);
+    const normalizedText = text.toLocaleLowerCase('vi-VN').normalize('NFD')
+        .replace(/\p{M}/gu, '').replace(/đ/g, 'd');
+    const isFixMode = /(?:^|[^a-z])(sua|fix|khac phuc|giai quyet|danh thuc|warmup|wake|khoi dong|thu lai|retry|cuu)(?=$|[^a-z])/.test(normalizedText);
+    if (isFixMode && chatId !== (process.env.ALERT_ZALO_USER_CHAT_ID || '').trim()) {
+        return { ok: true, ignored: 'operator_only' };
+    }
+    const now = Date.now();
+    if (now - (lastBotReplyByChat.get(chatId) || 0) < 30_000) {
+        return { ok: true, ignored: 'rate_limited' };
+    }
+    lastBotReplyByChat.set(chatId, now);
     const probe = await probeAndRemedateModal(isFixMode);
     const issueContext = lastModalIssue
         ? `Sự cố gần nhất: ${lastModalIssue.type} tại ${lastModalIssue.endpoint} (hiện vật ${lastModalIssue.heritageId}) lúc ${lastModalIssue.time}. Gợi ý gốc: ${lastModalIssue.action}`
@@ -336,7 +365,7 @@ async function handleZaloBotWebhook(body) {
     const primary = isFixMode ? 'openrouter' : 'groq';
     const secondary = isFixMode ? 'groq' : 'openrouter';
     const sysPrompt = isFixMode
-        ? 'Bạn là Kỹ sư Trực chiến AI của dự án Tái Sinh Di Sản Số (Vercel + Modal GPU T4). Nhiệm vụ: dựa trên kết quả kiểm tra/đánh thức GPU vừa chạy và sự cố gần nhất, báo cáo ngắn gọn (dưới 110 từ, tiếng Việt rõ ràng) việc hệ thống vừa tự động thực hiện (đánh thức GPU, kiểm tra khóa, xóa cooldown) và hướng giải quyết cụ thể. Tuyệt đối không bịa đặt số liệu hay tiết lộ khóa.'
+        ? 'Bạn là trợ lý vận hành của dự án Tái Sinh Di Sản Số (Vercel + Modal GPU T4). Chỉ báo cáo kết quả GET /health vừa thực hiện và gợi ý bước kiểm tra tiếp theo, dưới 110 từ bằng tiếng Việt. GET /health không sửa mã, cấu hình, khóa hay job. Không tuyên bố hệ thống đã tự phục hồi hoặc đã sinh ảnh nếu không có bằng chứng. Không tiết lộ khóa.'
         : 'Bạn là Trợ lý Tóm tắt Vận hành của dự án Tái Sinh Di Sản Số. Nhiệm vụ: giải thích tình trạng hệ thống hoặc tóm tắt lỗi gần nhất bằng ngôn ngữ đời thường, tự nhiên, dễ hiểu cho cả nhóm (dưới 90 từ, tiếng Việt). Cuối tin nhắc nhẹ: nếu cần đánh thức GPU hoặc xử lý lỗi, nhắn "sửa lỗi" hoặc "đánh thức GPU".';
     const userPrompt = `Tin nhắn từ nhóm: "${text}"\nTrạng thái kiểm tra Modal vừa chạy: ${probe.summary}\n${issueContext}`;
 

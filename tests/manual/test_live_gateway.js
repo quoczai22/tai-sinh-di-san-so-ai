@@ -91,6 +91,7 @@ async function main() {
     result = await call('passports/DP-HV08-20261119T161848-V1/qc', 'POST', {});
     assert.equal(result.code, 404, 'write route must not be forwarded');
 
+    const alertsBeforeFailure = alerts;
     _resetAlertCooldown();
     global.fetch = async (url) => {
         if (url === 'https://alert.mock') { alerts++; return new Response(null, { status: 204 }); }
@@ -101,13 +102,13 @@ async function main() {
     assert.equal(result.body.demo_label, 'Kết quả đã sinh sẵn — không phải sinh trực tiếp');
     result = await call('generate', 'POST', { heritage_id: 'LR3D_61', seed: 44 });
     assert.equal(result.body.backend, 'demo');
-    assert.equal(alerts, 1, 'Discord alert must respect cooldown');
+    assert.equal(alerts, alertsBeforeFailure + 1, 'Discord alert must respect cooldown');
 
     process.env.MODAL_URL = '';
     _resetAlertCooldown();
     result = await call('generate', 'POST', { heritage_id: 'LR3D_61', seed: 45 });
     assert.equal(result.body.backend, 'demo');
-    assert.equal(alerts, 1, 'unconfigured Modal must not alert');
+    assert.equal(alerts, alertsBeforeFailure + 2, 'missing Modal configuration should alert');
 
     process.env.MODAL_URL = 'https://modal.mock';
     process.env.ALERT_DISCORD_WEBHOOK_URL = '';
