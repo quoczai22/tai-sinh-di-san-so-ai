@@ -27,13 +27,13 @@
     bottom: 10px;
 }
 
-/* Nhãn AI: ký hiệu nhỏ, chữ in hoa, không chiếm chỗ của ảnh */
+/* Nhãn "Hỗ trợ bởi AI": chữ nhỏ, không chiếm chỗ của ảnh */
 .ai-tag {
-    padding: 3px 7px 2px;
+    padding: 3px 8px;
     border-radius: 2px;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
-    letter-spacing: .14em;
+    letter-spacing: .02em;
     background: rgba(252, 251, 247, .9);
     color: var(--ink);
     line-height: 1.2;

@@ -1,30 +1,41 @@
 // core/download.js — TẢI ẢNH THIẾT KẾ về máy (nút Tải xuống ở cửa sổ phóng to và nút Tải toàn bộ ở trang Kết quả).
-// Ra: downloadImage(src, tên) → luôn lưu PNG/JPEG, không bao giờ WebP; không tải được thì mở ảnh ở thẻ mới.
+// Ra: downloadImage(src, tên) → luôn lưu PNG có in nhãn "Hỗ trợ bởi AI" ở góc dưới trái; không tải được thì mở ảnh ở thẻ mới.
 import { h } from './dom.js';
 
-// Đổi ảnh bất kỳ (ví dụ WebP) sang PNG bằng canvas, để file người xem nhận luôn là định dạng ảnh phổ biến.
-async function toPng(blob) {
+// Nhãn bắt buộc cho ảnh do AI hỗ trợ tạo (YC3): hiện trên giao diện (components/badges.js) và in lên file tải về.
+export const AI_LABEL = 'Hỗ trợ bởi AI';
+
+// Vẽ ảnh lên canvas rồi in nhãn AI ở góc dưới trái, trả về PNG. Cũng đổi mọi định dạng (ví dụ WebP) sang PNG.
+async function toLabeledPng(blob) {
     const bitmap = await createImageBitmap(blob);
     const canvas = document.createElement('canvas');
     canvas.width = bitmap.width;
     canvas.height = bitmap.height;
-    canvas.getContext('2d').drawImage(bitmap, 0, 0);
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(bitmap, 0, 0);
+    // Cỡ chữ theo chiều rộng ảnh, tối thiểu 12px để vẫn đọc được trên ảnh nhỏ
+    const fontPx = Math.max(12, Math.round(bitmap.width * 0.03));
+    const padX = Math.round(fontPx * 0.7), padY = Math.round(fontPx * 0.45), margin = Math.round(fontPx * 0.8);
+    ctx.font = `600 ${fontPx}px system-ui, "Segoe UI", sans-serif`;
+    const boxW = Math.round(ctx.measureText(AI_LABEL).width) + padX * 2, boxH = fontPx + padY * 2;
+    const x = margin, y = bitmap.height - margin - boxH;
+    ctx.fillStyle = 'rgba(252, 251, 247, 0.92)';
+    ctx.fillRect(x, y, boxW, boxH);
+    ctx.fillStyle = '#1d2a36';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(AI_LABEL, x + padX, y + boxH / 2);
     return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob'))), 'image/png'));
 }
 
 // Tải ảnh về máy: lấy ảnh dạng blob rồi bấm một liên kết download (thuộc tính download không chạy với ảnh khác nguồn).
-// File tải về luôn là PNG hoặc JPEG, không bao giờ là WebP. Nếu không lấy được thì mở ảnh ở thẻ mới để người xem tự lưu.
+// File tải về luôn là PNG có nhãn AI. Nếu không lấy được ảnh thì mở ảnh ở thẻ mới (khi đó ảnh chưa có nhãn in).
 export async function downloadImage(src, filename) {
     try {
         const res = await fetch(src);
         if (!res.ok) throw new Error(res.status);
-        let blob = await res.blob();
-        // Đuôi file: theo loại ảnh máy chủ báo; nếu không có thì lấy theo đuôi trong đường dẫn ảnh
-        let ext = { 'image/png': 'png', 'image/webp': 'webp', 'image/jpeg': 'jpg' }[blob.type]
-            || (decodeURIComponent(src).match(/\.(png|webp|jpe?g)(?:$|[?&#])/i)?.[1] || 'png').toLowerCase();
-        if (ext === 'webp') { blob = await toPng(blob); ext = 'png'; }
+        const blob = await toLabeledPng(await res.blob());   // luôn là PNG có nhãn AI
         const url = URL.createObjectURL(blob);
-        const a = h('a', { href: url, download: `${filename}.${ext}` });
+        const a = h('a', { href: url, download: `${filename}.png` });
         document.body.append(a);
         a.click();
         a.remove();
