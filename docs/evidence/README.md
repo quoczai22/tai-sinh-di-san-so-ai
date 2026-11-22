@@ -38,7 +38,7 @@ Giới hạn đã nêu trong hồ sơ: mỗi mức EXP-A có 30 cặp (6 hiện 
 | Design Passport có phiên bản, chuỗi mã băm từ nguồn đến thành phẩm | `outputs/passports/` (24 file) | Có | |
 | Lịch sử bước sửa tay | Bước `manual_edit` trong `tsds/provenance/passport.py`; API sửa tay phải qua lại cổng G3; có test | Có chức năng. Chưa có Passport ví dụ có bước sửa tay trong bộ nộp | `[CẦN NHÓM ĐIỀN: tạo một ví dụ]` |
 | Kiểm tra toàn vẹn chuỗi mã băm | lệnh ở mục "Cách tự kiểm tra" bên dưới | Đạt 24/24 ngày 22/11 | |
-| Nhãn nội dung có hỗ trợ AI | `tsds/provenance/labeling.py`; khai báo đầy đủ ở `docs/ai_disclosure.md` | Có nhãn khi xuất ảnh qua API. Ảnh trên giao diện web chưa gắn nhãn | |
+| Nhãn nội dung có hỗ trợ AI | `tsds/provenance/labeling.py`; khai báo đầy đủ ở `docs/ai_disclosure.md` | Có nhãn khi xuất ảnh qua API. Giao diện web có nhãn "Hỗ trợ bởi AI" trên ảnh AI tạo và in nhãn lên file tải về (`web_ui/assets/js/components/badges.js`, `web_ui/assets/js/core/download.js`) | |
 | Khai báo công cụ AI | `docs/ai_disclosure.md` | Có. Còn chỗ `[CẦN NHÓM ĐIỀN]` (giấy phép từng mô hình, thư của tác giả VietFashion) | |
 | Thư xin phép hoặc xác nhận của đơn vị giữ ảnh | không cần cho CC BY 4.0, nhưng cần xác minh nguồn từng vật nếu muốn khẳng định quyền dùng công khai | **Chưa có** | |
 
@@ -65,7 +65,7 @@ Bộ kiểm thử tự động (không cần GPU):
 uv run pytest
 ```
 
-Ngày 22/11/2026: 358 ca, trong đó 1 ca bị bỏ qua vì dành cho máy không có GPU.
+Ngày 22/11/2026: 359 ca (358 đạt), trong đó 1 ca bị bỏ qua vì dành cho máy không có GPU.
 
 Sinh lại một bộ thiết kế (cần GPU): `uv run python scripts/demo/generate_demo_set.py LR3D_33`. Cùng seed 42 cho ảnh trùng từng bit (SHA-256) với bộ trong `outputs/runs/`, nhóm đã kiểm ngày 22/11/2026.
 

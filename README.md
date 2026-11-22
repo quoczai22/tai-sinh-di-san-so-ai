@@ -52,7 +52,7 @@ Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang ch
 | API | FastAPI + Uvicorn (`tsds/api/main.py`); PyTorch chỉ nạp khi cần, máy không GPU thì `/generate` trả 503 |
 | Giao diện | HTML/CSS/JS thuần (ES modules), không framework; 3 trang cho người xem (Trang chủ, Studio, Kết quả) |
 | Dữ liệu | Tệp JSON/CSV trong repo, không dùng cơ sở dữ liệu |
-| Kiểm thử | pytest (358 ca, không cần GPU) |
+| Kiểm thử | pytest (359 ca, không cần GPU) |
 
 ## 3. Cấu trúc thư mục
 
@@ -123,7 +123,7 @@ Có API ở `127.0.0.1:8000` thì giao diện chạy chế độ trực tiếp; 
 **B. Kiểm thử**
 
 ```powershell
-uv run pytest     # 358 ca; không cần GPU (1 ca dành cho máy không có PyTorch nên bị bỏ qua trên máy có GPU)
+uv run pytest     # 359 ca; không cần GPU (1 ca dành cho máy không có PyTorch nên bị bỏ qua trên máy có GPU)
 ```
 
 **C. Sinh ảnh và thí nghiệm (cần GPU NVIDIA ≥ 6 GB, xem [`docs/SETUP_AI_LOCAL.md`](docs/SETUP_AI_LOCAL.md))**

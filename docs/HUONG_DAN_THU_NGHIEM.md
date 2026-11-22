@@ -27,7 +27,7 @@ Nút **Xem ý nghĩa hoa văn** ở Studio mở cuốn sổ mô tả hoa văn, n
 - Ảnh được sinh bằng GPU trên Modal (Tesla T4). Mỗi lần chỉ một lượt chạy, tối đa 2 lượt chờ. Hàng chờ đầy thì báo thử lại sau.
 - Mỗi địa chỉ mạng được tối đa 10 lượt mỗi giờ.
 - Nếu GPU không sẵn sàng, trang tự dùng **kết quả đã sinh sẵn** và hiện nhãn "Kết quả đã sinh sẵn, không phải sinh trực tiếp". Trường hợp này không phải sinh ảnh mới.
-- Ảnh xuất qua API (`GET /passports/{id}/export`) có nhãn "Thiết kế hỗ trợ bởi AI" ở mép ảnh và trong dữ liệu PNG (xem `docs/ai_disclosure.md`). Ảnh hiển thị trên trang web chưa gắn nhãn này.
+- Ảnh xuất qua API (`GET /passports/{id}/export`) có nhãn "Thiết kế hỗ trợ bởi AI" ở mép ảnh và trong dữ liệu PNG (xem `docs/ai_disclosure.md`). Trên trang web, mọi ảnh do AI hỗ trợ tạo (hoa văn, áo dài) có nhãn "Hỗ trợ bởi AI" ở góc ảnh, và file tải về từ web được in nhãn này ở góc dưới trái.
 
 ## 4. Thời gian chờ đã đo
 
@@ -38,7 +38,7 @@ Nút **Xem ý nghĩa hoa văn** ở Studio mở cuốn sổ mô tả hoa văn, n
 
 ## 5. Giới hạn đã biết
 
-- Giao diện web chỉ còn 3 trang: chưa hiện Passport, chỉ số chất lượng và nhãn AI trên ảnh hiển thị.
+- Giao diện web chỉ còn 3 trang: chưa hiện Passport và chỉ số chất lượng.
 - Có thiết kế được gắn nhãn "có cảnh báo" hoặc "không đạt" từ cổng chất lượng. Đây là hành vi đúng của hệ thống, không phải lỗi. Hiện vật LR3D_124 hay bị loại vì đường nối hoa văn.
 - **Chưa có người am hiểu di sản hoặc thiết kế thẩm định mẫu**, và chưa có chấm mù của người thật (xem `docs/evidence/README.md`).
 - Chưa thử ba người dùng thật cùng lúc và chưa thử khởi động lại container sau khi job xong (`docs/DEPLOY_LIVE.md`).

@@ -28,7 +28,7 @@ export async function render([heritageId]) {
     const downloadAllBtn = h('button', {
         class: 'btn hero-btn ghost',
         type: 'button',
-        title: 'Tải 4 file ảnh PNG gốc chất lượng cao',
+        title: 'Tải 4 file ảnh PNG chất lượng cao, có in nhãn Hỗ trợ bởi AI',
         onclick: async () => {
             downloadAllBtn.disabled = true;
             downloadAllBtn.textContent = 'Đang tải…';
