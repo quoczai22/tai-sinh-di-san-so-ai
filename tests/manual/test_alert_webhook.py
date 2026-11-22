@@ -243,8 +243,9 @@ def main() -> int:
         assert wait_for_url("http://127.0.0.1:3031/health")
         c_only, r_only = http_json("http://127.0.0.1:3031/api/generate", method="POST", body={"heritage_id": "LR3D_33"})
         assert c_only == 200 and r_only.get("backend") == "demo", r_only
-        assert len(received_messages) == 0, received_messages
-        print("[PASS 6] MODAL_URL trống: Demo thuần, không cảnh báo.")
+        assert len(received_messages) == 1, received_messages
+        assert "chưa cấu hình URL" in received_messages[0].get("content", "")
+        print("[PASS 6] MODAL_URL trống: Demo và một cảnh báo cấu hình.")
 
         print("\n=== TẤT CẢ 6 KỊCH BẢN CẢNH BÁO DISCORD ĐỀU ĐẠT CHUẨN (PASS) ===")
         return 0
