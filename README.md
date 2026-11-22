@@ -3,32 +3,21 @@
 > Hoa văn gốm Bát Tràng, dệt lại thành áo dài — có kiểm định chất lượng, thí nghiệm có đối chứng và hồ sơ truy vết cho từng thiết kế.
 
 Bài dự thi **vòng chung kết** Cuộc thi Sáng tạo trẻ Quốc gia về Trí tuệ nhân tạo 2026, Bảng C — nhóm *3 chàng hiệp sĩ mộng mơ*.
-Hồ sơ đầy đủ cho Ban tổ chức (BTC) nằm ở [`docs/finals/`](docs/finals/README.md).
+Hồ sơ vòng chung kết nằm ở [`docs/finals/`](docs/finals/README.md).
 
 ## Mục lục
 
-1. [Ba yêu cầu cải tiến của BTC](#1-ba-yêu-cầu-cải-tiến-của-btc)
-2. [Xem nhanh (không cần GPU)](#2-xem-nhanh-không-cần-gpu)
-3. [Kiến trúc](#3-kiến-trúc)
-4. [Cấu trúc thư mục](#4-cấu-trúc-thư-mục)
-5. [Cài đặt và chạy](#5-cài-đặt-và-chạy)
-6. [Biến môi trường](#6-biến-môi-trường)
-7. [Tài liệu](#7-tài-liệu)
-8. [Trạng thái và việc còn lại](#8-trạng-thái-và-việc-còn-lại)
+1. [Xem nhanh (không cần GPU)](#1-xem-nhanh-không-cần-gpu)
+2. [Kiến trúc](#2-kiến-trúc)
+3. [Cấu trúc thư mục](#3-cấu-trúc-thư-mục)
+4. [Cài đặt và chạy](#4-cài-đặt-và-chạy)
+5. [Biến môi trường](#5-biến-môi-trường)
+6. [Tài liệu](#6-tài-liệu)
+7. [Trạng thái và việc còn lại](#7-trạng-thái-và-việc-còn-lại)
 
 ---
 
-## 1. Ba yêu cầu cải tiến của BTC
-
-| # | BTC yêu cầu | Đã làm | Xem ở |
-|---|---|---|---|
-| 1 | Đánh giá **thiết kế cuối**, không chỉ hoa văn trung gian | Cổng **G2** (hoa văn: rò dáng bình, đường nối) và **G3** (thiết kế cuối: giữ họa tiết PPS, IoU dáng áo, độ nét, giữ chi tiết mịn, lệch màu ΔE); vòng thử lại polish (đổi seed, hạ độ nhiễu, trả bản ghép thô); khoá họa tiết `pattern_lock_v1`; bộ tiêu chí chuyên gia 5 mục chấm mù. Không chỉ số nào tự phê duyệt thiết kế. | `quality/`, `config/quality_gate.json`, `config/expert_rubric.json`, [05](docs/finals/05_QUALITY_ASSURANCE.md) |
-| 2 | **Đối chứng có kiểm soát**, nhiều seed, chấm mù | Module thí nghiệm từ chối kế hoạch đổi hơn một yếu tố; EXP-A (trọng số ControlNet, chưa chạy), EXP-B (bước hoàn thiện, 126 lượt), EXP-C (từng bước ghép), EXP-D (nguồn áo nền, 60 lượt), EXP-E (nguồn ảnh nạp, 36 lượt); gói chấm mù; thống kê KTC 95%, hệ số biến thiên, Krippendorff α, Wilcoxon, Friedman | `tsds/evaluation/experiment.py`, `tsds/evaluation/experiments/`, [06](docs/finals/06_EXPERIMENTS.md) |
-| 3 | **Bản quyền, nguồn gốc, truy vết** | Danh mục nguồn schema 2.0; cổng quyền theo 4 mục đích sử dụng; Design Passport có sổ cái băm nối chuỗi, phiên bản có băm cha, chỉnh sửa tay chạy lại G3; nhãn "Thiết kế hỗ trợ bởi AI" trên ảnh xuất | `provenance/`, `data/heritage/metadata.json`, `outputs/passports/`, [07](docs/finals/07_PROVENANCE_COPYRIGHT.md) |
-
-Kết quả bộ demo hiện tại (24 thiết kế, 6 hiện vật × 4 mức sáng tạo, ngày 19/11/2026, đọc từ Passport): G2 đạt 16, cảnh báo 5, loại 3 (cả 3 do đường nối, hiện vật LR3D_124); G3 đạt 14, cảnh báo 10, loại 0; PPS trung bình 0,943; giữ chi tiết mịn trung vị 0,87. Cả 10 cảnh báo G3 do chi tiết mịn dưới 0,85: bản cuối vẫn mất khoảng 13 đến 14% nét mảnh so với bản ghép thô. PPS cao một phần do chính cách làm (khoá họa tiết chép lại nét bản ghép), nên phải chờ chuyên gia chấm mù mới kết luận được bản nào đẹp hơn. Mốc so sánh bản 06/09/2026: G3 đạt 0/24, PPS trung vị 0,36 (số liệu lịch sử, xem [05](docs/finals/05_QUALITY_ASSURANCE.md)).
-
-## 2. Xem nhanh (không cần GPU)
+## 1. Xem nhanh (không cần GPU)
 
 ```powershell
 uv run python -m http.server 5500 --directory web_ui
@@ -36,7 +25,7 @@ uv run python -m http.server 5500 --directory web_ui
 
 Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang chủ, Studio (chọn hiện vật) và Kết quả (4 tà áo). Không có API thì giao diện tự chạy **chế độ ngoại tuyến**, đọc dữ liệu thật đã xuất sẵn trong `web_ui/data/` (bộ demo 24 thiết kế).
 
-## 3. Kiến trúc
+## 2. Kiến trúc
 
 ```text
  Hiện vật (data/heritage, có nguồn & quyền)
@@ -63,9 +52,9 @@ Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang ch
 | API | FastAPI + Uvicorn (`tsds/api/main.py`); PyTorch chỉ nạp khi cần, máy không GPU thì `/generate` trả 503 |
 | Giao diện | HTML/CSS/JS thuần (ES modules), không framework; 3 trang cho người xem (Trang chủ, Studio, Kết quả) |
 | Dữ liệu | Tệp JSON/CSV trong repo, không dùng cơ sở dữ liệu |
-| Kiểm thử | pytest (249 ca, không cần GPU) |
+| Kiểm thử | pytest (358 ca, không cần GPU) |
 
-## 4. Cấu trúc thư mục
+## 3. Cấu trúc thư mục
 
 ```text
 .
@@ -86,7 +75,6 @@ Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang ch
 │   ├── garment/          Bố cục hoa văn (layouts.json); ảnh áo mẫu cũ chỉ dùng để chạy lại thí nghiệm cũ
 │   ├── lora/             Trọng số LoRA dáng áo dài (CC BY-NC 4.0, chỉ dùng phi thương mại)
 │   ├── raw/              Dữ liệu gốc thô, không commit: lr3d_src/ (mô hình LR3D-CULT2), vietfashion/, file zip tải về
-│   ├── archive/          Siêu dữ liệu schema 1 (đầu vào của bước chuyển đổi)
 │   └── prompt_terms.json
 ├── outputs/
 │   ├── runs/             Mỗi lần chạy một thư mục + manifest SHA-256 (bộ demo 24 thiết kế)
@@ -119,7 +107,7 @@ Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang ch
 `tsds.core` < `tsds.generation` < `tsds.quality` < `tsds.provenance` < `tsds.evaluation` < `tsds.pipeline` < `tsds.api`, `tsds.streamlit_ui`.
 Mã Python nằm hết trong `tsds/` nên `Dockerfile` và `COPY_DIRS` của `scripts/deploy/build_hf_space.py` chỉ cần `tsds/`, `config/`, `data/` (`tests/test_deploy_files.py` kiểm tra). Thư viện khai báo trong `pyproject.toml` (cài bằng `uv sync`); `requirements-api.txt` chỉ dành cho ảnh Docker.
 
-## 5. Cài đặt và chạy
+## 4. Cài đặt và chạy
 
 Lệnh chạy bằng PowerShell tại thư mục gốc.
 
@@ -135,7 +123,7 @@ Có API ở `127.0.0.1:8000` thì giao diện chạy chế độ trực tiếp; 
 **B. Kiểm thử**
 
 ```powershell
-uv run pytest     # 249 ca; không cần GPU (1 ca dành cho máy không có PyTorch nên bị bỏ qua trên máy có GPU)
+uv run pytest     # 358 ca; không cần GPU (1 ca dành cho máy không có PyTorch nên bị bỏ qua trên máy có GPU)
 ```
 
 **C. Sinh ảnh và thí nghiệm (cần GPU NVIDIA ≥ 6 GB, xem [`docs/SETUP_AI_LOCAL.md`](docs/SETUP_AI_LOCAL.md))**
@@ -162,7 +150,7 @@ uv run python scripts/data_prep/ingest_heritage_image.py --file <ảnh> --candid
 
 **Triển khai giao diện:** `vercel.json` chuyển `/` tới `web_ui/index.html`. Khi có API GPU công khai, đặt `window.DH_API_BASE` trong `web_ui/assets/js/config.js`. Mỗi lần phát hành giao diện, chạy `python scripts/web/ui_index.py finals-N` để đổi phiên bản ở mọi thẻ CSS, script và import map (trình duyệt không dùng lại tệp cũ). Cấu trúc thư mục giao diện: `docs/UI_ARCHITECTURE.md`.
 
-## 6. Biến môi trường
+## 5. Biến môi trường
 
 Đặt trong tệp `.env` ở thư mục gốc (không commit).
 
@@ -175,7 +163,7 @@ uv run python scripts/data_prep/ingest_heritage_image.py --file <ảnh> --candid
 | `TSDS_WRITE_KEY` | API khi chạy công khai | Thao tác ghi phải gửi header `X-API-Key` |
 | `TSDS_GENERATE_PER_HOUR` | API | Giới hạn số lần sinh mỗi giờ cho một IP (mặc định 6) |
 
-## 7. Tài liệu
+## 6. Tài liệu
 
 | Tài liệu | Nội dung |
 |---|---|
@@ -184,13 +172,15 @@ uv run python scripts/data_prep/ingest_heritage_image.py --file <ảnh> --candid
 | [05_QUALITY_ASSURANCE](docs/finals/05_QUALITY_ASSURANCE.md) · [06_EXPERIMENTS](docs/finals/06_EXPERIMENTS.md) · [07_PROVENANCE_COPYRIGHT](docs/finals/07_PROVENANCE_COPYRIGHT.md) | Ba yêu cầu cải tiến |
 | [08_KPI](docs/finals/08_KPI.md) · [09_ARCHITECTURE_UI](docs/finals/09_ARCHITECTURE_UI.md) · [10_TEST_REPORT](docs/finals/10_TEST_REPORT.md) · [11_CHANGELOG](docs/finals/11_CHANGELOG.md) | KPI, kiến trúc & giao diện, kiểm thử, thay đổi |
 
-## 8. Trạng thái và việc còn lại
+## 7. Trạng thái và việc còn lại
+
+Yêu cầu cải tiến của ban tổ chức, minh chứng và link thử nghiệm: [`docs/cac_yeu_cau_cai_tien.md`](docs/cac_yeu_cau_cai_tien.md).
 
 Chỉ ghi số đã đo; phần chưa có dữ liệu ghi là "mục tiêu cần đo" (xem [08_KPI](docs/finals/08_KPI.md)).
 
-- Đã chạy: EXP-B (126 lượt), EXP-C (24), EXP-D (60), EXP-E (36). **EXP-A (120 lượt) chưa chạy.**
+- Đã chạy: EXP-A (120 lượt, 5 seed), EXP-B (126), EXP-D (60), EXP-E (36), EXP-F (36), EXP-G (90). Kết quả: `docs/finals/06_EXPERIMENTS.md`. Chưa thí nghiệm nào có chấm mù của người thật.
 - **Chưa có phiếu chấm của người thật:** cần ít nhất một người am hiểu di sản và một người am hiểu thiết kế xem mẫu và điền phiếu; gói chấm mù EXP-D cần ít nhất 3 người chấm; đủ ≥ 30 phiếu thì hiệu chỉnh ngưỡng thành QG-1.1 (không sửa đè QG-1.0).
-- **Chưa hiện vật nào có giấy phép từng vật (0/6):** 6 hiện vật LR3D-CULT2 thuộc bộ dữ liệu công bố CC BY 4.0 nhưng từng vật có thể lấy từ nguồn giấy phép học thuật; hệ thống đang chặn xuất bản công khai; đã có mẫu thư xin phép, chưa gửi.
+- **Giấy phép ảnh nguồn:** 6 hiện vật LR3D-CULT2 ghi CC BY 4.0 (giấy phép công bố của bộ dữ liệu, xác nhận 21/11/2026) kèm ghi công tác giả. Nhóm chưa xác minh riêng nguồn của từng vật (một phần mô hình trong bộ có thể lấy từ Sketchfab theo giấy phép học thuật). Xem `docs/DANH_MUC_NGUON_HIEN_VAT.md`.
 - **LoRA học từ VietFashion (CC BY-NC 4.0):** chỉ dùng phi thương mại, phải ghi công bài ICMR 2026 (xem `data/lora/README.md`).
 - Hiện vật LR3D_124 hay bị G2 loại vì đường nối (3 trong 4 thiết kế ở bộ demo). Vòng sinh lại bằng đổi seed chỉ cứu được một phần (thử thật: 1 trong 3), xem `docs/finals/05_QUALITY_ASSURANCE.md`.
 - Giao diện web chỉ còn 3 trang; Passport và chỉ số chất lượng đọc qua API và tệp dữ liệu, không hiện trên web.
