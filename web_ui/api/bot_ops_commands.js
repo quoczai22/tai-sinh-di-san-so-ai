@@ -89,6 +89,20 @@ function formatRunsHistory(runs) {
     );
 }
 
+function formatDeployInstructions() {
+    return (
+        '🚀 [QUY TRÌNH TRIỂN KHAI CD TỰ ĐỘNG · AWS CODEBUILD]\n\n' +
+        '1️⃣ Kiểm tra chất lượng (CI Main):\n' +
+        '• Link GitHub Actions: https://github.com/quoczai22/tai-sinh-di-san-so-ai/actions\n' +
+        '• Đảm bảo commit trên nhánh "main" đã chạy qua 100% test case kiểm thử.\n\n' +
+        '2️⃣ Triển khai tự động lên Modal GPU (CD):\n' +
+        '• Vào AWS CodeBuild Console: https://ap-southeast-2.console.aws.amazon.com/codesuite/codebuild/projects/tai-sinh-di-san-so-ai-modal-deploy/history?region=ap-southeast-2\n' +
+        '• Bấm nút: [ Start build ]\n' +
+        '• Hệ thống AWS CodeBuild sẽ tự động lấy Token CD bảo mật từ Parameter Store và deploy code mới lên Modal mà không lộ khóa ra ngoài!\n\n' +
+        '🔒 Lưu ý bảo mật: Bot chỉ là giao diện giám sát & thông báo, quyền bấm deploy cuối cùng thuộc về người vận hành trên AWS Console.'
+    );
+}
+
 function formatHelpMenu() {
     return (
         '📖 [DANH MỤC LỆNH BOT TÁI SINH DI SẢN SỐ]\n\n' +
@@ -101,7 +115,7 @@ function formatHelpMenu() {
         '• /checkcredit (hoặc "credit", "tien"): Xem số dư credit Modal miễn phí còn lại.\n' +
         '• /gpu (hoặc "trang thai"): Kiểm tra tình trạng sẵn sàng của cụm GPU T4.\n' +
         '• /runs (hoặc "lich su"): Xem tổng số lượt sinh và 3 lượt mới nhất.\n' +
-        '• /ci: Xem trạng thái quy trình kiểm thử và triển khai GitHub Actions.'
+        '• /deploy (hoặc /cd, /ci): Hướng dẫn & link triển khai AWS CodeBuild CD.'
     );
 }
 
@@ -198,6 +212,17 @@ async function tryHandleOpsCommand({
             body: JSON.stringify({ chat_id: chatId, text: reply }),
         }, 5000).catch(() => {});
         return { ok: true, mode: 'ops_runs' };
+    }
+
+    // 6. Hướng dẫn & link triển khai CD: /deploy, /cd, deploy, phat hanh, cd
+    if (/^(\/deploy|\/cd|deploy|phat hanh|cd)$/.test(text)) {
+        const reply = formatDeployInstructions();
+        await fetchWithTimeout(`${zaloBase}/bot${zaloToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chatId, text: reply }),
+        }, 5000).catch(() => {});
+        return { ok: true, mode: 'ops_deploy' };
     }
 
     return null;
