@@ -1,0 +1,105 @@
+name: Modal backend checks
+
+on:
+  pull_request:
+    paths:
+      - "modal_app.py"
+      - "Dockerfile"
+      - "requirements-api.txt"
+      - "mock_backend.py"
+      - "tsds/**"
+      - "config/**"
+      - "data/**"
+      - "web_ui/api/**"
+      - "web_ui/assets/js/core/data.js"
+      - "tests/test_api.py"
+      - "tests/test_deploy_files.py"
+      - "tests/manual/**"
+      - ".github/workflows/modal-backend.yml"
+  push:
+    branches: [main]
+    paths:
+      - "modal_app.py"
+      - "Dockerfile"
+      - "requirements-api.txt"
+      - "mock_backend.py"
+      - "tsds/**"
+      - "config/**"
+      - "data/**"
+      - "web_ui/api/**"
+      - "web_ui/assets/js/core/data.js"
+      - "tests/test_api.py"
+      - "tests/test_deploy_files.py"
+      - "tests/manual/**"
+      - ".github/workflows/modal-backend.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    name: API, queue and Modal package
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install CPU test dependencies
+        run: python -m pip install pytest==9.2.0 numpy==2.4.6 fastapi==0.163.2 uvicorn==0.54.0 httpx==0.28.1 pillow==13.0.0
+      - name: Check Python syntax
+        run: python -m compileall -q modal_app.py tsds/api
+      - name: Test API and deployment package
+        run: python -m pytest tests/test_api.py tests/test_deploy_files.py -q
+      - name: Test API key protection
+        run: python tests/manual/test_api_key_guard.py
+      - name: Test generation queue
+        run: python tests/manual/test_generation_queue.py
+      - name: Test worker failure recovery
+        run: python tests/manual/test_worker_resilience.py
+
+  gateway:
+    name: Vercel gateway and live session
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install mock API dependencies
+        run: python -m pip install fastapi==0.163.2 uvicorn==0.54.0
+      - name: Test gateway against mock backend
+        run: node tests/manual/test_live_gateway_mock.js
+      - name: Test session resume without duplicate generation
+        run: node --experimental-default-type=module tests/manual/test_live_session.mjs
+
+  next-action:
+    name: Next action
+    if: always()
+    needs: [api, gateway]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Summarize action
+        env:
+          API_RESULT: ${{ needs.api.result }}
+          GATEWAY_RESULT: ${{ needs.gateway.result }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          echo "## Modal backend: next action" >> "$GITHUB_STEP_SUMMARY"
+          echo "API/package: **$API_RESULT** · Gateway/session: **$GATEWAY_RESULT**" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$API_RESULT" != success ] || [ "$GATEWAY_RESULT" != success ]; then
+            echo "Fix the failed job before deploying Modal. See docs/CI_MODAL.md for the response by failure type." >> "$GITHUB_STEP_SUMMARY"
+          elif [ "$GITHUB_EVENT_NAME" = push ] && git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null && git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA" | grep -Eq '^(modal_app\.py|Dockerfile|requirements-api\.txt|tsds/|config/|data/)'; then
+            echo "Backend code changed and checks passed. Review docs/CI_MODAL.md, then deploy Modal manually and run a live smoke test if this change must go live." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Checks passed. No Modal deployment is indicated by this run." >> "$GITHUB_STEP_SUMMARY"
+          fi
