@@ -313,6 +313,7 @@ async function probeAndRemedateModal(isFixMode) {
 async function handleZaloBotWebhook(body) {
     const { ciStatusReply } = require('./bot_ci_status');
     const { tryHandleDesignCommand } = require('./bot_design_preview');
+    const { tryHandleOpsCommand } = require('./bot_ops_commands');
     const zaloToken = (process.env.ALERT_ZALO_BOT_TOKEN || '').trim();
     const zaloBase = (process.env.ALERT_ZALO_API_BASE || 'https://bot-api.zapps.me').trim().replace(/\/$/, '');
     if (body?.internal_poll && zaloToken) {
@@ -376,6 +377,17 @@ async function handleZaloBotWebhook(body) {
         buildBackendHeaders,
     });
     if (designResult) return designResult;
+
+    const opsResult = await tryHandleOpsCommand({
+        cleanText: normalizedText,
+        chatId,
+        zaloBase,
+        zaloToken,
+        fetchWithTimeout,
+        getBackendConfig,
+        buildBackendHeaders,
+    });
+    if (opsResult) return opsResult;
     const isFixMode = /(?:^|[^a-z])(sua|fix|khac phuc|giai quyet|danh thuc|warmup|wake|khoi dong|thu lai|retry|cuu)(?=$|[^a-z])/.test(normalizedText);
     if (isFixMode && chatId !== (process.env.ALERT_ZALO_USER_CHAT_ID || '').trim()) {
         return { ok: true, ignored: 'operator_only' };
