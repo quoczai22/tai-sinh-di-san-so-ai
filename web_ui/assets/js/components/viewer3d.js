@@ -2,7 +2,7 @@
 // Dùng chung một renderer, dựng lần lượt từng khung (hàng đợi) để không giật; lỗi WebGL thì giữ ảnh phẳng.
 // Ra: mountViewer(box, mã) → { spin, toggleSpin, setZoom } | false; hoverSpin(thẻ, box, mã). Mô hình: assets/models/<mã>.glb.
 const MODEL_DIR = './assets/models/';
-const MODEL_VERSION = 'finals-87';
+const MODEL_VERSION = 'finals-88';
 const AUTO_ROTATE_SPEED = 1.4;
 const RESUME_AFTER_MS = 3500;
 const live = new Set(), models = new Map(), queue = [];
@@ -273,10 +273,12 @@ export function hoverSpin(card, box, heritageId) {
         failed = !view;
         if (view && hovering && !reducedMotion()) view.spin(true);
     };
-    new IntersectionObserver((entries, observer) => {
-        if (entries.some(e => e.isIntersecting)) { observer.disconnect(); load(); }
-    }, { rootMargin: '200px' }).observe(card);
-    const enter = () => { hovering = true; if (reducedMotion()) return; if (view) view.spin(true); else load(); };
+    const enter = (event) => {
+        if (event.type === 'pointerenter' && event.pointerType === 'touch') return;
+        hovering = true;
+        if (reducedMotion()) return;
+        if (view) view.spin(true); else load();
+    };
     const leave = () => { hovering = false; view?.spin(false); };
     card.addEventListener('pointerenter', enter);
     card.addEventListener('pointerleave', leave);

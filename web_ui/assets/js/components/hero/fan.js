@@ -32,7 +32,7 @@ function bringToFront(card) {
 
 function fanCard(kind, label, src, ai, contain) {
     return h('figure', { class: `fan-card ${kind}`, onclick: (e) => bringToFront(e.currentTarget) },
-        h('div', { class: `fan-img ${contain ? 'contain' : ''}` }, src ? h('img', { src, alt: '', loading: 'eager', decoding: 'async' }) : null),
+        h('div', { class: `fan-img ${contain ? 'contain' : ''}` }, src ? h('img', { dataset: { src }, alt: '', decoding: 'async' }) : null),
         h('figcaption', {}, h('span', { class: 'fan-step' }, label), ai ? aiMark() : null));
 }
 
@@ -50,12 +50,31 @@ export async function libraryVisual(root) {
     stage.append(...setEls);
     const dotEls = sets.map(({ it }, k) => h('button', { type: 'button', 'aria-label': it.name, onclick: () => ctl.go(k) }));
     dots.append(...dotEls);
+    const loaded = new Map();
+    const loadSet = (k) => {
+        if (!loaded.has(k)) {
+            const images = [...setEls[k].querySelectorAll('img[data-src]')];
+            loaded.set(k, Promise.all(images.map((img) => {
+                img.src = img.dataset.src;
+                delete img.dataset.src;
+                return img.decode?.().catch(() => {}) || Promise.resolve();
+            })));
+        }
+        return loaded.get(k);
+    };
+    let showRequest = 0;
     const show = (k) => {
-        setEls.forEach((el, j) => {
-            el.classList.toggle('on', j === k);
-            if (j !== k) [...el.children].forEach((c) => { c.classList.remove('front'); c.style.zIndex = ''; });
+        const request = ++showRequest;
+        const ready = loadSet(k);
+        loadSet((k + 1) % setEls.length);
+        ready.then(() => {
+            if (request !== showRequest || !stage.isConnected) return;
+            setEls.forEach((el, j) => {
+                el.classList.toggle('on', j === k);
+                if (j !== k) [...el.children].forEach((c) => { c.classList.remove('front'); c.style.zIndex = ''; });
+            });
+            dotEls.forEach((el, j) => el.setAttribute('aria-pressed', String(j === k)));
         });
-        dotEls.forEach((el, j) => el.setAttribute('aria-pressed', String(j === k)));
     };
     const ctl = cycle(sets.length, show, 5600);
     stage.addEventListener('click', () => ctl.pause());
