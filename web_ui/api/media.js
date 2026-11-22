@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { getBackendConfig, buildBackendHeaders, fetchWithTimeout, alertModalIssue,
+const { getBackendConfig, buildBackendHeaders, fetchReadWithRetry, alertModalIssue,
     upstreamErrorType, httpFailureType } = require('./_shared');
 
 const SAFE_FILENAME_RE = /^[A-Za-z0-9._-]+$/;
@@ -41,7 +41,7 @@ module.exports = async function handler(req, res) {
     let failure = baseUrl ? null : 'thiếu MODAL_URL';
     if (baseUrl) {
         try {
-            const upstream = await fetchWithTimeout(
+            const upstream = await fetchReadWithRetry(
                 `${baseUrl}/media/variant/${encodeURIComponent(filename)}`,
                 {
                     method: 'GET',

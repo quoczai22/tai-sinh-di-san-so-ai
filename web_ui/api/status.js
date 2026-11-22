@@ -3,6 +3,7 @@ const {
     getBackendConfig,
     buildBackendHeaders,
     fetchWithTimeout,
+    fetchReadWithRetry,
     getDemoVariants,
     logGatewayAudit,
     alertModalIssue,
@@ -183,7 +184,7 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        const upstream = await fetchWithTimeout(
+        const upstream = await fetchReadWithRetry(
             `${baseUrl}/generate/${encodeURIComponent(jobId)}`,
             {
                 method: 'GET',

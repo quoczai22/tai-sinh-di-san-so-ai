@@ -3,6 +3,7 @@ const {
     getBackendConfig,
     buildBackendHeaders,
     fetchWithTimeout,
+    fetchReadWithRetry,
     alertModalIssue,
     upstreamErrorType,
     httpFailureType,
@@ -39,7 +40,8 @@ async function forward(req, res, upstreamPath, options = {}) {
     const headers = buildBackendHeaders('modal', config);
     if (options.body) headers['Content-Type'] = 'application/json';
     try {
-        const upstream = await fetchWithTimeout(config.modalUrl + upstreamPath, {
+        const read = req.method === 'GET' ? fetchReadWithRetry : fetchWithTimeout;
+        const upstream = await read(config.modalUrl + upstreamPath, {
             method: req.method,
             headers,
             ...(options.body ? { body: JSON.stringify(options.body) } : {}),
@@ -139,7 +141,7 @@ module.exports = async function handler(req, res) {
             return res.status(200).json(demo(job[1], heritageId, 'modal_not_configured'));
         }
         try {
-            const upstream = await fetchWithTimeout(
+            const upstream = await fetchReadWithRetry(
                 config.modalUrl + '/generate/' + encodeURIComponent(job[1]),
                 { headers: buildBackendHeaders('modal', config) }, config.modalTimeoutMs);
             if (upstream.status === 404) {

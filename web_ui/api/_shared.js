@@ -70,6 +70,25 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
     }
 }
 
+async function fetchReadWithRetry(url, options = {}, timeoutMs = 8000) {
+    if ((options.method || 'GET').toUpperCase() !== 'GET') {
+        throw new TypeError('Chỉ thử lại yêu cầu đọc GET.');
+    }
+    for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+            const response = await fetchWithTimeout(url, options, timeoutMs);
+            if (attempt === 0 && [502, 503, 504].includes(response.status)) {
+                await new Promise((resolve) => setTimeout(resolve, 200));
+                continue;
+            }
+            return response;
+        } catch (error) {
+            if (attempt === 1 || upstreamErrorType(error) === 'timeout') throw error;
+            await new Promise((resolve) => setTimeout(resolve, 200));
+        }
+    }
+}
+
 let cachedDemoData = null;
 function loadDemoData() {
     if (cachedDemoData) return cachedDemoData;
@@ -160,8 +179,18 @@ function alertModalIssue(type, endpoint, heritageId, viewerState) {
     const safeId = /^[A-Za-z0-9_-]{1,80}$/.test(String(heritageId || ''))
         ? String(heritageId) : 'không có';
     const time = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+    const action = recommendedAction(type);
     return notifyAlert(`⚠️ Modal lỗi: ${type} | Endpoint: ${endpoint} | Hiện vật: ${safeId} | ` +
-        `${time} (giờ VN) | giám khảo đang thấy ${viewerState}.`);
+        `${time} (giờ VN) | giám khảo đang thấy ${viewerState}. | Gợi ý: ${action}`);
+}
+
+function recommendedAction(type) {
+    if (/sai khóa|HTTP 40[13]/i.test(type)) return 'Đối chiếu MODAL_KEY trên Vercel với DH_API_KEY trong Modal secret.';
+    if (/thiếu.*(MODAL|backend)|chưa cấu hình/i.test(type)) return 'Kiểm tra biến môi trường Vercel rồi redeploy phần cấu hình bị đổi.';
+    if (/hàng chờ đầy|HTTP 429|HTTP 409/i.test(type)) return 'Kiểm tra hàng đợi và job đang chạy; chờ rồi thử lại.';
+    if (/job.*failed|job không còn/i.test(type)) return 'Xem log job trong Modal và trạng thái ảnh/Volume trước khi tạo lại.';
+    if (/timeout|lỗi mạng|HTTP 50[234]/i.test(type)) return 'Kiểm tra Modal Logs, trạng thái GPU và credit; giữ bản demo cho người xem.';
+    return 'Đối chiếu Vercel Runtime Logs và Modal Logs theo thời gian, endpoint.';
 }
 
 function upstreamErrorType(error) {
@@ -179,6 +208,7 @@ module.exports = {
     getBackendConfig,
     buildBackendHeaders,
     fetchWithTimeout,
+    fetchReadWithRetry,
     loadDemoData,
     getDemoVariants,
     logGatewayAudit,
