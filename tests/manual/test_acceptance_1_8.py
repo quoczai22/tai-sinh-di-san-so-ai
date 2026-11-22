@@ -6,7 +6,6 @@ Chạy:
 """
 from __future__ import annotations
 
-import csv
 import json
 import os
 from pathlib import Path
@@ -124,7 +123,7 @@ def main() -> int:
         # ------------------------------------------------------------------
         # Tiêu chí #7: Gọi /generate trên backend khi không có X-API-Key -> 401
         # ------------------------------------------------------------------
-        code_no_key, _ = http_json("http://127.0.0.1:8001/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        code_no_key, _ = http_json("http://127.0.0.1:8001/generate", method="POST", body={"heritage_id": "LR3D_33"})
         assert code_no_key == 401, f"Mong đợi 401 nhưng nhận {code_no_key}"
         print("[PASS #7] Gọi /generate không có X-API-Key trả về HTTP 401.")
 
@@ -150,23 +149,23 @@ def main() -> int:
         # ------------------------------------------------------------------
         # Tiêu chí #1: Cả 8001 (Modal) và 8002 (HF) đều chạy -> Phục vụ bởi Modal
         # ------------------------------------------------------------------
-        code1, res1 = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        code1, res1 = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "LR3D_33"})
         assert code1 in (200, 202) and res1.get("backend") == "modal", f"Mong đợi modal, nhận: {res1}"
         print(f"[PASS #1] Cả 8001 & 8002 chạy -> Phục vụ bởi backend='{res1['backend']}' (job_id={res1['job_id'][:8]}...).")
 
         # ------------------------------------------------------------------
         # Tiêu chí #5: 2 trình duyệt bấm cùng lúc -> Không có lỗi 409; người thứ 2 thấy vị trí hàng đợi
         # ------------------------------------------------------------------
-        c_a, r_a = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
-        c_b, r_b = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "BT010_2"})
+        c_a, r_a = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "LR3D_33"})
+        c_b, r_b = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "LR3D_38"})
         assert c_a != 409 and c_b != 409, f"Bị lỗi 409: {c_a}, {c_b}"
-        _, st_b = http_json(f"http://127.0.0.1:3010/api/status?job_id={r_b['job_id']}&backend=modal&heritage_id=BT010_2")
+        _, st_b = http_json(f"http://127.0.0.1:3010/api/status?job_id={r_b['job_id']}&backend=modal&heritage_id=LR3D_38")
         assert "queue_position" in st_b and st_b["queue_position"] >= 1, f"Không thấy queue_position >= 1: {st_b}"
         print(f"[PASS #5] 2 trình duyệt bấm cùng lúc -> Không lỗi 409; người thứ 2 thấy queue_position={st_b['queue_position']}.")
 
         # Chờ job hoàn tất trên 8001
         for _ in range(25):
-            _, st_done = http_json(f"http://127.0.0.1:3010/api/status?job_id={res1['job_id']}&backend=modal&heritage_id=BT_Hac_XP")
+            _, st_done = http_json(f"http://127.0.0.1:3010/api/status?job_id={res1['job_id']}&backend=modal&heritage_id=LR3D_33")
             if st_done.get("status") == "completed":
                 break
             time.sleep(0.25)
@@ -186,7 +185,7 @@ def main() -> int:
         assert wait_for_url("http://127.0.0.1:8001/heritage"), "8001 (DELAY=120) không khởi động được"
 
         t0 = time.time()
-        code4, res4 = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"}, timeout=8.0)
+        code4, res4 = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "LR3D_33"}, timeout=8.0)
         elapsed4 = time.time() - t0
         assert code4 in (200, 202) and res4.get("backend") == "hf", f"Mong đợi failover sang hf, nhận: {res4}"
         assert elapsed4 >= 1.4, f"Failover quá nhanh ({elapsed4:.2f}s) — không phải do chạm MODAL_TIMEOUT_MS=1500"
@@ -200,7 +199,7 @@ def main() -> int:
         p8001_slow.kill()
         p8001_slow.wait(timeout=5)
 
-        code2, res2 = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        code2, res2 = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "LR3D_33"})
         assert code2 in (200, 202) and res2.get("backend") == "hf", f"Mong đợi hf, nhận: {res2}"
         print(f"[PASS #2] Tắt mock 8001 -> Tự động chuyển sang 8002 (backend='{res2['backend']}').")
 
@@ -219,7 +218,7 @@ def main() -> int:
         # Chờ qua /heritage để KHÔNG tiêu lượt /health đang giả lập ngủ
         assert wait_for_url("http://127.0.0.1:8002/heritage"), "8002 (WARMUP) không khởi động được"
 
-        code_w, res_w = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        code_w, res_w = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "LR3D_33"})
         assert code_w == 202, f"Mong đợi 202 warming, nhận {code_w}: {res_w}"
         assert res_w.get("backend") == "hf" and res_w.get("warming") is True, f"Mong đợi job warming: {res_w}"
         assert res_w["job_id"].startswith("warming_"), res_w
@@ -235,7 +234,7 @@ def main() -> int:
             assert time.time() < deadline, f"Quá thời gian chờ HF thức dậy: {result}"
             time.sleep(0.3)
             code_s, result = http_json(
-                f"http://127.0.0.1:3010/api/status?job_id={job_id}&backend={backend}&heritage_id=BT_Hac_XP"
+                f"http://127.0.0.1:3010/api/status?job_id={job_id}&backend={backend}&heritage_id=LR3D_33"
             )
             assert code_s == 200, f"/api/status trả {code_s}: {result}"
             assert result.get("backend") != "demo", f"Rơi sang demo thay vì chờ HF thức: {result}"
@@ -259,23 +258,25 @@ def main() -> int:
         print(f"[PASS #2b] HF Space ngủ (503 x{warmup_calls}) -> warming -> thức -> job {job_id[:8]}... hoàn tất với backend='hf'.")
 
         # ------------------------------------------------------------------
-        # Tiêu chí #3: Tắt cả hai (8001 & 8002) -> Demo mode, có nhãn, số khớp variants.csv
+        # Tiêu chí #3: Tắt cả hai (8001 & 8002) -> Demo mode, có nhãn, số khớp Passport
         # ------------------------------------------------------------------
         p8002.terminate()
         p8002.wait(timeout=5)
 
-        code3, res3 = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        code3, res3 = http_json("http://127.0.0.1:3010/api/generate", method="POST", body={"heritage_id": "LR3D_33"})
         assert code3 == 200 and res3.get("backend") == "demo", f"Mong đợi demo, nhận: {res3}"
         assert res3.get("demo_label") == "Kết quả đã sinh sẵn — không phải sinh trực tiếp"
         assert len(res3.get("variants", [])) == 4
 
-        with (ROOT / "tsds" / "evaluation" / "variants.csv").open("r", encoding="utf-8") as f:
-            csv_rows = [r for r in csv.DictReader(f) if r["heritage_id"] == "BT_Hac_XP"]
-        for idx, v in enumerate(res3["variants"]):
-            expected_sim = float(csv_rows[idx]["similarity_pattern_vs_ceramic"])
-            assert abs(float(v["similarity_pattern_vs_ceramic"]) - expected_sim) < 1e-6
-            assert len(v["sha256_design"]) == 64
-        print("[PASS #3] Tắt cả 8001 & 8002 -> Trả về Demo mode, đúng nhãn và khớp 100% số liệu variants.csv.")
+        pas = sorted((json.loads(f.read_text(encoding="utf-8")) for f in (ROOT / "outputs" / "passports").glob("DP-*.json")),
+                     key=lambda d: d["passport_id"])
+        pas = [d for d in pas if d["heritage"]["heritage_id"] == "LR3D_33"]
+        assert len(pas) == 4, "cần đủ 4 Passport của LR3D_33 làm đối chiếu"
+        for v, d in zip(res3["variants"], pas):
+            assert abs(float(v["controlnet_weight"]) - d["generation"]["controlnet"]["conditioning_scale"]) < 1e-6
+            assert v["seed"] == d["generation"]["seed"]
+            assert v["sha256_design"] == d["versions"][0]["sha256"] and len(v["sha256_design"]) == 64
+        print("[PASS #3] Tắt cả 8001 & 8002 -> Trả về Demo mode, đúng nhãn và khớp 100% số liệu trong Passport.")
 
         # ------------------------------------------------------------------
         # Tiêu chí #2c: Cổng chạy KHÔNG có biến HF (chỉ Modal) -> Modal sập rơi THẲNG sang demo
@@ -299,7 +300,7 @@ def main() -> int:
         code_no_hf, res_no_hf = http_json(
             "http://127.0.0.1:3012/api/generate",
             method="POST",
-            body={"heritage_id": "BT_Hac_XP"},
+            body={"heritage_id": "LR3D_33"},
             timeout=5.0,
         )
         elapsed_no_hf = time.time() - t_no_hf
@@ -313,7 +314,7 @@ def main() -> int:
         procs.append(p_slow_no_hf)
         assert wait_for_url("http://127.0.0.1:8001/heritage"), "Mock treo chưa sẵn sàng"
         t_slow = time.monotonic()
-        c_slow, r_slow = http_json("http://127.0.0.1:3012/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"}, timeout=5.0)
+        c_slow, r_slow = http_json("http://127.0.0.1:3012/api/generate", method="POST", body={"heritage_id": "LR3D_33"}, timeout=5.0)
         elapsed_slow = time.monotonic() - t_slow
         assert c_slow == 200 and r_slow.get("backend") == "demo", r_slow
         assert 1.4 <= elapsed_slow < 3.0, f"Timeout Modal không đúng: {elapsed_slow:.2f}s"
@@ -324,9 +325,9 @@ def main() -> int:
         p_job = subprocess.Popen([sys.executable, "mock_backend.py"], cwd=str(ROOT), env={**env_8001, "DELAY": "3"})
         procs.append(p_job)
         assert wait_for_url("http://127.0.0.1:8001/heritage"), "Mock job chưa sẵn sàng"
-        c_job, r_job = http_json("http://127.0.0.1:3012/api/generate", method="POST", body={"heritage_id": "BT_Hac_XP"})
+        c_job, r_job = http_json("http://127.0.0.1:3012/api/generate", method="POST", body={"heritage_id": "LR3D_33"})
         assert c_job == 202 and r_job.get("backend") == "modal", r_job
-        status_url = f"http://127.0.0.1:3012/api/status?job_id={r_job['job_id']}&backend=modal&heritage_id=BT_Hac_XP"
+        status_url = f"http://127.0.0.1:3012/api/status?job_id={r_job['job_id']}&backend=modal&heritage_id=LR3D_33"
         c_pending, r_pending = http_json(status_url)
         assert c_pending == 200 and r_pending.get("status") in ("queued", "running"), r_pending
         p_job.kill()

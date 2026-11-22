@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """Provenance & Copyright Registry — một nguồn dữ liệu duy nhất cho hiện vật.
 
-`data/heritage/metadata.json` (schema 2.x) là nguồn chuẩn DUY NHẤT. Hai tệp cũ
-(`data/metadata.json`, `data/heritage/items.json`) đã được lưu trữ ở
-`data/archive/` vì lệch nhau và gán niên hiệu không có nguồn.
+`data/heritage/metadata.json` (schema 2.x) là nguồn chuẩn DUY NHẤT.
 
 Nguyên tắc vận hành mượn từ kiến trúc quy trình mua hàng (APQC):
   * "Phân luồng ngay từ đầu vào": mỗi hiện vật mang một rights_status ngay khi

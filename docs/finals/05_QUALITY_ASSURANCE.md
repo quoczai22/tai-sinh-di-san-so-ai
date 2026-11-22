@@ -155,7 +155,7 @@ Trên 24 thiết kế cũ (6 hiện vật × 4, áo mẫu cố định, polish t
 | Bộ demo trước: HV11 V3 và V4 | PPS 0,23 đến 0,37 ở cả 5 lần thử | Trả bản ghép thô kèm nhãn "chưa qua bước hoàn thiện" | như trên |
 | Bộ demo trước: HV12 V1 | PPS 0,3997 và 0,3976 ở seed 42 và 43 | Đạt ở seed 44 | như trên |
 | Khoá họa tiết cũ (σ 1,2) | PPS cao (0,91) nhưng mất nét mảnh, giữ chi tiết mịn 0,61; 6/12 thiết kế loại theo chỉ số mới | Đổi `dog_sigma_low` 0,3, thêm chỉ số `detail_ratio` | `tsds/evaluation/polish_finish_trial.csv` |
-| Bản 06/09/2026: HV01 V1, V2 | Hoa văn là ảnh nguyên chiếc bình (VLS 0,56 và 0,67) | G2 loại (lịch sử); nay mặc định nạp mảng phẳng nên VLS lớn nhất của bộ seed 42 chỉ 0,22 | commit `b1192b0` |
+| Bản nộp 06/09/2026: hai biến thể V1, V2 của một hiện vật | Hoa văn là ảnh nguyên chiếc bình (VLS 0,56 và 0,67) | G2 loại (lịch sử); nay mặc định nạp mảng phẳng nên VLS lớn nhất của bộ seed 42 chỉ 0,22 | commit `b1192b0` |
 
 ### Giới hạn đã biết
 

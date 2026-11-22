@@ -72,7 +72,7 @@ def main() -> int:
     if not os.getenv("BACKEND_KEY", "").strip():
         print("Thiếu BACKEND_KEY (khoá khớp DH_API_KEY của backend).")
         return 2
-    heritage_id = sys.argv[1] if len(sys.argv) > 1 else "BT_Hac_XP"
+    heritage_id = sys.argv[1] if len(sys.argv) > 1 else "LR3D_33"
     print(f"Backend: {base}\nHiện vật: {heritage_id}\n")
 
     code, res, t_health = call(base, "/health")

@@ -4,7 +4,7 @@ Trả lời yêu cầu cải tiến 2 của BTC: **đối chứng có kiểm so�
 
 ## Vấn đề của bộ 4 biến thể cũ
 
-Bốn biến thể V1 đến V4 của bản 06/09/2026 khác nhau ở **bốn** yếu tố cùng lúc (`tsds/evaluation/variants.csv`). Luồng sản phẩm hiện nay vẫn giữ cách đặt này (bốn mức sáng tạo đổi nhiều yếu tố cùng lúc):
+Bốn biến thể V1 đến V4 của bản 06/09/2026 khác nhau ở **bốn** yếu tố cùng lúc. Luồng sản phẩm hiện nay vẫn giữ cách đặt này (bốn mức sáng tạo đổi nhiều yếu tố cùng lúc):
 
 | Yếu tố | V1 | V2 | V3 | V4 |
 |---|---|---|---|---|
@@ -36,7 +36,7 @@ Quy trình chạy:
 
 ```bash
 python -m tsds.evaluation.experiment plan    tsds/evaluation/experiments/EXP-A_controlnet_weight.json   # sinh kế hoạch, KIỂM TRA đơn biến
-python -m tsds.evaluation.experiment run     tsds/evaluation/experiments/EXP-A_controlnet_weight.json   # chạy (EXP-A, B, D, E, F cần GPU; EXP-C chạy trên CPU; EXP-G chạy bằng python -m tsds.evaluation.exp_g plan|run|analyze)
+python -m tsds.evaluation.experiment run     tsds/evaluation/experiments/EXP-A_controlnet_weight.json   # chạy (EXP-A, B, D, E, F cần GPU; EXP-G chạy bằng python -m tsds.evaluation.exp_g plan|run|analyze)
 python -m tsds.evaluation.experiment blind   outputs/experiments/EXP-A --raters CG01,CG02,CG03     # gói chấm mù
 python -m tsds.evaluation.experiment analyze outputs/experiments/EXP-A                            # thống kê
 ```
@@ -50,17 +50,17 @@ python -m tsds.evaluation.experiment analyze outputs/experiments/EXP-A          
 5. **Đồng thuận trước khi kết luận**: tính Krippendorff's alpha (dữ liệu khoảng) giữa người chấm. Mục tiêu α ≥ 0,667 mới dùng điểm trung bình để kết luận.
 6. **Thống kê**: trung bình, độ lệch chuẩn, khoảng tin cậy 95% (phân phối t), hệ số biến thiên theo mức; so sánh cặp với mức đối chứng trên cùng hiện vật và seed (Wilcoxon có dấu, chỉ báo p khi có ≥ 6 cặp); so sánh tất cả các mức (Friedman, khi có ≥ 3 khối đủ mức).
 
-## Bảy thí nghiệm (EXP-A đến EXP-G)
+## Sáu thí nghiệm (EXP-A, B, D, E, F, G)
 
-| | EXP-A | EXP-B | EXP-C | EXP-D | EXP-E |
-|---|---|---|---|---|---|
-| Câu hỏi | Trọng số ControlNet ảnh hưởng **riêng** thế nào đến hoa văn và thiết kế cuối? | Bước hoàn thiện (polish) làm mất bao nhiêu họa tiết, và khoá họa tiết giữ lại được bao nhiêu? | Mỗi bước ghép tất định (displacement, shading, color grade) đóng góp gì? | Áo dài nền do LoRA sinh so với áo mẫu cố định | Ảnh nạp cho ControlNet: ảnh render cả bình so với mảng hoa văn phẳng |
-| Biến độc lập | Trọng số: 0,85 / 0,65 / 0,45 / 0,25 | Cách hoàn thiện: không polish; polish toàn ảnh 0,25 và 0,40; polish toàn ảnh 0,40 + khoá; polish chỉ vùng áo 0,25 và 0,30; polish chỉ vùng áo 0,30 + khoá | Chế độ ghép: đầy đủ / bỏ displacement / bỏ shading / bỏ color grade | Nguồn áo nền: cố định / LoRA | Nguồn ảnh nạp: render / mảng phẳng |
-| Lặp | 5 seed: 42, 7, 123, 2024, 31415 | 3 seed polish: 42, 7, 123 | Không (tất định) | 5 seed: 42 đến 46 (cũng là seed hoa văn và seed áo LoRA) | 3 seed: 42, 43, 44 |
-| Hiện vật | 6 hiện vật đang dùng | 6 hiện vật đang dùng | 6 hiện vật cũ (chỉ ghép trên CPU) | 6 hiện vật đang dùng | 6 hiện vật đang dùng |
-| Số lượt | 120 | 126 | 24 | 60 | 36 |
-| Trạng thái | **Đã chạy 120/120** (20/11/2026) | **Đã chạy 126/126** | **Đã chạy 24/24** (trên 6 hiện vật cũ) | **Đã chạy 60/60** | **Đã chạy 36/36** |
-| Chấm mù | Chưa | Chưa | Gói đã dựng, **chưa có phiếu** | Gói đã dựng (60 ảnh, 3 phiếu trống), **chưa có phiếu** | Chưa |
+| | EXP-A | EXP-B | EXP-D | EXP-E |
+|---|---|---|---|---|
+| Câu hỏi | Trọng số ControlNet ảnh hưởng **riêng** thế nào đến hoa văn và thiết kế cuối? | Bước hoàn thiện (polish) làm mất bao nhiêu họa tiết, và khoá họa tiết giữ lại được bao nhiêu? | Áo dài nền do LoRA sinh so với áo mẫu cố định | Ảnh nạp cho ControlNet: ảnh render cả bình so với mảng hoa văn phẳng |
+| Biến độc lập | Trọng số: 0,85 / 0,65 / 0,45 / 0,25 | Cách hoàn thiện: không polish; polish toàn ảnh 0,25 và 0,40; polish toàn ảnh 0,40 + khoá; polish chỉ vùng áo 0,25 và 0,30; polish chỉ vùng áo 0,30 + khoá | Nguồn áo nền: cố định / LoRA | Nguồn ảnh nạp: render / mảng phẳng |
+| Lặp | 5 seed: 42, 7, 123, 2024, 31415 | 3 seed polish: 42, 7, 123 | 5 seed: 42 đến 46 (cũng là seed hoa văn và seed áo LoRA) | 3 seed: 42, 43, 44 |
+| Hiện vật | 6 hiện vật đang dùng | 6 hiện vật đang dùng | 6 hiện vật đang dùng | 6 hiện vật đang dùng |
+| Số lượt | 120 | 126 | 60 | 36 |
+| Trạng thái | **Đã chạy 120/120** (20/11/2026) | **Đã chạy 126/126** | **Đã chạy 60/60** | **Đã chạy 36/36** |
+| Chấm mù | Chưa | Chưa | Gói đã dựng (60 ảnh, 3 phiếu trống), **chưa có phiếu** | Chưa |
 
 Hai thí nghiệm thêm ngày 20/11/2026, cùng cố định: áo LoRA, bố cục `front_panel`, ControlNet 0,65, bảng màu tự do, polish chỉ vùng áo 0,20 kèm khoá họa tiết; lặp theo 3 seed 42, 43, 44.
 
@@ -181,21 +181,6 @@ Chi tiết đầy đủ, ảnh và các mức thêm sau ở `docs/KET_QUA_EXP_G.
 - **Lỗi tìm được và đã sửa trong luồng sản phẩm:** ô thưa hoặc mực nhạt bị in cả nền thành mảng phẳng (`ground_alpha`); có 7 ca kiểm thử.
 - **Chưa đưa vào luồng sản phẩm:** luồng vẫn dùng `sd_controlnet` từ mảng phẳng. Các mức dán và phần tử là hướng đang cân nhắc (SAM tách motif, ghép tất định rồi polish), chưa có chấm mù.
 - Cả hai chỉ số lọt hình bình và đường nối thiên lệch với ô thưa; SIFT chỉ đo kế thừa pixel.
-
-## Kết quả EXP-C: từng bước ghép (chạy trên 6 hiện vật cũ)
-
-Chỉ số: PPS của mỗi chế độ so với bản ghép đầy đủ (bản đầy đủ bằng 1). Chỉ số này cho biết **mỗi bước làm ảnh thay đổi bao nhiêu**, không cho biết bước đó làm ảnh đẹp hơn hay giống vải hơn.
-
-| Chế độ | n | Trung bình | Độ lệch chuẩn | KTC 95% | Hiệu trung vị so với đầy đủ |
-|---|---|---|---|---|---|
-| Đầy đủ | 6 | 1,000 | 0 | – | – |
-| Bỏ displacement | 6 | 0,851 | 0,041 | 0,808 – 0,893 | −0,140 |
-| Bỏ shading | 6 | 0,965 | 0,016 | 0,948 – 0,981 | −0,035 |
-| Bỏ color grade | 6 | 0,958 | 0,039 | 0,918 – 0,999 | −0,026 |
-
-Friedman trên 6 hiện vật: χ² = 16,2; p = 0,001. Wilcoxon từng chế độ so với đầy đủ: p = 0,031 cho cả ba (với 6 cặp, đây là giá trị nhỏ nhất có thể đạt: cả 6 hiện vật đổi cùng chiều). Displacement (uốn họa tiết theo nếp vải) là bước làm thay đổi hình ảnh nhiều nhất. Có thay đổi không có nghĩa là có lợi.
-
-EXP-C ghép trên áo mẫu cố định của 6 hiện vật cũ nên **không chạy lại được** sau khi áo mẫu bị bỏ khỏi luồng. Ảnh và gói chấm mù của EXP-C đã xoá ngày 19/11/2026; còn `plan.csv`, `results.csv`, `summary.json`. Muốn xem ảnh, quay lại commit `b1192b0`.
 
 ## Thử hoàn thiện ảnh trên bộ demo hiện tại
 

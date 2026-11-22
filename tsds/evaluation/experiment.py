@@ -11,10 +11,9 @@ Nguyên tắc cưỡng chế bằng mã (không chỉ ghi trong tài liệu):
 
 Lệnh:
     python -m tsds.evaluation.experiment plan  tsds/evaluation/experiments/EXP-A_controlnet_weight.json
-    python -m tsds.evaluation.experiment run   tsds/evaluation/experiments/EXP-C_composite_ablation.json   # CPU
-    python -m tsds.evaluation.experiment run   ...EXP-A...  # cần GPU
-    python -m tsds.evaluation.experiment blind outputs/experiments/EXP-C --raters CG01,CG02,CG03
-    python -m tsds.evaluation.experiment analyze outputs/experiments/EXP-C
+    python -m tsds.evaluation.experiment run   tsds/evaluation/experiments/EXP-A_controlnet_weight.json   # cần GPU
+    python -m tsds.evaluation.experiment blind outputs/experiments/EXP-A --raters CG01,CG02,CG03
+    python -m tsds.evaluation.experiment analyze outputs/experiments/EXP-A
 """
 from __future__ import annotations
 
@@ -68,9 +67,6 @@ def resolve_units(spec: dict, root: Path = ROOT) -> list[str]:
     items = all_items(root)
     if mode == "active":
         return [it["heritage_id"] for it in items if it.get("status", "active") == "active"]
-    if mode == "legacy_all":
-        logged = {r["heritage_id"] for r in csv.DictReader((root / "tsds" / "evaluation" / "variants.csv").open(encoding="utf-8"))}
-        return [it["heritage_id"] for it in items if it["heritage_id"] in logged]
     if isinstance(mode, list):
         return mode
     raise PlanError(f"units.heritage không hợp lệ: {mode}")
@@ -124,47 +120,6 @@ def write_plan(spec: dict, rows: list[dict], out_dir: Path) -> Path:
 
 
 # ---------------------------------------------------------------- thực thi ----
-
-def _legacy_pattern(heritage_id: str, variant: int = 2) -> Path:
-    return ROOT / "outputs" / "variants" / f"{heritage_id}_V{variant}_pattern.png"
-
-
-def run_cpu_composite(spec: dict, rows: list[dict], out_dir: Path) -> list[dict]:
-    """EXP-C: chạy được trên CPU vì giai đoạn 2 ghép ảnh là tất định."""
-    from PIL import Image                                          # noqa: PLC0415
-    from tsds.generation.garment import garment                                 # noqa: PLC0415
-    from tsds.provenance.hashing import sha256_file                     # noqa: PLC0415
-    from tsds.quality.metrics import pattern_preservation, to_rgb_array  # noqa: PLC0415
-    import numpy as np                                             # noqa: PLC0415
-
-    flags = {"full": {}, "no_displacement": {"displace": 0.0}, "no_shading": {"shading": False},
-             "no_grade": {"grade": False}}
-    tpl = Image.open(garment.TEMPLATE).convert("RGB")
-    template = np.asarray(tpl)
-    img_dir = out_dir / "images"
-    img_dir.mkdir(parents=True, exist_ok=True)
-    full_cache: dict[str, np.ndarray] = {}
-    results = []
-    for r in rows:
-        pat = Image.open(_legacy_pattern(r["heritage_id"])).convert("RGB")
-        layout = r["cfg.layout"]
-        img = garment.apply(pat, layout=layout, **flags[r["iv_level"]])
-        name = f"{r['heritage_id']}__{r['iv_level']}.png"
-        img.save(img_dir / name)
-        arr = to_rgb_array(img)
-        if r["iv_level"] == "full":
-            full_cache[r["heritage_id"]] = arr
-        results.append({**r, "status": "completed", "image": f"images/{name}",
-                        "sha256": sha256_file(img_dir / name),
-                        "pattern_sha256": sha256_file(_legacy_pattern(r["heritage_id"]))})
-    mask_cache = garment._layout_mask(tpl, garment.get_layout(rows[0]["cfg.layout"]))
-    for res in results:
-        ref = full_cache[res["heritage_id"]]
-        cur = np.asarray(Image.open(out_dir / res["image"]).convert("RGB"))
-        m = pattern_preservation(ref, cur, template, mask_cache)
-        res["pattern_preservation_vs_full"] = m["pattern_preservation"]
-    return results
-
 
 def parse_finish(finish: str) -> tuple[str, float, bool]:
     """Đọc giá trị của biến `stage2_finish` thành (kiểu, độ nhiễu, có khóa họa tiết).
@@ -510,7 +465,9 @@ def main(argv: list[str] | None = None) -> int:
         plan = write_plan(spec, rows, out_dir)
         print(f"{spec['id']}: {len(rows)} lượt chạy → {plan.relative_to(ROOT)}")
         if args.cmd == "run":
-            results = run_gpu(spec, rows, out_dir) if spec.get("requires_gpu") else run_cpu_composite(spec, rows, out_dir)
+            if not spec.get("requires_gpu"):
+                raise PlanError("Mọi thí nghiệm hiện tại chạy trên GPU: đặt requires_gpu = true trong đặc tả.")
+            results = run_gpu(spec, rows, out_dir)
             print(f"→ {write_results(results, out_dir).relative_to(ROOT)}")
     elif args.cmd == "blind":
         blind = build_blind_packet(Path(args.dir), [r.strip() for r in args.raters.split(",") if r.strip()])

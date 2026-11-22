@@ -10,18 +10,17 @@ from tsds.provenance import registry as R
 
 
 def _item(status="unverified", item_status="active", **prov):
-    it = copy.deepcopy(R.get_item("BT_Hac_XP"))
+    it = copy.deepcopy(R.get_item("LR3D_33"))
     it["status"] = item_status
     it["provenance"] = {**it["provenance"], "rights_status": status, **prov}
     return it
 
 
-def test_registry_has_twelve_items_six_active():
+def test_registry_has_six_active_items():
     items = R.all_items()
-    assert len(items) == 12  # 6 vật LR3D (chính) + 6 vật cũ (retired)
-    assert sorted(i["code"] for i in items if R.item_status(i) == "active") == ["HV07", "HV08", "HV09", "HV10", "HV11", "HV12"]
-    retired = [i for i in items if R.item_status(i) == "retired"]
-    assert all(i.get("retired_reason") for i in retired), "hiện vật ngừng dùng phải ghi lý do"
+    assert len(items) == 6  # 6 vật của bộ LR3D-CULT2
+    assert sorted(i["code"] for i in items) == ["HV07", "HV08", "HV09", "HV10", "HV11", "HV12"]
+    assert all(R.item_status(i) == "active" for i in items)
 
 
 def test_completeness_reports_missing_fields_honestly():
@@ -79,21 +78,43 @@ def test_rights_gate_rejects_unknown_action():
         R.rights_gate(_item(), "sell_nft")
 
 
-@pytest.mark.parametrize("hid,c1", [
-    ("BT_Hac_XP", "pass"),
-    ("HSBT_XP-300x300", "fail"),
-    ("BT010_2", "fail"),
-    ("BHV_UU_XP1-600x600", "warn"),
+def _tao_anh_tong_hop(tmp_path, monkeypatch, canh_anh, canh_vat, ten="SYN"):
+    """Ảnh PNG có nền trong suốt, vật là hình vuông có hoa văn kẻ sọc ở giữa; chạy tiêu chí tuyển ảnh trên đó."""
+    import shutil
+
+    import numpy as np
+    from PIL import Image
+
+    from tsds.generation.pattern import controlnet as cn
+    rgba = np.zeros((canh_anh, canh_anh, 4), np.uint8)
+    o = (canh_anh - canh_vat) // 2
+    rgba[o:o + canh_vat, o:o + canh_vat, :3] = 255
+    rgba[o:o + canh_vat:12, o:o + canh_vat, :3] = 30           # sọc ngang tạo cạnh cho Canny
+    rgba[o:o + canh_vat, o:o + canh_vat, 3] = 255
+    Image.fromarray(rgba, "RGBA").save(tmp_path / f"{ten}.png")
+    (tmp_path / "config").mkdir(exist_ok=True)
+    shutil.copy(R.ROOT / R.SELECTION_CONFIG, tmp_path / R.SELECTION_CONFIG)
+    monkeypatch.setattr(cn, "HERITAGE_DIR", tmp_path)
+    return {"heritage_id": ten, "image_path": f"{ten}.png", "provenance": {}}
+
+
+@pytest.mark.parametrize("canh_anh,canh_vat,c1", [
+    (1024, 900, "pass"),     # vật dài từ 768 px trở lên
+    (1024, 600, "warn"),     # đủ 512 nhưng dưới 768
+    (1024, 300, "fail"),     # vật dưới 512 px
+    (400, 380, "fail"),      # cạnh ngắn ảnh dưới 512 px
 ])
-def test_selection_c1_resolution_on_real_images(hid, c1):
-    res = R.assess_selection(R.get_item(hid))
+def test_selection_c1_resolution_tren_anh_tong_hop(tmp_path, monkeypatch, canh_anh, canh_vat, c1):
+    item = _tao_anh_tong_hop(tmp_path, monkeypatch, canh_anh, canh_vat)
+    res = R.assess_selection(item, root=tmp_path)
     assert res["C1_resolution"]["level"] == c1
 
 
-def test_selection_c2_baseline_is_hv01():
-    res = R.assess_selection(R.get_item("BT_Hac_XP"))
-    assert res["C2_ornament_density"]["edge_px"] == 20092
-    assert res["C2_ornament_density"]["threshold"] == 12055
+def test_selection_c2_nguong_tinh_tu_moc_trong_cau_hinh(tmp_path, monkeypatch):
+    item = _tao_anh_tong_hop(tmp_path, monkeypatch, 1024, 900)
+    res = R.assess_selection(item, root=tmp_path)
+    cfg = R.load_selection_config(R.ROOT)["criteria"]["C2_ornament_density"]
+    assert res["C2_ornament_density"]["threshold"] == round(cfg["baseline_edge_px"] * cfg["ratio"]) == 12055
 
 
 def test_rights_gate_permission_scope_list_and_case():
@@ -101,7 +122,18 @@ def test_rights_gate_permission_scope_list_and_case():
     assert R.rights_gate(ok, "commercial_use").allowed
 
 
-def test_streamlit_loader_hides_retired_by_default():
+def test_streamlit_loader_hides_retired_by_default(tmp_path):
+    import json
+    import shutil
+
     from tsds.provenance.heritage import load_heritage_metadata
     assert len(load_heritage_metadata(R.ROOT)) == 6
-    assert len(load_heritage_metadata(R.ROOT, include_retired=True)) == 12
+    # đánh dấu một hiện vật là retired trên bản sao: mặc định bị ẩn, include_retired thì hiện
+    (tmp_path / "data" / "heritage").mkdir(parents=True)
+    for it in R.all_items():                       # loader kiểm tra ảnh có thật: chép ảnh hiện vật sang thư mục tạm
+        shutil.copy(R.ROOT / it["image_path"], tmp_path / "data" / "heritage")
+    meta = json.loads((R.ROOT / "data" / "heritage" / "metadata.json").read_text(encoding="utf-8"))
+    meta["items"]["LR3D_33"]["status"] = "retired"
+    (tmp_path / "data" / "heritage" / "metadata.json").write_text(json.dumps(meta, ensure_ascii=False), encoding="utf-8")
+    assert len(load_heritage_metadata(tmp_path)) == 5
+    assert len(load_heritage_metadata(tmp_path, include_retired=True)) == 6

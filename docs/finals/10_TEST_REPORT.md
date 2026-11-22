@@ -41,7 +41,6 @@ Nguyên tắc: kiểm thử **không sửa dữ liệu thật**. Các ca ghi (th
 | Sửa thẳng trạng thái phê duyệt trong tệp (không qua sổ cái) không bị phát hiện | `test_tampering_is_detected[approval]` | `verify` đối chiếu trạng thái, phiên bản, số phiếu với sổ cái |
 | Hàng đợi chấm mù hiện mã Passport (chứa số biến thể) | rà soát giao diện | Ẩn mã, xếp theo mã ẩn danh khi chấm mù |
 | Trang tràn ngang 1.628 px trên màn hình 390 px | kiểm tra bằng trình duyệt tự động | Cột lưới `minmax(0, 1fr)`, giới hạn bề rộng ô nhập |
-| EXP-C ghi `stage2_finish = img2img_0.40` trong khi không chạy img2img | dựng gói chấm mù EXP-C | Cố định `stage2_finish: none`, chạy lại EXP-C |
 | **Hoa văn bị ghép tràn ra ngoài áo:** vùng in được làm mờ mép (14 px) **sau khi** đã giới hạn trong áo nên lan ra nền ở khe giữa tay và thân; trước đó test chỉ cho phép sai số 45 px | ảnh áo LoRA tay loe (tối đa 1,7% pixel ngoài áo bị đổi); ca mới `test_hoa_van_khong_tran_vao_khe_giua_tay_va_than_ao` | Làm mờ rồi mới giới hạn lại trong áo; ngoài áo bằng đúng 0; test siết thành "bằng 0" |
 | **Mảng nền hoa văn bị in thành khối kem hoặc xám** hình chữ nhật trên áo | xem ảnh thiết kế | `ground_alpha`: chỉ in phần mực (có sắc hoặc đủ tối), nền để lộ vải; có ca kiểm thử |
 | **Polish toàn ảnh là mặc định của luồng sản phẩm:** nền bị vẽ lại, 14 đến 17% pixel ngoài áo đổi hơn 12 mức xám (đo khi chạy thật ngày 19/11/2026, không lưu thành tệp) | chạy thật 4 mức sáng tạo | Mặc định chuyển sang polish chỉ vùng áo kèm vòng thử lại; ngoài áo bằng 0 |

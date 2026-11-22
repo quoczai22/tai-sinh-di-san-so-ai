@@ -88,9 +88,9 @@ bình, cổ hẹp, đế tròn", prompt nói "tà dài, mặc ngoài quần". Đ
 
 ```json
 {
-  "heritage_id": "BT_Hac_XP",
-  "name": "Bình gốm hoa lam công và sen",
-  "image_path": "data/heritage/BT_Hac_XP.png",
+  "heritage_id": "LR3D_33",
+  "name": "Hiện vật men lam (ví dụ)",
+  "image_path": "data/heritage/LR3D_33.png",
   "image_source_url": null,
   "license": "unverified",
   "license_note": "Ảnh tự thu thập, chưa xác minh bản quyền. Chỉ dùng nội bộ MVP.",
@@ -333,7 +333,7 @@ hoàn thiện.
 ║           DESIGN PASSPORT              ║
 ╠══════════════════════════════════════╣
 ║ HOA VĂN                                ║
-║ BT_Hac_XP — Bình gốm hoa lam công sen  ║
+║ LR3D_33 — Hiện vật men lam (ví dụ)      ║
 ║ (Mô tả nội bộ nhóm, không phải trích   ║
 ║  dẫn học thuật)                        ║
 ║                                        ║
@@ -442,7 +442,7 @@ generation/
 └── stable_diffusion.py  wrapper SD1.5 + ControlNet · circular padding
 
 evaluation/
-└── variants.py          sinh bộ 4 thiết kế, ghi variants.csv
+└── variants.py          sinh bộ 4 thiết kế
 
 scripts/
 └── 07_describe_heritage.py   LLM thị giác viết mô tả — CHẠY OFFLINE MỘT LẦN

@@ -9,7 +9,7 @@ khác biệt không thể đến từ việc SD vẽ cái áo khác đi.
 
 Chạy:
     python -m tsds.evaluation.intensity_sweep
-    python -m tsds.evaluation.intensity_sweep --items BT001,BT008 --dry-run
+    python -m tsds.evaluation.intensity_sweep --items LR3D_33,LR3D_61 --dry-run
 """
 from __future__ import annotations
 
@@ -41,8 +41,7 @@ from tsds.generation.garment import garment      # noqa: E402
 
 OUT_DIR = ROOT / "outputs" / "sweep"
 CSV_FILE = ROOT / "tsds" / "evaluation" / "intensity_sweep.csv"
-# Bản cũ mặc định "BT001","BT008","BT010" — ba mã không còn tồn tại. Nay lấy từ
-# Heritage Registry (chỉ hiện vật active).
+# Mặc định lấy từ Heritage Registry (chỉ hiện vật active).
 def _default_items() -> list[str]:
     from tsds.provenance.heritage import load_heritage_metadata  # noqa: PLC0415
     return [it["heritage_id"] for it in load_heritage_metadata(ROOT)]
