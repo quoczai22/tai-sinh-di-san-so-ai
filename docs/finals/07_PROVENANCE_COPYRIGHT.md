@@ -8,7 +8,7 @@ Hiện trạng: từ 19/11/2026 dữ liệu chính là 6 hiện vật của bộ
 
 Tệp `data/heritage/metadata.json`. Bản cũ (schema 1) lưu ở `data/archive/2026-09_schema1/`, chuyển đổi bằng `scripts/data_prep/migrate_heritage_metadata_v2.py`.
 
-Mười trường nguồn gốc bắt buộc (`provenance/registry.py::REQUIRED_PROVENANCE`): tên hiện vật, nguồn, URL, đơn vị lưu giữ hoặc đăng ảnh, tác giả ảnh, tình trạng quyền, giấy phép, cách ghi công, ngày thu thập, phiên bản dữ liệu gốc (mã băm ảnh gốc). Hệ thống **không tự điền** trường nào nhóm không biết. Độ đầy đủ hiện là 8/10 ở cả 6 hiện vật đang dùng (thiếu giấy phép từng vật và ngày thu thập).
+Mười trường nguồn gốc bắt buộc (`tsds/provenance/registry.py::REQUIRED_PROVENANCE`): tên hiện vật, nguồn, URL, đơn vị lưu giữ hoặc đăng ảnh, tác giả ảnh, tình trạng quyền, giấy phép, cách ghi công, ngày thu thập, phiên bản dữ liệu gốc (mã băm ảnh gốc). Hệ thống **không tự điền** trường nào nhóm không biết. Độ đầy đủ hiện là 8/10 ở cả 6 hiện vật đang dùng (thiếu giấy phép từng vật và ngày thu thập).
 
 ### Sáu hiện vật đang dùng (LR3D-CULT2)
 
@@ -40,7 +40,7 @@ Ngày thu thập không còn biết chính xác; danh mục ghi "trước 06/09/
 
 ## 2. Tiêu chí tuyển ảnh và kết quả rà soát
 
-Tệp `config/heritage_selection.json` (HS-2.0), chạy bằng `provenance/registry.py::assess_selection`.
+Tệp `config/heritage_selection.json` (HS-2.0), chạy bằng `tsds/provenance/registry.py::assess_selection`.
 
 | Tiêu chí | Quy tắc | Loại |
 |---|---|---|
@@ -103,7 +103,7 @@ python scripts/data_prep/ingest_heritage_image.py --file TSDS_DSC05640.jpg --can
 
 ## 3. Cổng quyền theo mục đích sử dụng
 
-`provenance/registry.py::rights_gate`. Cổng được gọi trong mã, không phải hướng dẫn trên giấy.
+`tsds/provenance/registry.py::rights_gate`. Cổng được gọi trong mã, không phải hướng dẫn trên giấy.
 
 | Mục đích | Chưa xác minh | Đã gửi đề nghị | Đã cấp phép / giấy phép mở / CC0 / tự chụp | Bị từ chối | Hiện vật ngừng dùng |
 |---|---|---|---|---|---|
@@ -112,7 +112,7 @@ python scripts/data_prep/ingest_heritage_image.py --file TSDS_DSC05640.jpg --can
 | Xuất bản công khai | **Chặn** | **Chặn** | Cho phép kèm ghi công | Chặn | Chặn |
 | Thương mại | Chặn | Chặn | CC0 / tự chụp: cho phép; giấy phép mở không có NC: cho phép kèm điều kiện; cấp phép: chỉ khi phạm vi ghi "commercial" | Chặn | Chặn |
 
-Nơi gọi cổng: trước khi sinh (`pipeline/run.py`, mục đích thử nghiệm), khi xuất ảnh (`GET /passports/{id}/export`, mục đích trình diễn), khi xuất bản (`POST /passports/{id}/publish`).
+Nơi gọi cổng: trước khi sinh (`tsds/pipeline/run.py`, mục đích thử nghiệm), khi xuất ảnh (`GET /passports/{id}/export`, mục đích trình diễn), khi xuất bản (`POST /passports/{id}/publish`).
 
 ### Thư đề nghị cấp phép
 
@@ -120,7 +120,7 @@ Trang "Nguồn và bản quyền" của giao diện từng tạo sẵn thư cho 
 
 ## 4. Design Passport
 
-`provenance/passport.py`, `provenance/builder.py`. Mỗi thiết kế có một Passport JSON trong `outputs/passports/`, mã dạng `DP-<hiện vật>-<ngày>-V<biến thể>`.
+`tsds/provenance/passport.py`, `tsds/provenance/builder.py`. Mỗi thiết kế có một Passport JSON trong `outputs/passports/`, mã dạng `DP-<hiện vật>-<ngày>-V<biến thể>`.
 
 | Phần | Nội dung |
 |---|---|
@@ -143,7 +143,7 @@ Giới hạn cần nói rõ: sổ cái giúp **phát hiện** sửa đổi khi �
 
 ### Nhãn "Thiết kế hỗ trợ bởi AI"
 
-Khi xuất ảnh (`GET /passports/{id}/export`), `provenance/labeling.py` thêm:
+Khi xuất ảnh (`GET /passports/{id}/export`), `tsds/provenance/labeling.py` thêm:
 
 - Dải nhãn nhìn thấy được ở chân ảnh: "Thiết kế hỗ trợ bởi AI", mã Passport; nếu quyền ảnh nguồn chưa xác minh thì thêm "Ảnh nguồn chưa xác minh quyền — không dùng thương mại".
 - Siêu dữ liệu PNG (iTXt): mã Passport, SHA-256 của thiết kế, tên hiện vật, câu ghi công, cờ cảnh báo quyền. Siêu dữ liệu vẫn còn nếu dải nhãn bị cắt khỏi ảnh.

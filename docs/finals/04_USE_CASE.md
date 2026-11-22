@@ -27,22 +27,22 @@ Vì sao dùng **generalization** cho tác nhân: mọi vai trò nội bộ đề
 | UC01 | Đăng ký và đăng nhập | Người dùng đã đăng ký | Kế hoạch | Hiện chỉ có khoá ghi `TSDS_WRITE_KEY` |
 | UC02 | Xem danh mục hiện vật | Khách | Đã chạy | `GET /heritage`, Trang chủ và lưới chọn ở Studio; sổ hoa văn ở Studio (ảnh tĩnh, ý nghĩa hoa văn, nguồn ảnh, đối chiếu bảo tàng) |
 | UC03 | Tải lên hiện vật | Nhà thiết kế | Một phần | Ảnh mới đưa vào bằng dòng lệnh; chưa có nút tải lên |
-| UC04 | Kiểm tra nguồn gốc hiện vật | (được include) | Đã chạy | `provenance/registry.py::assess_selection` |
+| UC04 | Kiểm tra nguồn gốc hiện vật | (được include) | Đã chạy | `tsds/provenance/registry.py::assess_selection` |
 | UC05 | Quản lý giấy phép và bản quyền | Quản trị viên | Một phần | Sửa `data/heritage/metadata.json`; giao diện chỉ xem |
 | UC06 | Phân tích họa tiết | Hệ thống AI | Đã chạy | Canny, bảng màu, mật độ nét |
-| UC07 | Sinh họa tiết AI | Hệ thống AI | Đã chạy | `generation/pattern.py` |
+| UC07 | Sinh họa tiết AI | Hệ thống AI | Đã chạy | `tsds/generation/pattern/pattern.py` |
 | UC08 | Tạo thiết kế áo dài | Nhà thiết kế | Đã chạy | `POST /generate`, Studio → trang Kết quả |
 | UC09 | Chỉnh sửa thiết kế | Nhà thiết kế | Đã chạy | `POST /passports/{id}/edits` (chưa có giao diện web) |
 | UC10 | Đánh giá chất lượng thiết kế | QC Officer, Hệ thống AI | Đã chạy | `quality/` (tự động trong mỗi lượt sinh); QC Officer dùng `POST /passports/{id}/qc` (chưa có giao diện web) |
 | UC11 | So sánh các phiên bản | (extend UC15) | Đã chạy | Trường `versions` của `GET /passports/{id}` (chưa có giao diện web) |
 | UC12 | Thẩm định chuyên gia | Chuyên gia di sản | Đã chạy | `POST /passports/{id}/reviews`; gói chấm mù `scripts/eval/build_blind_review.py` (chưa có giao diện web) |
 | UC13 | Phê duyệt thiết kế | QC Officer (và phiếu chuyên gia) | Đã chạy | Trạng thái `approved` trong Passport |
-| UC14 | Quản lý Design Passport | Nhà thiết kế | Đã chạy | `provenance/passport.py`, `GET /passports/{id}` (chưa có giao diện web) |
+| UC14 | Quản lý Design Passport | Nhà thiết kế | Đã chạy | `tsds/provenance/passport.py`, `GET /passports/{id}` (chưa có giao diện web) |
 | UC15 | Xem lịch sử chỉnh sửa | Người dùng đã đăng ký | Đã chạy | Trường `timeline` của `GET /passports/{id}` (chưa có giao diện web) |
 | UC16 | Xuất thiết kế (gắn nhãn AI) | Nhà thiết kế | Đã chạy | `GET /passports/{id}/export`. Lưu ý: nút Tải xuống ở trang Kết quả tải ảnh chưa gắn nhãn AI |
 | UC17 | Quản lý người dùng và dữ liệu | Quản trị viên | Kế hoạch | – |
-| UC18 | Kiểm tra quyền sử dụng | (được include) | Đã chạy | `provenance/registry.py::rights_gate` |
-| UC19 | Thử nghiệm có kiểm soát | QC Officer, Hệ thống AI | Một phần | `evaluation/experiment.py` (dòng lệnh), `GET /experiments` để xem |
+| UC18 | Kiểm tra quyền sử dụng | (được include) | Đã chạy | `tsds/provenance/registry.py::rights_gate` |
+| UC19 | Thử nghiệm có kiểm soát | QC Officer, Hệ thống AI | Một phần | `tsds/evaluation/experiment.py` (dòng lệnh), `GET /experiments` để xem |
 
 Rà soát 21/11/2026: từ ngày 19/11/2026 web chỉ còn Trang chủ, Studio và trang Kết quả. Các ca của QC Officer, chuyên gia và quản lý Passport vẫn chạy thật qua API (có kiểm thử) nhưng chưa có giao diện web; cột cuối ghi rõ điều này.
 
@@ -66,7 +66,7 @@ Quy tắc dùng: **include** khi ca gốc *luôn luôn* phải chạy ca kia m�
 | So sánh các phiên bản «extend» Xem lịch sử chỉnh sửa | Chỉ khi thiết kế có từ hai phiên bản |
 | Phê duyệt thiết kế «extend» Thẩm định chuyên gia | Chỉ khi quyết định của chuyên gia là "Đạt" |
 
-Những nối kết **cố ý không vẽ**: Thử nghiệm có kiểm soát không include Tạo thiết kế, vì thí nghiệm dùng bộ chạy riêng (`evaluation/experiment.py`) và kết quả không đi vào danh mục sản phẩm. Nối hai ca này sẽ gợi ý sai rằng ảnh thí nghiệm có thể được xuất bản.
+Những nối kết **cố ý không vẽ**: Thử nghiệm có kiểm soát không include Tạo thiết kế, vì thí nghiệm dùng bộ chạy riêng (`tsds/evaluation/experiment.py`) và kết quả không đi vào danh mục sản phẩm. Nối hai ca này sẽ gợi ý sai rằng ảnh thí nghiệm có thể được xuất bản.
 
 ## Mô tả ca sử dụng (mẫu Tilley)
 

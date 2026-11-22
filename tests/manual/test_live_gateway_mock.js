@@ -11,7 +11,7 @@ const python = process.env.PYTHON_EXECUTABLE || 'python';
 const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'dh-live-mock-'));
 const child = spawn(python, ['-m', 'uvicorn', 'mock_backend:app',
     '--host', '127.0.0.1', '--port', String(port), '--log-level', 'error'], {
-    cwd: path.resolve(__dirname, '..'),
+    cwd: path.resolve(__dirname, '..', '..'),
     env: { ...process.env, DH_API_KEY: 'local-contract-key', DH_OUTPUT_DIR: outputDir,
         DELAY: '0.1', FAIL: '0' },
     stdio: 'ignore',

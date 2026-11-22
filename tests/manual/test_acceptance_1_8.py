@@ -68,7 +68,7 @@ def main() -> int:
         #  kiểm tra lúc import module không kéo torch vào và /health không khởi chạy job)
         # ------------------------------------------------------------------
         check_code = (
-            "import sys; import api.main as m; "
+            "import sys; import tsds.api.main as m; "
             "assert 'torch' not in sys.modules, 'torch bị import ngay khi nạp api.main!'; "
             "res = m.health(); "
             "assert res.get('status') == 'ok', res; "
@@ -269,7 +269,7 @@ def main() -> int:
         assert res3.get("demo_label") == "Kết quả đã sinh sẵn — không phải sinh trực tiếp"
         assert len(res3.get("variants", [])) == 4
 
-        with (ROOT / "evaluation" / "variants.csv").open("r", encoding="utf-8") as f:
+        with (ROOT / "tsds" / "evaluation" / "variants.csv").open("r", encoding="utf-8") as f:
             csv_rows = [r for r in csv.DictReader(f) if r["heritage_id"] == "BT_Hac_XP"]
         for idx, v in enumerate(res3["variants"]):
             expected_sim = float(csv_rows[idx]["similarity_pattern_vs_ceramic"])

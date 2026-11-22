@@ -1,10 +1,10 @@
 # Kết quả EXP-G: bốn cách tạo ô hoa văn từ mảng phẳng
 
 - **Ngày chạy:** 20/11/2026. 72 lượt (6 hiện vật x 4 cách x 3 seed), cả 72 lượt ra ảnh.
-- **Đặc tả:** `evaluation/experiments/EXP-G_pattern_method.json`. **Mã:** `evaluation/exp_g.py`. **Ảnh và số liệu:** `outputs/experiments/EXP-G/`.
+- **Đặc tả:** `tsds/evaluation/experiments/EXP-G_pattern_method.json`. **Mã:** `tsds/evaluation/exp_g.py`. **Ảnh và số liệu:** `outputs/experiments/EXP-G/`.
 - **Ô hoa văn** là ảnh nhỏ mà `garment.apply` lát liền lên áo. Cả bốn cách dùng chung áo LoRA, bố cục `front_panel`, polish có mặt nạ 0,20 kèm khóa họa tiết. Chỉ khác cách tạo ô.
 
-> **Cập nhật 20/11/2026 (đọc trước):** các số và ảnh của `elements_sam` (LR3D_38, LR3D_61, LR3D_97) và `elements_clip` (LR3D_38, LR3D_97) ở các mục "Sửa màu mờ" và "Chọn phần tử tốt" bị lỗi nền in cả mảng. Lỗi đã sửa trong `generation/garment.py` (mục "Sửa lỗi nền in cả mảng" ở cuối) và hai mức đã chạy lại; kết quả chạy lại nằm ở mục đó, thay cho số cũ.
+> **Cập nhật 20/11/2026 (đọc trước):** các số và ảnh của `elements_sam` (LR3D_38, LR3D_61, LR3D_97) và `elements_clip` (LR3D_38, LR3D_97) ở các mục "Sửa màu mờ" và "Chọn phần tử tốt" bị lỗi nền in cả mảng. Lỗi đã sửa trong `tsds/generation/garment/garment.py` (mục "Sửa lỗi nền in cả mảng" ở cuối) và hai mức đã chạy lại; kết quả chạy lại nằm ở mục đó, thay cho số cũ.
 
 ## Bốn cách
 
@@ -47,7 +47,7 @@ Kiểm định cặp Wilcoxon so với `sd_controlnet` (mẫu nhỏ, chỉ tham 
 
 **Nguyên nhân (đã đo).** `garment.apply` chỉ in điểm có sắc độ từ 16 đến 34 hoặc đủ tối. Mảng phẳng cắt từ ảnh bình có sắc độ thấp: p90 chỉ 11 đến 30, trong khi ô do SD sinh là 28 đến 62. Độ đục trung bình của ô dán nguyên thấp hơn ô SD ở 4 trong 6 hiện vật (LR3D_97 chỉ 0,05).
 
-**Cách sửa.** Hàm `boost_ink` trong `evaluation/exp_g.py` kéo mực ra xa màu nền trong không gian LAB, neo tại màu nền để nền không đổi. Hai hệ số, đều tự về 1 khi ảnh đã đủ tương phản:
+**Cách sửa.** Hàm `boost_ink` trong `tsds/evaluation/exp_g.py` kéo mực ra xa màu nền trong không gian LAB, neo tại màu nền để nền không đổi. Hai hệ số, đều tự về 1 khi ảnh đã đủ tương phản:
 - Kéo khoảng cách tới màu nền (phân vị 98 lên 60, tối đa 3 lần).
 - Kéo sắc độ (phân vị 95 lên 45, tối đa 2 lần), chỉ cho điểm nghiêng về xanh. Bản kéo mọi hướng làm hiện đốm vàng (vết ố men) ở LR3D_97 nên đã bỏ.
 
@@ -76,7 +76,7 @@ Sắc độ p95 trong vùng in: 11,1 lên 21,1 (SD là 25,1). Các chỉ số c�
 
 **Vấn đề.** Quy tắc chọn cũ (`element_library.score`: cạnh ngắn x tỉ lệ mực) không biết phần tử có nguyên vẹn hay có phải hình chính, nên lấy mảnh vụn ở LR3D_38 (cặp nửa lá) và LR3D_61 (mảnh cong).
 
-**Quy tắc mới** (`pick_main_element` trong `evaluation/exp_g.py`, tất định):
+**Quy tắc mới** (`pick_main_element` trong `tsds/evaluation/exp_g.py`, tất định):
 1. Lọc hình dạng: cạnh ngắn từ 200 px, tỉ lệ cạnh dài trên cạnh ngắn tối đa 2,6, độ lấp đầy hộp bao từ 0,30. Không ai qua lọc thì xét tất cả.
 2. CLIP chấm độ khớp giữa ảnh phần tử (đặt trên màu nền men) và mô tả hiện vật (`name_en` cộng `base_description` trong `data/prompt_terms.json`).
 3. Nhân hệ số phạt nhẹ cho phần tử nhỏ: (cạnh ngắn / 400) mũ 0,25, tối đa 1. Hòa điểm thì theo mã phần tử.
@@ -120,7 +120,7 @@ Xem ảnh: nét xanh rõ hơn ở LR3D_38 và LR3D_97, tăng nhẹ ở LR3D_33, 
 
 ### Phát hiện: nền ô bị in cả mảng khi mực quá nhạt
 
-`garment.ground_alpha` (trong pipeline, `generation/garment.py`) có quy tắc dự phòng: độ đục trung bình dưới 0,05 thì giữ đục hoàn toàn, để hoa văn trắng trên nền kem không biến mất. Hệ quả: ô có mực rất nhạt bị in **cả màu nền** thành một mảng phẳng đè lên áo.
+`garment.ground_alpha` (trong pipeline, `tsds/generation/garment/garment.py`) có quy tắc dự phòng: độ đục trung bình dưới 0,05 thì giữ đục hoàn toàn, để hoa văn trắng trên nền kem không biến mất. Hệ quả: ô có mực rất nhạt bị in **cả màu nền** thành một mảng phẳng đè lên áo.
 
 Độ đục trung bình của ô trước khi áp quy tắc dự phòng (dưới 0,05 là bị in cả nền):
 
@@ -138,7 +138,7 @@ Xem ảnh: nét xanh rõ hơn ở LR3D_38 và LR3D_97, tăng nhẹ ở LR3D_33, 
 
 ## Sửa lỗi nền in cả mảng (`ground_alpha`) (20/11/2026)
 
-**Sửa trong pipeline chính:** `generation/garment.py`, hàm `ground_alpha` và hàm mới `_faint_ink_alpha`. Chỉ đổi nhánh dự phòng (độ đục trung bình dưới 0,05). Mọi ô có độ đục từ 0,05 trở lên đi đường cũ, không đổi kết quả (có test dùng `monkeypatch` chứng minh nhánh mới không được gọi).
+**Sửa trong pipeline chính:** `tsds/generation/garment/garment.py`, hàm `ground_alpha` và hàm mới `_faint_ink_alpha`. Chỉ đổi nhánh dự phòng (độ đục trung bình dưới 0,05). Mọi ô có độ đục từ 0,05 trở lên đi đường cũ, không đổi kết quả (có test dùng `monkeypatch` chứng minh nhánh mới không được gọi).
 
 **Cách làm.** Nhánh dự phòng cũ trả toàn 1 (giữ đục hoàn toàn) để hoa văn trắng trên nền kem không biến mất. Nhánh mới thử trước: so từng điểm với màu nền của ô (trung vị từng kênh LAB), nếu ô là "nền phẳng có mực thưa" thì trả độ đục theo độ lệch nền (nền trong suốt, mực đục); không thì vẫn trả toàn 1 như cũ. Ô được coi là "nền phẳng có mực thưa" khi cả ba điều kiện đúng, với khoảng cách ΔE76 tới màu nền:
 

@@ -6,7 +6,7 @@ import copy
 
 import pytest
 
-from provenance import registry as R
+from tsds.provenance import registry as R
 
 
 def _item(status="unverified", item_status="active", **prov):
@@ -102,6 +102,6 @@ def test_rights_gate_permission_scope_list_and_case():
 
 
 def test_streamlit_loader_hides_retired_by_default():
-    from provenance.heritage import load_heritage_metadata
+    from tsds.provenance.heritage import load_heritage_metadata
     assert len(load_heritage_metadata(R.ROOT)) == 6
     assert len(load_heritage_metadata(R.ROOT, include_retired=True)) == 12

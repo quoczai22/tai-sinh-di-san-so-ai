@@ -21,14 +21,14 @@ Mã quy trình L3 tham chiếu [02_APQC.md](02_APQC.md).
 | Mã | KPI | Công thức | Hiện tại | Mục tiêu | Nguồn, cách đo | L3 | Chủ |
 |---|---|---|---|---|---|---|---|
 | K07 | Dao động theo seed | Hệ số biến thiên (sd / trung bình) của PPS theo seed ở từng mức trọng số | EXP-A (5 seed, 6 hiện vật): hệ số biến thiên của PPS theo seed trong mỗi ô trung bình 2,1% ở trọng số 0,85, 2,4% ở 0,65, 2,8% ở 0,45, 2,9% ở 0,25 (tính từ `outputs/experiments/EXP-A/results.csv`, chưa có script riêng). Bộ demo 3 seed (42, 43, 44; 24 ô × 3 seed): trung bình 0,95 đến 1,6% theo mức sáng tạo, lớn nhất 4,0% (tính từ Passport) | Báo cáo kèm mọi kết luận; không đặt ngưỡng | `outputs/experiments/EXP-A/summary.json` | 1.1 | BA |
-| K08 | Tỉ lệ thí nghiệm hợp lệ đơn biến | Kế hoạch qua `validate_plan` / kế hoạch dùng làm bằng chứng | 7/7 (EXP-A đến EXP-G) | 100% | `python -m evaluation.experiment plan …` | 1.1 | BA |
+| K08 | Tỉ lệ thí nghiệm hợp lệ đơn biến | Kế hoạch qua `validate_plan` / kế hoạch dùng làm bằng chứng | 7/7 (EXP-A đến EXP-G) | 100% | `python -m tsds.evaluation.experiment plan …` | 1.1 | BA |
 | K18 | Số lượt chạy hoàn tất theo kế hoạch | Lượt `completed` / lượt trong `plan.csv` | EXP-B 126/126; EXP-C 24/24; EXP-D 60/60; EXP-E 36/36; EXP-F 36/36; EXP-G 126/126; EXP-A 120/120 | 100% trước khi phân tích | `results.csv` | 1.1 | BA |
 
 ## Nguồn gốc và bản quyền (yêu cầu BTC 3)
 
 | Mã | KPI | Công thức | Hiện tại | Mục tiêu | Nguồn, cách đo | L3 | Chủ |
 |---|---|---|---|---|---|---|---|
-| K09 | Độ đầy đủ hồ sơ nguồn | Số trường bắt buộc có giá trị / 10, theo hiện vật | 8/10 ở cả 6 hiện vật đang dùng (thiếu giấy phép từng vật và ngày thu thập) | 10/10 với mọi hiện vật đang dùng | `provenance/registry.py::completeness` | 4.1, 4.2 | Quản trị dữ liệu |
+| K09 | Độ đầy đủ hồ sơ nguồn | Số trường bắt buộc có giá trị / 10, theo hiện vật | 8/10 ở cả 6 hiện vật đang dùng (thiếu giấy phép từng vật và ngày thu thập) | 10/10 với mọi hiện vật đang dùng | `tsds/provenance/registry.py::completeness` | 4.1, 4.2 | Quản trị dữ liệu |
 | K10 | Tỉ lệ hiện vật đang dùng được phép xuất bản | Hiện vật `active` qua cổng `publish_public` / số hiện vật `active` | 0/6 | 100% trước khi xuất bản công khai bất kỳ thiết kế nào | `GET /provenance/catalog` | 2.2 | Quản trị dữ liệu |
 | K11 | Toàn vẹn Passport | Passport qua `verify` / tổng | 24/24 bộ demo; 72/72 kể cả bộ nhiều seed | 100%, kiểm mỗi lần chạy bộ kiểm thử | `tests/test_passport.py` | 4.3, 4.4 | Hệ thống |
 | K16 | Ảnh xuất có nhãn AI | Ảnh xuất qua API có dải nhãn và siêu dữ liệu / ảnh xuất qua API | 100% (theo thiết kế: endpoint xuất luôn gắn nhãn; có ca kiểm thử) | 100% | `tests/test_api.py` | 4.4 | Hệ thống |
@@ -48,5 +48,5 @@ Mã quy trình L3 tham chiếu [02_APQC.md](02_APQC.md).
 
 - **Tự động**: các KPI K01–K04, K09–K12, K16–K18, K20 đọc thẳng từ tệp CSV/JSON do hệ thống ghi. Không có bước nhập tay.
 - **Theo sự kiện**: K13, K17 tính từ thời điểm trong sổ cái Passport (mỗi sự kiện có thời điểm và đã được băm nối chuỗi nên không sửa lùi được mà không bị phát hiện).
-- **Theo phiếu**: K05, K06, K14 cần phiếu chuyên gia. Bộ phân tích `evaluation/experiment.py analyze` tính alpha; kappa tính khi hiệu chỉnh ngưỡng ([05](05_QUALITY_ASSURANCE.md)).
+- **Theo phiếu**: K05, K06, K14 cần phiếu chuyên gia. Bộ phân tích `tsds/evaluation/experiment.py analyze` tính alpha; kappa tính khi hiệu chỉnh ngưỡng ([05](05_QUALITY_ASSURANCE.md)).
 - Giao diện web cho người xem không còn trang "Tổng quan" (đã gỡ ngày 19/11/2026). Số liệu KPI vẫn được xuất vào `web_ui/data/dashboard.json` bằng `scripts/demo/export_demo_data.py`; ô chưa đo ghi "Mục tiêu cần đo", không ghi số.

@@ -6,8 +6,8 @@ Giữ nguyên lựa chọn công nghệ của bản 09/2026: Python + FastAPI, p
 
 ```
 generation/         sinh hoa văn, sinh áo dài nền bằng LoRA, tách vùng áo bằng SAM, ghép áo, polish, khoá họa tiết (chạy trên GPU)
-  pipeline/run.py  viết lại: mỗi lần chạy một thư mục riêng, gọi cổng quyền, chất lượng, Passport
-quality/            (mới) metrics.py · gate.py · assess.py (khoá họa tiết nay ở core/pattern_lock.py) — chỉ cần CPU
+  tsds/pipeline/run.py  viết lại: mỗi lần chạy một thư mục riêng, gọi cổng quyền, chất lượng, Passport
+quality/            (mới) metrics.py · gate.py · assess.py (khoá họa tiết nay ở tsds/core/pattern_lock.py) — chỉ cần CPU
 provenance/         (mới) registry.py · passport.py · builder.py · labeling.py · hashing.py
 evaluation/
   experiment.py     (mới) kế hoạch, kiểm tra đơn biến, chạy, chấm mù, thống kê
@@ -25,9 +25,9 @@ Luồng dữ liệu một lần chạy:
 POST /generate ─► cổng quyền (thử nghiệm) ─► outputs/runs/R<thời điểm>-<mã>/
                      │                         00_reference · 01_canny · V1..V4_pattern · _aodai_raw · _aodai
                      ▼
-               quality/assess (G2, G3, khoá họa tiết nếu cần)
+               tsds/quality/assess (G2, G3, khoá họa tiết nếu cần)
                      ▼
-               provenance/builder ─► outputs/passports/DP-<mã>-<ngày>-V<i>.json (sổ cái băm)
+               tsds/provenance/builder ─► outputs/passports/DP-<mã>-<ngày>-V<i>.json (sổ cái băm)
                      ▼
                manifest.json (SHA-256 từng tệp) ─► kết quả job: trạng thái từng phương án
 ```
@@ -37,7 +37,7 @@ POST /generate ─► cổng quyền (thử nghiệm) ─► outputs/runs/R<th�
 - Ngưỡng cổng, tiêu chí tuyển ảnh, bộ tiêu chí chuyên gia đều là tệp cấu hình có phiên bản; đổi ngưỡng không cần sửa mã và Passport cũ vẫn ghi phiên bản đã dùng.
 - Thêm thí nghiệm mới = thêm một tệp JSON; bộ kiểm tra đơn biến áp dụng tự động.
 - Thêm hiện vật = thêm một mục trong danh mục; cổng C1–C4 và cổng quyền áp dụng tự động.
-- Lưu trữ đi qua `api/store.py` (ghi tệp tạm rồi đổi tên, có khoá luồng). Khi cần nhiều người dùng đồng thời, thay lớp này bằng cơ sở dữ liệu mà không đổi API.
+- Lưu trữ đi qua `tsds/api/store.py` (ghi tệp tạm rồi đổi tên, có khoá luồng). Khi cần nhiều người dùng đồng thời, thay lớp này bằng cơ sở dữ liệu mà không đổi API.
 - Giới hạn hiện tại: một tiến trình API, một GPU, job giữ trong bộ nhớ (khởi động lại mất trạng thái job đang chạy, không mất Passport đã ghi).
 
 ### API
@@ -65,7 +65,7 @@ Bối cảnh là một xưởng thiết kế làm việc với hiện vật gố
 
 ### Bố cục "triển lãm số" và chuyển động (bản 3, 18/11/2026)
 
-Lấy cảm hứng từ cách các nền tảng di sản trực tuyến kể chuyện (ảnh bìa tràn màn hình, chương đánh số, băng thẻ ảnh cuộn ngang), không sao chép giao diện hay thương hiệu của nền tảng nào. Kiểu dáng ở `web_ui/assets/css/` (mỗi component một file, thứ tự nạp trong `order.json`), chuyển động ở `web_ui/assets/js/core/motion.js`, `core/reveal.js`, `core/scenes.js`, ảnh bìa ở `web_ui/assets/js/components/hero/`. Sơ đồ từng file: `docs/UI_ARCHITECTURE.md`.
+Lấy cảm hứng từ cách các nền tảng di sản trực tuyến kể chuyện (ảnh bìa tràn màn hình, chương đánh số, băng thẻ ảnh cuộn ngang), không sao chép giao diện hay thương hiệu của nền tảng nào. Kiểu dáng ở `web_ui/assets/css/` (mỗi component một file, thứ tự nạp trong `order.json`), chuyển động ở `web_ui/assets/js/core/motion.js`, `tsds/core/reveal.js`, `tsds/core/scenes.js`, ảnh bìa ở `web_ui/assets/js/components/hero/`. Sơ đồ từng file: `docs/UI_ARCHITECTURE.md`.
 
 | Thành phần | Mô tả |
 |---|---|
@@ -82,7 +82,7 @@ Web chỉ dành cho người xem: **Trang chủ · Studio · Kết quả**. Các
 | Chức năng | Nằm ở |
 |---|---|
 | Kiểm định chất lượng G2/G3 | `quality/`, `config/quality_gate.json`, `GET /quality/designs` |
-| Thí nghiệm EXP-A đến EXP-G | `evaluation/experiment.py`, `evaluation/exp_g.py`, `outputs/experiments/`, `GET /experiments` |
+| Thí nghiệm EXP-A đến EXP-G | `tsds/evaluation/experiment.py`, `tsds/evaluation/exp_g.py`, `outputs/experiments/`, `GET /experiments` |
 | Thẩm định chuyên gia | `config/expert_rubric.json`, `POST /passports/{id}/reviews`, gói chấm mù nhiều seed `outputs/review/blind_review/` (`scripts/eval/build_blind_review.py`) |
 | Design Passport | `outputs/passports/`, `GET /passports/{id}`, `GET /passports/{id}/export` |
 | Nguồn và bản quyền | `data/heritage/metadata.json`, `GET /provenance/catalog`, [07](07_PROVENANCE_COPYRIGHT.md) |
@@ -105,11 +105,11 @@ Không có nút nào bấm mà không làm gì. Chức năng chưa có máy ch�
 ## Chạy
 
 ```bash
-pip install -r requirements.txt            # máy có GPU: đủ để sinh ảnh
-uvicorn api.main:app --port 8000           # API
+uv sync                                    # cài thư viện theo pyproject.toml và uv.lock (máy có GPU đủ để sinh ảnh)
+uvicorn tsds.api.main:app --port 8000           # API
 python -m http.server 5500                 # mở http://localhost:5500/web_ui/
 python scripts/demo/export_demo_data.py      # cập nhật dữ liệu cho chế độ trình diễn
-pip install -r requirements-dev.txt && pytest   # kiểm thử, không cần GPU
+uv run pytest                              # kiểm thử, không cần GPU
 ```
 
 ## Khung xem 3D (trang Studio của từng hiện vật)

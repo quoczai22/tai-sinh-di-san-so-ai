@@ -25,12 +25,13 @@ sys.path.insert(0, str(ROOT))
 
 import torch                                                       # noqa: E402
 
-from evaluation import intensity_sweep                              # noqa: E402
-from generation import controlnet, garment, garment_lora, layout_select, pattern  # noqa: E402
-from pipeline import run as pipeline_run                       # noqa: E402
-from generation.stable_diffusion import Generator                   # noqa: E402
-from provenance import builder, passport                            # noqa: E402
-from quality import assess, pattern_retry, retry                                   # noqa: E402
+from tsds.evaluation import intensity_sweep                              # noqa: E402
+from tsds.generation.pattern import controlnet, pattern
+from tsds.generation.garment import garment, garment_lora, layout_select  # noqa: E402
+from tsds.pipeline import run as pipeline_run                       # noqa: E402
+from tsds.generation.stable_diffusion import Generator                   # noqa: E402
+from tsds.provenance import builder, passport                            # noqa: E402
+from tsds.quality import assess, pattern_retry, retry                                   # noqa: E402
 
 # (nhãn, đối tượng, tên hàm, có phải bước con của dòng trước không)
 STEPS = [

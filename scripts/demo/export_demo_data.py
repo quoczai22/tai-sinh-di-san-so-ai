@@ -29,10 +29,10 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from api import store                                              # noqa: E402
-from api.main import ui_items                                      # noqa: E402
-from provenance import passport as P                               # noqa: E402
-from provenance.registry import (all_items, assess_selection, completeness,  # noqa: E402
+from tsds.api import store                                              # noqa: E402
+from tsds.api.main import ui_items                                      # noqa: E402
+from tsds.provenance import passport as P                               # noqa: E402
+from tsds.provenance.registry import (all_items, assess_selection, completeness,  # noqa: E402
                                  load_selection_config, rights_gate)
 
 OUT = ROOT / "web_ui" / "data"

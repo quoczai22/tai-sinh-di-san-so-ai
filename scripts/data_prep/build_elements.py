@@ -20,7 +20,7 @@ import cv2
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from generation.elements import Config, SamSegmenter, build_object, postfilter, update_index  # noqa: E402
+from tsds.generation.pattern.elements import Config, SamSegmenter, build_object, postfilter, update_index  # noqa: E402
 
 IMAGE_EXT = (".png", ".jpg", ".jpeg")
 

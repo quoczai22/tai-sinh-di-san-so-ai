@@ -87,7 +87,7 @@ def load_env() -> None:
 
 
 def n_tokens(text: str) -> int:
-    from generation.prompt_template import n_tokens as nt      # noqa: PLC0415
+    from tsds.generation.prompt_template import n_tokens as nt      # noqa: PLC0415
     return nt(text) - 2                                        # bỏ <bos>/<eos>
 
 

@@ -9,10 +9,10 @@ from pathlib import Path
 
 import pytest
 
-from evaluation import experiment as E
+from tsds.evaluation import experiment as E
 
 ROOT = Path(__file__).resolve().parent.parent
-SPECS = sorted((ROOT / "evaluation" / "experiments").glob("EXP-*.json"))
+SPECS = sorted((ROOT / "tsds" / "evaluation" / "experiments").glob("EXP-*.json"))
 
 
 @pytest.mark.parametrize("path,n", [("EXP-A_controlnet_weight.json", 120), ("EXP-B_stage2_finish.json", 126),
@@ -20,7 +20,7 @@ SPECS = sorted((ROOT / "evaluation" / "experiments").glob("EXP-*.json"))
                                     ("EXP-D_garment_source.json", 60),
                                     ("EXP-E_pattern_source.json", 36)])
 def test_specs_expand_and_pass_validation(path, n):
-    spec = E.load_spec(ROOT / "evaluation" / "experiments" / path)
+    spec = E.load_spec(ROOT / "tsds" / "evaluation" / "experiments" / path)
     rows = E.expand_plan(spec)
     assert len(rows) == n
     assert len({r["run_key"] for r in rows}) == n, "khoá lượt chạy phải duy nhất"
@@ -35,7 +35,7 @@ def test_gpu_experiments_use_only_active_items():
 
 def test_legacy_v1_v4_design_is_rejected():
     """Dựng lại đúng bộ 4 biến thể bản 09/2026: đổi trọng số + prompt + bảng màu + bố cục cùng lúc."""
-    spec = E.load_spec(ROOT / "evaluation" / "experiments" / "EXP-A_controlnet_weight.json")
+    spec = E.load_spec(ROOT / "tsds" / "evaluation" / "experiments" / "EXP-A_controlnet_weight.json")
     rows = E.expand_plan(spec)
     legacy = {0.85: ("", "original", "side_stripe"), 0.65: ("", "free", "front_panel"),
               0.45: ("modern simplified interpretation", "free", "center_medallion"),
@@ -50,7 +50,7 @@ def test_legacy_v1_v4_design_is_rejected():
 
 
 def test_plan_without_iv_variation_is_rejected():
-    spec = copy.deepcopy(E.load_spec(ROOT / "evaluation" / "experiments" / "EXP-C_composite_ablation.json"))
+    spec = copy.deepcopy(E.load_spec(ROOT / "tsds" / "evaluation" / "experiments" / "EXP-C_composite_ablation.json"))
     spec["independent_variable"]["levels"] = ["full"]
     with pytest.raises(E.PlanError):
         E.expand_plan(spec)
@@ -143,7 +143,7 @@ def test_parse_finish_khong_hop_le(finish):
 
 
 def test_exp_b_co_muc_polish_co_mat_na_va_moi_muc_deu_doc_duoc():
-    spec = E.load_spec(ROOT / "evaluation" / "experiments" / "EXP-B_stage2_finish.json")
+    spec = E.load_spec(ROOT / "tsds" / "evaluation" / "experiments" / "EXP-B_stage2_finish.json")
     levels = spec["independent_variable"]["levels"]
     assert "masked_0.30" in levels
     for lv in levels:
@@ -153,7 +153,7 @@ def test_exp_b_co_muc_polish_co_mat_na_va_moi_muc_deu_doc_duoc():
 # ---------------------------------------------------------------- EXP-D: nền áo ----
 
 def _spec_d():
-    return E.load_spec(ROOT / "evaluation" / "experiments" / "EXP-D_garment_source.json")
+    return E.load_spec(ROOT / "tsds" / "evaluation" / "experiments" / "EXP-D_garment_source.json")
 
 
 def test_exp_d_chi_doi_nen_ao_va_cung_hoa_van_giua_hai_muc():
@@ -175,7 +175,7 @@ def test_lora_garment_seeds_chi_lay_muc_lora_va_khong_trung():
 
 
 def test_pregenerate_garments_ghi_loi_khong_quay_ve_ao_mau(tmp_path):
-    from generation.garment_lora import GarmentError
+    from tsds.generation.garment.garment_lora import GarmentError
 
     def gia(d, seed):
         if seed == 43:
@@ -208,7 +208,7 @@ def test_gach_cham_mu_bo_luot_khong_ra_anh_va_analyze_dem_trang_thai(tmp_path):
 
 
 def test_source_prepared_nho_lai_theo_hien_vat_va_nguon(monkeypatch):
-    from generation import controlnet as cn
+    from tsds.generation.pattern import controlnet as cn
     calls = []
     monkeypatch.setattr(cn, "prepare", lambda hid, **kw: calls.append((hid, kw.get("image_path"))) or {"x": len(calls)})
     cache = {}

@@ -5,9 +5,9 @@ import cv2
 import numpy as np
 import pytest
 
-from generation import controlnet as cn
-from generation import element_library as lib
-from generation import elements as el
+from tsds.generation.pattern import controlnet as cn
+from tsds.generation.pattern import element_library as lib
+from tsds.generation.pattern import elements as el
 
 HINH_L = np.array([[0, 0], [80, 0], [80, 30], [40, 30], [40, 90], [0, 90]])
 HINH_SAO = np.array([[10, 0], [60, 20], [90, 10], [70, 60], [95, 95], [40, 70], [0, 90], [20, 40]])

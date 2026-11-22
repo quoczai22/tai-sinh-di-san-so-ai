@@ -25,7 +25,7 @@ COPY_FILES = [
     "Dockerfile",
     "requirements-api.txt",
 ]
-COPY_DIRS = ["api", "core", "pipeline", "generation", "evaluation", "provenance", "quality", "config", "data"]   # khớp các lệnh COPY trong Dockerfile
+COPY_DIRS = ["tsds", "config", "data"]   # khớp các lệnh COPY trong Dockerfile
 IGNORE = shutil.ignore_patterns("__pycache__", "*.pyc", ".gitkeep")
 
 SPACE_README = """---

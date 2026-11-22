@@ -1,9 +1,9 @@
-"""Kiểm thử evaluation/seam.py (chỉ số M5) bằng ảnh tổng hợp, không cần GPU."""
+"""Kiểm thử tsds/evaluation/seam.py (chỉ số M5) bằng ảnh tổng hợp, không cần GPU."""
 import numpy as np
 import pytest
 from PIL import Image
 
-from evaluation.seam import NGUONG_M5, seam_score
+from tsds.evaluation.seam import NGUONG_M5, seam_score
 
 K = 16  # độ rộng bộ lọc làm mượt: ảnh mượt hơn thì cặp cột kề nhau càng giống nhau
 

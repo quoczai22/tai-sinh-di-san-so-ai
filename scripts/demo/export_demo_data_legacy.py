@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Xuất dữ liệu thực nghiệm thật từ evaluation/variants.csv sang JSON tĩnh cho chế độ Demo.
+"""Xuất dữ liệu thực nghiệm thật từ tsds/evaluation/variants.csv sang JSON tĩnh cho chế độ Demo.
 
 Kiểm tra nghiêm ngặt sự tồn tại của từng file ảnh thiết kế trong
 web_ui/assets/images/variants/ (và ảnh hiện vật gốc). Nếu thiếu bất kỳ ảnh nào
@@ -22,7 +22,7 @@ for _s in (sys.stdout, sys.stderr):
             pass
 
 ROOT = Path(__file__).resolve().parents[2]
-CSV_PATH = ROOT / "evaluation" / "variants.csv"
+CSV_PATH = ROOT / "tsds" / "evaluation" / "variants.csv"
 METADATA_PATH = ROOT / "data" / "heritage" / "metadata.json"
 WEB_UI_DIR = ROOT / "web_ui"
 VARIANTS_IMG_DIR = WEB_UI_DIR / "assets" / "images" / "variants"
@@ -94,7 +94,7 @@ def export_demo_variants() -> dict:
             by_heritage.setdefault(heritage_id, []).append(parsed)
 
     if not by_heritage:
-        raise RuntimeError("File evaluation/variants.csv rỗng, không có dữ liệu để xuất.")
+        raise RuntimeError("File tsds/evaluation/variants.csv rỗng, không có dữ liệu để xuất.")
 
     for heritage_id, variants in by_heritage.items():
         variants.sort(key=lambda item: item["variant_index"])
@@ -105,7 +105,7 @@ def export_demo_variants() -> dict:
 
     payload = {
         "_meta": {
-            "source": "evaluation/variants.csv",
+            "source": "tsds/evaluation/variants.csv",
             "note": "Kết quả thực nghiệm thật đã sinh sẵn — không phải sinh trực tiếp.",
             "label": "Kết quả đã sinh sẵn — không phải sinh trực tiếp",
         },

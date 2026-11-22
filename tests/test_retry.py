@@ -1,10 +1,10 @@
-"""Kiểm thử vòng loại và thử lại của polish (quality/retry.py) bằng polish giả, không cần GPU."""
+"""Kiểm thử vòng loại và thử lại của polish (tsds/quality/retry.py) bằng polish giả, không cần GPU."""
 import csv
 
 import pytest
 from PIL import Image
 
-from quality import retry as R
+from tsds.quality import retry as R
 
 
 def g3_gia(**status):

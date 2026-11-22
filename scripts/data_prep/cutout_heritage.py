@@ -57,7 +57,7 @@ def sam_refine(img: Image.Image, coarse: np.ndarray) -> np.ndarray:
     Trong ba mặt nạ SAM trả về, chọn mặt nạ nhỏ nhất mà vẫn chứa ít nhất 90% mặt nạ thô (mặt nạ lớn hơn thường lấy cả nền).
     """
     import torch                                                    # noqa: PLC0415
-    from generation import garment_sam as gs                         # noqa: PLC0415
+    from tsds.generation.garment import garment_sam as gs                         # noqa: PLC0415
     model, proc, dev = gs._model()
     w, h = img.size
     ys, xs = np.where(coarse > 0)
@@ -95,10 +95,10 @@ def cutout(img: Image.Image) -> Image.Image:
 
 
 def main(argv: list[str]) -> int:
-    from provenance.registry import all_items                          # noqa: PLC0415
+    from tsds.provenance.registry import all_items                          # noqa: PLC0415
     ids = argv or [it["heritage_id"] for it in all_items(ROOT) if it.get("status", "active") == "active"]
     OUT.mkdir(parents=True, exist_ok=True)
-    from generation import garment_sam                                  # noqa: PLC0415
+    from tsds.generation.garment import garment_sam                                  # noqa: PLC0415
     for hid in ids:
         src = ROOT / "data" / "heritage" / f"{hid}.png"
         out = cutout(Image.open(src))

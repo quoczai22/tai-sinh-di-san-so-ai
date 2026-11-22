@@ -23,7 +23,7 @@ os.environ["DH_API_KEY"] = "test_key"
 os.environ["DH_OUTPUT_DIR"] = tempfile.mkdtemp(prefix="dh_out_")
 
 # Thay module pipeline thật bằng bản luôn ném lỗi.
-fake = types.ModuleType("pipeline.run")
+fake = types.ModuleType("tsds.pipeline.run")
 
 
 def _boom(*_args, **_kwargs):
@@ -31,11 +31,11 @@ def _boom(*_args, **_kwargs):
 
 
 fake.generate_design_set = _boom
-fake.SEED = 42  # api/main.py (bản chung kết) import SEED cùng generate_design_set
-sys.modules["pipeline.run"] = fake
+fake.SEED = 42  # tsds/api/main.py (bản chung kết) import SEED cùng generate_design_set
+sys.modules["tsds.pipeline.run"] = fake
 
-from api import main as api  # noqa: E402
-from api.main import GenerateRequest  # noqa: E402
+from tsds.api import main as api  # noqa: E402
+from tsds.api.main import GenerateRequest  # noqa: E402
 
 
 def main() -> int:

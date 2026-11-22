@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Kiểm thử khoá API fail-closed của api/main.py (không cần GPU).
+"""Kiểm thử khoá API fail-closed của tsds/api/main.py (không cần GPU).
 
 Chạy:
     python tests/manual/test_api_key_guard.py
 
 Ba trường hợp:
-  1. DH_REQUIRE_API_KEY=1, DH_API_KEY trống  -> import api.main phải lỗi RuntimeError rõ ràng.
+  1. DH_REQUIRE_API_KEY=1, DH_API_KEY trống  -> import tsds.api.main phải lỗi RuntimeError rõ ràng.
   2. DH_REQUIRE_API_KEY=1, DH_API_KEY có giá trị -> khởi động được; /generate thiếu khoá -> 401.
   3. Không đặt DH_REQUIRE_API_KEY, DH_API_KEY trống -> khởi động được như cũ (chạy local).
 """
@@ -25,9 +25,9 @@ for _s in (sys.stdout, sys.stderr):
 
 ROOT = Path(__file__).resolve().parents[2]
 
-IMPORT_ONLY = "import api.main; print('STARTED')"
+IMPORT_ONLY = "import tsds.api.main; print('STARTED')"
 IMPORT_AND_401 = (
-    "from fastapi.testclient import TestClient; import api.main as m; "
+    "from fastapi.testclient import TestClient; import tsds.api.main as m; "
     "c = TestClient(m.app); "
     "r = c.post('/generate', json={'heritage_id': 'BT_Hac_XP'}); "
     "assert r.status_code == 401, r.status_code; "

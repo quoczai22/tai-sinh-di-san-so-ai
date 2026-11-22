@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
 
-const WEB_UI_ROOT = path.resolve(__dirname, '..', 'web_ui');
+const WEB_UI_ROOT = path.resolve(__dirname, '..', '..', 'web_ui');
 const API_DIR = path.join(WEB_UI_ROOT, 'api');
 const PORT = parseInt(process.env.PORT || '3000', 10);
 

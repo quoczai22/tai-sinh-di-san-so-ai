@@ -4,11 +4,11 @@ Tài liệu này ghi **mỗi file làm gì** và **nằm ở bước nào của 
 
 ## 1. Nguyên tắc
 
-- **Không bundler, không framework.** web_ui chạy ES modules thuần (mở `index.html` là chạy) và dựng DOM bằng `h()` trong `core/dom.js`, đóng vai JSX.
+- **Không bundler, không framework.** web_ui chạy ES modules thuần (mở `index.html` là chạy) và dựng DOM bằng `h()` trong `tsds/core/dom.js`, đóng vai JSX.
 - **Component** là một hàm `Ten(props) → HTMLElement`:
   - không đọc hay ghi biến toàn cục;
   - nhận dữ liệu qua tham số, báo sự kiện qua callback.
-- **View** (`views/*.js`) chỉ lấy dữ liệu từ `core/data.js` rồi ghép component. View không tự định nghĩa component (có kiểm thử chặn: `tests/test_frontend.py::test_views_do_not_define_components`).
+- **View** (`views/*.js`) chỉ lấy dữ liệu từ `tsds/core/data.js` rồi ghép component. View không tự định nghĩa component (có kiểm thử chặn: `tests/test_frontend.py::test_views_do_not_define_components`).
 - **Mỗi component có file CSS cùng tên** trong `assets/css/components/`. Tên class bắt đầu bằng tên component (`.journey-card`, `.jc-img`…).
 - **Mỗi file ≤ 500 dòng** và mở đầu bằng chú thích vai trò. Có kiểm thử chặn: `test_ui_files_stay_small_and_documented`.
 - **`index.html` không sửa tay ở hai chỗ:** thẻ `<link>` CSS và import map. Thêm, đổi tên hay xoá file JS/CSS thì chạy `python scripts/web/ui_index.py`. Phát hành bản mới thì chạy `python scripts/web/ui_index.py finals-N`.
@@ -19,16 +19,16 @@ Tài liệu này ghi **mỗi file làm gì** và **nằm ở bước nào của 
 ```
 index.html ─► config.js (DH_API_BASE)
           └─► app.js
-                ├─ core/motion.js       áp mức chuyển động đã lưu, đo máy yếu → <html class="motion-off|calm">
-                ├─ core/data.js#init    GET /health (≤2,5 s) → chế độ live (có GPU) | demo (dữ liệu thật đã sinh sẵn)
-                └─ core/router.js#startRouter
+                ├─ tsds/core/motion.js       áp mức chuyển động đã lưu, đo máy yếu → <html class="motion-off|calm">
+                ├─ tsds/core/data.js#init    GET /health (≤2,5 s) → chế độ live (có GPU) | demo (dữ liệu thật đã sinh sẵn)
+                └─ tsds/core/router.js#startRouter
                       mỗi lần đổi hash:
-                      ├─ core/routes.js           tìm trang, tải lười views/<mã>.js
+                      ├─ tsds/core/routes.js           tìm trang, tải lười views/<mã>.js
                       ├─ components/nav.js        vẽ thanh trên, menu, chân trang; đóng menu
-                      ├─ views/<mã>.js#render     lấy dữ liệu (core/data.js) → ghép components
+                      ├─ views/<mã>.js#render     lấy dữ liệu (tsds/core/data.js) → ghép components
                       ├─ components/hero/index.js ảnh bìa của trang
-                      ├─ core/reveal.js#enhance   gắn hiệu ứng hiện dần
-                      └─ core/scenes.js#scenes    cảnh cuộn (--e/--p/--x, khối dính --pp)
+                      ├─ tsds/core/reveal.js#enhance   gắn hiệu ứng hiện dần
+                      └─ tsds/core/scenes.js#scenes    cảnh cuộn (--e/--p/--x, khối dính --pp)
 ```
 
 ## 3. Pipeline GUI cho người xem
@@ -37,8 +37,8 @@ index.html ─► config.js (DH_API_BASE)
 |---|---|---|---|---|
 | 0. Khám phá | `#/library` | `views/library.js` | `hero/fan`, `journey-card`, `artifact-card`, `gallery-item`, `chapter-head`; trang trí `decor/phoenix`, `decor/drum` | `data.heritage()`, `data.passports()` |
 | 1. Chọn đầu vào | `#/studio` | `views/studio.js` | `picker-card` (rê chuột thì xoay 3D qua `viewer3d.hoverSpin`) | `data.heritage()` |
-| 2. Tạo thiết kế | `#/studio/<mã>` | `views/studio.js` | `viewer3d`, `viewer-controls`, `artifact-book` (nút "Xem ý nghĩa hoa văn" mở sổ hai trang nổi trên trang), `layout.stateBox` | Có GPU: `core/generation.js` gọi `POST /generate` rồi hỏi `GET /generate/{id}`. Không có GPU: mở bộ đã sinh sẵn, không giả lập |
-| 3. Xem và tải đầu ra | `#/result/<mã>` | `views/result.js` | `design-card`, `lightbox`, `badges.demoNotice` | `data.passports()`, `core/download.js` |
+| 2. Tạo thiết kế | `#/studio/<mã>` | `views/studio.js` | `viewer3d`, `viewer-controls`, `artifact-book` (nút "Xem ý nghĩa hoa văn" mở sổ hai trang nổi trên trang), `layout.stateBox` | Có GPU: `tsds/core/generation.js` gọi `POST /generate` rồi hỏi `GET /generate/{id}`. Không có GPU: mở bộ đã sinh sẵn, không giả lập |
+| 3. Xem và tải đầu ra | `#/result/<mã>` | `views/result.js` | `design-card`, `lightbox`, `badges.demoNotice` | `data.passports()`, `tsds/core/download.js` |
 
 Nhãn AI (`components/badges.js#aiMark`) có trên **mọi** ảnh do AI hỗ trợ tạo, phục vụ YC3. Ở chế độ trình diễn, trang Kết quả luôn có dòng "Kết quả đã sinh sẵn".
 
@@ -107,12 +107,12 @@ streamlit_ui/
 │   ├── sidebar.py              GPU/CPU, PyTorch, Python, thống kê dữ liệu
 │   ├── heritage_picker.py      bước 1–2: chọn hiện vật, thông tin, trạng thái PyTorch, nút Tạo
 │   └── variant_results.py      bước cuối: 3 thẻ (bộ 4 thiết kế + tải PNG, đối chiếu, bảng số liệu)
-├── screens/generate.py         ghép các component; gọi pipeline/run.py khi bấm Tạo
-└── heritage_data.py            lớp chuyển tiếp → provenance/heritage.py (giữ cho mã cũ)
+├── screens/generate.py         ghép các component; gọi tsds/pipeline/run.py khi bấm Tạo
+└── heritage_data.py            lớp chuyển tiếp → tsds/provenance/heritage.py (giữ cho mã cũ)
 ```
 
 - Thư mục màn hình tên `screens/` chứ không phải `pages/`, vì Streamlit tự coi `pages/` là trang con.
-- `load_heritage_metadata` đã chuyển sang `provenance/heritage.py`. Lý do: API (`api/main.py`), `evaluation/`, `mock_backend.py` và kiểm thử đều dùng hàm này, mà backend thì không được phụ thuộc thư mục giao diện. `Dockerfile` không còn phải chép `streamlit_ui/`.
+- `load_heritage_metadata` đã chuyển sang `tsds/provenance/heritage.py`. Lý do: API (`tsds/api/main.py`), `evaluation/`, `mock_backend.py` và kiểm thử đều dùng hàm này, mà backend thì không được phụ thuộc thư mục giao diện. `Dockerfile` không còn phải chép `streamlit_ui/`.
 
 ## 6. Thêm một thành phần mới
 

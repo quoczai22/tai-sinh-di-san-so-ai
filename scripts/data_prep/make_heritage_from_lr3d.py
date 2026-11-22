@@ -6,10 +6,10 @@ Chạy (sau scripts/data_prep/extract_lr3d.py):
 Mỗi vật thể cho hai ảnh:
 - Ảnh hiện vật mặc định = ảnh render cả bình (script 08 đã trích), đúng luồng hồ sơ gốc.
 - Mảng texture phẳng (biến thể so sánh), cắt tự động:
-  1. Vùng hợp lệ = phần texture được mô hình 3D phủ lên (UV), như generation/elements.py.
+  1. Vùng hợp lệ = phần texture được mô hình 3D phủ lên (UV), như tsds/generation/pattern/elements.py.
   2. Tách các mảnh UV rời nhau (đảo). Chọn đảo có nhiều nét mực nhất (diện tích nhân tỉ lệ pixel sẫm hơn nền men).
   3. Cắt khung bao của đảo, thu nhỏ nếu cạnh dài hơn 2048 pixel, kênh alpha là mặt nạ của đảo.
-  Ảnh ra là PNG RGBA: generation/controlnet.py đã biết dùng kênh alpha làm mặt nạ món đồ.
+  Ảnh ra là PNG RGBA: tsds/generation/pattern/controlnet.py đã biết dùng kênh alpha làm mặt nạ món đồ.
 Không dùng mặt nạ tay. Việc chọn 6 vật thể là bước chọn nguồn, ghi ở SELECTED bên dưới.
 
 Đầu ra:
@@ -28,7 +28,7 @@ import cv2
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from generation.elements import get_valid_mask, read_rgb  # noqa: E402
+from tsds.generation.pattern.elements import get_valid_mask, read_rgb  # noqa: E402
 
 # 6 vật chọn bằng mắt ngày 18/11/2026 từ 14 vật lam trắng sạch (xem docs/HUONG_CAI_TIEN_V2.md mục 2.2)
 SELECTED = [33, 61, 50, 38, 97, 124]

@@ -10,9 +10,9 @@ import cv2
 import numpy as np
 import pytest
 
-from quality import gate as QG
-from quality import metrics as M
-from core.pattern_lock import pattern_lock
+from tsds.quality import gate as QG
+from tsds.quality import metrics as M
+from tsds.core.pattern_lock import pattern_lock
 
 ROOT = Path(__file__).resolve().parent.parent
 CFG = QG.load_config()
@@ -37,7 +37,7 @@ def test_nan_is_not_a_pass_or_fail():
 def test_config_is_marked_provisional_and_never_approves():
     assert CFG["status"] == "provisional"
     assert "Không chỉ số nào tự phê duyệt" in CFG["principle"]
-    from quality.assess import approval_from_assessment
+    from tsds.quality.assess import approval_from_assessment
     best = {"overall": {"decision": "PASS", "message": ""}, "repair": None}
     assert approval_from_assessment(best)[0] == "pending_expert_review"
 
@@ -151,7 +151,7 @@ def test_detail_ratio_vung_qua_nho_tra_nan():
 
 
 def test_khoa_hoa_tiet_mac_dinh_khoi_phuc_net_manh():
-    from core.pattern_lock import pattern_lock
+    from tsds.core.pattern_lock import pattern_lock
     raw = _anh_net_manh()
     polish = cv2.GaussianBlur(raw, (0, 0), 1.5)         # polish giả làm nhòe nét mảnh
     mask = np.ones(raw.shape[:2], np.float32)
