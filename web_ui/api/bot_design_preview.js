@@ -44,7 +44,7 @@ async function sendFourDesigns(fetchWithTimeout, zaloBase, zaloToken, chatId, ve
             zaloToken,
             chatId,
             urls[i],
-            `${prefixLabel} · Thiết kế ${i + 1}/4 — Bình #${vessel.num}: ${vessel.name} (${vessel.id})`
+            `${prefixLabel} · Thiết kế ${i + 1}/4 — Bình #${vessel.num}: ${vessel.name}`
         );
     }
 }
@@ -151,7 +151,7 @@ async function tryHandleDesignCommand({
 
     // 1. Danh sách bình: "binh", "danh sach", "menu", "chon binh"
     if (/^(binh|danh sach( binh)?|chon binh|menu|test binh)$/.test(clean)) {
-        const lines = VESSELS.map((v) => `${v.num}. ${v.name} (${v.id})`).join('\n');
+        const lines = VESSELS.map((v) => `${v.num}. ${v.name}`).join('\n');
         const msg = `🏺 Danh sách 6 bình gốm Bát Tràng:\n${lines}\n\n` +
             '👉 Gõ "bình 1" .. "bình 6" (hoặc số 1..6): Nhận ngay 4 ảnh áo dài mẫu của bình đó.\n' +
             '👉 Gõ "sinh 1" .. "sinh 6": Gọi GPU Modal T4 sinh mới 4 ảnh thật và tự động gửi vào Zalo khi xong!';
@@ -170,7 +170,7 @@ async function tryHandleDesignCommand({
             zaloBase,
             zaloToken,
             chatId,
-            `🏺 Bình #${vessel.num}: ${vessel.name} (${vessel.id})\nĐang gửi 4 thiết kế áo dài vào Zalo của bạn...`
+            `🏺 Bình #${vessel.num}: ${vessel.name}\nĐang gửi 4 thiết kế áo dài vào Zalo của bạn...`
         );
         const urls = [1, 2, 3, 4].map((i) => `${PUBLIC_BASE}/assets/images/variants/${vessel.id}_V${i}_aodai.png`);
         await sendFourDesigns(fetchWithTimeout, zaloBase, zaloToken, chatId, vessel, urls, 'Áo dài');
@@ -214,7 +214,7 @@ async function tryHandleDesignCommand({
                 zaloBase,
                 zaloToken,
                 chatId,
-                `🎨 Đang sinh 4 thiết kế mới trên GPU T4 cho Bình #${vessel.num}: ${vessel.name} (${vessel.id}).\n` +
+                `🎨 Đang sinh 4 thiết kế mới trên GPU T4 cho Bình #${vessel.num}: ${vessel.name}.\n` +
                 '⏳ Bot sẽ tự động gửi 4 ảnh PNG vừa sinh vào đây ngay khi GPU chạy xong (khoảng 60–90 giây)!'
             );
             return await pollAndSendWhenDone({
@@ -258,7 +258,7 @@ async function tryHandleDesignCommand({
                         zaloBase,
                         zaloToken,
                         chatId,
-                        `✅ Đang gửi 4 ảnh mới nhất từ GPU Modal cho Bình #${vessel.num}: ${vessel.name} (Run: ${latestRunId})...`
+                        `✅ Đang gửi 4 ảnh mới nhất từ GPU Modal cho Bình #${vessel.num}: ${vessel.name}...`
                     );
                     const urls = [1, 2, 3, 4].map((i) => `${PUBLIC_BASE}/api/live/media/run/${latestRunId}/V${i}_aodai.png`);
                     await sendFourDesigns(fetchWithTimeout, zaloBase, zaloToken, chatId, vessel, urls, 'Ảnh mới sinh từ GPU');
