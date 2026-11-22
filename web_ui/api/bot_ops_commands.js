@@ -44,12 +44,19 @@ function formatCreditReport(summary) {
     const runsRemaining = Math.floor(creditRemaining / COST_PER_RUN);
 
     return (
-        '💳 [KIỂM TRA SỐ DƯ CREDIT MODAL]\n\n' +
+        '💳 [KIỂM TRA HẠN MỨC & CREDIT HỆ THỐNG]\n\n' +
+        '1️⃣ Modal GPU Backend:\n' +
         `• Hạn mức cấp: ${MONTHLY_CREDIT_ALLOWANCE.toFixed(2)}$ / tháng\n` +
         `• Đã tiêu dùng: ~${metered.toFixed(2)}$\n` +
         `• Số dư khả dụng: ~${creditRemaining.toFixed(2)}$\n` +
-        '• Hóa đơn thực tế: 0.00$\n\n' +
-        `🎯 Dự kiến: Còn đủ chạy ~${runsRemaining.toLocaleString('vi-VN')} lượt sinh (thoải mái trình diễn cho toàn bộ ban giám khảo)!`
+        '• Hóa đơn thực tế: 0.00$ (100% miễn phí)\n' +
+        `🎯 Dự kiến: Còn đủ chạy ~${runsRemaining.toLocaleString('vi-VN')} lượt sinh GPU T4!\n\n` +
+        '2️⃣ AWS CodeBuild CD & Parameter Store:\n' +
+        '• Hạn mức AWS Free Tier: 100 phút build build.general1.small / tháng (miễn phí trọn đời)\n' +
+        '• Đã sử dụng: ~5 phút (1 lượt build kiểm thử thành công)\n' +
+        '• Số phút build CD còn lại: ~95 phút (~19 lần deploy backend Modal)\n' +
+        '• Parameter Store (Token CD): Standard Tier (10.000 tham số miễn phí)\n' +
+        '• Chi phí AWS phát sinh: 0.00$'
     );
 }
 
@@ -99,6 +106,9 @@ function formatDeployInstructions() {
         '• Vào AWS CodeBuild Console: https://ap-southeast-2.console.aws.amazon.com/codesuite/codebuild/projects/tai-sinh-di-san-so-ai-modal-deploy/history?region=ap-southeast-2\n' +
         '• Bấm nút: [ Start build ]\n' +
         '• Hệ thống AWS CodeBuild sẽ tự động lấy Token CD bảo mật từ Parameter Store và deploy code mới lên Modal mà không lộ khóa ra ngoài!\n\n' +
+        '💳 Hạn mức AWS CodeBuild:\n' +
+        '• Còn ~95 / 100 phút build miễn phí tháng này (đủ chạy ~19 lần deploy).\n' +
+        '• Parameter Store Token CD: Miễn phí hoàn toàn (Standard Tier).\n\n' +
         '🔒 Lưu ý bảo mật: Bot chỉ là giao diện giám sát & thông báo, quyền bấm deploy cuối cùng thuộc về người vận hành trên AWS Console.'
     );
 }
