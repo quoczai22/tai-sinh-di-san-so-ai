@@ -204,14 +204,14 @@ async function tryHandleDesignCommand({
     if (/^(binh|danh sach( binh)?|chon binh|menu|test binh)$/.test(clean)) {
         const lines = VESSELS.map((v) => `${v.num}. ${v.name}`).join('\n');
         const msg = `🏺 Danh sách 6 bình gốm Bát Tràng:\n${lines}\n\n` +
-            '👉 Gõ "bình 1" .. "bình 6" (hoặc số 1..6): Nhận ngay 4 ảnh áo dài mẫu của bình đó.\n' +
-            '👉 Gõ "sinh 1" .. "sinh 6": Gọi GPU Modal T4 sinh mới 4 ảnh thật và tự động gửi vào Zalo khi xong!';
+            '👉 Gõ số "1" .. "6" (hoặc "bình 1" .. "bình 6"): Mở Sổ hoa văn xem dáng bình & ý nghĩa hoa văn.\n' +
+            '👉 Gõ "sinh 1" .. "sinh 6": Gọi GPU Modal T4 sinh mới 4 ảnh thiết kế áo dài và gửi vào Zalo khi xong!';
         await sendText(fetchWithTimeout, zaloBase, zaloToken, chatId, msg);
         return { ok: true, mode: 'vessel_list' };
     }
 
-    // 2. Xem nhanh 4 ảnh áo dài của bình: "binh 1", "ao 1", "1", "lr3d_61"
-    const pickMatch = clean.match(/^(?:binh|ao|xem binh|test)\s+([1-6]|lr3d_\d+|hv\d+)$/) ||
+    // 2. Xem chi tiết Sổ hoa văn của bình (KHÔNG gửi ảnh có sẵn): "1..6", "binh 1..6", "so 1..6"
+    const pickMatch = clean.match(/^(?:binh|so|chi tiet|xem binh|mo ta)\s+([1-6]|lr3d_\d+|hv\d+)$/) ||
         clean.match(/^([1-6]|lr3d_\d+)$/);
     if (pickMatch) {
         const vessel = findVessel(pickMatch[1]);
@@ -221,11 +221,9 @@ async function tryHandleDesignCommand({
             zaloBase,
             zaloToken,
             chatId,
-            `${formatBookBlock(vessel)}\n\nĐang gửi 4 thiết kế áo dài vào Zalo của bạn...`
+            `${formatBookBlock(vessel)}\n\n👉 Gõ "sinh ${vessel.num}" để tạo 4 thiết kế áo dài mới từ bình này trên GPU!`
         );
-        const urls = [1, 2, 3, 4].map((i) => `${PUBLIC_BASE}/assets/images/variants/${vessel.id}_V${i}_aodai.png`);
-        await sendFourDesigns(fetchWithTimeout, zaloBase, zaloToken, chatId, vessel, urls, 'Áo dài');
-        return { ok: true, mode: 'vessel_preview', heritageId: vessel.id };
+        return { ok: true, mode: 'vessel_detail', heritageId: vessel.id };
     }
 
     // 3. Sinh thật trên GPU Modal và tự động chờ gửi 4 ảnh khi xong: "sinh 1..6" hoặc "gpu 1..6"
