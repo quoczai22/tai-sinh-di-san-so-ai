@@ -17,6 +17,9 @@ on:
       - "tests/test_deploy_files.py"
       - "tests/manual/**"
       - "scripts/deploy/test_alert.js"
+      - "scripts/deploy/aws-modal-cd.yaml"
+      - "docs/CI_MODAL.md"
+      - ".github/workflows/modal-deploy.yml"
       - ".github/workflows/modal-backend.yml"
   push:
     branches: [main]
@@ -34,6 +37,9 @@ on:
       - "tests/test_deploy_files.py"
       - "tests/manual/**"
       - "scripts/deploy/test_alert.js"
+      - "scripts/deploy/aws-modal-cd.yaml"
+      - "docs/CI_MODAL.md"
+      - ".github/workflows/modal-deploy.yml"
       - ".github/workflows/modal-backend.yml"
   workflow_dispatch:
 
