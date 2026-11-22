@@ -1,6 +1,6 @@
 # Triển khai giao diện mới qua Vercel và Modal
 
-Ngày cập nhật: 21/11/2026. Tài liệu này mô tả nhánh deploy/live-gateway. Backend đã triển khai trên Modal workspace doandt0612; Vercel Preview đã kiểm chứng, production chưa thay đổi.
+Ngày cập nhật: 22/11/2026. Backend dùng Modal workspace doandt0612; các mốc kiểm thử ngày 21/11 ở dưới là lịch sử, không thay thế việc xác nhận trạng thái production hiện tại trên dashboard.
 
 ## Quyết định
 
