@@ -1,13 +1,64 @@
 const PUBLIC_BASE = 'https://tai-sinh-di-san-so-ai.vercel.app';
 
 const VESSELS = [
-    { num: 1, id: 'LR3D_33', code: 'HV07', name: 'Huy hiệu, mẫu đơn và dây sen' },
-    { num: 2, id: 'LR3D_61', code: 'HV08', name: 'Rồng và mây' },
-    { num: 3, id: 'LR3D_50', code: 'HV09', name: 'Dây hoa cuộn dày' },
-    { num: 4, id: 'LR3D_38', code: 'HV10', name: 'Cây hoa' },
-    { num: 5, id: 'LR3D_97', code: 'HV11', name: 'Nét lam thưa trên men kem' },
-    { num: 6, id: 'LR3D_124', code: 'HV12', name: 'Huy hiệu rồng' },
+    {
+        num: 1,
+        id: 'LR3D_33',
+        code: 'HV07',
+        name: 'Huy hiệu, mẫu đơn và dây sen',
+        form: 'Hũ thân phình, vai rộng, cổ ngắn, hai quai đầu thú',
+        motifText: 'Quanh vai là các ô vân như ý hình mây cụm chứa hoa lá, cùng dạng với hoa văn cổ áo mây trên vải vóc xưa. Thân bình phủ một băng mẫu đơn dây, loài hoa tượng trưng cho điềm may và vẻ đẹp nữ tính. Chân bình là hàng ô cánh sen, biểu tượng của sự thanh khiết trong Phật giáo.',
+    },
+    {
+        num: 2,
+        id: 'LR3D_61',
+        code: 'HV08',
+        name: 'Rồng và mây',
+        form: 'Hũ thân tròn, vai đầy, cổ thẳng ngắn',
+        motifText: 'Một con rồng thân dài phủ vảy uốn quanh bình giữa những dải mây xoắn. Rồng tượng trưng cho trời và hoàng đế, mây là điềm lành và hạnh phúc. Chân bình là hàng cánh sen dài, biểu tượng của sự thanh khiết trong Phật giáo.',
+    },
+    {
+        num: 3,
+        id: 'LR3D_50',
+        code: 'HV09',
+        name: 'Dây hoa cuộn dày',
+        form: 'Bình cổ cao, thân cầu, miệng hơi loe',
+        motifText: 'Dây hoa cuộn, chủ yếu là hoa sen, phủ kín cổ và thân bình; chân bình viền một hàng ô cánh sen nhỏ. Hoa sen gắn với Phật giáo, tượng trưng cho sự thanh khiết, đồng thời là biểu tượng của sự trường thọ và thanh nhã.',
+    },
+    {
+        num: 4,
+        id: 'LR3D_38',
+        code: 'HV10',
+        name: 'Cây hoa',
+        form: 'Bình trụ cao, thân thon dài, vai xuôi',
+        motifText: 'Những khóm cây hoa thân mảnh, hoa nhỏ kết chùm, vươn thẳng từ chân lên vai bình trên nền men xanh nhạt.',
+    },
+    {
+        num: 5,
+        id: 'LR3D_97',
+        code: 'HV11',
+        name: 'Nét lam thưa trên men kem',
+        form: 'Bình dáng tỳ bà (ngọc hồ xuân): thân hình quả lê, cổ thắt, miệng loe',
+        motifText: 'Dưới miệng bình là băng lá chuối, cổ vẽ mây xoắn, thân chia ô vẽ hoa lá cách điệu, chân là hàng cánh sen. Mây là điềm lành, sen tượng trưng cho sự thanh khiết. Cách chia băng này gần với những bình hoa lam Việt Nam thế kỷ 15.',
+    },
+    {
+        num: 6,
+        id: 'LR3D_124',
+        code: 'HV12',
+        name: 'Huy hiệu rồng',
+        form: 'Bình vuông bốn mặt, cổ thẳng ngắn',
+        motifText: 'Vai bình viền một băng vân như ý; giữa thân là ô tròn có con rồng cuộn mình, biểu tượng của trời và hoàng đế; chân bình là băng lá chuối.',
+    },
 ];
+
+function formatBookBlock(vessel) {
+    return (
+        `📖 Sổ hoa văn — Bình #${vessel.num}: ${vessel.name}\n` +
+        `• Dáng bình: ${vessel.form}\n` +
+        `• Hoa văn & ý nghĩa: ${vessel.motifText}\n` +
+        '• Nguồn ảnh: Bộ dữ liệu LR3D-CULT2 (Nguyen và cộng sự, FPT University), Mendeley Data (DOI 10.17632/jr23fnrvx2.1) · Giấy phép CC BY 4.0.'
+    );
+}
 
 const lastJobByChat = new Map();
 
@@ -170,7 +221,7 @@ async function tryHandleDesignCommand({
             zaloBase,
             zaloToken,
             chatId,
-            `🏺 Bình #${vessel.num}: ${vessel.name}\nĐang gửi 4 thiết kế áo dài vào Zalo của bạn...`
+            `${formatBookBlock(vessel)}\n\nĐang gửi 4 thiết kế áo dài vào Zalo của bạn...`
         );
         const urls = [1, 2, 3, 4].map((i) => `${PUBLIC_BASE}/assets/images/variants/${vessel.id}_V${i}_aodai.png`);
         await sendFourDesigns(fetchWithTimeout, zaloBase, zaloToken, chatId, vessel, urls, 'Áo dài');
@@ -214,7 +265,8 @@ async function tryHandleDesignCommand({
                 zaloBase,
                 zaloToken,
                 chatId,
-                `🎨 Đang sinh 4 thiết kế mới trên GPU T4 cho Bình #${vessel.num}: ${vessel.name}.\n` +
+                `${formatBookBlock(vessel)}\n\n` +
+                '🎨 Đang sinh 4 thiết kế mới trên GPU T4.\n' +
                 '⏳ Bot sẽ tự động gửi 4 ảnh PNG vừa sinh vào đây ngay khi GPU chạy xong (khoảng 60–90 giây)!'
             );
             return await pollAndSendWhenDone({
@@ -258,7 +310,7 @@ async function tryHandleDesignCommand({
                         zaloBase,
                         zaloToken,
                         chatId,
-                        `✅ Đang gửi 4 ảnh mới nhất từ GPU Modal cho Bình #${vessel.num}: ${vessel.name}...`
+                        `${formatBookBlock(vessel)}\n\n✅ Đang gửi 4 ảnh mới nhất từ GPU Modal...`
                     );
                     const urls = [1, 2, 3, 4].map((i) => `${PUBLIC_BASE}/api/live/media/run/${latestRunId}/V${i}_aodai.png`);
                     await sendFourDesigns(fetchWithTimeout, zaloBase, zaloToken, chatId, vessel, urls, 'Ảnh mới sinh từ GPU');
@@ -273,4 +325,4 @@ async function tryHandleDesignCommand({
     return null;
 }
 
-module.exports = { tryHandleDesignCommand, VESSELS };
+module.exports = { tryHandleDesignCommand, VESSELS, formatBookBlock };
