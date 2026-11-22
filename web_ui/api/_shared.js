@@ -462,6 +462,8 @@ module.exports = {
     notifyAlert,
     alertModalIssue,
     handleZaloBotWebhook,
+    recommendedAction,
+    callChatModel,
     upstreamErrorType,
     httpFailureType,
     _resetAlertCooldown,
