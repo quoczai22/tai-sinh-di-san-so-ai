@@ -210,12 +210,21 @@ async function tryHandleDesignCommand({
         return { ok: true, mode: 'vessel_list' };
     }
 
-    // 2. Xem chi tiết Sổ hoa văn của bình (KHÔNG gửi ảnh có sẵn): "1..6", "binh 1..6", "so 1..6"
+    // 2. Xem chi tiết Sổ hoa văn + ảnh chiếc bình gốm (KHÔNG gửi ảnh áo dài mẫu): "1..6", "binh 1..6", "so 1..6"
     const pickMatch = clean.match(/^(?:binh|so|chi tiet|xem binh|mo ta)\s+([1-6]|lr3d_\d+|hv\d+)$/) ||
         clean.match(/^([1-6]|lr3d_\d+)$/);
     if (pickMatch) {
         const vessel = findVessel(pickMatch[1]);
         if (!vessel) return null;
+        const vasePhotoUrl = `${PUBLIC_BASE}/assets/images/heritage/${vessel.id}.png`;
+        await sendPhoto(
+            fetchWithTimeout,
+            zaloBase,
+            zaloToken,
+            chatId,
+            vasePhotoUrl,
+            `🏺 Bình #${vessel.num}: ${vessel.name} (${vessel.form})`
+        );
         await sendText(
             fetchWithTimeout,
             zaloBase,
