@@ -1,4 +1,8 @@
 // Gửi một tin thử tới Discord webhook do người vận hành đặt trong biến môi trường.
+const fs = require('node:fs');
+const path = require('node:path');
+const envFile = path.resolve(__dirname, '../../.env.local');
+if (fs.existsSync(envFile)) process.loadEnvFile(envFile);
 const webhook = (process.env.ALERT_DISCORD_WEBHOOK_URL || '').trim();
 if (!webhook) {
     console.error('Thiếu ALERT_DISCORD_WEBHOOK_URL.');

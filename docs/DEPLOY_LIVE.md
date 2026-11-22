@@ -56,7 +56,7 @@ Nhóm tự cấu hình theo thứ tự:
 
 1. Trong Discord, mở **Edit Channel → Integrations → Webhooks → New Webhook** và sao chép URL trong kênh riêng của nhóm. Không gửi URL vào chat hay commit.
 2. Trong Vercel project `tai-sinh-di-san-so-ai`, đặt biến production `ALERT_DISCORD_WEBHOOK_URL` và `ALERT_COOLDOWN_MIN` bằng `30`, sau đó **Redeploy** để biến mới có hiệu lực.
-3. Trên máy của người vận hành, đặt `ALERT_DISCORD_WEBHOOK_URL` trong môi trường terminal rồi chạy `node scripts/deploy/test_alert.js` đúng một lần. Script chỉ in trạng thái gửi hoặc mã HTTP, không in URL.
+3. Trên máy của người vận hành, điền URL vào `ALERT_DISCORD_WEBHOOK_URL` trong `.env.local` ở gốc repo (tệp này đã được Git bỏ qua), rồi chạy `node scripts/deploy/test_alert.js` đúng một lần. Script tự đọc tệp và chỉ in trạng thái gửi hoặc mã HTTP, không in URL.
 4. Trong UptimeRobot, chọn **Add New Monitor → HTTP(s)**, URL `https://tai-sinh-di-san-so-ai.vercel.app/health`, chu kỳ 5 phút và email cho 2–3 thành viên. Không tạo monitor trỏ vào Modal, `/api/warmup` hoặc endpoint sinh ảnh.
 5. Trên bản Vercel **Preview**, tạm bỏ `MODAL_URL`, redeploy Preview và bấm Tạo. Xác nhận Discord nhận tin và giao diện hiện nhãn bản demo. Khôi phục `MODAL_URL` rồi redeploy Preview. Không thử bằng cách xóa biến production.
 
