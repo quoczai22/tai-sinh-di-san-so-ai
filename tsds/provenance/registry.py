@@ -40,6 +40,15 @@ ACTIONS = {
 }
 
 # Trường BTC yêu cầu (Đề cải tiến, mục 3) — nhãn tiếng Việt để hiển thị
+# Ràng buộc cấp hệ thống: trọng số LoRA áo dài huấn luyện từ ảnh VietFashion
+# (giấy phép CC BY-NC 4.0, chỉ phi thương mại). LoRA có mặt trong MỌI thiết kế
+# nên dù ảnh hiện vật cho phép thương mại, cả thiết kế vẫn bị chặn thương mại.
+# Đặt None nếu sau này thay LoRA bằng bản huấn luyện từ dữ liệu cho phép thương mại.
+SYSTEM_NONCOMMERCIAL_REASON: str | None = (
+    "Trọng số LoRA áo dài được huấn luyện từ ảnh VietFashion (CC BY-NC 4.0, chỉ phi thương mại), "
+    "nên thiết kế của hệ thống này không được dùng thương mại."
+)
+
 REQUIRED_PROVENANCE = {
     "name": "Tên hiện vật",
     "source_title": "Nguồn hiện vật",
@@ -135,8 +144,10 @@ def rights_gate(item: dict, action: str, root: Path = ROOT) -> GateResult:
         if status in cfg["publishable_statuses"]:
             return GateResult(True, "ok", "Đủ điều kiện xuất bản kèm ghi công.")
         return GateResult(False, "block", f"Không xuất bản công khai khi quyền ở trạng thái '{RIGHTS_STATUS.get(status, status)}'.")
-    # commercial_use
-    scope = (prov.get("permission") or {}).get("scope", "")
+    # commercial_use: ràng buộc cấp hệ thống (LoRA phi thương mại) chặn trước mọi xét giấy phép ảnh
+    if SYSTEM_NONCOMMERCIAL_REASON:
+        return GateResult(False, "block", SYSTEM_NONCOMMERCIAL_REASON)
+    scope =(prov.get("permission") or {}).get("scope", "")
     # Phạm vi cấp phép là danh sách mục đích ("display, publish, commercial_use"...).
     # So theo từ nguyên vẹn: "non-commercial" KHÔNG được hiểu là cho phép thương mại.
     tokens = {t for t in re.split(r"[,;\s]+", (" ".join(scope) if isinstance(scope, list) else str(scope)).lower()) if t}

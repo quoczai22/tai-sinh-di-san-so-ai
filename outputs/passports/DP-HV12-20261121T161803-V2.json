@@ -743,9 +743,9 @@
       "reason": "Đủ điều kiện xuất bản kèm ghi công."
     },
     "commercial_use": {
-      "allowed": true,
-      "level": "warn",
-      "reason": "Giấy phép mở cho phép thương mại — phải giữ điều kiện ghi công/chia sẻ tương tự."
+      "allowed": false,
+      "level": "block",
+      "reason": "Trọng số LoRA áo dài được huấn luyện từ ảnh VietFashion (CC BY-NC 4.0, chỉ phi thương mại), nên thiết kế của hệ thống này không được dùng thương mại."
     }
   }
 }

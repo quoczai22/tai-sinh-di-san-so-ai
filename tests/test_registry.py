@@ -8,6 +8,9 @@ import pytest
 
 from tsds.provenance import registry as R
 
+# Giá trị mặc định của ràng buộc LoRA phi thương mại, lấy trước khi fixture tắt nó
+_MAC_DINH_RANG_BUOC = R.SYSTEM_NONCOMMERCIAL_REASON
+
 
 def _item(status="unverified", item_status="active", **prov):
     it = copy.deepcopy(R.get_item("LR3D_33"))
@@ -53,6 +56,30 @@ def test_rights_gate_matrix(status, action, allowed, level):
     g = R.rights_gate(_item(status), action)
     assert (g.allowed, g.level) == (allowed, level)
     assert g.reason
+
+
+@pytest.fixture(autouse=True)
+def _bo_rang_buoc_he_thong(monkeypatch):
+    """Các test giấy phép từng hiện vật chạy khi chưa có ràng buộc LoRA phi thương mại.
+    Ràng buộc cấp hệ thống được test riêng ở test_system_noncommercial_*."""
+    monkeypatch.setattr(R, "SYSTEM_NONCOMMERCIAL_REASON", None)
+
+
+def test_system_noncommercial_blocks_commercial_for_every_status(monkeypatch):
+    # LoRA phi thương mại có mặt trong mọi thiết kế → chặn thương mại dù ảnh nguồn cho phép
+    monkeypatch.setattr(R, "SYSTEM_NONCOMMERCIAL_REASON", _MAC_DINH_RANG_BUOC)
+    for it in (_item("public_domain"), _item("own_work"), _item("open_license", license="CC BY 4.0"),
+               _item("permission_granted", permission={"scope": "commercial_use"})):
+        g = R.rights_gate(it, "commercial_use")
+        assert (g.allowed, g.level) == (False, "block")
+        assert "LoRA" in g.reason and "CC BY-NC" in g.reason
+    # Các mục đích phi thương mại không bị ảnh hưởng
+    assert R.rights_gate(_item("open_license"), "publish_public").allowed
+    assert R.rights_gate(_item("open_license"), "demo_display").allowed
+
+
+def test_system_noncommercial_is_on_by_default():
+    assert _MAC_DINH_RANG_BUOC and "CC BY-NC" in _MAC_DINH_RANG_BUOC
 
 
 def test_rights_gate_open_license_noncommercial_blocks_commercial():
