@@ -14,7 +14,7 @@ from PIL import Image
 from generation import garment
 
 from . import gate as QG
-from .repair import pattern_lock
+from core.pattern_lock import pattern_lock
 
 
 def _arr(path: Path) -> np.ndarray:

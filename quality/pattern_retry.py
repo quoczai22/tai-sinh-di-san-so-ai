@@ -28,8 +28,7 @@ from pathlib import Path
 
 from PIL import Image
 
-ROOT = Path(__file__).resolve().parent.parent
-QC_DIR = ROOT / "outputs" / "qc"
+from core.paths import QC_DIR, ROOT
 REJECT_COLUMNS = ["timestamp", "tag", "attempt", "seed", "failed_metrics", "values", "thresholds", "reason",
                   "next_action", "image"]
 

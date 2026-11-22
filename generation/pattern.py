@@ -22,8 +22,8 @@ for _s in (sys.stdout, sys.stderr):
         except (AttributeError, ValueError):
             pass
 
-ROOT = Path(__file__).resolve().parent.parent
-TERMS_FILE = ROOT / "data" / "prompt_terms.json"
+from core.paths import DATA_DIR, ROOT
+TERMS_FILE = DATA_DIR / "prompt_terms.json"
 
 # v6 mục 5.3 — 4 mức Creative Intensity
 INTENSITY = {

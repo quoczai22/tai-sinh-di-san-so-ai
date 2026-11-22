@@ -20,6 +20,8 @@ import numpy as np
 from PIL import Image
 from skimage.color import rgb2lab
 
+from core.align import align_to  # noqa: F401  (giữ tên metrics.align_to cho nơi gọi cũ)
+
 
 def to_rgb_array(img: Image.Image | np.ndarray) -> np.ndarray:
     if isinstance(img, np.ndarray):
@@ -42,31 +44,6 @@ def _dog(lum: np.ndarray, s1: float = 1.2, s2: float = 4.0) -> np.ndarray:
     """Dải tần trung (Difference of Gaussians): giữ NÉT VẼ họa tiết, bỏ bóng
     nếp vải (tần thấp) và nhiễu hạt (tần rất cao)."""
     return cv2.GaussianBlur(lum, (0, 0), s1) - cv2.GaussianBlur(lum, (0, 0), s2)
-
-
-def align_to(reference: np.ndarray, moving: np.ndarray) -> tuple[np.ndarray, dict]:
-    """Căn `moving` về khung của `reference` bằng ECC affine.
-
-    Tách hai loại sai khác: LỆCH HÌNH HỌC (img2img dịch/co áo) và ĐỔI HỌA TIẾT.
-    Nếu không căn trước, một lệch 2 px cũng làm tụt tương quan nét vẽ và ta sẽ
-    quy nhầm là "mất họa tiết".
-    """
-    a = cv2.GaussianBlur(cv2.cvtColor(reference, cv2.COLOR_RGB2GRAY), (0, 0), 2).astype(np.float32)
-    b = cv2.GaussianBlur(cv2.cvtColor(moving, cv2.COLOR_RGB2GRAY), (0, 0), 2).astype(np.float32)
-    warp = np.eye(2, 3, dtype=np.float32)
-    try:
-        cc, warp = cv2.findTransformECC(
-            a, b, warp, cv2.MOTION_AFFINE,
-            (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 200, 1e-5), None, 5)
-    except cv2.error:
-        cc = float("nan")
-    aligned = cv2.warpAffine(moving, warp, (moving.shape[1], moving.shape[0]),
-                             flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP,
-                             borderMode=cv2.BORDER_REFLECT)
-    info = {"ecc": round(float(cc), 4),
-            "scale": round(float(np.sqrt(abs(np.linalg.det(warp[:, :2])))), 4),
-            "shift_px": round(float(np.hypot(warp[0, 2], warp[1, 2])), 2)}
-    return aligned, info
 
 
 def pattern_region(raw: np.ndarray, template: np.ndarray, layout_mask: np.ndarray,

@@ -14,8 +14,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_LORA = ROOT / "data" / "lora" / "aodai_r16_512"
+from core.paths import LORA_DIR, ROOT
+DEFAULT_LORA = LORA_DIR / "aodai_r16_512"
 SIZE = (512, 688)                     # rộng x cao, khớp độ phân giải lúc huấn luyện LoRA
 NEG_EXTRA = ", orange, red, colored trim, patterned, belt, sash, waistband, bow, tie, hands on hips, arms crossed, hands in pockets"   # LoRA hay thêm viền màu, dây buộc ở eo và tay chống hông; áo dài trắng trơn không có
 # Một áo hợp lệ: không chạm mép khung, đủ lớn, đủ cao (thấy từ ngực xuống gấu)

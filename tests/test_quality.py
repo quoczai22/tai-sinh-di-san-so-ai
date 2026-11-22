@@ -12,7 +12,7 @@ import pytest
 
 from quality import gate as QG
 from quality import metrics as M
-from quality.repair import pattern_lock
+from core.pattern_lock import pattern_lock
 
 ROOT = Path(__file__).resolve().parent.parent
 CFG = QG.load_config()
@@ -151,7 +151,7 @@ def test_detail_ratio_vung_qua_nho_tra_nan():
 
 
 def test_khoa_hoa_tiet_mac_dinh_khoi_phuc_net_manh():
-    from quality.repair import pattern_lock
+    from core.pattern_lock import pattern_lock
     raw = _anh_net_manh()
     polish = cv2.GaussianBlur(raw, (0, 0), 1.5)         # polish giả làm nhòe nét mảnh
     mask = np.ones(raw.shape[:2], np.float32)

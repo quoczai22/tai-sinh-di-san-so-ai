@@ -26,7 +26,8 @@ sys.path.insert(0, str(ROOT))
 import torch                                                       # noqa: E402
 
 from evaluation import intensity_sweep                              # noqa: E402
-from generation import controlnet, garment, garment_lora, layout_select, pattern, streamlit_runner  # noqa: E402
+from generation import controlnet, garment, garment_lora, layout_select, pattern  # noqa: E402
+from pipeline import run as pipeline_run                       # noqa: E402
 from generation.stable_diffusion import Generator                   # noqa: E402
 from provenance import builder, passport                            # noqa: E402
 from quality import assess, pattern_retry, retry                                   # noqa: E402
@@ -99,7 +100,7 @@ def main() -> int:
     base = ROOT / "outputs" / "_profile_tmp"
     base.mkdir(parents=True, exist_ok=True)
     tmp = Path(tempfile.mkdtemp(prefix="profile_gen_", dir=base))
-    streamlit_runner.PASSPORT_DIR = tmp / "passports"             # Passport và nhật ký ghi vào thư mục tạm
+    pipeline_run.PASSPORT_DIR = tmp / "passports"             # Passport và nhật ký ghi vào thư mục tạm
     retry.QC_DIR = tmp / "qc"
     pattern_retry.QC_DIR = tmp / "qc"
     for label, obj, name, _ in STEPS:
@@ -110,7 +111,7 @@ def main() -> int:
         for run in range(1, args.runs + 1):
             TIMES.clear()
             t0 = time.perf_counter()
-            results = streamlit_runner.generate_design_set(
+            results = pipeline_run.generate_design_set(
                 args.heritage_id, lambda p, label: print(f"  [{time.perf_counter() - t0:6.1f}s] {p}% {label}", flush=True),
                 output_dir=tmp / "runs")
             total = time.perf_counter() - t0

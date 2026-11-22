@@ -23,7 +23,7 @@ os.environ["DH_API_KEY"] = "test_key"
 os.environ["DH_OUTPUT_DIR"] = tempfile.mkdtemp(prefix="dh_out_")
 
 # Thay module pipeline thật bằng bản luôn ném lỗi.
-fake = types.ModuleType("generation.streamlit_runner")
+fake = types.ModuleType("pipeline.run")
 
 
 def _boom(*_args, **_kwargs):
@@ -32,7 +32,7 @@ def _boom(*_args, **_kwargs):
 
 fake.generate_design_set = _boom
 fake.SEED = 42  # api/main.py (bản chung kết) import SEED cùng generate_design_set
-sys.modules["generation.streamlit_runner"] = fake
+sys.modules["pipeline.run"] = fake
 
 from api import main as api  # noqa: E402
 from api.main import GenerateRequest  # noqa: E402

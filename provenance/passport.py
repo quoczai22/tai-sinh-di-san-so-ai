@@ -20,7 +20,7 @@ from pathlib import Path
 from .hashing import sha256_file, sha256_json
 
 SCHEMA = "design-passport/1.0"
-ROOT = Path(__file__).resolve().parent.parent
+from core.paths import ROOT
 ACTOR_TYPES = {"ai": "AI hỗ trợ", "system": "Hệ thống (tất định)", "human": "Con người"}
 APPROVAL_STATES = {
     "draft": "Đang tạo",

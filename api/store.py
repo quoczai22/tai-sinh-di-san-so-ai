@@ -15,11 +15,7 @@ from pathlib import Path
 
 from provenance import passport as P
 
-ROOT = Path(__file__).resolve().parent.parent
-PASSPORTS = ROOT / "outputs" / "passports"
-RUNS = ROOT / "outputs" / "runs"
-EDITS = ROOT / "outputs" / "edits"
-EXPERIMENTS = ROOT / "outputs" / "experiments"
+from core.paths import EDITS_DIR as EDITS, EXPERIMENTS_DIR as EXPERIMENTS, PASSPORTS_DIR as PASSPORTS, ROOT, RUNS_DIR as RUNS
 PASSPORT_ID = re.compile(r"^DP-[A-Z0-9]{2,8}-[0-9T]{8,15}-V[0-9]{1,2}$")
 RUN_ID = re.compile(r"^R[0-9]{8}T[0-9]{6}-[A-Z0-9]{2,8}$")
 FILE_NAME = re.compile(r"^[A-Za-z0-9_.-]{1,80}\.png$")

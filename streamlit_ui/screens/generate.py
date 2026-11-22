@@ -1,4 +1,4 @@
-"""Màn hình duy nhất: chọn hiện vật → bấm Tạo (chạy pipeline thật qua generation/streamlit_runner.py) → xem 4 thiết kế.
+"""Màn hình duy nhất: chọn hiện vật → bấm Tạo (chạy pipeline thật qua pipeline/run.py) → xem 4 thiết kế.
 
 Chưa bấm Tạo cho hiện vật đang chọn thì hiện bộ ảnh đã sinh trước đó trên ổ đĩa (nếu có), không giả lập.
 """
@@ -8,7 +8,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from generation.streamlit_runner import generate_design_set
+from pipeline.run import generate_design_set
 
 from ..components.heritage_picker import heritage_panel, heritage_select
 from ..components.variant_results import variant_results

@@ -24,9 +24,9 @@ from PIL import Image
 from generation import controlnet as cn, element_library, garment, layout_select, palette, pattern
 from generation.stable_diffusion import Generator
 
-ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = ROOT / "outputs" / "runs"
-PASSPORT_DIR = ROOT / "outputs" / "passports"
+from core.paths import PASSPORTS_DIR, ROOT, RUNS_DIR
+OUT_DIR = RUNS_DIR
+PASSPORT_DIR = PASSPORTS_DIR
 SEED = 42
 POLISH_STRENGTH = 0.40
 # 4 biến thể không khóa bố cục: CLIP xếp hạng các bố cục rồi mỗi biến thể lấy bố cục chưa dùng, nên 4 thiết kế của một

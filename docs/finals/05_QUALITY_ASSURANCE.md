@@ -57,7 +57,7 @@ Quyết định của một cổng là mức tệ nhất trong các phép đo c�
 Bước hoàn thiện (`generation/garment.py::polish_locked`) gồm ba việc nối tiếp:
 
 1. **Polish chỉ vùng áo** (Stable Diffusion 1.5 img2img, độ nhiễu 0,20): ảnh polish chỉ được dùng trong mặt nạ áo; ngoài áo giữ nguyên từng pixel của bản ghép (trôi ngoài áo bằng 0). Mặc định cũ là polish toàn ảnh độ nhiễu 0,40; EXP-B cho thấy cách này làm PPS tụt còn 0,30 và làm lệch dáng áo (IoU 0,956 so với 0,993 ở polish chỉ vùng áo), vì nền và tay cũng bị vẽ lại.
-2. **Khoá họa tiết** (`quality/repair.py`, `pattern_lock_v1`): giữ phần tần thấp của ảnh polish (bóng nếp vải, ánh sáng) và trả lại nét vẽ và màu của họa tiết từ bản ghép, chỉ trong vùng họa tiết (mặt nạ làm mềm 3 px). Kênh sáng trả lại mọi tần số mịn hơn σ = 4 px của bản ghép (`dog_sigma_low` = 0,3, `dog_sigma_high` = 4,0); kênh màu kéo về bản ghép với trọng số 0,85. Sau cùng ép phần ngoài áo về đúng bản ghép.
+2. **Khoá họa tiết** (`core/pattern_lock.py`, `pattern_lock_v1`): giữ phần tần thấp của ảnh polish (bóng nếp vải, ánh sáng) và trả lại nét vẽ và màu của họa tiết từ bản ghép, chỉ trong vùng họa tiết (mặt nạ làm mềm 3 px). Kênh sáng trả lại mọi tần số mịn hơn σ = 4 px của bản ghép (`dog_sigma_low` = 0,3, `dog_sigma_high` = 4,0); kênh màu kéo về bản ghép với trọng số 0,85. Sau cùng ép phần ngoài áo về đúng bản ghép.
 3. **Vòng thử lại** (`quality/retry.py`): đo cổng G3 trên ảnh vừa hoàn thiện. Nếu **PPS dưới 0,40 hoặc IoU dưới 0,92** (hai chỉ số ở mức lỗi) thì thử lại theo thứ tự: seed gốc, rồi 3 seed kế tiếp cùng độ nhiễu 0,20, rồi hạ độ nhiễu xuống 0,12 một lần; vẫn lỗi thì **trả bản ghép thô** kèm nhãn "chưa qua bước hoàn thiện". Tối đa 5 lần polish. Mọi lần bị loại ghi vào `outputs/qc/rejects.csv` kèm ảnh. Các chỉ số khác (độ nét, chi tiết mịn, lệch màu) chỉ cảnh báo, không kích hoạt thử lại.
 
 Căn cứ chọn cấu hình là `evaluation/polish_finish_trial.csv` (xem [06](06_EXPERIMENTS.md)): trên 12 thiết kế, khoá họa tiết cũ (`dog_sigma_low` 1,2) cho PPS cao (0,91) nhưng chi tiết mịn thấp (0,61); `dog_sigma_low` 0,3 giữ chi tiết mịn 0,83 và không thiết kế nào bị loại.
@@ -66,7 +66,7 @@ Căn cứ chọn cấu hình là `evaluation/polish_finish_trial.csv` (xem [06](
 
 ## Sinh lại hoa văn khi G2 lỗi
 
-Vòng này (`quality/pattern_retry.py`, gọi từ `generation/streamlit_runner.py`) đo G2 ngay sau khi sinh hoa văn, trước khi ghép lên áo, để không phí công polish và cổng G3 cho một hoa văn chắc chắn bị loại.
+Vòng này (`quality/pattern_retry.py`, gọi từ `pipeline/run.py`) đo G2 ngay sau khi sinh hoa văn, trước khi ghép lên áo, để không phí công polish và cổng G3 cho một hoa văn chắc chắn bị loại.
 
 1. Sinh hoa văn với seed gốc rồi đo G2 (trên đúng ảnh sẽ dùng, sau khi khớp bảng màu).
 2. Chỉ **LỖI** mới kích hoạt: VLS từ 0,40 hoặc đường nối từ 2,0. Cảnh báo (WARN) dùng luôn, giống vòng polish.

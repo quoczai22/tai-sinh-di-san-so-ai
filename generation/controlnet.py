@@ -20,8 +20,7 @@ for _s in (sys.stdout, sys.stderr):
         except (AttributeError, ValueError):
             pass
 
-ROOT = Path(__file__).resolve().parent.parent
-HERITAGE_DIR = ROOT / "data" / "heritage"
+from core.paths import HERITAGE_DIR, ROOT
 
 RESOLUTION = 512          # native SD1.5, an toàn với 8GB VRAM
 CANNY_LOW = 100

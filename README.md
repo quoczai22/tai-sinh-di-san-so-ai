@@ -69,11 +69,13 @@ Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang ch
 
 ```text
 .
-├── api/                  FastAPI: hiện vật, sinh thiết kế, Passport, QC, thẩm định, chỉnh sửa, xuất bản, thí nghiệm
-├── generation/           Pipeline hai giai đoạn (controlnet, pattern, palette, layout_select, garment, garment_lora, garment_sam, streamlit_runner)
-├── quality/              Cổng G2/G3, phép đo, khoá họa tiết
-├── provenance/           Danh mục nguồn, cổng quyền, Design Passport, băm, nhãn AI
+├── core/                 Tầng thấp nhất, không import gói nào khác: paths.py (mọi đường dẫn), align.py, pattern_lock.py (khoá họa tiết)
+├── generation/           Sinh ảnh hai giai đoạn (controlnet, pattern, palette, layout_select, garment, garment_lora, garment_sam); chỉ phụ thuộc core
+├── quality/              Cổng G2/G3, phép đo, thử lại (phụ thuộc core, generation)
+├── provenance/           Danh mục nguồn, cổng quyền, Design Passport, băm, nhãn AI (phụ thuộc core, generation, quality)
 ├── evaluation/           Thí nghiệm có kiểm soát (experiment.py, experiments/), thử cách hoàn thiện ảnh (polish_finish_trial)
+├── pipeline/             run.py: điều phối end-to-end một lần sinh (generate_design_set), nối generation, quality, provenance
+├── api/                  FastAPI: hiện vật, sinh thiết kế, Passport, QC, thẩm định, chỉnh sửa, xuất bản, thí nghiệm
 ├── config/               Ngưỡng cổng QG-1.0, tiêu chí tuyển ảnh, bộ tiêu chí chuyên gia (có phiên bản)
 ├── data/
 │   ├── heritage/         Ảnh hiện vật, metadata.json (schema 2.0), sources/ (ứng viên ảnh CC0 thay thế)
@@ -108,6 +110,10 @@ Mở `http://127.0.0.1:5500`. Giao diện cho người xem có 3 trang: Trang ch
 ├── requirements.txt · requirements-dev.txt · pytest.ini · vercel.json
 └── README.md
 ```
+
+**Phân tầng import** (tầng dưới không được import ngược lên tầng trên; `tests/test_layering.py` kiểm tra tự động, kể cả import đặt trong hàm):
+`core` < `generation` < `quality` < `provenance` < `evaluation` < `pipeline` < `api`, `streamlit_ui`.
+Thêm gói Python mới mà API dùng thì phải thêm vào `Dockerfile` và `COPY_DIRS` của `scripts/deploy/build_hf_space.py` (`tests/test_deploy_files.py` kiểm tra).
 
 ## 5. Cài đặt và chạy
 

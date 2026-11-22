@@ -22,7 +22,7 @@ sys.path.insert(0, str(ROOT))
 
 from generation import garment                                      # noqa: E402
 from quality import gate as QG                                      # noqa: E402
-from quality.repair import PARAMS, pattern_lock                     # noqa: E402
+from core.pattern_lock import PARAMS, pattern_lock                     # noqa: E402
 
 OUT = ROOT / "evaluation" / "polish_finish_trial.csv"
 STRENGTHS = (0.30, 0.20)

@@ -51,6 +51,8 @@ snapshot_download('facebook/sam-vit-base', allow_patterns=['*.json', '*.txt', '*
 " && chmod -R 777 "${HF_HOME}"
 
 COPY api/ /app/api/
+COPY core/ /app/core/
+COPY pipeline/ /app/pipeline/
 COPY generation/ /app/generation/
 COPY evaluation/ /app/evaluation/
 COPY provenance/ /app/provenance/

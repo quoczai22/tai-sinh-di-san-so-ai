@@ -20,7 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from generation.streamlit_runner import SEED, generate_design_set  # noqa: E402
+from pipeline.run import SEED, generate_design_set  # noqa: E402
 from provenance.registry import all_items                          # noqa: E402
 
 

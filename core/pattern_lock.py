@@ -21,7 +21,7 @@ import cv2
 import numpy as np
 from skimage.color import lab2rgb, rgb2lab
 
-from .metrics import align_to
+from .align import align_to
 
 METHOD = "pattern_lock_v1"
 # dog_sigma_low 0,3 (trước là 1,2): khôi phục cả nét mảnh dưới 1,2 px. Thử trên 12 thiết kế: chi tiết mịn so với bản thô

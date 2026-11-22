@@ -375,7 +375,7 @@ def run(spec: dict, rows: list[dict], out_dir: Path, keep: list[dict] | None = N
     from generation.stable_diffusion import Generator            # noqa: PLC0415
     from provenance.hashing import sha256_file                   # noqa: PLC0415
     from quality.assess import assess_design                     # noqa: PLC0415
-    from quality.repair import pattern_lock                      # noqa: PLC0415
+    from core.pattern_lock import pattern_lock
 
     img_dir = out_dir / "images"
     img_dir.mkdir(parents=True, exist_ok=True)

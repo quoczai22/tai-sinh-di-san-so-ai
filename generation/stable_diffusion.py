@@ -20,7 +20,7 @@ for _s in (sys.stdout, sys.stderr):
         except (AttributeError, ValueError):
             pass
 
-ROOT = Path(__file__).resolve().parent.parent
+from core.paths import ROOT
 DEFAULT_SD15_MODEL_ID = "stable-diffusion-v1-5/stable-diffusion-v1-5"
 DEFAULT_CONTROLNET_CANNY_ID = "lllyasviel/control_v11p_sd15_canny"
 

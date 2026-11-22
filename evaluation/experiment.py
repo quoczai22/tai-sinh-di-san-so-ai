@@ -241,7 +241,7 @@ def run_gpu(spec: dict, rows: list[dict], out_dir: Path) -> list[dict]:  # pragm
     from generation.stable_diffusion import Generator             # noqa: PLC0415
     from provenance.hashing import sha256_file                     # noqa: PLC0415
     from quality.assess import assess_design                       # noqa: PLC0415
-    from quality.repair import pattern_lock                         # noqa: PLC0415
+    from core.pattern_lock import pattern_lock
     import numpy as np                                             # noqa: PLC0415
 
     img_dir = out_dir / "images"

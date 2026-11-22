@@ -3,7 +3,7 @@
 
 Cùng một hàm cho hai nguồn:
   · lần chạy cũ (evaluation/variants.csv) — scripts/10_build_legacy_runs.py
-  · lần chạy mới qua API/Streamlit — generation/streamlit_runner.py
+  · lần chạy mới qua API/Streamlit — pipeline/run.py
 Nhờ vậy Passport của luồng sản phẩm có ĐỦ trường như luồng đánh giá (sửa điểm
 lệch #2 của bản rà soát: "luồng API không ghi seed, prompt, model, mã băm").
 """
@@ -15,7 +15,7 @@ from pathlib import Path
 from . import passport as P
 from .registry import rights_gate
 
-ROOT = Path(__file__).resolve().parent.parent
+from core.paths import ROOT
 LORA_LICENSE = "VietFashion CC BY-NC 4.0: chỉ dùng phi thương mại"
 LORA_CITATION = ("Cao, Bui, Vo, Tran, Le. VietFashion: Benchmarking Sketch-Text Composed Image Retrieval for "
                  "Cultural Outfits. ICMR 2026. doi:10.1145/3805622.3810590")
@@ -108,7 +108,7 @@ def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict,
     pp["generation"]["pattern_retry"] = {"status": rec.get("pattern_status", "single_pass"),
                                          "attempts": rec.get("pattern_attempt_log") or []}
     if rec.get("polish_lock"):
-        from quality import repair as _repair                        # noqa: PLC0415
+        from core import pattern_lock as _repair
         pp["generation"]["polish_img2img"]["pattern_lock"] = {"method": _repair.METHOD, "params": _repair.PARAMS}
     prov = item.get("provenance") or {}
     ts = rec["timestamp"]
@@ -155,7 +155,7 @@ def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict,
                label=f"Hoàn thiện img2img {kind} (strength {rec['polish_strength']})" + (", khóa họa tiết" if locked else ""),
                actor_type="ai", actor="Stable Diffusion 1.5 img2img", tool="generation/garment.py",
                at=ts, inputs=[raw["sha256"]], outputs=[fin["sha256"]],
-               note=("Sau polish, quality/repair.py (pattern_lock_v1, tất định) trả lại nét vẽ và màu họa tiết từ bản ghép thô; "
+               note=("Sau polish, core/pattern_lock.py (pattern_lock_v1, tất định) trả lại nét vẽ và màu họa tiết từ bản ghép thô; "
                      "phần ánh sáng và bóng vải lấy từ polish.") if locked else None)
     P.add_version(pp, kind="ai_generated", artifact=fin, created_by="pipeline", actor_type="ai", at=ts,
                   note="Thiết kế cuối do pipeline sinh.")
@@ -170,9 +170,9 @@ def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict,
             art = P.file_record(rep["path"], "repair_pattern_lock", root, method=rep["info"]["method"])
             pp["artifacts"].append(art)
             P.add_step(pp, step="repair_pattern_lock", label="Sửa tất định: khoá họa tiết (pattern-lock)",
-                       actor_type="system", actor="quality/repair.py", tool=rep["info"]["method"], at=now,
+                       actor_type="system", actor="core/pattern_lock.py", tool=rep["info"]["method"], at=now,
                        inputs=[raw["sha256"], fin["sha256"]], outputs=[art["sha256"]])
-            P.add_version(pp, kind="system_repair", artifact=art, created_by="quality/repair.py",
+            P.add_version(pp, kind="system_repair", artifact=art, created_by="core/pattern_lock.py",
                           actor_type="system", at=now,
                           note=f"Ứng viên sửa; G3 sau sửa: {rep['G3_final']['decision']}. Chuyên gia so mù với v1.")
             pp["quality"]["repair"] = {"G3_final": rep["G3_final"], "overall": rep["overall"]}

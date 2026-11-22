@@ -107,7 +107,7 @@ streamlit_ui/
 │   ├── sidebar.py              GPU/CPU, PyTorch, Python, thống kê dữ liệu
 │   ├── heritage_picker.py      bước 1–2: chọn hiện vật, thông tin, trạng thái PyTorch, nút Tạo
 │   └── variant_results.py      bước cuối: 3 thẻ (bộ 4 thiết kế + tải PNG, đối chiếu, bảng số liệu)
-├── screens/generate.py         ghép các component; gọi generation/streamlit_runner.py khi bấm Tạo
+├── screens/generate.py         ghép các component; gọi pipeline/run.py khi bấm Tạo
 └── heritage_data.py            lớp chuyển tiếp → provenance/heritage.py (giữ cho mã cũ)
 ```
 

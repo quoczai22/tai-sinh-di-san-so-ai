@@ -63,7 +63,7 @@ Hai gateway không nhãn trong sơ đồ là **gateway hợp nhất** (merge): n
 
 ## Nhánh lỗi và vòng lặp
 
-- **Boundary error event** trên "Sinh họa tiết": máy hết bộ nhớ GPU hoặc mô hình lỗi → kết thúc lỗi, job ghi trạng thái `failed` và loại lỗi vào nhật ký. Mã: `generation/streamlit_runner.py` bắt lỗi theo từng biến thể, một biến thể lỗi không làm hỏng ba biến thể còn lại.
+- **Boundary error event** trên "Sinh họa tiết": máy hết bộ nhớ GPU hoặc mô hình lỗi → kết thúc lỗi, job ghi trạng thái `failed` và loại lỗi vào nhật ký. Mã: `pipeline/run.py` bắt lỗi theo từng biến thể, một biến thể lỗi không làm hỏng ba biến thể còn lại.
 - **Vòng G2**: sinh lại tối đa 3 lần, mỗi lần seed tăng 1, giữ nguyên prompt, trọng số ControlNet và bảng màu; quá 3 lần thì giữ bản ít lỗi nhất, Passport ghi `qa_failed` (mã không có bước người chỉnh tham số).
 - **Vòng G3**: khoá họa tiết là bước mặc định của luồng; vòng thử lại polish (đổi seed, hạ độ nhiễu, cuối cùng trả bản ghép thô) rồi đo lại; vẫn lỗi thì QC Officer xem và chỉ được trả về sửa.
 - **Vòng thẩm định**: chuyên gia yêu cầu sửa → sửa tay → **quay lại G3** → thẩm định lại. API thực hiện đúng vòng này: tải bản sửa lên thì hệ thống chạy G3 trên bản sửa trước khi đưa về hàng đợi.
@@ -79,7 +79,7 @@ Sơ đồ TO-BE được sửa để khớp mã hiện tại. Những chỗ đã
 
 | Trước | Mã thực tế | Sửa trong sơ đồ |
 |---|---|---|
-| Ghép lên "áo mẫu" cố định | Áo dài nền sinh mới bằng LoRA mỗi lượt, vùng áo tách bằng SAM (`generation/garment_lora.py`, `generation/streamlit_runner.py`) | Thêm bước "Sinh áo dài nền (LoRA), tách vùng áo (SAM)" |
+| Ghép lên "áo mẫu" cố định | Áo dài nền sinh mới bằng LoRA mỗi lượt, vùng áo tách bằng SAM (`generation/garment_lora.py`, `pipeline/run.py`) | Thêm bước "Sinh áo dài nền (LoRA), tách vùng áo (SAM)" |
 | "Hoàn thiện img2img" toàn ảnh | Hoàn thiện chỉ vùng áo, khoá họa tiết (`garment.polish_locked`) | Đổi tên bước |
 | G2 lỗi đủ 3 lần → Nhà thiết kế điều chỉnh tham số | Hệ thống giữ bản ít lỗi nhất, gắn cờ `qa_failed` (`quality/pattern_retry.py`) | Thay bằng Service Task ở lane Kiểm soát chất lượng |
 | "Sửa: khoá họa tiết hoặc giảm strength" | Thử lại hoàn thiện: đổi seed, hạ độ nhiễu, cuối cùng trả bản ghép thô (`quality/retry.py`) | Đổi tên; G3 vẫn lỗi sau thử lại thì chuyển QC Officer |
@@ -91,7 +91,7 @@ Những điểm sơ đồ cố ý không vẽ vì là chi tiết kỹ thuật, k
 - **Hàng chờ GPU**: `POST /generate` nhận tối đa 3 lượt đang chờ hoặc đang chạy (`TSDS_MAX_ACTIVE_JOBS`), quá thì trả 429; giới hạn 6 lượt/giờ/IP ở API, 10 lượt/giờ/IP ở cổng Vercel.
 - **Dự phòng khi máy GPU lỗi**: cổng `web_ui/api/live.js` trả bộ thiết kế đã sinh sẵn, trang Kết quả ghi rõ "Kết quả đã sinh sẵn — không phải sinh trực tiếp".
 - **Seed**: web không cho nhập seed. Áo nền dùng seed ngẫu nhiên mỗi lượt (`garment_lora.pick_seed`), hoa văn dùng seed mặc định 42 rồi tăng dần khi sinh lại; cả hai ghi vào Passport.
-- **C1–C4** chạy khi nạp ảnh (`scripts/data_prep/ingest_heritage_image.py`); hiện vật không đạt ở trạng thái `retired` nên không xuất hiện ở Studio. Kiểm tra quyền mục đích "thử nghiệm" chạy lại ở đầu mỗi lượt sinh (`streamlit_runner.py`; quyền bị từ chối thì job thất bại).
+- **C1–C4** chạy khi nạp ảnh (`scripts/data_prep/ingest_heritage_image.py`); hiện vật không đạt ở trạng thái `retired` nên không xuất hiện ở Studio. Kiểm tra quyền mục đích "thử nghiệm" chạy lại ở đầu mỗi lượt sinh (`pipeline/run.py.py`; quyền bị từ chối thì job thất bại).
 
 Khoảng trống còn lại giữa quy trình và giao diện web (không sửa trong đợt này):
 

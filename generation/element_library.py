@@ -18,9 +18,9 @@ from typing import Optional
 
 from generation import elements as el
 
-ROOT = Path(__file__).resolve().parent.parent
-INDEX_PATH = ROOT / "data" / "elements" / "index.json"
-CROPS_PATH = ROOT / "data" / "heritage" / "lr3d_crops.json"
+from core.paths import DATA_DIR, HERITAGE_DIR, PANELS_DIR, ROOT
+INDEX_PATH = DATA_DIR / "elements" / "index.json"
+CROPS_PATH = HERITAGE_DIR / "lr3d_crops.json"
 MIN_SIDE = 200  # pixel, dưới mức này phần tử quá nhỏ để cho Canny đủ nét ở khung 512
 
 # So lỏng hơn lúc dựng kho: ở đây chỉ cần bốn phần tử khác nhau, nên gộp cả bản "na ná"
@@ -41,7 +41,6 @@ def score(rec: dict) -> float:
     return float(min(rec["size_wh"])) * float(rec.get("ink_frac", 0.0)) * min(1.0, dens if dens else 1.0)
 
 
-PANELS_DIR = ROOT / "data" / "heritage" / "panels"
 SOURCES = ("render", "panel", "elements")
 
 

@@ -21,6 +21,8 @@ import cv2
 import numpy as np
 from PIL import Image
 
+from core.pattern_lock import pattern_lock
+
 for _s in (sys.stdout, sys.stderr):
     if getattr(_s, "encoding", "").lower().replace("-", "") != "utf8":
         try:
@@ -28,8 +30,7 @@ for _s in (sys.stdout, sys.stderr):
         except (AttributeError, ValueError):
             pass
 
-ROOT = Path(__file__).resolve().parent.parent
-GARMENT_DIR = ROOT / "data" / "garment"
+from core.paths import GARMENT_DIR, ROOT
 TEMPLATE = GARMENT_DIR / "aodai_template.png"
 LAYOUTS_FILE = GARMENT_DIR / "layouts.json"
 
@@ -413,9 +414,8 @@ def polish_locked(composite: Image.Image, layout_mask: np.ndarray, strength: flo
 
     Polish làm hoa văn hòa vào vải nhưng vẽ lại cả họa tiết (mất đầu rồng, đổi màu lá). Khóa họa tiết giữ phần
     ánh sáng và bóng vải của polish, còn nét vẽ và sắc độ lấy lại từ `composite` trong `layout_mask`
-    (xem quality/repair.py). Ngoài vùng áo vẫn giữ nguyên từng pixel như polish có mặt nạ.
+    (xem core/pattern_lock.py). Ngoài vùng áo vẫn giữ nguyên từng pixel như polish có mặt nạ.
     """
-    from quality.repair import pattern_lock                          # noqa: PLC0415  (tránh import vòng với quality.assess)
     if mask is None:
         mask = garment_mask(Image.open(TEMPLATE).convert("RGB"))
     if mask.shape[:2] != (composite.height, composite.width):

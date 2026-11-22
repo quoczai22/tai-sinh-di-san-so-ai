@@ -20,7 +20,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+from core.paths import ROOT
 METADATA = Path("data") / "heritage" / "metadata.json"
 SELECTION_CONFIG = Path("config") / "heritage_selection.json"
 

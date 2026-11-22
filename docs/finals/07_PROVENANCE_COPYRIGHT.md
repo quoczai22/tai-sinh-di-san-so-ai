@@ -112,7 +112,7 @@ python scripts/data_prep/ingest_heritage_image.py --file TSDS_DSC05640.jpg --can
 | Xuất bản công khai | **Chặn** | **Chặn** | Cho phép kèm ghi công | Chặn | Chặn |
 | Thương mại | Chặn | Chặn | CC0 / tự chụp: cho phép; giấy phép mở không có NC: cho phép kèm điều kiện; cấp phép: chỉ khi phạm vi ghi "commercial" | Chặn | Chặn |
 
-Nơi gọi cổng: trước khi sinh (`generation/streamlit_runner.py`, mục đích thử nghiệm), khi xuất ảnh (`GET /passports/{id}/export`, mục đích trình diễn), khi xuất bản (`POST /passports/{id}/publish`).
+Nơi gọi cổng: trước khi sinh (`pipeline/run.py`, mục đích thử nghiệm), khi xuất ảnh (`GET /passports/{id}/export`, mục đích trình diễn), khi xuất bản (`POST /passports/{id}/publish`).
 
 ### Thư đề nghị cấp phép
 

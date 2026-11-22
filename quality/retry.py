@@ -23,8 +23,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-ROOT = Path(__file__).resolve().parent.parent
-QC_DIR = ROOT / "outputs" / "qc"
+from core.paths import QC_DIR, ROOT
 # M1 và M3 trong kế hoạch. Các chỉ số khác (độ nét, lệch màu) chỉ cảnh báo, không kích hoạt thử lại.
 GATED = ("garment_shape_iou", "pattern_preservation")
 FALLBACK_LABEL = "chưa qua bước hoàn thiện"

@@ -23,7 +23,7 @@ for _s in (sys.stdout, sys.stderr):
         except (AttributeError, ValueError):
             pass
 
-ROOT = Path(__file__).resolve().parent.parent
+from core.paths import ROOT
 
 TOKEN_LIMIT = 77          # CLIP cắt ở đây và KHÔNG báo lỗi
 TOKEN_SAFE = 75           # trừ <bos>/<eos>

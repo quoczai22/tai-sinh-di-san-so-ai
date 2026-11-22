@@ -17,8 +17,8 @@ import numpy as np
 
 from . import metrics as M
 
-ROOT = Path(__file__).resolve().parent.parent
-CONFIG = ROOT / "config" / "quality_gate.json"
+from core.paths import CONFIG_DIR, ROOT
+CONFIG = CONFIG_DIR / "quality_gate.json"
 ORDER = {"PASS": 0, "WARN": 1, "FAIL": 2, "N/A": -1}
 
 

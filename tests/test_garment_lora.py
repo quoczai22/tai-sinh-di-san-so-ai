@@ -106,7 +106,7 @@ def test_mat_na_rong_bi_loai_o_color_ok():
 
 
 def test_bien_the_mac_dinh_khong_khoa_bo_cuc_de_clip_chon_bon_vi_tri_khac_nhau():
-    from generation import streamlit_runner as sr
+    from pipeline import run as sr
     assert [v["level"] for v in sr.DEFAULT_VARIANTS] == [1, 2, 3, 4]
     assert not any("layout" in v for v in sr.DEFAULT_VARIANTS)      # không khóa: mỗi biến thể lấy bố cục chưa dùng
 

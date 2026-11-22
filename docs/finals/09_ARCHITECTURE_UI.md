@@ -6,8 +6,8 @@ Giữ nguyên lựa chọn công nghệ của bản 09/2026: Python + FastAPI, p
 
 ```
 generation/         sinh hoa văn, sinh áo dài nền bằng LoRA, tách vùng áo bằng SAM, ghép áo, polish, khoá họa tiết (chạy trên GPU)
-  streamlit_runner  viết lại: mỗi lần chạy một thư mục riêng, gọi cổng quyền, chất lượng, Passport
-quality/            (mới) metrics.py · gate.py · repair.py · assess.py — chỉ cần CPU
+  pipeline/run.py  viết lại: mỗi lần chạy một thư mục riêng, gọi cổng quyền, chất lượng, Passport
+quality/            (mới) metrics.py · gate.py · assess.py (khoá họa tiết nay ở core/pattern_lock.py) — chỉ cần CPU
 provenance/         (mới) registry.py · passport.py · builder.py · labeling.py · hashing.py
 evaluation/
   experiment.py     (mới) kế hoạch, kiểm tra đơn biến, chạy, chấm mù, thống kê

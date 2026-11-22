@@ -25,7 +25,7 @@ from provenance.registry import (all_items, assess_selection, completeness, get_
                                  load_registry, load_selection_config, rights_gate)
 from provenance.heritage import load_heritage_metadata
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+from core.paths import ROOT as PROJECT_ROOT
 log = logging.getLogger("tsds.api")
 
 
@@ -286,7 +286,7 @@ def generate_designs(request: GenerateRequest) -> dict:
     if item is None or item.get("status", "active") != "active":
         raise HTTPException(status_code=404, detail="Không tìm thấy hiện vật đang hoạt động.")
     try:
-        from generation.streamlit_runner import SEED, generate_design_set   # noqa: PLC0415
+        from pipeline.run import SEED, generate_design_set   # noqa: PLC0415
     except ImportError:
         raise HTTPException(status_code=503, detail="Máy chủ này chưa có môi trường sinh ảnh (PyTorch + GPU). "
                                                     "Giao diện đang hiển thị kết quả đã sinh sẵn.") from None
