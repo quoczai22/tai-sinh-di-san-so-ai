@@ -5,6 +5,7 @@ const {
     fetchWithTimeout,
     fetchReadWithRetry,
     alertModalIssue,
+    handleZaloBotWebhook,
     upstreamErrorType,
     httpFailureType,
     logGatewayAudit,
@@ -76,6 +77,11 @@ module.exports = async function handler(req, res) {
             runtime: 'vercel-cpu',
             generation_available: Boolean(config.modalUrl && config.modalKey),
         });
+    }
+    if (route === 'zalo-webhook' && req.method === 'POST') {
+        const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
+        const result = await handleZaloBotWebhook(body);
+        return res.status(200).json(result);
     }
     if (route === 'generate' && req.method === 'POST') {
         const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});

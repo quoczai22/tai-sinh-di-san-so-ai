@@ -198,13 +198,140 @@ async function notifyAlert(message) {
     await Promise.all(tasks);
 }
 
+let lastModalIssue = null;
+
 function alertModalIssue(type, endpoint, heritageId, viewerState) {
     const safeId = /^[A-Za-z0-9_-]{1,80}$/.test(String(heritageId || ''))
         ? String(heritageId) : 'không có';
     const time = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
     const action = recommendedAction(type);
+    lastModalIssue = { type, endpoint, heritageId: safeId, viewerState, action, time };
     return notifyAlert(`⚠️ Modal lỗi: ${type} | Endpoint: ${endpoint} | Hiện vật: ${safeId} | ` +
         `${time} (giờ VN) | giám khảo đang thấy ${viewerState}. | Gợi ý: ${action}`);
+}
+
+async function callChatModel(provider, systemPrompt, userPrompt, timeoutMs = 8000) {
+    const isGroq = provider === 'groq';
+    const apiKey = (isGroq ? process.env.GROQ_API_KEY : process.env.OPENROUTER_API_KEY || '').trim();
+    if (!apiKey) throw new Error(`Missing ${provider} API key`);
+    const model = (isGroq
+        ? (process.env.GROQ_MODEL || 'openai/gpt-oss-20b')
+        : (process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash')).trim();
+    const url = isGroq
+        ? 'https://api.groq.com/openai/v1/chat/completions'
+        : 'https://openrouter.ai/api/v1/chat/completions';
+    const res = await fetchWithTimeout(url, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            model,
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt },
+            ],
+            max_tokens: 320,
+            temperature: 0.2,
+        }),
+    }, timeoutMs);
+    if (!res.ok) throw new Error(`${provider} HTTP ${res.status}`);
+    const data = await res.json();
+    const reply = data?.choices?.[0]?.message?.content?.trim();
+    if (!reply) throw new Error(`${provider} empty reply`);
+    return { model, reply };
+}
+
+async function probeAndRemedateModal(isFixMode) {
+    const config = getBackendConfig();
+    if (!config.modalUrl || !config.modalKey) {
+        return { configured: false, ok: false, summary: 'Thiếu biến MODAL_URL hoặc MODAL_KEY trên Vercel.' };
+    }
+    if (isFixMode) _resetAlertCooldown();
+    const t0 = Date.now();
+    try {
+        const timeout = isFixMode ? Math.max(15000, config.modalTimeoutMs) : 6000;
+        const healthRes = await fetchWithTimeout(`${config.modalUrl}/health`, {
+            headers: buildBackendHeaders('modal', config),
+        }, timeout);
+        const elapsedMs = Date.now() - t0;
+        if (!healthRes.ok) {
+            return {
+                configured: true,
+                ok: false,
+                httpStatus: healthRes.status,
+                elapsedMs,
+                summary: `Modal /health trả HTTP ${healthRes.status} sau ${elapsedMs}ms (${httpFailureType(healthRes.status)}).`,
+            };
+        }
+        const health = await healthRes.json().catch(() => ({}));
+        return {
+            configured: true,
+            ok: true,
+            httpStatus: 200,
+            elapsedMs,
+            cuda: health.cuda,
+            device: health.device,
+            summary: `Modal GPU phản hồi 200 OK sau ${elapsedMs}ms (CUDA=${health.cuda}, GPU=${health.device || 'T4'}).`,
+        };
+    } catch (error) {
+        const elapsedMs = Date.now() - t0;
+        return {
+            configured: true,
+            ok: false,
+            elapsedMs,
+            summary: `Không kết nối được Modal sau ${elapsedMs}ms (${upstreamErrorType(error)}).`,
+        };
+    }
+}
+
+async function handleZaloBotWebhook(body) {
+    const zaloToken = (process.env.ALERT_ZALO_BOT_TOKEN || '').trim();
+    const zaloChatId = (process.env.ALERT_ZALO_CHAT_ID || '').trim();
+    const zaloBase = (process.env.ALERT_ZALO_API_BASE || 'https://bot-api.zapps.me').trim().replace(/\/$/, '');
+    const msg = body?.message || body?.result?.message || null;
+    const chatId = msg?.chat?.id ? String(msg.chat.id) : '';
+    const text = String(msg?.text || '').trim();
+    if (!zaloToken || !zaloChatId || !chatId || chatId !== zaloChatId || !text) {
+        return { ok: true, ignored: true };
+    }
+
+    const isFixMode = /\b(sửa|sua|fix|khắc phục|khac phuc|giải quyết|giai quyet|đánh thức|danh thuc|warmup|wake|khởi động|khoi dong|thử lại|thu lai|retry|cứu|cuu)\b/i.test(text);
+    const probe = await probeAndRemedateModal(isFixMode);
+    const issueContext = lastModalIssue
+        ? `Sự cố gần nhất: ${lastModalIssue.type} tại ${lastModalIssue.endpoint} (hiện vật ${lastModalIssue.heritageId}) lúc ${lastModalIssue.time}. Gợi ý gốc: ${lastModalIssue.action}`
+        : 'Chưa ghi nhận sự cố Modal nào trong phiên hiện tại.';
+
+    const primary = isFixMode ? 'openrouter' : 'groq';
+    const secondary = isFixMode ? 'groq' : 'openrouter';
+    const sysPrompt = isFixMode
+        ? 'Bạn là Kỹ sư Trực chiến AI của dự án Tái Sinh Di Sản Số (Vercel + Modal GPU T4). Nhiệm vụ: dựa trên kết quả kiểm tra/đánh thức GPU vừa chạy và sự cố gần nhất, báo cáo ngắn gọn (dưới 110 từ, tiếng Việt rõ ràng) việc hệ thống vừa tự động thực hiện (đánh thức GPU, kiểm tra khóa, xóa cooldown) và hướng giải quyết cụ thể. Tuyệt đối không bịa đặt số liệu hay tiết lộ khóa.'
+        : 'Bạn là Trợ lý Tóm tắt Vận hành của dự án Tái Sinh Di Sản Số. Nhiệm vụ: giải thích tình trạng hệ thống hoặc tóm tắt lỗi gần nhất bằng ngôn ngữ đời thường, tự nhiên, dễ hiểu cho cả nhóm (dưới 90 từ, tiếng Việt). Cuối tin nhắc nhẹ: nếu cần đánh thức GPU hoặc xử lý lỗi, nhắn "sửa lỗi" hoặc "đánh thức GPU".';
+    const userPrompt = `Tin nhắn từ nhóm: "${text}"\nTrạng thái kiểm tra Modal vừa chạy: ${probe.summary}\n${issueContext}`;
+
+    let replyText = '';
+    try {
+        const { model, reply } = await callChatModel(primary, sysPrompt, userPrompt, 9000);
+        const badge = isFixMode ? `🛠️ [Giải quyết · ${model}]` : `📌 [Tóm tắt · ${model}]`;
+        replyText = `${badge}\n${reply}`;
+    } catch (_) {
+        try {
+            const { model, reply } = await callChatModel(secondary, sysPrompt, userPrompt, 9000);
+            const badge = isFixMode ? `🛠️ [Giải quyết · ${model}]` : `📌 [Tóm tắt · ${model}]`;
+            replyText = `${badge}\n${reply}`;
+        } catch (__) {
+            replyText = `${isFixMode ? '🛠️ [Tự động kiểm tra & đánh thức GPU]' : '📌 [Trạng thái hệ thống]'}\n• ${probe.summary}\n• ${issueContext}`;
+        }
+    }
+
+    await fetchWithTimeout(`${zaloBase}/bot${zaloToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: zaloChatId, text: replyText }),
+    }, 5000).catch(() => {});
+
+    return { ok: true, mode: isFixMode ? 'fix' : 'summary', probeOk: probe.ok };
 }
 
 function recommendedAction(type) {
@@ -237,6 +364,7 @@ module.exports = {
     logGatewayAudit,
     notifyAlert,
     alertModalIssue,
+    handleZaloBotWebhook,
     upstreamErrorType,
     httpFailureType,
     _resetAlertCooldown,
