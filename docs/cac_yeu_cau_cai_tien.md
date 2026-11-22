@@ -10,7 +10,7 @@ Số liệu cập nhật ngày 22/11/2026, đọc từ Passport và tệp kết 
 |---|---|---|---|---|
 | 1 | Đánh giá **thiết kế cuối**, không chỉ hoa văn trung gian | Cổng chất lượng **G2** (hoa văn: rò dáng bình, đường nối) và **G3** (thiết kế cuối: giữ họa tiết PPS, IoU dáng áo, độ nét, chi tiết mịn, lệch màu ΔE). Hoàn thiện ảnh (polish) chỉ trong vùng áo, khoá họa tiết `pattern_lock_v1`. Vòng loại và thử lại: đổi seed, hạ độ nhiễu, cuối cùng trả bản ghép thô | Người am hiểu di sản và thiết kế xem mẫu, phiếu nhận xét | [05](finals/05_QUALITY_ASSURANCE.md), `config/quality_gate.json`, `tsds/quality/` |
 | 2 | **Đối chứng có kiểm soát**, nhiều seed, chấm mù | Module thí nghiệm từ chối kế hoạch đổi hơn một yếu tố. Sáu thí nghiệm: EXP-A (trọng số ControlNet, 120 lượt, 5 seed), EXP-B (bước hoàn thiện, 126), EXP-D (nguồn áo nền, 60), EXP-E (nguồn ảnh nạp, 36), EXP-F (36), EXP-G (cách tạo ô hoa văn, 90). Thống kê Wilcoxon, Friedman, hệ số biến thiên theo seed. Gói chấm mù đã dựng sẵn | Điểm của người chấm mù (tối thiểu 3 người) và độ đồng thuận giữa họ | [06](finals/06_EXPERIMENTS.md), `tsds/evaluation/`, `outputs/experiments/` |
-| 3 | **Bản quyền, nguồn gốc, truy vết** | Danh mục nguồn có DOI và giấy phép CC BY 4.0 cho 6 hiện vật. Cổng quyền theo 4 mục đích. Design Passport có chuỗi mã băm, phiên bản có mã băm cha, bước sửa tay phải chạy lại G3. Nhãn "Thiết kế hỗ trợ bởi AI" trên ảnh xuất. Khai báo công cụ AI | Xác minh riêng nguồn từng vật; Passport và nhãn AI chưa hiện trên giao diện web | [07](finals/07_PROVENANCE_COPYRIGHT.md), [ai_disclosure.md](ai_disclosure.md), `tsds/provenance/` |
+| 3 | **Bản quyền, nguồn gốc, truy vết** | Danh mục nguồn có DOI và giấy phép CC BY 4.0 cho 6 hiện vật. Cổng quyền theo 4 mục đích. Design Passport có chuỗi mã băm, phiên bản có mã băm cha, bước sửa tay phải chạy lại G3. Nhãn "Hỗ trợ bởi AI" trên giao diện web và trên ảnh tải về; nhãn "Thiết kế hỗ trợ bởi AI" trên ảnh xuất qua API. Khai báo công cụ AI | Xác minh riêng nguồn từng vật; Passport chưa hiện trên giao diện web | [07](finals/07_PROVENANCE_COPYRIGHT.md), [ai_disclosure.md](ai_disclosure.md), `tsds/provenance/` |
 
 ## 2. Kết quả bộ demo hiện tại
 
@@ -28,7 +28,7 @@ Toàn vẹn chuỗi mã băm: 24/24 Passport. Cách tự kiểm tra có trong [e
 1. **Chấm mù:** gửi gói chấm mù cho ít nhất 3 người, thu điểm, tính Krippendorff alpha (mục tiêu từ 0,667). Chưa có điểm của ai, nên chưa kết luận được "đẹp hơn" hay "giống vải in hơn".
 2. **Thẩm định mẫu:** mời ít nhất một người am hiểu di sản và một người am hiểu thiết kế điền phiếu. Nếu hết hạn chưa có thì ghi đúng sự thật, không ghi "đã thẩm định".
 3. **Nguồn từng vật:** 6 hiện vật thuộc bộ LR3D-CULT2 (CC BY 4.0), nhưng một phần mô hình trong bộ có thể lấy từ Sketchfab theo giấy phép học thuật. Chưa xác minh vật nào thuộc nguồn nào.
-4. **Giao diện web:** chỉ còn 3 trang, chưa hiện Passport, chỉ số chất lượng và nhãn AI trên ảnh hiển thị.
+4. **Giao diện web:** chỉ còn 3 trang, chưa hiện Passport và chỉ số chất lượng. Nhãn "Hỗ trợ bởi AI" đã có trên ảnh.
 5. **Link thử nghiệm:** xem mục 4.
 
 ## 4. Link thử nghiệm cho BTC

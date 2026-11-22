@@ -1,4 +1,4 @@
-# Danh mục nguồn và quyền sử dụng sáu hiện vật (bản 19/11/2026)
+# Danh mục nguồn và quyền sử dụng sáu hiện vật (bản 19/11/2026, cập nhật 22/11/2026)
 
 Tài liệu này trả lời yêu cầu 3 của ban tổ chức: nguồn và quyền sử dụng sáu hiện vật, cách ghi công, lịch sử các bước chỉnh sửa do người làm, và nhãn nội dung có hỗ trợ AI.
 
@@ -85,6 +85,38 @@ Các bước sau do hệ thống làm tự động, không có chỉnh sửa tay
 | Phạm vi: dùng nội bộ, hiển thị công khai, cho tải mô hình 3D, đăng ảnh kết quả | Chưa ghi |
 | Điều kiện kèm theo (cách ghi công, thời hạn) | Chưa ghi |
 | File bằng chứng đính kèm | Chưa có |
+
+Các việc khác chưa làm:
+
 - Chưa có chuyên gia di sản hoặc thiết kế xem xét mẫu.
-- Chưa tích hợp các trường nguồn này vào Design Passport của ứng dụng (xem mục 9 của `docs/HUONG_CAI_TIEN_V2.md`).
-- Phần lớn nhãn nguồn trong giao diện web (tiêu đề trang, chân trang, các đoạn giới thiệu) vẫn ghi chung "Bát Tràng" ở chín chỗ, chưa đối chiếu với tuyên bố ở mục 4.
+- Nhãn nguồn trong giao diện web (tiêu đề trang, chân trang, các đoạn giới thiệu) vẫn ghi chung "Bát Tràng" ở chín chỗ, chưa đối chiếu với tuyên bố ở mục 4.
+
+## 7. Design Passport: nguồn và thành phẩm (cập nhật 22/11/2026)
+
+Design Passport là file JSON đi kèm mỗi thiết kế, ghi chuỗi các bước từ ảnh nguồn đến thành phẩm. Bộ nộp có 24 file ở `outputs/passports/` (6 hiện vật, mỗi hiện vật 4 mức sáng tạo).
+
+**Các trường liên quan đến nguồn và phiên bản:**
+
+| Trường trong Passport | Nội dung |
+|---|---|
+| `heritage` | Mã hiện vật, tên, nguồn (`source_title`, `source_url`), đơn vị giữ, giấy phép (`license`), ghi công (`attribution`), mã băm ảnh nguồn (`source_image_sha256`) |
+| `artifacts` | Từng file trung gian và thành phẩm: ảnh nguồn, canny, hoa văn, áo thô, áo cuối. Mỗi file có đường dẫn và SHA-256 |
+| `process_steps` | Từng bước: ai làm (`ai`, `system`, `human`), công cụ, mã băm đầu vào và đầu ra |
+| `versions` | Danh sách phiên bản thiết kế, mỗi bản có mã băm của bản cha (`parent_sha256`). Bản V1 do pipeline sinh, `parent_version` rỗng |
+| `edits` | Lịch sử sửa tay. Hiện rỗng ở cả 24 file vì chưa có thiết kế nào được sửa tay |
+| `ai_disclosure` | Nhãn "Thiết kế được tạo với sự hỗ trợ của AI" và danh sách bước do AI, người, hệ thống |
+| `ledger` | Sổ cái nối mã băm: mỗi dòng chứa mã băm dòng trước. Sửa một dòng thì các dòng sau hỏng |
+| `rights` | Kết quả cổng quyền theo mục đích: hiển thị demo, xuất bản công khai, thương mại |
+
+**Kiểm tra toàn vẹn** (ngày 22/11/2026: 24/24 đạt). Chạy tại gốc repo:
+
+```powershell
+uv run python -c "import glob, json; from pathlib import Path; from tsds.provenance import passport as P; fs = sorted(glob.glob('outputs/passports/*.json')); ok = sum(bool(P.verify(json.load(open(f, encoding='utf-8')), Path('.'))['ok']) for f in fs); print(ok, '/', len(fs), 'Passport toàn vẹn')"
+```
+
+**Giới hạn cần nêu trung thực:**
+
+- Bước `collect_image` (thu thập ảnh) chưa có ngày tải bộ dữ liệu. Passport ghi chú "cần điền".
+- Chưa có Passport nào có bước sửa tay (`edits` rỗng). Chức năng có và có test, nhưng chưa có ví dụ trong bộ nộp.
+- Hai trường `tool` và `actor` trong một số bước còn ghi đường dẫn mã cũ (ví dụ `scripts/07_describe_heritage.py`, `generation/controlnet.py`) vì Passport được sinh ngày 21/11, trước khi nhóm đổi cấu trúc thư mục. Không sửa tay vì sẽ làm hỏng chuỗi mã băm. Đường dẫn hiện tại: `scripts/data_prep/describe_heritage.py`, `tsds/generation/pattern/controlnet.py`.
+- Quyền thương mại: giấy phép CC BY 4.0 của ảnh hiện vật cho phép thương mại, nhưng trọng số LoRA áo dài huấn luyện từ ảnh VietFashion giấy phép CC BY-NC 4.0 (chỉ phi thương mại, xem `docs/ai_disclosure.md`). LoRA có trong mọi thiết kế nên cả hệ thống **chỉ dùng phi thương mại**. Ngày 22/11/2026 nhóm đã sửa cổng quyền (`tsds/provenance/registry.py`, hằng `SYSTEM_NONCOMMERCIAL_REASON`) để `commercial_use` luôn bị chặn, và cập nhật khối `rights` của 24 Passport. Các khối này không nằm trong chuỗi mã băm nên chuỗi vẫn toàn vẹn (24/24). Hiển thị và xuất bản công khai kèm ghi công vẫn được phép.
