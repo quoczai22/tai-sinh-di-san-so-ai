@@ -148,7 +148,7 @@ uv run python scripts/data_prep/ingest_heritage_image.py --file <ảnh> --candid
 
 **E. Công cụ kiểm chứng nội bộ:** `uv run streamlit run app.py`
 
-**Triển khai giao diện:** `vercel.json` chuyển `/` tới `web_ui/index.html`. Khi có API GPU công khai, đặt `window.DH_API_BASE` trong `web_ui/assets/js/config.js`. Mỗi lần phát hành giao diện, chạy `python scripts/web/ui_index.py finals-N` để đổi phiên bản ở mọi thẻ CSS, script và import map (trình duyệt không dùng lại tệp cũ). Cấu trúc thư mục giao diện: `docs/UI_ARCHITECTURE.md`.
+**Triển khai giao diện:** Project Vercel `tai-sinh-di-san-so-ai` đã nối với GitHub, theo dõi `main` và dùng Root Directory `web_ui`. Push lên `main` tự tạo production deployment tại `https://tai-sinh-di-san-so-ai.vercel.app/`; không cần chạy `vercel deploy --prod` thêm. Pull request và push lên `main` có kiểm thử giao diện trong `.github/workflows/web-ui.yml`. Vercel triển khai độc lập với kết quả kiểm thử, vì vậy cần xem trạng thái CI trước khi merge. Khi có API GPU công khai, đặt `window.DH_API_BASE` trong `web_ui/assets/js/config.js`. Mỗi lần phát hành giao diện, chạy `python scripts/web/ui_index.py finals-N` để đổi phiên bản ở mọi thẻ CSS, script và import map (trình duyệt không dùng lại tệp cũ). Cấu trúc thư mục giao diện: `docs/UI_ARCHITECTURE.md`.
 
 ## 5. Biến môi trường
 

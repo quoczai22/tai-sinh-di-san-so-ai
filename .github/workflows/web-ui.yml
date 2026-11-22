@@ -1,0 +1,32 @@
+name: Web UI checks
+
+on:
+  pull_request:
+    paths:
+      - "web_ui/**"
+      - "outputs/passports/**"
+      - "data/heritage/metadata.json"
+      - "tests/test_frontend.py"
+      - ".github/workflows/web-ui.yml"
+  push:
+    branches: [main]
+    paths:
+      - "web_ui/**"
+      - "outputs/passports/**"
+      - "data/heritage/metadata.json"
+      - "tests/test_frontend.py"
+      - ".github/workflows/web-ui.yml"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install pytest==9.2.0
+      - run: python -m pytest tests/test_frontend.py -q
