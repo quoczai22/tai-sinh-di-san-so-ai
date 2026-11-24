@@ -219,8 +219,8 @@ Khi có giám khảo truy cập và Modal gặp sự cố (lỗi mạng, timeout
 
 | Hạng mục đo | Môi trường | Giá trị ghi nhận | Ghi chú |
 |---|---|---|---|
-| **Modal Cold Start** (từ 0 container → sẵn sàng) | Modal NVIDIA T4 | *(chưa đo)* | Image đã nạp sẵn SD1.5 + ControlNet + CLIP + SAM (đọc thẳng từ image) |
-| **Thời gian sinh 1 bộ 4 thiết kế** | Modal NVIDIA T4 | *(chưa đo)* | Gồm 4 biến thể SD1.5 ControlNet + chấm điểm 7 bố cục CLIP + img2img polish |
+| **Modal Cold Start** (từ 0 container → sẵn sàng) | Modal NVIDIA T4 | *(chưa đo)* — chỉ có một mẫu không kiểm soát: lượt `GET /health` đầu tiên sau khi deploy bản mới (24/11/2026) mất 15,2 giây | Image đã nạp sẵn SD1.5 + ControlNet + CLIP + SAM (đọc thẳng từ image); chưa đo lúc container đã tắt hẳn rồi khởi động lại |
+| **Thời gian sinh 1 bộ 4 thiết kế** | Modal NVIDIA T4 | **126,8 giây** — *một mẫu đo* (24/11/2026), container nhiều khả năng đang ấm, hiện vật `LR3D_61`, đo từ lúc gửi yêu cầu qua gateway production đến lúc có kết quả (theo dõi mỗi 3 giây, sai số ±3 giây) | Gồm sinh áo nền bằng LoRA (khoảng 47 giây đầu), 4 biến thể (Passport cách nhau khoảng 15 giây), kiểm tra chất lượng và lập Design Passport. Chi tiết ở `docs/DEPLOY_LIVE.md`; chưa đủ mẫu để kết luận phân bố |
 | **Thời gian Scale-down về 0** | Modal NVIDIA T4 | *(chưa đo)* — giá trị **cấu hình** là `420s` (7 phút) | `SCALEDOWN_SECONDS = 420` (`scaledown_window=420`) trong `modal_app.py` (giá trị cấu hình, chưa đo); số đo thật lấy từ thời điểm container dừng trên dashboard Modal |
 | **HF Space tự thức khi nhận API request** | HF Space Docker T4 (Private) | Không áp dụng (đã bỏ HF Space) | — |
 | **Thời gian thức dậy của HF Space** | HF Space Docker T4 (Private) | Không áp dụng (đã bỏ HF Space) | — |

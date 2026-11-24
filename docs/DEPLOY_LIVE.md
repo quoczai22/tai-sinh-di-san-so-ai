@@ -73,18 +73,31 @@ Sự cố thực tế xảy ra ngày 21/11/2026 trên production và đã đư�
 - **Cách kiểm tra**:
   - `GET /api/live/health` **không đủ** để xác nhận: endpoint này chỉ chạy trên CPU và chỉ kiểm tra `MODAL_URL` và `MODAL_KEY` có được cấu hình hay không (`generation_available`), không gọi Modal và không xác minh khoá đúng hay GPU sẵn sàng.
   - Phải chạy **một lượt sinh thật** trên `https://tai-sinh-di-san-so-ai.vercel.app` để xác nhận khoá khớp và GPU xử lý thành công.
+  - Đã thực hiện ngày 24/11/2026: một lượt sinh thật qua production thành công và khóa Vercel–Modal khớp (xem mục **Lượt sinh thật qua production (24/11/2026)**).
 - **Lưu ý chi phí**: mỗi lượt sinh thật sẽ đánh thức GPU T4 trên Modal và tốn credit GPU (cộng thời gian giữ container chờ theo cấu hình `scaledown_window=420` giây, chưa đo phí thực tế). Chỉ chạy lượt kiểm tra thật sau khi đã hoàn tất đủ 3 bước khắc phục ở trên.
 
 ## Chưa kiểm chứng
 
 Các hạng mục sau **chưa đo / chưa xác minh** tính đến ngày 24/11/2026:
 
-- **Cold start Modal** (thời gian từ 0 container tới khi sẵn sàng): *chưa đo*.
-- **Thời gian sinh 4 ảnh** trên Modal T4: *chưa đo*.
+- **Cold start Modal** (thời gian từ 0 container tới khi sẵn sàng): *chưa đo* (chỉ có một mẫu không kiểm soát: lượt `GET /health` đầu tiên sau khi deploy bản mới ngày 24/11 mất 15,2 giây).
+- **Thời gian sinh 4 ảnh** trên Modal T4: mới có **một mẫu** (126,8 giây, container nhiều khả năng đang ấm, ngày 24/11/2026; xem mục **Lượt sinh thật qua production (24/11/2026)**); chưa đủ để kết luận phân bố, và chưa đo lúc container nguội.
 - **Phí thực tế** trên Modal (chi phí mỗi lượt sinh và chi phí giữ container chờ): *chưa đo*.
 - **Độ bền lưu ảnh trên Modal Volume sau khi container tự tắt** (sau chu kỳ `scaledown_window` tự động): *chưa xác minh* (trước đó mới thử dừng app thủ công rồi deploy lại trên Preview, chưa chờ container tự tắt).
-- **Khóa ghi trên Modal**: bản sửa (bỏ `TSDS_WRITE_KEY`, các route ghi dùng `DH_API_KEY`) chỉ có hiệu lực sau khi **deploy lại Modal thủ công**; ngày 24/11 trước khi sửa, `GET /health` của Modal báo `write_protection: false`. Sau khi deploy phải kiểm lại và thấy `true`: *chưa xác minh*.
+- **Gửi chỉnh sửa thật qua trang `edit` trên production**: *chưa xác minh* (khóa ghi đã đúng trên Modal, nhưng chưa có lượt gửi chỉnh sửa nào đi qua gateway).
 - Đã xác minh ngày 24/11/2026 (không còn là mục chưa kiểm chứng): với cấu hình Root Directory = `web_ui`, Framework = Other, bản production build từ `main` (commit `6c6c25f`) trên Vercel thành công (trạng thái Ready).
+- Đã xác minh ngày 24/11/2026 sau khi deploy lại Modal từ `main` (`66dd279`): `GET /health` của Modal báo `write_protection: true`, `cuda: true`, GPU `Tesla T4`; `POST` vào `qc`, `reviews`, `edits`, `publish` và `/generate` khi không có khóa hoặc sai khóa đều trả HTTP 401; route đọc (`/heritage`, `/passports`) vẫn mở. Trước khi sửa, `/health` từng báo `write_protection: false`.
+- Đã xác minh ngày 24/11/2026: một lượt sinh thật qua gateway production thành công, khóa `MODAL_KEY` (Vercel) và `DH_API_KEY` (Modal) khớp.
+
+## Lượt sinh thật qua production (24/11/2026)
+
+Đúng một lượt, sau khi deploy lại Modal từ `main` (`66dd279`) và được người vận hành duyệt (tốn credit GPU của workspace `doandt0612`). Kết quả là **một mẫu đo**, không phải số chính thức.
+
+- **Cách chạy**: hiện vật `LR3D_61`, seed `20261124`; gửi `POST /api/live/generate` tới `https://tai-sinh-di-san-so-ai.vercel.app`, rồi hỏi `GET /api/live/generate/{job_id}` mỗi 3 giây.
+- **Mốc thời gian** (tính từ lúc gửi yêu cầu, sai số ±3 giây do chu kỳ hỏi): +2,7 giây nhận job (HTTP 202, `backend: modal`, vị trí hàng chờ 1); +6,2 giây bắt đầu sinh áo dài nền bằng LoRA; +53,5 giây thiết kế 1/4; +74,4 giây thiết kế 2/4; +88,3 giây thiết kế 3/4; +102,3 giây thiết kế 4/4; +116,4 giây kiểm tra chất lượng và lập Design Passport; **+126,8 giây hoàn tất 4/4**.
+- **Kết quả**: 4 Passport mới (run `R20261124T043719-HV08`, tạo lúc 04:37 UTC, tức 11:37 giờ Việt Nam; cách nhau khoảng 15 giây). G2: 3 PASS, 1 WARN. G3: 2 PASS, 2 WARN. Không thiết kế nào bị loại. V1 và V4 chờ chuyên gia; V2 và V3 có cảnh báo.
+- **Ảnh**: V1 tải qua gateway trả HTTP 200, `image/png`, 712.314 byte, đúng chữ ký PNG, mất 1,6 giây.
+- **Hạn chế**: đây không phải cold start (bước sinh bắt đầu sau 6 giây nên container nhiều khả năng đang ấm; Modal không cho thông tin chính thức); chỉ một mẫu; phí thực tế chưa đo (ước chừng khoảng 9 phút máy T4: 127 giây sinh cộng tối đa 7 phút giữ chờ, xem phí thật trên dashboard Modal); phản hồi hỏi trạng thái không có trường `backend`, `gpu`, `duration_s`, nên việc Modal xử lý được xác nhận qua HTTP 202 `backend: modal` lúc tạo job và qua 4 Passport mới.
 
 ## Kiểm tra chưa tốn GPU
 
