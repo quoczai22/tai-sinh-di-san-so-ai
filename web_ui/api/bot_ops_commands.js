@@ -23,21 +23,22 @@ function formatCreditReport(summary) {
         'Hãy kiểm tra trang Billing của hai dịch vụ trước khi chạy GPU hoặc CodeBuild.';
 }
 
-function formatGpuStatus(health, elapsedMs) {
+function formatGpuStatus(health, elapsedMs, failure) {
     if (!health) {
         return (
             '🟡 [TRẠNG THÁI GPU MODAL]\n\n' +
-            '• Không xác minh được trạng thái Modal (có thể do mạng, timeout hoặc backend lỗi).\n' +
-            '👉 Bạn gõ "sinh 1" .. "sinh 6" để gọi GPU khởi động và sinh ảnh thật nhé!'
+            `• Chưa xác minh được GPU: ${failure || 'không có phản hồi hợp lệ'}.\n` +
+            `• Thời gian kiểm tra: ${elapsedMs}ms.\n` +
+            '• Chưa nên kết luận GPU đang ngủ hoặc sẵn sàng sinh ảnh. Hãy thử lại sau khi Modal khởi động.'
         );
     }
     return (
-        '🟢 [TRẠNG THÁI GPU MODAL · ONLINE]\n\n' +
-        `• Thiết bị: ${health.device || 'Nvidia Tesla T4 (16GB VRAM)'}\n` +
-        `• CUDA: ${health.cuda ? 'Khả dụng 100%' : 'Chưa bật'}\n` +
-        `• Phiên bản Backend: v${health.version || '1.1.0'}\n` +
+        `${health.cuda && health.generation_available ? '🟢' : '🟡'} [TRẠNG THÁI GPU MODAL · ĐÃ PHẢN HỒI]\n\n` +
+        `• Thiết bị: ${health.device || 'chưa xác định'}\n` +
+        `• CUDA: ${health.cuda ? 'Khả dụng' : 'Chưa bật'}\n` +
+        `• Phiên bản Backend: ${health.version || 'chưa xác định'}\n` +
         `• Trạng thái sinh ảnh: ${health.generation_available ? 'Sẵn sàng tiếp nhận' : 'Bận'}\n` +
-        `• Độ trễ phản hồi: ${elapsedMs || 350}ms`
+        `• Độ trễ phản hồi: ${elapsedMs}ms`
     );
 }
 
@@ -155,14 +156,24 @@ async function tryHandleOpsCommand({
         const config = getBackendConfig();
         const t0 = Date.now();
         let health = null;
+        let failure = '';
         try {
-            const hRes = await fetchWithTimeout(`${config.modalUrl}/health`, {
-                headers: buildBackendHeaders('modal', config),
-            }, 6000);
-            if (hRes.ok) health = await hRes.json();
-        } catch (_) {}
+            if (!config.modalUrl || !config.modalKey) {
+                failure = 'thiếu MODAL_URL hoặc MODAL_KEY trên Vercel';
+            } else {
+                const hRes = await fetchWithTimeout(`${config.modalUrl}/health`, {
+                    headers: buildBackendHeaders('modal', config),
+                }, Math.min(50000, Math.max(20000, config.modalTimeoutMs)));
+                if (hRes.ok) health = await hRes.json();
+                else failure = `Modal trả HTTP ${hRes.status}`;
+            }
+        } catch (error) {
+            failure = error.name === 'AbortError' || /timeout/i.test(error.message)
+                ? 'quá thời gian chờ Modal khởi động'
+                : 'lỗi kết nối tới Modal';
+        }
         const elapsedMs = Date.now() - t0;
-        const reply = formatGpuStatus(health, elapsedMs);
+        const reply = formatGpuStatus(health, elapsedMs, failure);
         await fetchWithTimeout(`${zaloBase}/bot${zaloToken}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
