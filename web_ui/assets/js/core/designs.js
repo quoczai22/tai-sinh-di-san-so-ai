@@ -9,6 +9,9 @@ export const PREF = ['pending_expert_review', 'qa_warning', 'revision_requested'
 
 export const latestOf = (d) => (d.latest_version_kind === 'system_repair' && d.repair_thumb ? d.repair_thumb : d.thumb);
 export const patternOf = (d) => d.pattern_thumb || (d.thumb ? d.thumb.replace(/final_img2img\.webp$/, 'pattern.webp') : null);
+// Đường dẫn ảnh để HIỂN THỊ. Thiết kế đã có bản chỉnh sửa của người dùng thì vẫn hiện ảnh hệ thống tạo (gateway không phục vụ
+// ảnh người dùng tải lên, để ảnh đó không bị công khai); trang Kết quả đánh dấu "Có bản chỉnh sửa".
+export const shownPath = (d) => (d.latest_version_kind === 'human_edit' ? (d.repair_path || d.final_path) : (d.latest_path || d.final_path));
 export const assetUrl = (path) => !path ? '' : (/^(https?:)?\/\//.test(path) || path.startsWith('/') ? path : './' + path);
 export const byPref = (a, b) => (PREF.indexOf(a.approval.status) - PREF.indexOf(b.approval.status)) || a.passport_id.localeCompare(b.passport_id);
 

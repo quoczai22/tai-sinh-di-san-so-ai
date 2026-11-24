@@ -1,0 +1,7 @@
+/* views/mine.css — RIÊNG TRANG THIẾT KẾ ĐÃ TẠO: lưới các thẻ bộ thiết kế .mine-grid. JS: views/mine.js. */
+
+.mine-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+    gap: 24px;
+}

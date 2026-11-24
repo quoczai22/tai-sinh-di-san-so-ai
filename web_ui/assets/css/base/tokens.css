@@ -21,6 +21,7 @@
     --warn-soft: #F6ECCF;
     --fail: #A3392B;
     --fail-soft: #F6E2DD;
+    --error: #C62828;   /* chữ báo lỗi nhập liệu: đỏ rõ, tương phản trên nền giấy dó (khác --fail dùng cho trạng thái không đạt) */
     --series-a: #B8742A;
     --series-b: #24508A;
     --radius-s: 6px;

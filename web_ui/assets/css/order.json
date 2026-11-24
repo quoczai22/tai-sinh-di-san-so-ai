@@ -20,6 +20,10 @@
     "components/gallery-item.css",
     "components/design-card.css",
     "components/lightbox.css",
+    "components/confirm-dialog.css",
+    "components/dropzone.css",
+    "components/edit-panel.css",
+    "components/run-card.css",
     "components/viewer3d.css",
     "components/artifact-book.css",
     "components/footer.css",
@@ -28,6 +32,7 @@
     "views/home.css",
     "views/studio.css",
     "views/result.css",
+    "views/mine.css",
     "base/motion.css"
   ]
 }

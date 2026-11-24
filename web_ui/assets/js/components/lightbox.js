@@ -4,15 +4,15 @@
 import { h } from '../core/dom.js';
 import { icon } from '../core/icons.js';
 import { downloadImage } from '../core/download.js';
-import { aiMark } from './badges.js';
+import { aiMark, editedMark } from './badges.js';
 
 // Ảnh có thể phóng to từ 100% đến 400%: kéo thanh trượt, lăn chuột trên ảnh (phóng về phía con trỏ),
 // bấm đúp để phóng 2 lần hoặc về lại 100%. Khi đã phóng thì kéo chuột để xê dịch ảnh.
 const ZOOM_MIN = 1, ZOOM_MAX = 4, ZOOM_STEP = 0.25;                 // nút − và + đổi 25% mỗi lần bấm
 
-function zoomablePic(src, alt) {
+function zoomablePic(src, alt, edited) {
     const img = h('img', { src, alt, draggable: 'false' });
-    const pic = h('div', { class: 'lb-pic' }, img, aiMark());
+    const pic = h('div', { class: 'lb-pic' }, img, aiMark(), edited ? editedMark() : null);
     const slider = h('input', { class: 'lb-zoom', type: 'range', min: String(ZOOM_MIN * 100), max: String(ZOOM_MAX * 100), step: '5',
         value: '100', 'aria-label': 'Phóng to, thu nhỏ' });
     let z = 1, tx = 0, ty = 0;                                      // mức phóng và độ xê dịch (px) so với tâm ảnh
@@ -62,7 +62,9 @@ function zoomablePic(src, alt) {
 }
 
 // Cửa sổ phóng to ảnh. Đóng bằng dấu X, nút QUAY LẠI, phím Esc hoặc bấm ra ngoài; trả tiêu điểm về ảnh đã bấm.
-export function openLightbox({ src, alt, filename, opener }) {
+// edit: { href } thêm nút "Tải lên chỉnh sửa" dẫn tới trang chỉnh sửa; { locked: lý do } hiện nút khóa kèm lý do; bỏ trống thì không có nút.
+// edited: true thì ảnh có nhãn "Đã chỉnh sửa" ở góc trên bên phải (cạnh nhãn AI vẫn giữ ở góc dưới bên trái).
+export function openLightbox({ src, alt, filename, opener, edit, edited }) {
     const close = () => {
         document.removeEventListener('keydown', onKey);
         box.remove();
@@ -72,8 +74,11 @@ export function openLightbox({ src, alt, filename, opener }) {
     const closeBtn = h('button', { class: 'lb-close', type: 'button', 'aria-label': 'Đóng', onclick: close }, icon('close'));
     const download = h('button', { class: 'btn hero-btn primary', type: 'button', onclick: () => downloadImage(src, filename) }, icon('download'), 'Tải xuống');
     const back = h('button', { class: 'btn hero-btn ghost', type: 'button', onclick: close }, 'Quay lại');
-    const { pic, row, controls } = zoomablePic(src, alt);
-    const focusables = [closeBtn, ...controls, download, back];
+    const { pic, row, controls } = zoomablePic(src, alt, edited);
+    let editBtn = null;
+    if (edit?.href) editBtn = h('a', { class: 'btn hero-btn ghost', href: edit.href, onclick: () => close() }, 'Tải lên chỉnh sửa');
+    else if (edit?.locked) editBtn = h('button', { class: 'btn hero-btn ghost', type: 'button', disabled: true, title: edit.locked }, 'Tải lên chỉnh sửa');
+    const focusables = [closeBtn, ...controls, download, back, ...(edit?.href ? [editBtn] : [])];
     const onKey = (e) => {
         if (e.key === 'Escape') { close(); return; }
         if (e.key !== 'Tab') return;                                // giữ tiêu điểm bàn phím trong cửa sổ
@@ -87,7 +92,8 @@ export function openLightbox({ src, alt, filename, opener }) {
             closeBtn,
             pic,
             row,
-            h('div', { class: 'lb-actions' }, download, back)));
+            h('div', { class: 'lb-actions' }, download, back, editBtn),
+            edit?.locked ? h('p', { class: 'lb-note' }, edit.locked) : null));
     document.body.classList.add('lb-open');
     document.getElementById('overlay-root').append(box);
     document.addEventListener('keydown', onKey);

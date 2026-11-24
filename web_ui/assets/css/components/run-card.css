@@ -1,0 +1,64 @@
+/* components/run-card.css — THẺ MỘT BỘ THIẾT KẾ ĐÃ TẠO (trang Thiết kế đã tạo): .run-card, .rc-head, lưới bốn ảnh .rc-grid/.rc-pic, .rc-actions. JS: components/run-card.js. */
+
+.run-card {
+    display: grid;
+    gap: 14px;
+    padding: 18px;
+    background: var(--porcelain);
+    border: 1px solid var(--line);
+}
+
+.rc-name {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: 19px;
+}
+
+.rc-time, .rc-gone {
+    color: var(--ink-2);
+    font-size: 14px;
+}
+
+.rc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.rc-pic {
+    position: relative;
+    background: var(--vitrine);
+}
+
+.rc-pic img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: contain;
+}
+
+.rc-pic .ai-tag {
+    position: absolute;
+    left: 4px;
+    bottom: 4px;
+    font-size: 8.5px;
+    padding: 1px 4px;
+}
+
+.rc-pic .edited-mark {
+    top: 4px;
+    right: 4px;
+    padding: 1px 4px;
+    font-size: 8.5px;
+}
+
+.rc-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.rc-actions .hero-btn.ghost {
+    color: var(--ink);
+    border-color: var(--ink-3);
+}

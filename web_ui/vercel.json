@@ -4,10 +4,12 @@
     "api/generate.js": { "maxDuration": 60 },
     "api/status.js": { "maxDuration": 60 },
     "api/media.js": { "maxDuration": 30 },
-    "api/live.js": { "maxDuration": 60 }
+    "api/live.js": { "maxDuration": 60 },
+    "api/edit.js": { "maxDuration": 60 }
   },
   "rewrites": [
     { "source": "/health", "destination": "/api/health" },
+    { "source": "/api/live/passports/:id/edits", "destination": "/api/edit?id=:id" },
     { "source": "/api/live/:route*", "destination": "/api/live" },
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ]

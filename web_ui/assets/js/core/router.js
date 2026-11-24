@@ -23,7 +23,7 @@ async function route() {
     renderNav(r.id);
     document.title = `${r.title} — Tái Sinh Di Sản Số`;
     const main = document.getElementById('main');
-    const args = params.map(decodeURIComponent);
+    const args = params.map((p) => { try { return decodeURIComponent(p); } catch { return p; } });   // tham số sai định dạng giữ nguyên, không làm hỏng việc đổi trang
     // Chuẩn bị trang mới trong khi trang cũ vẫn hiển thị; chỉ hiện khung chờ nếu tải lâu.
     const slow = setTimeout(() => { if (my === seq) clear(main).append(h('div', { class: 'skeleton', style: { minHeight: '240px' }, 'aria-label': 'Đang tải' })); }, 450);
     let view;

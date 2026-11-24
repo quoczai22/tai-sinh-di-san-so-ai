@@ -41,7 +41,7 @@ Bộ tài liệu này chỉ phục vụ vòng chung kết và tập trung vào b
 | Nhiều seed | EXP-A 5 seed, EXP-B 3, EXP-D 5, EXP-E 3, EXP-F 3, EXP-G 3; bộ demo ba seed (42, 43, 44) cho gói chấm mù | `outputs/experiments/EXP-*/plan.csv` |
 | Đánh giá mù | Gói chấm mù riêng cho EXP-A (48 ảnh, chỉ đổi trọng số ControlNet, `outputs/review/blind_review_EXP-A/`) cho yêu cầu 2. Gói chấm mù nhiều seed: 72 thiết kế (24 ô × 3 seed), mã ẩn danh, mỗi người chấm thấy 24 thiết kế (một mỗi ô, seed xoay theo mã người chấm), thứ tự xáo theo người chấm; ảnh của gói không đưa vào repo | `outputs/review/blind_review/` |
 | CSV cấu hình, bảng điểm người chấm, thống kê độ phân tán | `plan.csv`, `results.csv`, `ratings_*.csv`, `summary.json` (trung bình, độ lệch chuẩn, KTC 95%, hệ số biến thiên, alpha, kiểm định cặp) | `outputs/experiments/` |
-| Trạng thái thật | EXP-A đến EXP-G đã chạy; chưa có phiếu chấm mù | [06](06_EXPERIMENTS.md) |
+| Trạng thái thật | EXP-A đến EXP-G đã chạy; EXP-A có 28 phiếu chấm mù của người quan tâm nhưng alpha chỉ 0,03; chưa có phiếu chuyên gia | [06](06_EXPERIMENTS.md) |
 
 ### 3. Bản quyền, nguồn gốc, truy vết biên tập
 

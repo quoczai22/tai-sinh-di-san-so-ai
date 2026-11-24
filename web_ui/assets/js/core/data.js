@@ -17,6 +17,25 @@ function savedLiveRun() {
     } catch { return null; }
 }
 
+// Danh sách các bộ thiết kế đã tạo trên trình duyệt này (trang #/mine). Chỉ lưu mã hiện vật, mã lượt chạy và giờ tạo;
+// ảnh và Passport vẫn nằm trên máy chủ. Tối đa MY_RUNS_MAX bộ, bộ mới nhất đứng đầu.
+const MY_RUNS_KEY = 'dh:my-runs';
+const MY_RUNS_MAX = 12;
+
+export function myRuns() {
+    try {
+        const list = JSON.parse(localStorage.getItem(MY_RUNS_KEY) || '[]');
+        return Array.isArray(list) ? list.filter((r) => r?.heritageId && r?.runId) : [];
+    } catch { return []; }
+}
+function saveRuns(list) {
+    try { localStorage.setItem(MY_RUNS_KEY, JSON.stringify(list.slice(0, MY_RUNS_MAX))); } catch { /* trình duyệt chặn lưu: bỏ qua */ }
+}
+function rememberRun(heritageId, runId) {
+    saveRuns([{ heritageId, runId, createdAt: new Date().toISOString() }, ...myRuns().filter((r) => r.runId !== runId)]);
+}
+export function forgetRun(runId) { saveRuns(myRuns().filter((r) => r.runId !== runId)); }
+
 async function getJson(url, opts = {}) {
     const res = await fetch(url, { cache: 'no-store', ...opts });
     if (!res.ok) {
@@ -37,7 +56,11 @@ async function cached(key, loader) {
 export async function init() {
     const resultId = location.hash.match(/^#\/result\/([^/]+)$/)?.[1];
     const saved = savedLiveRun();
-    state.mode = resultId && decodeURIComponent(resultId) === saved?.heritageId ? 'live' : 'demo';
+    // Chế độ trực tiếp khi mở thẳng: trang Kết quả vừa tạo, hoặc trang cần dữ liệu máy chủ (#/mine, #/edit/..., #/result/<mã>/<lượt chạy>)
+    const needsServer = /^#\/(mine|edit)(\/|$)/.test(location.hash) || /^#\/result\/[^/]+\/[^/]+/.test(location.hash);
+    let resultKey = resultId || '';
+    try { resultKey = decodeURIComponent(resultKey); } catch { /* địa chỉ sai định dạng: dùng nguyên văn, không làm sập trang */ }
+    state.mode = needsServer || (resultId && resultKey === saved?.heritageId) ? 'live' : 'demo';
     if (API) {
         try {
             const ctrl = new AbortController();
@@ -60,6 +83,7 @@ export function activateLive(heritageId, runId, variants = []) {
     state.mode = 'live';
     if (heritageId && runId) {
         try { localStorage.setItem(LIVE_RUN_KEY, JSON.stringify({ heritageId, runId })); } catch {}
+        rememberRun(heritageId, runId);
     }
     state.cache.delete('live:passports');
     const designs = variants.filter((variant) => variant.status === 'completed' && variant.image_url)
@@ -78,6 +102,9 @@ export function activateLive(heritageId, runId, variants = []) {
         return image;
     });
 }
+// Trang cần dữ liệu máy chủ (Thiết kế đã tạo, Chỉnh sửa, Kết quả của một lượt cũ) chuyển sang chế độ trực tiếp.
+// Nếu máy chủ không trả lời, passports() tự rớt về chế độ trình diễn như mọi nơi khác.
+export function enterLive() { if (API) state.mode = 'live'; }
 export function liveDesignsFor(heritageId) {
     return state.latestResult?.heritageId === heritageId &&
         state.latestResult.runId === liveRunFor(heritageId) ? state.latestResult.designs : null;
@@ -145,6 +172,17 @@ export async function startGeneration(heritageId, seed) {
 }
 export const jobStatus = (jobId, heritageId) =>
     getJson(`${API}/generate/${encodeURIComponent(jobId)}?heritage_id=${encodeURIComponent(heritageId)}`);
+
+// Gửi bản chỉnh sửa của một thiết kế (POST /passports/<mã>/edits qua gateway). Trả về kết quả của API (mã sửa, quyết định G3, trạng thái duyệt).
+// Sau khi lưu thành công, bỏ danh sách Passport đã nhớ để trang Kết quả hiện dấu "Có bản chỉnh sửa".
+export async function submitEdit(passportId, payload) {
+    const result = await getJson(`${API}/passports/${encodeURIComponent(passportId)}/edits`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    });
+    state.cache.delete('live:passports');
+    state.latestResult = null;               // ảnh chụp bộ vừa sinh không có số bản sửa; bỏ để trang Kết quả đọc lại danh sách mới
+    return result;
+}
 
 export function audit(event, extra = {}) {
     if (state.mode !== 'live') return;
