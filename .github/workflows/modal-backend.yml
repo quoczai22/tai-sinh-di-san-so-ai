@@ -89,12 +89,12 @@ jobs:
         run: node --experimental-default-type=module tests/manual/test_live_session.mjs
       - name: Prove health endpoints do not wake Modal
         run: node tests/manual/test_health_cpu.js
-      - name: Test alert and demo failover with local mock servers
+      - name: Test live failure alerts with local mock servers
         run: node tests/manual/test_live_alert_failover.js
       - name: Test safe retry for read requests
         run: node tests/manual/test_read_retry.js
-      - name: Test legacy gateway Discord cooldown with local webhook
-        run: python tests/manual/test_alert_webhook.py
+      - name: Reject retired generation endpoints without demo output
+        run: node tests/manual/test_legacy_endpoints.js
       - name: Test operator alert script with local webhook
         run: node tests/manual/test_alert_script.js
       - name: Test Zalo webhook authorization without external calls

@@ -13,6 +13,7 @@ Ngày cập nhật: 24/11/2026. Backend dùng Modal workspace doandt0612; các m
 ## Quyết định
 
 - Kiến trúc chính thức: giám khảo → **Vercel** (`tai-sinh-di-san-so-ai`) → **Modal GPU T4** (`tai-sinh-di-san-so-api`). Khi bấm Tạo mà Modal lỗi, giao diện báo lỗi và giữ người dùng ở Studio; không đổi lượt sinh thất bại thành ảnh đã sinh sẵn. Dữ liệu mẫu trong `web_ui/data` chỉ dùng để trưng bày và chạy ngoại tuyến.
+- Hai endpoint cũ `/api/generate` và `/api/status` đã ngừng dùng, trả HTTP `410`; chỉ `/api/live/generate` nhận lượt sinh mới. Các bài test cũ về failover demo trong `tests/manual/test_acceptance_1_8.py` và `tests/manual/test_alert_webhook.py` là tư liệu lịch sử, không còn là bài nghiệm thu bản hiện hành.
 - Chỉ bật live sau khi chủ tài khoản xác nhận Spend limit trên Modal. Người vận hành đã xác nhận ngày 24/11/2026 là đã đặt (mức cụ thể không ghi ở đây; chưa kiểm trên dashboard). Nếu đến 24/11 chưa ổn định live thì nộp bản demo.
 - UptimeRobot chỉ ping `/health` của Vercel (`https://tai-sinh-di-san-so-ai.vercel.app/health`). Route `/health` và `/api/live/health` đều chạy trên CPU (`runtime: "vercel-cpu"`), không đánh thức Modal.
 
