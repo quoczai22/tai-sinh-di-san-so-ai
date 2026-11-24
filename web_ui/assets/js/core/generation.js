@@ -45,8 +45,9 @@ export async function runGeneration(heritageId, seed, onProgress = () => {}) {
     if (jobId) {
         try { await beforeDeadline(data.jobStatus(jobId, heritageId), deadline); }
         catch (error) {
-            if (error.status === 404) forgetJob();
-            throw error;
+            if (error.status !== 404) throw error;
+            forgetJob();                  // lượt cũ không còn trên máy chủ (đã xóa hoặc máy chủ khởi động lại): bỏ nó và tạo lượt mới
+            jobId = null;
         }
     }
     if (!jobId) {

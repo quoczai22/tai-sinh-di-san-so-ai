@@ -69,7 +69,7 @@ Lấy cảm hứng từ cách các nền tảng di sản trực tuyến kể chu
 
 | Thành phần | Mô tả |
 |---|---|
-| Điều hướng | Logo hoa sen ở giữa; trái: Trang chủ, Studio và Thiết kế đã tạo (mục này chỉ hiện khi trình duyệt đã tạo ít nhất một bộ); phải: nút menu ☰ (menu có cùng các mục; trang Kết quả chỉ vào qua nút Tạo thiết kế) |
+| Điều hướng | Logo hoa sen ở giữa; trái: Trang chủ, Studio và Thiết kế đã tạo; phải: nút menu ☰ (menu có cùng các mục; trang Kết quả chỉ vào qua nút Tạo thiết kế) |
 | Trang chủ | Ảnh bìa với quạt thẻ Hiện vật → Hoa văn → Áo dài; chim phượng và câu mở đầu; Hành trình 3 chặng; lưới hiện vật; lưới áo dài; mặt trống đồng và lời kết |
 | Studio | Chọn hiện vật (Đầu vào) rồi nút Tạo thiết kế; tạo xong tự chuyển sang trang Kết quả. Có GPU: sinh thật kèm tiến độ. Không có GPU hoặc Modal lỗi: báo không tạo được, không mở bộ ảnh có sẵn như kết quả của lượt mới. |
 | Kết quả (`#/result/<mã hiện vật>` hoặc `#/result/<mã hiện vật>/<mã lượt chạy>`) | Bốn tà áo của bộ thiết kế mới nhất của hiện vật (hoặc đúng lượt chạy được chỉ định), nhãn AI; nút Tạo lại và Chọn hiện vật khác. Bấm một ảnh mở cửa sổ phóng to có nút Tải xuống và Tải lên chỉnh sửa. Thiết kế đã có bản sửa mang nhãn "Đã chỉnh sửa" ở góc trên bên phải, nhãn AI vẫn giữ. Không có khung chi tiết hay chỉ số kỹ thuật |

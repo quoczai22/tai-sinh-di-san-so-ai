@@ -5,9 +5,19 @@ from __future__ import annotations
 import base64
 import io
 import json
+from pathlib import Path
 
 import pytest
 from PIL import Image, ImageFilter
+
+PASSPORT_DIR = Path(__file__).resolve().parent.parent / "outputs" / "passports"
+
+
+def _real_passports() -> dict[str, bytes]:
+    return {f.name: f.read_bytes() for f in sorted(PASSPORT_DIR.glob("DP-*.json"))}
+
+
+REAL_BEFORE = _real_passports()          # chụp lúc nạp tệp test, trước mọi ca ghi: Passport thật có thể đã có bản sửa của người dùng
 
 OLD_HERITAGE_KEYS = {"id", "name", "dynasty", "description", "conditioningMode", "image", "colors",
                      "colorNames", "licenseNote", "variantImageBase"}
@@ -274,11 +284,9 @@ def test_edit_rejects_non_images(api_client):
     assert api_client.post(f"/passports/{_ids(api_client)[0]}/edits", json=body).status_code == 422
 
 
-def test_real_passports_untouched(api_client, root):
-    """Các ca ghi ở trên chạy trên bản sao; Passport thật không đổi."""
-    for f in sorted((root / "outputs" / "passports").glob("DP-*.json")):
-        p = json.loads(f.read_text(encoding="utf-8"))
-        assert p["reviews"] == [] and p["edits"] == [], f.name
+def test_real_passports_untouched():
+    """Các ca ghi ở trên chạy trên bản sao; Passport thật không bị test ghi vào (so với lúc nạp tệp test)."""
+    assert _real_passports() == REAL_BEFORE
 
 
 def test_quality_experiments_catalog(api_client):

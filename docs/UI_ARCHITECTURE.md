@@ -39,7 +39,7 @@ index.html ─► config.js (DH_API_BASE)
 | 1. Chọn đầu vào | `#/studio` | `views/studio.js` | `picker-card` (rê chuột thì xoay 3D qua `viewer3d.hoverSpin`) | `data.heritage()` |
 | 2. Tạo thiết kế | `#/studio/<mã>` | `views/studio.js` | `viewer3d`, `viewer-controls`, `artifact-book` (nút "Xem ý nghĩa hoa văn" mở sổ hai trang nổi trên trang), `layout.stateBox` | Có GPU: `tsds/core/generation.js` gọi `POST /generate` rồi hỏi `GET /generate/{id}`. Không có GPU: mở bộ đã sinh sẵn, không giả lập |
 | 3. Xem và tải đầu ra | `#/result/<mã>` hoặc `#/result/<mã>/<mã lượt chạy>` (mở lại một bộ đã tạo) | `views/result.js` | `design-card`, `lightbox`, `badges.demoNotice` | `data.passports()`, `tsds/core/download.js` |
-| 4. Xem lại bộ đã tạo | `#/mine` (chỉ hiện trên thanh trên và menu khi trình duyệt đã tạo ít nhất một bộ) | `views/mine.js` | `run-card` | `data.myRuns()` (danh sách lưu trong trình duyệt, tối đa 12 bộ), `data.passports()` |
+| 4. Xem lại bộ đã tạo | `#/mine` | `views/mine.js` | `run-card` | `data.myRuns()` (danh sách lưu trong trình duyệt, tối đa 12 bộ), `data.passports()` |
 | 5. Tải bản chỉnh sửa | `#/edit/<mã Passport>` (vào từ nút "Tải lên chỉnh sửa" trong cửa sổ phóng to; không nằm trong menu) | `views/edit.js` | `edit-panel` (gồm `dropzone`, `confirm-dialog`) | `data.submitEdit()` → gateway `api/edit.js` → `POST /passports/{id}/edits` |
 
 Nhãn AI (`components/badges.js#aiMark`) có trên **mọi** ảnh do AI hỗ trợ tạo, phục vụ YC3. Ở chế độ trình diễn, trang Kết quả luôn có dòng "Kết quả đã sinh sẵn".

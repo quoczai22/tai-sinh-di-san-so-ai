@@ -265,3 +265,51 @@ console.log(JSON.stringify(r));
 """)
     assert out.get("initError") is None and out["initMode"] == "demo"
     assert out["beforeEdit"] == 1 and out["afterEdit"] is None
+
+
+def test_refresh_health_recovers_when_first_health_call_failed():
+    """Lần gọi /health đầu quá chậm (torch còn nạp) làm init() coi như không có GPU; refreshHealth() hỏi lại và sửa được."""
+    out = _node_module(f"""
+globalThis.window = {{ DH_API_BASE: 'http://127.0.0.1:8000' }};
+globalThis.location = {{ hash: '#/studio/LR3D_33' }};
+globalThis.localStorage = {{ getItem: () => null, setItem: () => {{}} }};
+let healthCalls = 0;
+globalThis.fetch = async (url) => {{
+    if (String(url).endsWith('/health')) {{
+        healthCalls += 1;
+        if (healthCalls === 1) throw new DOMException('timeout', 'AbortError');         // lần đầu: quá hạn chờ
+        return {{ ok: true, status: 200, json: async () => ({{ generation_available: true }}) }};
+    }}
+    return {{ ok: true, status: 200, json: async () => ({{}}) }};
+}};
+const data = await import('{(JS / 'core' / 'data.js').as_uri()}');
+await data.init();
+const r = {{ afterInit: data.canGenerate() }};
+r.refreshed = await data.refreshHealth();
+r.afterRefresh = data.canGenerate();
+console.log(JSON.stringify(r));
+""")
+    assert out == {"afterInit": False, "refreshed": True, "afterRefresh": True}
+
+
+def test_generation_drops_a_stale_pending_job_and_starts_a_new_one():
+    """Trình duyệt còn nhớ lượt tạo đã bị xóa khỏi máy chủ (404): phải bỏ nó và tạo lượt mới, không kẹt ở lượt cũ."""
+    out = _node_module(f"""
+const store = new Map([['dh:pending-generation', JSON.stringify({{ heritageId: 'LR3D_33', jobId: 'a'.repeat(32), startedAt: Date.now() }})]]);
+globalThis.window = {{ DH_API_BASE: 'http://x' }};
+globalThis.location = {{ hash: '#/studio/LR3D_33' }};
+globalThis.localStorage = {{ getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) }};
+const calls = [];
+const reply = (status, body) => ({{ ok: status < 400, status, json: async () => body }});
+globalThis.fetch = async (url, opts = {{}}) => {{
+    calls.push((opts.method || 'GET') + ' ' + String(url).replace('http://x', ''));
+    if (String(url).includes('/generate/' + 'a'.repeat(32))) return reply(404, {{ detail: 'Không tìm thấy job.' }});
+    if (String(url).endsWith('/generate')) return reply(200, {{ job_id: 'b'.repeat(32) }});
+    if (String(url).includes('/generate/' + 'b'.repeat(32))) return reply(200, {{ status: 'completed', run_id: 'R1', variants: [], progress: 100 }});
+    return reply(200, {{}});
+}};
+const {{ runGeneration }} = await import('{(JS / 'core' / 'generation.js').as_uri()}');
+const job = await runGeneration('LR3D_33', null);
+console.log(JSON.stringify({{ runId: job.run_id, posted: calls.some((c) => c.startsWith('POST') && c.endsWith('/generate')), pending: store.get('dh:pending-generation') ?? null }}));
+""")
+    assert out == {"runId": "R1", "posted": True, "pending": None}

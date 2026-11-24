@@ -72,7 +72,7 @@ export function openLightbox({ src, alt, filename, opener, edit, edited }) {
         opener?.focus();
     };
     const closeBtn = h('button', { class: 'lb-close', type: 'button', 'aria-label': 'Đóng', onclick: close }, icon('close'));
-    const download = h('button', { class: 'btn hero-btn primary', type: 'button', onclick: () => downloadImage(src, filename) }, icon('download'), 'Tải xuống');
+    const download = h('button', { class: 'btn hero-btn primary', type: 'button', onclick: () => downloadImage(src, filename, { edited }) }, icon('download'), 'Tải xuống');
     const back = h('button', { class: 'btn hero-btn ghost', type: 'button', onclick: close }, 'Quay lại');
     const { pic, row, controls } = zoomablePic(src, alt, edited);
     let editBtn = null;

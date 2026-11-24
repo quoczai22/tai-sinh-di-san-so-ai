@@ -75,6 +75,13 @@ export async function init() {
 
 export const isLive = () => state.mode === 'live';
 export const canGenerate = () => Boolean(state.health?.generation_available);
+// Hỏi lại /health, chờ tối đa 10 giây. Lần gọi đầu sau khi bật máy chủ chậm (máy chủ còn nạp torch, quá 2,5 giây chờ của init()),
+// hoặc máy chủ bật sau khi trang đã mở; nếu không hỏi lại thì trang coi như không có GPU cho đến khi tải lại.
+export async function refreshHealth() {
+    if (!API) return false;
+    try { state.health = await getJson(`${API}/health`, { signal: AbortSignal.timeout(10000) }); } catch { /* giữ nguyên kết quả cũ */ }
+    return canGenerate();
+}
 export function liveRunFor(heritageId) {
     const saved = savedLiveRun();
     return saved?.heritageId === heritageId ? saved.runId : null;

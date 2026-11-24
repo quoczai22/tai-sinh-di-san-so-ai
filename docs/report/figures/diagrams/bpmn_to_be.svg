@@ -1,0 +1,299 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4572 1312" width="4572" height="1312" font-family="Be Vietnam Pro, Segoe UI, Arial, sans-serif" font-size="12">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1D2A36"/></marker><marker id="oarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#fff" stroke="#1D2A36"/></marker><marker id="ocirc" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8"><circle cx="5" cy="5" r="4" fill="#fff" stroke="#1D2A36"/></marker></defs>
+<rect width="100%" height="100%" fill="#fff"/>
+<text x="20" y="1302" fill="#7A8591" font-size="11">BPMN 2.0 TO-BE — Tái Sinh Di Sản Số (vòng chung kết)</text>
+<rect x="20" y="20" width="4532" height="970" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<line x1="54" y1="20" x2="54" y2="990" stroke="#1D2A36"/>
+<text x="37.0" y="505.0" transform="rotate(-90 37.0 505.0)" text-anchor="middle" dominant-baseline="middle" font-weight="700" fill="#1D2A36">Nền tảng Tái Sinh Di Sản Số</text>
+<rect x="54" y="20" width="4498" height="190" fill="none" stroke="#7A8591"/>
+<line x1="88" y1="20" x2="88" y2="210" stroke="#7A8591"/>
+<text x="71.0" y="115.0" transform="rotate(-90 71.0 115.0)" text-anchor="middle" dominant-baseline="middle" fill="#1D2A36" font-size="11.5">Nhà thiết kế</text>
+<rect x="54" y="210" width="4498" height="190" fill="none" stroke="#7A8591"/>
+<line x1="88" y1="210" x2="88" y2="400" stroke="#7A8591"/>
+<text x="71.0" y="305.0" transform="rotate(-90 71.0 305.0)" text-anchor="middle" dominant-baseline="middle" fill="#1D2A36" font-size="11.5">Hệ thống AI (GPU)</text>
+<rect x="54" y="400" width="4498" height="330" fill="none" stroke="#7A8591"/>
+<line x1="88" y1="400" x2="88" y2="730" stroke="#7A8591"/>
+<text x="71.0" y="565.0" transform="rotate(-90 71.0 565.0)" text-anchor="middle" dominant-baseline="middle" fill="#1D2A36" font-size="11.5">Kiểm soát chất lượng</text>
+<rect x="54" y="730" width="4498" height="260" fill="none" stroke="#7A8591"/>
+<line x1="88" y1="730" x2="88" y2="990" stroke="#7A8591"/>
+<text x="71.0" y="860.0" transform="rotate(-90 71.0 860.0)" text-anchor="middle" dominant-baseline="middle" fill="#1D2A36" font-size="11.5">Dữ liệu và Passport</text>
+<rect x="20" y="1026" width="4532" height="120" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<line x1="54" y1="1026" x2="54" y2="1146" stroke="#1D2A36"/>
+<text x="30.0" y="1086.0" transform="rotate(-90 30.0 1086.0)" text-anchor="middle" dominant-baseline="middle" font-weight="700" fill="#1D2A36">Hội đồng</text>
+<text x="44.0" y="1086.0" transform="rotate(-90 44.0 1086.0)" text-anchor="middle" dominant-baseline="middle" font-weight="700" fill="#1D2A36">chuyên gia</text>
+<rect x="54" y="1026" width="4498" height="120" fill="none" stroke="#7A8591"/>
+<line x1="88" y1="1026" x2="88" y2="1146" stroke="#7A8591"/>
+<text x="71.0" y="1086.0" transform="rotate(-90 71.0 1086.0)" text-anchor="middle" dominant-baseline="middle" fill="#1D2A36" font-size="11.5">Chuyên gia</text>
+<rect x="20" y="1182" width="4532" height="64" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<text x="2286.0" y="1214.0" text-anchor="middle" dominant-baseline="middle" font-weight="700" fill="#1D2A36">Chủ sở hữu ảnh (pool hộp đen)</text>
+<polyline points="184.0,80.0 259.0,80.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="391.0,80.0 483.0,80.0 483.0,827.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="549.0,860.0 618.0,860.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="664.0,860.0 733.0,860.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="672" y="854" text-anchor="start" fill="#8B5E3C" font-size="11">Đạt</text>
+<polyline points="641.0,883.0 641.0,923.0 325.0,923.0 325.0,113.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="647" y="897" text-anchor="start" fill="#8B5E3C" font-size="11">Không đạt</text>
+<polyline points="865.0,860.0 934.0,860.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="957.0,837.0 957.0,790.0 1098.0,790.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="963" y="829" text-anchor="start" fill="#8B5E3C" font-size="11">Bị từ chối</text>
+<polyline points="957.0,883.0 957.0,930.0 1049.0,930.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="963" y="897" text-anchor="start" fill="#8B5E3C" font-size="11">Chưa xác minh</text>
+<polyline points="980.0,860.0 1250.0,860.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="988" y="854" text-anchor="start" fill="#8B5E3C" font-size="11">Hợp lệ</text>
+<polyline points="1181.0,930.0 1273.0,930.0 1273.0,883.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="1296.0,860.0 1431.0,860.0 1431.0,303.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="1497.0,270.0 1523.0,270.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="1655.0,270.0 1681.0,270.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="1813.0,270.0 1905.0,270.0 1905.0,567.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="1777.0,320.0 1777.0,323.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="1971.0,600.0 2040.0,600.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="2086.0,600.0 2221.0,600.0 2221.0,303.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="2094" y="594" text-anchor="start" fill="#8B5E3C" font-size="11">Đạt</text>
+<polyline points="2063.0,623.0 2063.0,649.0 1723.0,649.0 1723.0,303.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="2069" y="637" text-anchor="start" fill="#8B5E3C" font-size="11">Không đạt, dưới 3 lần: đổi seed</text>
+<polyline points="2063.0,577.0 2063.0,493.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="2069" y="569" text-anchor="start" fill="#8B5E3C" font-size="11">Không đạt, đủ 3 lần</text>
+<polyline points="2129.0,460.0 2197.0,460.0 2197.0,303.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="2287.0,270.0 2313.0,270.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="2445.0,270.0 2537.0,270.0 2537.0,567.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="2603.0,600.0 2672.0,600.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="2695.0,577.0 2695.0,80.0 3103.0,80.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="2701" y="569" text-anchor="start" fill="#8B5E3C" font-size="11">Đạt</text>
+<polyline points="2718.0,600.0 2853.0,600.0 2853.0,303.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="2726" y="594" text-anchor="start" fill="#8B5E3C" font-size="11">Không đạt, còn lượt thử</text>
+<polyline points="2695.0,623.0 2695.0,670.0 2787.0,670.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="2701" y="637" text-anchor="start" fill="#8B5E3C" font-size="11">Cảnh báo / hết lượt</text>
+<polyline points="2787.0,270.0 2567.0,270.0 2567.0,567.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="2919.0,670.0 2988.0,670.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="3011.0,647.0 3011.0,380.0 3169.0,380.0 3169.0,113.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="3017" y="639" text-anchor="start" fill="#8B5E3C" font-size="11">Chuyển chuyên gia (chỉ khi cảnh báo)</text>
+<polyline points="3034.0,670.0 3801.0,670.0 3801.0,633.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="3042" y="664" text-anchor="start" fill="#8B5E3C" font-size="11">Trả về sửa</text>
+<polyline points="3235.0,80.0 3327.0,80.0 3327.0,567.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="3393.0,600.0 3468.0,600.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="3502.0,600.0 3620.0,600.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="3643.0,623.0 3643.0,860.0 3735.0,860.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="3649" y="637" text-anchor="start" fill="#8B5E3C" font-size="11">Đạt</text>
+<polyline points="3666.0,600.0 3735.0,600.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="3674" y="594" text-anchor="start" fill="#8B5E3C" font-size="11">Cần sửa</text>
+<polyline points="3643.0,577.0 3643.0,530.0 3686.0,530.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="3649" y="569" text-anchor="start" fill="#8B5E3C" font-size="11">Loại</text>
+<polyline points="3801.0,567.0 3801.0,183.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="3735.0,150.0 3709.0,150.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="3577.0,150.0 2507.0,150.0 2507.0,567.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="3867.0,860.0 3893.0,860.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="4025.0,860.0 4094.0,860.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="4117.0,837.0 4117.0,790.0 4209.0,790.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="4123" y="829" text-anchor="start" fill="#8B5E3C" font-size="11">Có</text>
+<polyline points="4117.0,883.0 4117.0,930.0 4209.0,930.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="4123" y="897" text-anchor="start" fill="#8B5E3C" font-size="11">Chưa</text>
+<polyline points="4341.0,790.0 4416.0,790.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="4341.0,930.0 4416.0,930.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="3344.0,1086.0 3419.0,1086.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="3551.0,1086.0 3577.0,1086.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="3709.0,1086.0 3784.0,1086.0" fill="none" stroke="#1D2A36" stroke-width="1.3" marker-end="url(#arr)"/>
+<polyline points="1115.0,963.0 1115.0,1182.0" fill="none" stroke="#1D2A36" stroke-width="1.2" stroke-dasharray="7 5" marker-start="url(#ocirc)" marker-end="url(#oarr)"/>
+<text x="1121" y="1072" fill="#24508A" font-size="11" font-style="italic">Thư đề nghị cấp phép</text>
+<polyline points="3327.0,633.0 3327.0,1069.0" fill="none" stroke="#1D2A36" stroke-width="1.2" stroke-dasharray="7 5" marker-start="url(#ocirc)" marker-end="url(#oarr)"/>
+<text x="3333" y="851" fill="#24508A" font-size="11" font-style="italic">Yêu cầu thẩm định</text>
+<polyline points="3801.0,1069.0 3801.0,1008.0 3485.0,1008.0 3485.0,617.0" fill="none" stroke="#1D2A36" stroke-width="1.2" stroke-dasharray="7 5" marker-start="url(#ocirc)" marker-end="url(#oarr)"/>
+<text x="3493" y="1003" fill="#24508A" font-size="11" font-style="italic">Phiếu thẩm định</text>
+<circle cx="167.0" cy="80" r="17.0" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<text x="167.0" y="111.0" text-anchor="middle" fill="#1D2A36" font-size="11">Có nhu cầu thiết</text>
+<text x="167.0" y="124.0" text-anchor="middle" fill="#1D2A36" font-size="11">kế</text>
+<rect x="259.0" y="47.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="277.0" cy="63.0" r="3.5" fill="none" stroke="#1D2A36"/>
+<path d="M271.0,74.0 q0,-7 6,-7 q6,0 6,7 z" fill="none" stroke="#1D2A36"/>
+<text x="331.0" y="82.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">Chọn hoặc tải lên</text>
+<text x="331.0" y="95.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">hiện vật gốm</text>
+<rect x="417.0" y="827.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="436.0" cy="846.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="436.0" cy="846.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="489.0" y="862.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">Kiểm tra dữ liệu,</text>
+<text x="489.0" y="875.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">nguồn gốc (C1–C4)</text>
+<path d="M641.0,837.0 L664.0,860 L641.0,883.0 L618.0,860 z" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<path d="M632.0,851 L650.0,869 M650.0,851 L632.0,869" stroke="#1D2A36" stroke-width="3"/>
+<text x="616.0" y="822.0" text-anchor="end" fill="#1D2A36" font-size="11" font-weight="600">Đạt tiêu chí</text>
+<text x="616.0" y="835.0" text-anchor="end" fill="#1D2A36" font-size="11" font-weight="600">tuyển ảnh?</text>
+<rect x="733.0" y="827.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="752.0" cy="846.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="752.0" cy="846.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="805.0" y="862.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">Kiểm tra quyền sử</text>
+<text x="805.0" y="875.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">dụng, giấy phép</text>
+<path d="M957.0,837.0 L980.0,860 L957.0,883.0 L934.0,860 z" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<path d="M948.0,851 L966.0,869 M966.0,851 L948.0,869" stroke="#1D2A36" stroke-width="3"/>
+<text x="932.0" y="822.0" text-anchor="end" fill="#1D2A36" font-size="11" font-weight="600">Tình trạng</text>
+<text x="932.0" y="835.0" text-anchor="end" fill="#1D2A36" font-size="11" font-weight="600">quyền?</text>
+<circle cx="1115.0" cy="790" r="17.0" fill="#fff" stroke="#1D2A36" stroke-width="3.2"/>
+<text x="1115.0" y="821.0" text-anchor="middle" fill="#1D2A36" font-size="11">Không được dùng</text>
+<text x="1115.0" y="834.0" text-anchor="middle" fill="#1D2A36" font-size="11">hiện vật</text>
+<rect x="1049.0" y="897.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<rect x="1061.0" y="909.0" width="16" height="11" fill="#1D2A36" stroke="#1D2A36"/>
+<path d="M1061.0,909.0 l8,6 l8,-6" fill="none" stroke="#fff"/>
+<text x="1121.0" y="926.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">Gửi đề nghị cấp</text>
+<text x="1121.0" y="939.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">phép, gắn nhãn phi</text>
+<text x="1121.0" y="952.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">thương mại</text>
+<path d="M1273.0,837.0 L1296.0,860 L1273.0,883.0 L1250.0,860 z" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<path d="M1264.0,851 L1282.0,869 M1282.0,851 L1264.0,869" stroke="#1D2A36" stroke-width="3"/>
+<rect x="1365.0" y="237.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="1384.0" cy="256.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="1384.0" cy="256.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="1437.0" y="266.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">Trích xuất đặc</text>
+<text x="1437.0" y="279.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">trưng: tách nền,</text>
+<text x="1437.0" y="292.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">Canny, bảng màu</text>
+<rect x="1523.0" y="237.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="1542.0" cy="256.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="1542.0" cy="256.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="1595.0" y="266.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">Sinh áo dài nền</text>
+<text x="1595.0" y="279.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">(LoRA), tách vùng</text>
+<text x="1595.0" y="292.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">áo (SAM)</text>
+<rect x="1681.0" y="237.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="1700.0" cy="256.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="1700.0" cy="256.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="1753.0" y="272.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">Sinh họa tiết</text>
+<text x="1753.0" y="285.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">SD1.5 + ControlNet</text>
+<circle cx="1777.0" cy="303.0" r="17.0" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="1777.0" cy="303.0" r="13.0" fill="none" stroke="#1D2A36" stroke-width="1.2"/>
+<path d="M1770.0,310.0 L1774.0,297.0 L1779.0,305.0 L1784.0,296.0 L1780.0,310.0 L1775.0,302.0 z" fill="#fff" stroke="#1D2A36"/>
+<circle cx="1777.0" cy="340" r="17.0" fill="#fff" stroke="#1D2A36" stroke-width="3.2"/>
+<path d="M1770.0,347 L1774.0,334 L1779.0,342 L1784.0,333 L1780.0,347 L1775.0,339 z" fill="#1D2A36" stroke="#1D2A36"/>
+<text x="1777.0" y="371.0" text-anchor="middle" fill="#1D2A36" font-size="11">Lỗi GPU: job thất</text>
+<text x="1777.0" y="384.0" text-anchor="middle" fill="#1D2A36" font-size="11">bại, đã ghi nhật</text>
+<text x="1777.0" y="397.0" text-anchor="middle" fill="#1D2A36" font-size="11">ký</text>
+<rect x="1839.0" y="567.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="1858.0" cy="586.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="1858.0" cy="586.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="1911.0" y="602.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">Cổng G2: kiểm tra</text>
+<text x="1911.0" y="615.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">hoa văn</text>
+<path d="M2063.0,577.0 L2086.0,600 L2063.0,623.0 L2040.0,600 z" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<path d="M2054.0,591 L2072.0,609 M2072.0,591 L2054.0,609" stroke="#1D2A36" stroke-width="3"/>
+<text x="2038.0" y="575.0" text-anchor="end" fill="#1D2A36" font-size="11" font-weight="600">Hoa văn đạt?</text>
+<rect x="1997.0" y="427.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="2016.0" cy="446.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="2016.0" cy="446.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="2069.0" y="456.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">Giữ bản ít lỗi</text>
+<text x="2069.0" y="469.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">nhất, gắn cờ</text>
+<text x="2069.0" y="482.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">qa_failed</text>
+<rect x="2155.0" y="237.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="2174.0" cy="256.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="2174.0" cy="256.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="2227.0" y="266.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">Chọn bố cục</text>
+<text x="2227.0" y="279.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">(CLIP), ghép hoa</text>
+<text x="2227.0" y="292.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">văn lên áo</text>
+<rect x="2313.0" y="237.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="2332.0" cy="256.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="2332.0" cy="256.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="2385.0" y="266.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">Hoàn thiện chỉ</text>
+<text x="2385.0" y="279.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">vùng áo, khoá họa</text>
+<text x="2385.0" y="292.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">tiết</text>
+<rect x="2471.0" y="567.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="2490.0" cy="586.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="2490.0" cy="586.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="2543.0" y="602.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">Cổng G3: kiểm tra</text>
+<text x="2543.0" y="615.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">thiết kế cuối</text>
+<path d="M2695.0,577.0 L2718.0,600 L2695.0,623.0 L2672.0,600 z" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<path d="M2686.0,591 L2704.0,609 M2704.0,591 L2686.0,609" stroke="#1D2A36" stroke-width="3"/>
+<text x="2670.0" y="575.0" text-anchor="end" fill="#1D2A36" font-size="11" font-weight="600">Kết quả G3?</text>
+<rect x="2787.0" y="237.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="2806.0" cy="256.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="2806.0" cy="256.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="2859.0" y="266.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">Thử lại hoàn</text>
+<text x="2859.0" y="279.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">thiện: đổi seed,</text>
+<text x="2859.0" y="292.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">hạ độ nhiễu</text>
+<rect x="2787.0" y="637.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="2805.0" cy="653.0" r="3.5" fill="none" stroke="#1D2A36"/>
+<path d="M2799.0,664.0 q0,-7 6,-7 q6,0 6,7 z" fill="none" stroke="#1D2A36"/>
+<text x="2859.0" y="672.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">QC Officer xem</text>
+<text x="2859.0" y="685.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">cảnh báo, lỗi</text>
+<path d="M3011.0,647.0 L3034.0,670 L3011.0,693.0 L2988.0,670 z" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<path d="M3002.0,661 L3020.0,679 M3020.0,661 L3002.0,679" stroke="#1D2A36" stroke-width="3"/>
+<text x="2986.0" y="645.0" text-anchor="end" fill="#1D2A36" font-size="11" font-weight="600">QC quyết định?</text>
+<rect x="3103.0" y="47.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="3121.0" cy="63.0" r="3.5" fill="none" stroke="#1D2A36"/>
+<path d="M3115.0,74.0 q0,-7 6,-7 q6,0 6,7 z" fill="none" stroke="#1D2A36"/>
+<text x="3175.0" y="82.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">Xem bộ 4 thiết kế</text>
+<text x="3175.0" y="95.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">(trang Kết quả)</text>
+<rect x="3261.0" y="567.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<rect x="3273.0" y="579.0" width="16" height="11" fill="#1D2A36" stroke="#1D2A36"/>
+<path d="M3273.0,579.0 l8,6 l8,-6" fill="none" stroke="#fff"/>
+<text x="3333.0" y="602.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">Lập gói chấm mù,</text>
+<text x="3333.0" y="615.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">gửi chuyên gia</text>
+<circle cx="3485.0" cy="600" r="17.0" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="3485.0" cy="600" r="13.0" fill="none" stroke="#1D2A36" stroke-width="1.2"/>
+<rect x="3477.0" y="594" width="16" height="11" fill="#fff" stroke="#1D2A36"/>
+<path d="M3477.0,594 l8,6 l8,-6" fill="none" stroke="#1D2A36"/>
+<text x="3485.0" y="631.0" text-anchor="middle" fill="#1D2A36" font-size="11">Nhận kết quả thẩm</text>
+<text x="3485.0" y="644.0" text-anchor="middle" fill="#1D2A36" font-size="11">định</text>
+<path d="M3643.0,577.0 L3666.0,600 L3643.0,623.0 L3620.0,600 z" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<path d="M3634.0,591 L3652.0,609 M3652.0,591 L3634.0,609" stroke="#1D2A36" stroke-width="3"/>
+<text x="3618.0" y="562.0" text-anchor="end" fill="#1D2A36" font-size="11" font-weight="600">Kết quả thẩm</text>
+<text x="3618.0" y="575.0" text-anchor="end" fill="#1D2A36" font-size="11" font-weight="600">định?</text>
+<circle cx="3703.0" cy="530" r="17.0" fill="#fff" stroke="#1D2A36" stroke-width="3.2"/>
+<text x="3703.0" y="561.0" text-anchor="middle" fill="#1D2A36" font-size="11">Bị loại, đã ghi lý</text>
+<text x="3703.0" y="574.0" text-anchor="middle" fill="#1D2A36" font-size="11">do</text>
+<rect x="3735.0" y="567.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="3754.0" cy="586.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="3754.0" cy="586.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="3807.0" y="602.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">Ghi lý do yêu cầu</text>
+<text x="3807.0" y="615.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">sửa vào Passport</text>
+<rect x="3735.0" y="117.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<path d="M3747.0,137.0 h4 v-6 h2 v6 h2 v-7 h2 v7 h2 v-5 h2 v8 q0,6 -6,6 h-4 q-4,0 -4,-4 z" fill="none" stroke="#1D2A36"/>
+<text x="3807.0" y="146.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">Chỉnh sửa thủ công</text>
+<text x="3807.0" y="159.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">trên phần mềm đồ</text>
+<text x="3807.0" y="172.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">họa</text>
+<rect x="3577.0" y="117.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="3595.0" cy="133.0" r="3.5" fill="none" stroke="#1D2A36"/>
+<path d="M3589.0,144.0 q0,-7 6,-7 q6,0 6,7 z" fill="none" stroke="#1D2A36"/>
+<text x="3649.0" y="152.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">Tải bản sửa lên,</text>
+<text x="3649.0" y="165.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">khai báo thay đổi</text>
+<rect x="3735.0" y="827.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="3754.0" cy="846.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="3754.0" cy="846.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="3807.0" y="856.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">Phê duyệt, cập</text>
+<text x="3807.0" y="869.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">nhật Design</text>
+<text x="3807.0" y="882.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">Passport</text>
+<rect x="3893.0" y="827.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="3912.0" cy="846.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="3912.0" cy="846.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="3965.0" y="856.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">Lưu phiên bản,</text>
+<text x="3965.0" y="869.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">seed, checksum,</text>
+<text x="3965.0" y="882.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">cấu hình</text>
+<path d="M4117.0,837.0 L4140.0,860 L4117.0,883.0 L4094.0,860 z" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<path d="M4108.0,851 L4126.0,869 M4126.0,851 L4108.0,869" stroke="#1D2A36" stroke-width="3"/>
+<text x="4092.0" y="822.0" text-anchor="end" fill="#1D2A36" font-size="11" font-weight="600">Quyền cho phép</text>
+<text x="4092.0" y="835.0" text-anchor="end" fill="#1D2A36" font-size="11" font-weight="600">xuất bản?</text>
+<rect x="4209.0" y="757.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="4228.0" cy="776.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="4228.0" cy="776.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="4281.0" y="792.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">Xuất bản kèm nhãn</text>
+<text x="4281.0" y="805.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">AI, ghi công</text>
+<rect x="4209.0" y="897.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="4228.0" cy="916.0" r="6" fill="none" stroke="#1D2A36" stroke-dasharray="2.4 1.6" stroke-width="2.4"/>
+<circle cx="4228.0" cy="916.0" r="2.4" fill="none" stroke="#1D2A36"/>
+<text x="4281.0" y="926.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">Cho tải xuống,</text>
+<text x="4281.0" y="939.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">nhãn phi thương</text>
+<text x="4281.0" y="952.0" text-anchor="middle" fill="#1D2A36" font-size="11.5">mại</text>
+<circle cx="4433.0" cy="790" r="17.0" fill="#fff" stroke="#1D2A36" stroke-width="3.2"/>
+<text x="4433.0" y="821.0" text-anchor="middle" fill="#1D2A36" font-size="11">Đã xuất bản</text>
+<circle cx="4433.0" cy="930" r="17.0" fill="#fff" stroke="#1D2A36" stroke-width="3.2"/>
+<text x="4433.0" y="961.0" text-anchor="middle" fill="#1D2A36" font-size="11">Đã lưu, chờ giấy</text>
+<text x="4433.0" y="974.0" text-anchor="middle" fill="#1D2A36" font-size="11">phép</text>
+<circle cx="3327.0" cy="1086" r="17.0" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<rect x="3319.0" y="1080" width="16" height="11" fill="#fff" stroke="#1D2A36"/>
+<path d="M3319.0,1080 l8,6 l8,-6" fill="none" stroke="#1D2A36"/>
+<text x="3327.0" y="1117.0" text-anchor="middle" fill="#1D2A36" font-size="11">Nhận yêu cầu</text>
+<rect x="3419.0" y="1053.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="3437.0" cy="1069.0" r="3.5" fill="none" stroke="#1D2A36"/>
+<path d="M3431.0,1080.0 q0,-7 6,-7 q6,0 6,7 z" fill="none" stroke="#1D2A36"/>
+<text x="3491.0" y="1088.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">Chấm mù 5 tiêu chí</text>
+<text x="3491.0" y="1101.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">văn hoá, thẩm mỹ</text>
+<rect x="3577.0" y="1053.0" width="132" height="66" rx="10" fill="#fff" stroke="#1D2A36" stroke-width="1.4"/>
+<circle cx="3595.0" cy="1069.0" r="3.5" fill="none" stroke="#1D2A36"/>
+<path d="M3589.0,1080.0 q0,-7 6,-7 q6,0 6,7 z" fill="none" stroke="#1D2A36"/>
+<text x="3649.0" y="1088.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">Ghi quyết định và</text>
+<text x="3649.0" y="1101.5" text-anchor="middle" fill="#1D2A36" font-size="11.5">lý do</text>
+<circle cx="3801.0" cy="1086" r="17.0" fill="#fff" stroke="#1D2A36" stroke-width="3.2"/>
+<rect x="3793.0" y="1080" width="16" height="11" fill="#1D2A36" stroke="#1D2A36"/>
+<path d="M3793.0,1080 l8,6 l8,-6" fill="none" stroke="#fff"/>
+<text x="3801.0" y="1117.0" text-anchor="middle" fill="#1D2A36" font-size="11">Gửi phiếu</text>
+</svg>

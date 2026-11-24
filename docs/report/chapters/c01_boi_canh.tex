@@ -1,0 +1,73 @@
+\chapter{Bối cảnh và mục tiêu}
+
+\section{Bài toán}
+
+Gốm men lam Bát Tràng có hệ hoa văn phong phú: dây hoa, mẫu đơn, rồng mây, huy hiệu. Hệ thống Tái sinh Di sản Số biến những hoa văn này thành thiết kế áo dài. Người dùng chọn một hiện vật số hóa. Hệ thống trả về bốn thiết kế áo dài, ứng với bốn mức sáng tạo, trong đó họa tiết gốm được giữ nhận ra được và dáng áo không bị biến dạng.
+
+Đầu vào của mô hình sinh là \emph{mảng hoa văn phẳng}, tức texture UV trải phẳng của mô hình 3D hiện vật, cạnh dài khoảng 2.048 điểm ảnh. Ảnh render cả bình chỉ dùng để hiển thị và nhận diện. Quy trình sinh có hai giai đoạn:
+\begin{enumerate}
+  \item Stable Diffusion 1.5 kết hợp ControlNet Canny sinh \emph{hoa văn phẳng} từ mảng hoa văn gốc \cite{rombach2022,zhang2023controlnet}.
+  \item Hoa văn được \emph{ghép tất định} lên một chiếc áo dài nền do LoRA sinh ra \cite{hu2021lora}. Mô hình SAM tách vùng áo \cite{kirillov2023sam}, CLIP chọn bố cục họa tiết trên áo \cite{radford2021clip}, rồi một bước hoàn thiện img2img chỉ chạy trong vùng áo, có khóa họa tiết.
+\end{enumerate}
+Chương 3 mô tả từng bước kèm hình minh họa.
+
+\section{Hạn chế của bản trước (tháng 9/2026)}
+
+Trước khi cải tiến, nhóm rà soát lại bản nộp tháng 9/2026 và ghi nhận các hạn chế sau.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{3.0cm}}
+\toprule
+\textbf{Hiện trạng} & \textbf{Hệ quả} & \textbf{Yêu cầu liên quan} \\
+\midrule
+Chỉ đo hoa văn trung gian (độ tương đồng CLIP). Thiết kế áo dài cuối không được đo &
+Không biết bước img2img có phá họa tiết hay không & Yêu cầu 1 \\
+Bước img2img độ nhiễu 0,40 chạy trên toàn ảnh, không kiểm tra sau đó &
+Đo lại 24 thiết kế cũ cho thấy 20 thiết kế có điểm giữ họa tiết (PPS) dưới 0,40, tức họa tiết bị vẽ lại & Yêu cầu 1 \\
+Hoa văn có thể là ảnh nguyên chiếc bình đặt trên nền trơn &
+Áo dài in hình cái bình (điểm rò dáng bình 0,56 và 0,67 ở hai biến thể của một hiện vật) & Yêu cầu 1 \\
+Bốn biến thể đổi cùng lúc bốn yếu tố, chỉ chạy một seed &
+Không quy được khác biệt cho yếu tố nào, không biết độ dao động theo seed & Yêu cầu 2 \\
+Mỗi lần gọi ghi đè ảnh cũ, mã băm bị cắt ngắn &
+Không tái lập được ảnh của lần chạy cũ, không đối chiếu được toàn vẹn tệp & Yêu cầu 3 \\
+Design Passport chỉ có 4 trường, không có phiên bản, lịch sử chỉnh sửa, phê duyệt hay nhãn AI &
+Không chứng minh được thiết kế đi từ nguồn nào, ai sửa gì & Yêu cầu 3 \\
+\bottomrule
+\end{tabularx}
+\caption{Hạn chế của bản 09/2026 và yêu cầu của ban tổ chức tương ứng.}
+\label{tab:hanche}
+\end{table}
+
+\section{Ba yêu cầu cải tiến của ban tổ chức}
+
+Ban tổ chức nêu ba yêu cầu cải tiến, được diễn đạt lại như sau:
+\begin{enumerate}
+  \item \textbf{Đánh giá thiết kế cuối.} Hệ thống phải đo chất lượng của thiết kế áo dài cuối cùng, không chỉ hoa văn trung gian.
+  \item \textbf{Đối chứng có kiểm soát.} Thí nghiệm phải đổi từng yếu tố một, thử nhiều seed và chấm mù.
+  \item \textbf{Nguồn gốc, bản quyền, truy vết.} Hệ thống phải ghi nguồn và giấy phép hiện vật, ghi công, lịch sử biên tập thủ công và nhãn nội dung có hỗ trợ AI.
+\end{enumerate}
+
+\chuahoanthien{Chép nguyên văn ba yêu cầu từ thư của ban tổ chức vào mục này. Phần trên là diễn đạt lại theo cách nhóm hiểu.}
+
+\section{Bảng so sánh trước và sau cải tiến}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+\textbf{Nội dung} & \textbf{Bản 09/2026} & \textbf{Bản cải tiến} & \textbf{Chương} \\
+\midrule
+Đánh giá chất lượng & Độ tương đồng CLIP của hoa văn trung gian & Cổng G2 (hoa văn) và G3 (thiết kế cuối, năm chỉ số) & 4 \\
+Hoàn thiện ảnh & img2img toàn ảnh, độ nhiễu 0,40, không kiểm sau đó & Chỉ trong vùng áo, độ nhiễu 0,20, khóa họa tiết, vòng loại và thử lại & 4 \\
+Thí nghiệm & Bốn biến thể đổi bốn yếu tố, một seed & Sáu thí nghiệm đơn biến, nhiều seed, gói chấm mù, thống kê & 5 \\
+Truy vết & Ghi đè ảnh, Passport 4 trường & Mỗi lần chạy một thư mục riêng, Passport có phiên bản, sổ cái mã băm, nhãn AI & 6 \\
+Chỉnh sửa của người & Không có & Tải bản sửa lên, chạy lại G3, ghi vào Passport & 6 \\
+Giao diện & Trang trình diễn có cửa sổ bật lên & Trang chủ, Studio, Kết quả, Thiết kế đã tạo, trang chỉnh sửa & 3 \\
+\bottomrule
+\end{tabularx}
+\caption{So sánh trước và sau cải tiến.}
+\label{tab:truocsau}
+\end{table}

@@ -1,0 +1,112 @@
+% !TEX program = xelatex
+% Báo cáo cải tiến: Tái sinh Di sản Số.
+% Biên dịch bằng XeLaTeX (Overleaf: Menu > Compiler > XeLaTeX; tệp latexmkrc đã đặt sẵn).
+% Phần chưa hoàn thiện được đánh dấu bằng khung vàng [CHƯA HOÀN THIỆN] (lệnh \chuahoanthien).
+% Hình đặt trong thư mục figures/. Hình nào chưa có thì lệnh \hinh hiện khung vàng thay thế, đặt đúng tên tệp vào là hình tự hiện.
+\documentclass[12pt,a4paper]{report}
+
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Termes}
+\setsansfont{TeX Gyre Heros}
+\setmonofont{Latin Modern Mono}
+
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{rotating}
+\usepackage{amsmath}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black,citecolor=blue!50!black]{hyperref}
+
+% Tiếng Việt: không ngắt từ bằng gạch nối (mỗi âm tiết đã là một từ), giãn dòng vừa phải
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\sloppy
+\emergencystretch=2em
+\linespread{1.12}
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+\setlist{itemsep=2pt,topsep=3pt,parsep=0pt}
+\captionsetup{font=small,labelfont=bf}
+\renewcommand{\arraystretch}{1.15}
+
+% Tên các mục theo tiếng Việt
+\renewcommand{\chaptername}{Chương}
+\renewcommand{\contentsname}{Mục lục}
+\renewcommand{\listfigurename}{Danh mục hình}
+\renewcommand{\listtablename}{Danh mục bảng}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\tablename}{Bảng}
+\renewcommand{\appendixname}{Phụ lục}
+\renewcommand{\bibname}{Tài liệu tham khảo}
+
+% Khung vàng đánh dấu phần chưa hoàn thiện hoặc cần nhóm điền
+\newcommand{\chuahoanthien}[1]{%
+  \par\medskip\noindent\colorbox{yellow!30}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{\small\textbf{[CHƯA HOÀN THIỆN]} #1}}\par\medskip}
+
+% Chèn hình: \hinh{đường dẫn trong figures/}{độ rộng}{chú thích}{nhãn}. Thiếu tệp thì hiện khung vàng.
+\newcommand{\hinh}[4]{%
+  \IfFileExists{figures/#1}%
+    {\begin{figure}[htbp]\centering\includegraphics[width=#2]{figures/#1}\caption{#3}\label{#4}\end{figure}}%
+    {\chuahoanthien{Chưa có hình \ma{figures/#1}. Nội dung hình: #3}}}
+
+% Hình rộng hơn khổ chữ một chút (sơ đồ nhiều chữ nhỏ)
+\newcommand{\hinhrong}[3]{%
+  \IfFileExists{figures/#1}%
+    {\begin{figure}[htbp]\centering\makebox[\textwidth][c]{\includegraphics[width=1.15\textwidth]{figures/#1}}\caption{#2}\label{#3}\end{figure}}%
+    {\chuahoanthien{Chưa có hình \ma{figures/#1}. Nội dung hình: #2}}}
+
+% Hình xoay ngang cả trang (ảnh nhiều chữ nhỏ): chữ đọc rõ hơn khi phóng to
+\newcommand{\hinhngang}[3]{%
+  \IfFileExists{figures/#1}%
+    {\begin{sidewaysfigure}[p]\centering\includegraphics[width=0.96\textheight]{figures/#1}\caption{#2}\label{#3}\end{sidewaysfigure}}%
+    {\chuahoanthien{Chưa có hình \ma{figures/#1}. Nội dung hình: #2}}}
+
+% Tên chỉ số và mã nguồn: chữ đơn cách, cho phép ngắt dòng ở dấu gạch dưới
+\newcommand{\ma}[1]{\texttt{\detokenize{#1}}}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\large Cuộc thi Sáng tạo trẻ Quốc gia trong lĩnh vực Trí tuệ nhân tạo năm 2026\par}
+\vspace{2.5cm}
+{\Huge\bfseries BÁO CÁO CẢI TIẾN\par}
+\vspace{0.8cm}
+{\Large\bfseries Hệ thống Tái sinh Di sản Số\par}
+\vspace{0.4cm}
+{\large Sinh hoa văn gốm Bát Tràng lên áo dài bằng trí tuệ nhân tạo\par}
+\vspace{3cm}
+\chuahoanthien{Tên nhóm, thành viên, đơn vị và người hướng dẫn: nhóm điền.}
+\vfill
+{\large Tháng 11 năm 2026\par}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+
+\input{chapters/c00_tom_tat}
+\input{chapters/c01_boi_canh}
+\input{chapters/c02_thiet_ke_he_thong}
+\input{chapters/c03_chuc_nang_pipeline}
+\input{chapters/c04_yeu_cau_1}
+\input{chapters/c05_yeu_cau_2}
+\input{chapters/c06_yeu_cau_3}
+\input{chapters/c07_trien_khai}
+\input{chapters/c08_kiem_thu_bao_mat}
+\input{chapters/c09_gioi_han}
+
+\appendix
+\input{chapters/phu_luc}
+\input{chapters/tai_lieu}
+
+\end{document}
