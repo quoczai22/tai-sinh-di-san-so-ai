@@ -1,0 +1,59 @@
+@startuml
+title Sơ đồ Use Case AS-IS — Tái Sinh Di Sản Số
+left to right direction
+skinparam packageStyle rectangle
+skinparam usecase { BackgroundColor #E8F0FA
+ BorderColor #2B5C94 }
+actor "Nhà thiết kế (người dùng web)" as DES
+actor "Chuyên gia thẩm định" as EXP
+actor "QC Officer" as QC
+actor "Người vận hành" as OPS
+actor "Người quản lý dữ liệu" as DATA
+actor "Google Forms" as GF <<hệ thống ngoài>>
+actor "Zalo (kênh cảnh báo)" as ZALO <<hệ thống ngoài>>
+rectangle "Nền tảng Tái Sinh Di Sản Số" {
+  usecase "UC01 – Tra cứu hiện vật" as UC01
+  usecase "UC02 – Xem ý nghĩa hoa văn" as UC02
+  usecase "UC03 – Tạo thiết kế áo dài" as UC03
+  usecase "UC06 – Tải lên bản chỉnh sửa" as UC06
+  usecase "UC04 – Xem lại thiết kế đã tạo" as UC04
+  usecase "UC05 – Tải thiết kế có nhãn AI" as UC05
+  usecase "UC08 – Kiểm định chất lượng tự động (G2, G3)" as UC08
+  usecase "UC09 – Ghi Design Passport" as UC09
+  usecase "UC07 – Kiểm tra quyền sử dụng" as UC07
+  usecase "UC10 – Xử lý cảnh báo chất lượng" as UC10
+  usecase "UC11 – Điều phối thẩm định mù" as UC11
+  usecase "UC12 – Chấm mù thiết kế" as UC12
+  usecase "UC14 – Tra cứu Design Passport" as UC14
+  usecase "UC17 – Chạy thử nghiệm có kiểm soát" as UC17
+  usecase "UC13 – Xuất bản thiết kế" as UC13
+  usecase "UC18 – Giám sát vận hành" as UC18
+  usecase "UC15 – Tiếp nhận hiện vật mới" as UC15
+  usecase "UC16 – Cập nhật quyền sử dụng hiện vật" as UC16
+}
+DES -- UC01
+DES -- UC03
+DES -- UC06
+DES -- UC04
+DES -- UC05
+QC -- UC10
+QC -- UC11
+QC -- UC14
+QC -- UC17
+QC -- UC13
+EXP -- UC12
+GF -- UC12
+GF -- UC11
+OPS -- UC18
+ZALO -- UC18
+DATA -- UC15
+DATA -- UC16
+UC03 ..> UC08 : <<include>>
+UC03 ..> UC09 : <<include>>
+UC03 ..> UC07 : <<include>>
+UC06 ..> UC08 : <<include>>
+UC06 ..> UC09 : <<include>>
+UC13 ..> UC07 : <<include>>
+UC15 ..> UC07 : <<include>>
+UC02 ..> UC01 : <<extend>>
+@enduml

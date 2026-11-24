@@ -1,0 +1,70 @@
+@startuml
+title Sơ đồ Use Case TO-BE — Tái Sinh Di Sản Số
+left to right direction
+skinparam packageStyle rectangle
+skinparam usecase { BackgroundColor #E8F0FA
+ BorderColor #2B5C94 }
+actor "Nhà thiết kế (người dùng web)" as DES
+actor "Chuyên gia thẩm định" as EXP
+actor "QC Officer" as QC
+actor "Người vận hành" as OPS
+actor "Người quản lý dữ liệu" as DATA
+actor "Zalo (kênh cảnh báo)" as ZALO <<hệ thống ngoài>>
+actor "Chủ sở hữu ảnh" as OWN
+actor "Nhân sự nội bộ" as STAFF
+rectangle "Nền tảng Tái Sinh Di Sản Số" {
+  usecase "UC01 – Tra cứu hiện vật" as UC01
+  usecase "UC02 – Xem ý nghĩa hoa văn" as UC02
+  usecase "UC03 – Tạo thiết kế áo dài" as UC03
+  usecase "UC06 – Tải lên bản chỉnh sửa" as UC06
+  usecase "UC04 – Xem lại thiết kế đã tạo" as UC04
+  usecase "UC05 – Tải thiết kế có nhãn AI và mã Passport" as UC05 <<thay đổi>>
+  usecase "UC08 – Kiểm định chất lượng tự động (G2, G3)" as UC08
+  usecase "UC09 – Ghi Design Passport" as UC09
+  usecase "UC07 – Kiểm tra quyền sử dụng" as UC07
+  usecase "UC10 – Xử lý cảnh báo chất lượng" as UC10
+  usecase "UC11 – Theo dõi hàng đợi thẩm định" as UC11 <<thay đổi>>
+  usecase "UC12 – Chấm mù trên cổng thẩm định" as UC12 <<thay đổi>>
+  usecase "UC14 – Tra cứu Design Passport" as UC14
+  usecase "UC17 – Chạy thử nghiệm có kiểm soát" as UC17
+  usecase "UC13 – Xuất bản thiết kế" as UC13
+  usecase "UC18 – Giám sát vận hành" as UC18
+  usecase "UC15 – Tiếp nhận hiện vật mới" as UC15
+  usecase "UC16 – Quản lý đề nghị cấp phép" as UC16 <<thay đổi>>
+  usecase "UC21 – Theo dõi trạng thái thiết kế" as UC21 <<mới>>
+  usecase "UC20 – Đề cử thiết kế đi thẩm định" as UC20 <<mới>>
+  usecase "UC19 – Đăng nhập theo vai trò" as UC19 <<mới>>
+}
+DES -- UC01
+DES -- UC03
+DES -- UC06
+DES -- UC04
+DES -- UC05
+QC -- UC10
+QC -- UC11
+QC -- UC14
+QC -- UC17
+QC -- UC13
+EXP -- UC12
+OPS -- UC18
+ZALO -- UC18
+DATA -- UC15
+DATA -- UC16
+DES -- UC20
+DES -- UC21
+OWN -- UC16
+STAFF -- UC19
+UC03 ..> UC08 : <<include>>
+UC03 ..> UC09 : <<include>>
+UC03 ..> UC07 : <<include>>
+UC06 ..> UC08 : <<include>>
+UC06 ..> UC09 : <<include>>
+UC13 ..> UC07 : <<include>>
+UC15 ..> UC07 : <<include>>
+UC02 ..> UC01 : <<extend>>
+UC21 ..> UC04 : <<extend>>
+EXP --|> STAFF
+QC --|> STAFF
+OPS --|> STAFF
+DATA --|> STAFF
+@enduml

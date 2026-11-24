@@ -1,0 +1,149 @@
+{
+ "BP-00_ban-do-quy-trinh_AS-IS.bpmn": {
+  "errors": [],
+  "elements": {
+   "startEvent": 3,
+   "callActivity": 4,
+   "endEvent": 3,
+   "messageFlow": 3,
+   "pool": 3,
+   "lane": 4
+  }
+ },
+ "BP-00_ban-do-quy-trinh_TO-BE.bpmn": {
+  "errors": [],
+  "elements": {
+   "startEvent": 3,
+   "callActivity": 4,
+   "endEvent": 3,
+   "messageFlow": 3,
+   "pool": 3,
+   "lane": 4
+  }
+ },
+ "BP-01_tao-thiet-ke.bpmn": {
+  "errors": [],
+  "elements": {
+   "startEvent": 1,
+   "userTask": 3,
+   "exclusiveGateway": 4,
+   "serviceTask": 6,
+   "sendTask": 2,
+   "endEvent": 4,
+   "businessRuleTask": 2,
+   "subProcess": 1,
+   "boundaryEvent": 1,
+   "messageFlow": 2,
+   "pool": 2,
+   "lane": 3
+  }
+ },
+ "BP-01a_tao-mot-phuong-an.bpmn": {
+  "errors": [],
+  "elements": {
+   "startEvent": 1,
+   "serviceTask": 7,
+   "boundaryEvent": 1,
+   "endEvent": 2,
+   "businessRuleTask": 2,
+   "exclusiveGateway": 4,
+   "pool": 1,
+   "lane": 2
+  }
+ },
+ "BP-02_xem-tai-chinh-sua_AS-IS.bpmn": {
+  "errors": [],
+  "elements": {
+   "startEvent": 1,
+   "userTask": 4,
+   "exclusiveGateway": 5,
+   "scriptTask": 1,
+   "endEvent": 4,
+   "serviceTask": 2,
+   "manualTask": 1,
+   "businessRuleTask": 2,
+   "pool": 1,
+   "lane": 3
+  }
+ },
+ "BP-02_xem-tai-chinh-sua_TO-BE.bpmn": {
+  "errors": [],
+  "elements": {
+   "startEvent": 1,
+   "userTask": 5,
+   "exclusiveGateway": 6,
+   "serviceTask": 4,
+   "endEvent": 5,
+   "manualTask": 1,
+   "businessRuleTask": 2,
+   "pool": 1,
+   "lane": 3
+  }
+ },
+ "BP-03_kiem-soat-tham-dinh-xuat-ban_AS-IS.bpmn": {
+  "errors": [],
+  "elements": {
+   "startEvent": 2,
+   "userTask": 6,
+   "exclusiveGateway": 5,
+   "endEvent": 7,
+   "sendTask": 1,
+   "receiveTask": 1,
+   "serviceTask": 2,
+   "businessRuleTask": 1,
+   "messageFlow": 2,
+   "pool": 2,
+   "lane": 3
+  }
+ },
+ "BP-03_kiem-soat-tham-dinh-xuat-ban_TO-BE.bpmn": {
+  "errors": [],
+  "elements": {
+   "startEvent": 2,
+   "businessRuleTask": 3,
+   "exclusiveGateway": 9,
+   "endEvent": 7,
+   "userTask": 4,
+   "serviceTask": 3,
+   "sendTask": 2,
+   "eventBasedGateway": 1,
+   "intermediateCatchEvent": 2,
+   "messageFlow": 3,
+   "pool": 2,
+   "lane": 3
+  }
+ },
+ "BP-04_tiep-nhan-hien-vat_AS-IS.bpmn": {
+  "errors": [],
+  "elements": {
+   "startEvent": 1,
+   "userTask": 4,
+   "serviceTask": 3,
+   "exclusiveGateway": 3,
+   "endEvent": 3,
+   "businessRuleTask": 1,
+   "manualTask": 1,
+   "messageFlow": 1,
+   "pool": 2,
+   "lane": 2
+  }
+ },
+ "BP-04_tiep-nhan-hien-vat_TO-BE.bpmn": {
+  "errors": [],
+  "elements": {
+   "startEvent": 1,
+   "userTask": 3,
+   "serviceTask": 5,
+   "exclusiveGateway": 4,
+   "endEvent": 4,
+   "businessRuleTask": 1,
+   "manualTask": 1,
+   "eventBasedGateway": 1,
+   "intermediateCatchEvent": 2,
+   "sendTask": 1,
+   "messageFlow": 3,
+   "pool": 2,
+   "lane": 2
+  }
+ }
+}

@@ -1,0 +1,112 @@
+{
+ "BP-00_ban-do-quy-trinh_AS-IS": {
+  "tasks": 4,
+  "human": 0,
+  "auto": 4,
+  "gateways": 0,
+  "ends": 3,
+  "handoffs": 0,
+  "messages": 3,
+  "pools": 3,
+  "lanes": 4
+ },
+ "BP-00_ban-do-quy-trinh_TO-BE": {
+  "tasks": 4,
+  "human": 0,
+  "auto": 4,
+  "gateways": 0,
+  "ends": 3,
+  "handoffs": 0,
+  "messages": 3,
+  "pools": 3,
+  "lanes": 4
+ },
+ "BP-01_tao-thiet-ke": {
+  "tasks": 14,
+  "human": 3,
+  "auto": 11,
+  "gateways": 4,
+  "ends": 4,
+  "handoffs": 3,
+  "messages": 2,
+  "pools": 2,
+  "lanes": 3
+ },
+ "BP-01a_tao-mot-phuong-an": {
+  "tasks": 9,
+  "human": 0,
+  "auto": 9,
+  "gateways": 4,
+  "ends": 2,
+  "handoffs": 0,
+  "messages": 0,
+  "pools": 1,
+  "lanes": 2
+ },
+ "BP-02_xem-tai-chinh-sua_AS-IS": {
+  "tasks": 10,
+  "human": 5,
+  "auto": 5,
+  "gateways": 5,
+  "ends": 4,
+  "handoffs": 6,
+  "messages": 0,
+  "pools": 1,
+  "lanes": 3
+ },
+ "BP-02_xem-tai-chinh-sua_TO-BE": {
+  "tasks": 12,
+  "human": 6,
+  "auto": 6,
+  "gateways": 6,
+  "ends": 5,
+  "handoffs": 7,
+  "messages": 0,
+  "pools": 1,
+  "lanes": 3
+ },
+ "BP-03_kiem-soat-tham-dinh-xuat-ban_AS-IS": {
+  "tasks": 11,
+  "human": 6,
+  "auto": 5,
+  "gateways": 5,
+  "ends": 7,
+  "handoffs": 6,
+  "messages": 2,
+  "pools": 2,
+  "lanes": 3
+ },
+ "BP-03_kiem-soat-tham-dinh-xuat-ban_TO-BE": {
+  "tasks": 12,
+  "human": 4,
+  "auto": 8,
+  "gateways": 10,
+  "ends": 7,
+  "handoffs": 8,
+  "messages": 3,
+  "pools": 2,
+  "lanes": 3
+ },
+ "BP-04_tiep-nhan-hien-vat_AS-IS": {
+  "tasks": 9,
+  "human": 5,
+  "auto": 4,
+  "gateways": 3,
+  "ends": 3,
+  "handoffs": 4,
+  "messages": 1,
+  "pools": 2,
+  "lanes": 2
+ },
+ "BP-04_tiep-nhan-hien-vat_TO-BE": {
+  "tasks": 11,
+  "human": 4,
+  "auto": 7,
+  "gateways": 5,
+  "ends": 4,
+  "handoffs": 9,
+  "messages": 3,
+  "pools": 2,
+  "lanes": 2
+ }
+}
