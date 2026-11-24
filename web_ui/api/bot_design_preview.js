@@ -80,24 +80,33 @@ async function sendText(fetchWithTimeout, zaloBase, zaloToken, chatId, text) {
 }
 
 async function sendPhoto(fetchWithTimeout, zaloBase, zaloToken, chatId, photoUrl, caption) {
-    await fetchWithTimeout(`${zaloBase}/bot${zaloToken}/sendPhoto`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: chatId, photo: photoUrl, caption }),
-    }, 8000).catch(() => {});
+    try {
+        const response = await fetchWithTimeout(`${zaloBase}/bot${zaloToken}/sendPhoto`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chatId, photo: photoUrl, caption }),
+        }, 8000);
+        if (!response.ok) return false;
+        const result = await response.json();
+        return result.ok !== false && (result.error_code == null || result.error_code === 0);
+    } catch (_) {
+        return false;
+    }
 }
 
 async function sendFourDesigns(fetchWithTimeout, zaloBase, zaloToken, chatId, vessel, urls, prefixLabel) {
+    let sent = 0;
     for (let i = 0; i < urls.length; i++) {
-        await sendPhoto(
+        if (await sendPhoto(
             fetchWithTimeout,
             zaloBase,
             zaloToken,
             chatId,
             urls[i],
             `${prefixLabel} · Thiết kế ${i + 1}/4 — Bình #${vessel.num}: ${vessel.name}`
-        );
+        )) sent++;
     }
+    return sent;
 }
 
 async function pollAndSendWhenDone({
@@ -131,11 +140,13 @@ async function pollAndSendWhenDone({
                     zaloBase,
                     zaloToken,
                     chatId,
-                    `✅ Đã sinh xong 4/4 thiết kế mới trên GPU T4 cho Bình #${vessel.num}: ${vessel.name}! Đang gửi 4 ảnh vào Zalo...`
+                    `✅ GPU đã hoàn tất lượt ${jobId} cho Bình #${vessel.num}: ${vessel.name}. Đang gửi ảnh vào Zalo...`
                 );
                 const urls = [1, 2, 3, 4].map((i) => `${PUBLIC_BASE}/api/live/media/run/${job.run_id}/V${i}_aodai.png`);
-                await sendFourDesigns(fetchWithTimeout, zaloBase, zaloToken, chatId, vessel, urls, 'Ảnh mới sinh từ GPU');
-                return { ok: true, mode: 'vessel_auto_completed', runId: job.run_id };
+                const sent = await sendFourDesigns(fetchWithTimeout, zaloBase, zaloToken, chatId, vessel, urls, 'Ảnh mới sinh từ GPU');
+                await sendText(fetchWithTimeout, zaloBase, zaloToken, chatId,
+                    sent === 4 ? '✅ Đã gửi đủ 4 ảnh.' : `⚠️ Chỉ gửi được ${sent}/4 ảnh. Gõ "xem ${jobId}" để thử nhận lại đúng lượt này.`);
+                return { ok: true, mode: 'vessel_auto_completed', runId: job.run_id, sent };
             }
             await sendText(fetchWithTimeout, zaloBase, zaloToken, chatId, `⚠️ Lượt sinh kết thúc với trạng thái: ${job.status}.`);
             return { ok: true, mode: 'vessel_auto_failed' };
@@ -144,17 +155,19 @@ async function pollAndSendWhenDone({
 
     if (hop < 4) {
         const secret = (process.env.ALERT_ZALO_WEBHOOK_SECRET || '').trim();
-        await fetchWithTimeout(`${PUBLIC_BASE}/api/live/zalo-webhook`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(secret ? { 'x-bot-api-secret-token': secret } : {}),
-            },
-            body: JSON.stringify({
-                internal_poll: { jobId, heritageId: vessel.id, chatId, hop: hop + 1 },
-            }),
-        }, 2500).catch(() => {});
-        return { ok: true, mode: 'vessel_poll_continued', hop: hop + 1 };
+        try {
+            const continuation = await fetchWithTimeout(`${PUBLIC_BASE}/api/live/zalo-webhook`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(secret ? { 'x-bot-api-secret-token': secret } : {}),
+                },
+                body: JSON.stringify({
+                    internal_poll: { jobId, heritageId: vessel.id, chatId, hop: hop + 1 },
+                }),
+            }, 2500);
+            if (continuation.ok) return { ok: true, mode: 'vessel_poll_continued', hop: hop + 1 };
+        } catch (_) {}
     }
 
     await sendText(
@@ -162,7 +175,7 @@ async function pollAndSendWhenDone({
         zaloBase,
         zaloToken,
         chatId,
-        `⏳ GPU đang hoàn thiện bước cuối cho Bình #${vessel.num}: ${vessel.name}. Bạn gõ "xem" để nhận 4 ảnh nhé!`
+        `⏳ Chưa xác nhận được ảnh đã gửi cho Bình #${vessel.num}: ${vessel.name}. Gõ "xem ${jobId}" để kiểm tra và nhận đúng lượt sinh này.`
     );
     return { ok: true, mode: 'vessel_poll_timeout' };
 }
@@ -239,7 +252,7 @@ async function tryHandleDesignCommand({
     const genMatch = clean.match(/^(?:sinh|gpu|tao)\s+([1-6]|lr3d_\d+|hv\d+)$/);
     if (genMatch) {
         const ownerId = (process.env.ALERT_ZALO_USER_CHAT_ID || '').trim();
-        if (ownerId && chatId !== ownerId) {
+        if (!ownerId || chatId !== ownerId) {
             return { ok: true, ignored: 'operator_only' };
         }
         const vessel = findVessel(genMatch[1]);
@@ -274,7 +287,7 @@ async function tryHandleDesignCommand({
                 chatId,
                 `${formatBookBlock(vessel)}\n\n` +
                 '🎨 Đang sinh 4 thiết kế mới trên GPU T4.\n' +
-                '⏳ Bot sẽ tự động gửi 4 ảnh PNG vừa sinh vào đây ngay khi GPU chạy xong (khoảng 60–90 giây)!'
+                `⏳ Bot sẽ tự động gửi 4 ảnh khi xong. Nếu cần nhận lại, gõ "xem ${job.job_id}".`
             );
             return await pollAndSendWhenDone({
                 jobId: job.job_id,
@@ -293,39 +306,50 @@ async function tryHandleDesignCommand({
         }
     }
 
-    // 4. Gõ "xem" (hoặc "xem 1..6"): lấy 4 ảnh mới sinh gần nhất trên Modal Volume mà không cần mã jobId
-    const watchMatch = clean.match(/^xem(?:\s+([1-6]|lr3d_\d+)(?:\s+([a-z0-9_-]+))?)?$/);
+    // Chỉ đọc đúng job của cuộc trò chuyện; không chọn run mới nhất của người khác.
+    const watchMatch = clean.match(/^xem(?:\s+([a-z0-9_-]{1,100}))?$/);
     if (watchMatch) {
+        const ownerId = (process.env.ALERT_ZALO_USER_CHAT_ID || '').trim();
+        if (!ownerId || chatId !== ownerId) return { ok: true, ignored: 'operator_only' };
         const saved = lastJobByChat.get(chatId);
-        const vessel = (watchMatch[1] ? findVessel(watchMatch[1]) : null) || saved?.vessel || VESSELS[0];
+        const jobId = watchMatch[1] || saved?.jobId;
+        if (!jobId) {
+            await sendText(fetchWithTimeout, zaloBase, zaloToken, chatId,
+                'Chưa có mã lượt sinh trong phiên bot này. Hãy gõ "xem <mã job>" từ tin nhắn bot gửi khi bắt đầu sinh.');
+            return { ok: true, mode: 'vessel_watch_missing_job' };
+        }
         const config = getBackendConfig();
         try {
             const res = await fetchWithTimeout(
-                `${config.modalUrl}/passports`,
+                `${config.modalUrl}/generate/${encodeURIComponent(jobId)}`,
                 { headers: buildBackendHeaders('modal', config) },
                 config.modalTimeoutMs
             );
             if (res.ok) {
-                const items = await res.json();
-                const forVessel = Array.isArray(items)
-                    ? items.filter((p) => p.heritage_id === vessel.id && p.run_id)
-                    : [];
-                if (forVessel.length > 0) {
-                    const latestRunId = forVessel.map((p) => p.run_id).sort().pop();
+                const job = await res.json();
+                const vessel = findVessel(job.heritage_id);
+                if (job.status === 'completed' && job.run_id && vessel) {
                     await sendText(
                         fetchWithTimeout,
                         zaloBase,
                         zaloToken,
                         chatId,
-                        `${formatBookBlock(vessel)}\n\n✅ Đang gửi 4 ảnh mới nhất từ GPU Modal...`
+                        `${formatBookBlock(vessel)}\n\n✅ Đang gửi ảnh của lượt ${jobId}...`
                     );
-                    const urls = [1, 2, 3, 4].map((i) => `${PUBLIC_BASE}/api/live/media/run/${latestRunId}/V${i}_aodai.png`);
-                    await sendFourDesigns(fetchWithTimeout, zaloBase, zaloToken, chatId, vessel, urls, 'Ảnh mới sinh từ GPU');
-                    return { ok: true, mode: 'vessel_watch_completed', runId: latestRunId };
+                    const urls = [1, 2, 3, 4].map((i) => `${PUBLIC_BASE}/api/live/media/run/${job.run_id}/V${i}_aodai.png`);
+                    const sent = await sendFourDesigns(fetchWithTimeout, zaloBase, zaloToken, chatId, vessel, urls, 'Ảnh mới sinh từ GPU');
+                    await sendText(fetchWithTimeout, zaloBase, zaloToken, chatId,
+                        sent === 4 ? '✅ Đã gửi đủ 4 ảnh.' : `⚠️ Chỉ gửi được ${sent}/4 ảnh. Gõ "xem ${jobId}" để thử lại.`);
+                    return { ok: true, mode: 'vessel_watch_completed', runId: job.run_id, sent };
+                }
+                if (job.status === 'failed') {
+                    await sendText(fetchWithTimeout, zaloBase, zaloToken, chatId, `⚠️ Lượt ${jobId} sinh ảnh thất bại.`);
+                    return { ok: true, mode: 'vessel_watch_failed' };
                 }
             }
         } catch (_) {}
-        await sendText(fetchWithTimeout, zaloBase, zaloToken, chatId, '⏳ Lượt sinh GPU đang chạy hoặc chưa hoàn tất. Bạn đợi thêm vài giây rồi gõ lại "xem" nhé!');
+        await sendText(fetchWithTimeout, zaloBase, zaloToken, chatId,
+            `⏳ Chưa lấy được kết quả lượt ${jobId}. Nếu GPU còn chạy, hãy thử lại bằng "xem ${jobId}".`);
         return { ok: true, mode: 'vessel_watch_running' };
     }
 

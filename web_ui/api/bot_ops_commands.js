@@ -8,63 +8,26 @@
  *   - /menu, help, tro giup: Hướng dẫn danh mục lệnh cho người dùng.
  */
 
-// Ước tính chi phí 1 lượt sinh 4 ảnh trên T4 (~90s = 0.015$)
-const COST_PER_RUN = 0.015;
-const MONTHLY_CREDIT_ALLOWANCE = 30.0;
-
 function formatUsageReport(summary, runsCount) {
-    const metered = Number(summary?.metered_cost || 3.16);
-    const creditRemaining = Math.max(0, MONTHLY_CREDIT_ALLOWANCE - metered);
-    const runsRemaining = Math.floor(creditRemaining / COST_PER_RUN);
-    const designsRemaining = runsRemaining * 4;
-
-    const todayCost = Number(summary?.today_cost || 0.0).toFixed(4);
-    const weekCost = Number(summary?.week_cost || 2.21).toFixed(2);
-
-    return (
-        '📊 [BÁO CÁO MỨC DÙNG & SỐ LƯỢT GỌI CÒN LẠI]\n\n' +
-        '📅 Mức sử dụng (Theo ngày & tuần):\n' +
-        `• Hôm nay: ${todayCost}$\n` +
-        `• 7 ngày qua: ~${weekCost}$\n` +
-        '• Chi tiết gần nhất: 21/11 (~1.61$), 20/11 (~0.60$)\n\n' +
-        '💳 Hạn mức & Credit tháng này:\n' +
-        `• Đã sử dụng: ~${metered.toFixed(2)}$ / ${MONTHLY_CREDIT_ALLOWANCE.toFixed(2)}$ credit miễn phí\n` +
-        `• Credit còn lại: ~${creditRemaining.toFixed(2)}$\n` +
-        '• Tiền thực phải thanh toán: 0.00$ (100% miễn phí)\n\n' +
-        '🎯 Ước tính khả năng sinh ảnh còn lại:\n' +
-        `• Đã hoàn thành trong lịch sử: ${runsCount || 24} lượt sinh\n` +
-        `• Số lượt sinh còn lại: ~${runsRemaining.toLocaleString('vi-VN')} lượt\n` +
-        `👉 Tương đương tạo được thêm ~${designsRemaining.toLocaleString('vi-VN')} chiếc áo dài mới trên GPU T4!`
-    );
+    const count = Number.isInteger(runsCount) && runsCount >= 0
+        ? `Đã ghi nhận ${runsCount} lượt sinh trên backend.`
+        : 'Chưa xác minh được số lượt sinh.';
+    return `📊 [MỨC SỬ DỤNG]\n${count}\n` +
+        'Bot chưa kết nối API billing Modal/AWS nên không thể xác minh chi phí ngày, tuần hoặc số credit còn lại. ' +
+        'Hãy xem trực tiếp trong trang Billing của Modal và AWS.';
 }
 
 function formatCreditReport(summary) {
-    const metered = Number(summary?.metered_cost || 3.16);
-    const creditRemaining = Math.max(0, MONTHLY_CREDIT_ALLOWANCE - metered);
-    const runsRemaining = Math.floor(creditRemaining / COST_PER_RUN);
-
-    return (
-        '💳 [KIỂM TRA HẠN MỨC & CREDIT HỆ THỐNG]\n\n' +
-        '1️⃣ Modal GPU Backend:\n' +
-        `• Hạn mức cấp: ${MONTHLY_CREDIT_ALLOWANCE.toFixed(2)}$ / tháng\n` +
-        `• Đã tiêu dùng: ~${metered.toFixed(2)}$\n` +
-        `• Số dư khả dụng: ~${creditRemaining.toFixed(2)}$\n` +
-        '• Hóa đơn thực tế: 0.00$ (100% miễn phí)\n' +
-        `🎯 Dự kiến: Còn đủ chạy ~${runsRemaining.toLocaleString('vi-VN')} lượt sinh GPU T4!\n\n` +
-        '2️⃣ AWS CodeBuild CD & Parameter Store:\n' +
-        '• Hạn mức AWS Free Tier: 100 phút build build.general1.small / tháng (miễn phí trọn đời)\n' +
-        '• Đã sử dụng: ~5 phút (1 lượt build kiểm thử thành công)\n' +
-        '• Số phút build CD còn lại: ~95 phút (~19 lần deploy backend Modal)\n' +
-        '• Parameter Store (Token CD): Standard Tier (10.000 tham số miễn phí)\n' +
-        '• Chi phí AWS phát sinh: 0.00$'
-    );
+    return '💳 [CREDIT VÀ CHI PHÍ]\nBot chưa kết nối API billing Modal/AWS. ' +
+        'Không thể xác minh số dư, hóa đơn hoặc hạn mức còn lại từ Zalo. ' +
+        'Hãy kiểm tra trang Billing của hai dịch vụ trước khi chạy GPU hoặc CodeBuild.';
 }
 
 function formatGpuStatus(health, elapsedMs) {
     if (!health) {
         return (
             '🟡 [TRẠNG THÁI GPU MODAL]\n\n' +
-            '• Container GPU T4 đang ở chế độ ngủ tiết kiệm điện (idle scaledown).\n' +
+            '• Không xác minh được trạng thái Modal (có thể do mạng, timeout hoặc backend lỗi).\n' +
             '👉 Bạn gõ "sinh 1" .. "sinh 6" để gọi GPU khởi động và sinh ảnh thật nhé!'
         );
     }
@@ -79,7 +42,10 @@ function formatGpuStatus(health, elapsedMs) {
 }
 
 function formatRunsHistory(runs) {
-    if (!Array.isArray(runs) || runs.length === 0) {
+    if (!Array.isArray(runs)) {
+        return '📜 [LỊCH SỬ SINH ẢNH]\nKhông kết nối được Modal; chưa xác minh được lịch sử.';
+    }
+    if (runs.length === 0) {
         return '📜 [LỊCH SỬ SINH ẢNH]\nChưa có lượt sinh ảnh nào được ghi nhận trên Volume.';
     }
     const latest = runs.slice(-3).reverse();
@@ -92,7 +58,7 @@ function formatRunsHistory(runs) {
         `📜 [LỊCH SỬ SINH ẢNH GPU]\n\n` +
         `• Tổng số lượt sinh đã hoàn tất: ${runs.length} lượt\n\n` +
         `🕒 3 lượt gần nhất:\n${itemsText}\n\n` +
-        '👉 Gõ "xem" để tải lại 4 ảnh của lượt sinh mới nhất vào Zalo!'
+        '👉 Gõ "xem" để nhận lại ảnh của lượt sinh gắn với cuộc trò chuyện này (nếu còn mã job).'
     );
 }
 
@@ -107,7 +73,7 @@ function formatDeployInstructions() {
         '• Bấm nút: [ Start build ]\n' +
         '• Hệ thống AWS CodeBuild sẽ tự động lấy Token CD bảo mật từ Parameter Store và deploy code mới lên Modal mà không lộ khóa ra ngoài!\n\n' +
         '💳 Hạn mức AWS CodeBuild:\n' +
-        '• Còn ~95 / 100 phút build miễn phí tháng này (đủ chạy ~19 lần deploy).\n' +
+        '• Xem mức dùng và chi phí thực tế trong AWS Billing trước khi deploy.\n' +
         '• Parameter Store Token CD: Miễn phí hoàn toàn (Standard Tier).\n\n' +
         '🔒 Lưu ý bảo mật: Bot chỉ là giao diện giám sát & thông báo, quyền bấm deploy cuối cùng thuộc về người vận hành trên AWS Console.'
     );
@@ -121,8 +87,8 @@ function formatHelpMenu() {
         '• "sinh 1" .. "sinh 6": Gọi GPU Modal T4 sinh mới 4 ảnh áo dài và tự động gửi vào Zalo.\n' +
         '• "xem": Nhận lại 4 ảnh áo dài vừa sinh gần nhất từ GPU.\n\n' +
         '⚙️ Quản trị & Giám sát hệ thống (Song ngữ Anh - Việt):\n' +
-        '• /usage (hoặc "mức dùng", "chi phí", "tiêu thụ"): Xem chi phí theo ngày, tuần & số lượt còn lại.\n' +
-        '• /checkcredit (hoặc "số dư", "tiền", "credit"): Xem số dư credit Modal & AWS CD miễn phí.\n' +
+        '• /usage (hoặc "mức dùng", "chi phí", "tiêu thụ"): Xem số lượt đã ghi nhận; chi phí cần kiểm tra trong Billing.\n' +
+        '• /checkcredit (hoặc "số dư", "tiền", "credit"): Hướng dẫn kiểm tra credit Modal và AWS.\n' +
         '• /gpu (hoặc "trạng thái", "thiết bị", "phần cứng"): Kiểm tra tình trạng cụm GPU T4 (online/idle).\n' +
         '• /runs (hoặc "lịch sử", "danh sách sinh"): Xem tổng số lượt sinh và 3 lượt mới nhất.\n' +
         '• /deploy (hoặc "triển khai", "phát hành", "/cd"): Hướng dẫn & link triển khai AWS CodeBuild CD.'
@@ -153,7 +119,7 @@ async function tryHandleOpsCommand({
     // 2. Kiểm tra mức dùng /usage: /usage, usage, muc dung, chi phi, da dung
     if (/^(\/usage|usage|muc dung|chi phi|da dung|tieu thu)$/.test(text)) {
         const config = getBackendConfig();
-        let runsCount = 24;
+        let runsCount = null;
         try {
             const rRes = await fetchWithTimeout(`${config.modalUrl}/runs`, {
                 headers: buildBackendHeaders('modal', config),
@@ -208,7 +174,7 @@ async function tryHandleOpsCommand({
     // 5. Kiểm tra lịch sử runs: /runs, runs, lich su, danh sach sinh, cac luot sinh
     if (/^(\/runs|runs|lich su|danh sach sinh|cac luot sinh|lich|nhat ky)$/.test(text)) {
         const config = getBackendConfig();
-        let runs = [];
+        let runs = null;
         try {
             const rRes = await fetchWithTimeout(`${config.modalUrl}/runs`, {
                 headers: buildBackendHeaders('modal', config),
