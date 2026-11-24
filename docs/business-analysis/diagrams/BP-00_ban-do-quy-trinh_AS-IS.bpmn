@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" id="Defs_BP00_ASIS" targetNamespace="https://tai-sinh-di-san-so/bpmn/BP00_ASIS" exporter="tsds-ba-kit" exporterVersion="2.0">
+  <bpmn:dataStore id="Store_DS_H" name="Danh mục hiện vật (metadata.json)" />
+  <bpmn:dataStore id="Store_DS_P" name="Kho Design Passport" />
+  <bpmn:collaboration id="Collab_BP00_ASIS">
+    <bpmn:participant id="OWN" name="Chủ sở hữu ảnh / bộ dữ liệu" />
+    <bpmn:participant id="P" name="Nền tảng Tái Sinh Di Sản Số" processRef="Proc_P" />
+    <bpmn:participant id="EXP" name="Hội đồng chuyên gia" />
+    <bpmn:messageFlow id="Msg_C4_OWN" name="Đề nghị cấp phép (khi quyền chưa rõ)" sourceRef="C4" targetRef="OWN" />
+    <bpmn:messageFlow id="Msg_C3_EXP" name="Gói / link chấm mù" sourceRef="C3" targetRef="EXP" />
+    <bpmn:messageFlow id="Msg_EXP_C3" name="Phiếu chấm" sourceRef="EXP" targetRef="C3" />
+  </bpmn:collaboration>
+  <bpmn:process id="Proc_P" name="Nền tảng Tái Sinh Di Sản Số" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_P">
+      <bpmn:lane id="L_DATA" name="Người quản lý dữ liệu">
+        <bpmn:flowNodeRef>S_D</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>C4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>E_D</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="L_USR" name="Nhà thiết kế (web)">
+        <bpmn:flowNodeRef>S_U</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>C2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>E_U</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="L_SYS" name="Hệ thống (web, API, pipeline AI)">
+        <bpmn:flowNodeRef>C1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="L_QC" name="QC Officer">
+        <bpmn:flowNodeRef>S_Q</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>C3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>E_Q</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="S_D" name="Có hiện vật mới">
+      <bpmn:outgoing>Flow_S_D_C4</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:callActivity id="C4" name="BP-04 Tiếp nhận hiện vật, quản lý quyền">
+      <bpmn:incoming>Flow_S_D_C4</bpmn:incoming>
+      <bpmn:outgoing>Flow_C4_E_D</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="Data_C4_DS_H">
+        <bpmn:targetRef>DS_H</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:callActivity>
+    <bpmn:endEvent id="E_D" name="Hiện vật có trên Studio">
+      <bpmn:incoming>Flow_C4_E_D</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:dataStoreReference id="DS_H" name="Danh mục hiện vật (metadata.json)" dataStoreRef="Store_DS_H" />
+    <bpmn:startEvent id="S_U" name="Cần một thiết kế">
+      <bpmn:outgoing>Flow_S_U_C1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:callActivity id="C1" name="BP-01 Tạo thiết kế áo dài">
+      <bpmn:incoming>Flow_S_U_C1</bpmn:incoming>
+      <bpmn:outgoing>Flow_C1_C2</bpmn:outgoing>
+      <bpmn:property id="Prop_C1" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="Data_DS_H_C1">
+        <bpmn:sourceRef>DS_H</bpmn:sourceRef>
+        <bpmn:targetRef>Prop_C1</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataOutputAssociation id="Data_C1_DS_P">
+        <bpmn:targetRef>DS_P</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:callActivity>
+    <bpmn:callActivity id="C2" name="BP-02 Xem, tải, chỉnh sửa thiết kế">
+      <bpmn:incoming>Flow_C1_C2</bpmn:incoming>
+      <bpmn:outgoing>Flow_C2_E_U</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="Data_C2_DS_P">
+        <bpmn:targetRef>DS_P</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:callActivity>
+    <bpmn:endEvent id="E_U" name="Kết thúc phiên thiết kế">
+      <bpmn:incoming>Flow_C2_E_U</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:dataStoreReference id="DS_P" name="Kho Design Passport" dataStoreRef="Store_DS_P" />
+    <bpmn:startEvent id="S_Q" name="QC mở đợt thẩm định (thủ công)">
+      <bpmn:outgoing>Flow_S_Q_C3</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:callActivity id="C3" name="BP-03 Kiểm soát chất lượng, thẩm định, xuất bản">
+      <bpmn:incoming>Flow_S_Q_C3</bpmn:incoming>
+      <bpmn:outgoing>Flow_C3_E_Q</bpmn:outgoing>
+      <bpmn:property id="Prop_C3" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="Data_DS_P_C3">
+        <bpmn:sourceRef>DS_P</bpmn:sourceRef>
+        <bpmn:targetRef>Prop_C3</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:callActivity>
+    <bpmn:endEvent id="E_Q" name="Thiết kế có kết luận">
+      <bpmn:incoming>Flow_C3_E_Q</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_S_D_C4" name="" sourceRef="S_D" targetRef="C4" />
+    <bpmn:sequenceFlow id="Flow_C4_E_D" name="" sourceRef="C4" targetRef="E_D" />
+    <bpmn:sequenceFlow id="Flow_S_U_C1" name="" sourceRef="S_U" targetRef="C1" />
+    <bpmn:sequenceFlow id="Flow_C1_C2" name="" sourceRef="C1" targetRef="C2" />
+    <bpmn:sequenceFlow id="Flow_C2_E_U" name="" sourceRef="C2" targetRef="E_U" />
+    <bpmn:sequenceFlow id="Flow_S_Q_C3" name="" sourceRef="S_Q" targetRef="C3" />
+    <bpmn:sequenceFlow id="Flow_C3_E_Q" name="" sourceRef="C3" targetRef="E_Q" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_BP00_ASIS" name="BP-00 AS-IS — Bản đồ quy trình">
+    <bpmndi:BPMNPlane id="Plane_BP00_ASIS" bpmnElement="Collab_BP00_ASIS">
+      <bpmndi:BPMNShape id="OWN_di" bpmnElement="OWN" isHorizontal="false" color:background-color="#F2F2F2" color:border-color="#5F6368">
+        <dc:Bounds x="20" y="20" width="64" height="1434" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P_di" bpmnElement="P" isHorizontal="false">
+        <dc:Bounds x="214" y="20" width="1064" height="1434" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="L_QC_di" bpmnElement="L_QC" isHorizontal="false">
+        <dc:Bounds x="1062" y="54" width="216" height="1400" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="L_SYS_di" bpmnElement="L_SYS" isHorizontal="false">
+        <dc:Bounds x="646" y="54" width="416" height="1400" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="L_USR_di" bpmnElement="L_USR" isHorizontal="false">
+        <dc:Bounds x="430" y="54" width="216" height="1400" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="L_DATA_di" bpmnElement="L_DATA" isHorizontal="false">
+        <dc:Bounds x="214" y="54" width="216" height="1400" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="S_D_di" bpmnElement="S_D">
+        <dc:Bounds x="304" y="140" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="345" y="151" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="C4_di" bpmnElement="C4">
+        <dc:Bounds x="240" y="240" width="164" height="92" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="E_D_di" bpmnElement="E_D">
+        <dc:Bounds x="304" y="396" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="345" y="401" width="78" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DS_H_di" bpmnElement="DS_H" color:background-color="#FFFFFF" color:border-color="#455A64">
+        <dc:Bounds x="929" y="261" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="916" y="216" width="77" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="S_U_di" bpmnElement="S_U">
+        <dc:Bounds x="520" y="524" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="498" y="505" width="81" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="C1_di" bpmnElement="C1">
+        <dc:Bounds x="672" y="624" width="164" height="92" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="C2_di" bpmnElement="C2">
+        <dc:Bounds x="456" y="752" width="164" height="92" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="E_U_di" bpmnElement="E_U">
+        <dc:Bounds x="520" y="908" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="561" y="913" width="71" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DS_P_di" bpmnElement="DS_P" color:background-color="#FFFFFF" color:border-color="#455A64">
+        <dc:Bounds x="929" y="901" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="984" y="913" width="57" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="S_Q_di" bpmnElement="S_Q">
+        <dc:Bounds x="1152" y="1062" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1129" y="1030" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="C3_di" bpmnElement="C3">
+        <dc:Bounds x="1088" y="1162" width="164" height="92" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="E_Q_di" bpmnElement="E_Q">
+        <dc:Bounds x="1152" y="1318" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1193" y="1323" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_S_D_C4_di" bpmnElement="Flow_S_D_C4">
+        <di:waypoint x="322" y="176" />
+        <di:waypoint x="322" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C4_E_D_di" bpmnElement="Flow_C4_E_D">
+        <di:waypoint x="322" y="332" />
+        <di:waypoint x="322" y="396" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S_U_C1_di" bpmnElement="Flow_S_U_C1">
+        <di:waypoint x="538" y="560" />
+        <di:waypoint x="538" y="670" />
+        <di:waypoint x="672" y="670" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C1_C2_di" bpmnElement="Flow_C1_C2">
+        <di:waypoint x="754" y="716" />
+        <di:waypoint x="754" y="734" />
+        <di:waypoint x="538" y="734" />
+        <di:waypoint x="538" y="752" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C2_E_U_di" bpmnElement="Flow_C2_E_U">
+        <di:waypoint x="538" y="844" />
+        <di:waypoint x="538" y="908" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S_Q_C3_di" bpmnElement="Flow_S_Q_C3">
+        <di:waypoint x="1170" y="1098" />
+        <di:waypoint x="1170" y="1162" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C3_E_Q_di" bpmnElement="Flow_C3_E_Q">
+        <di:waypoint x="1170" y="1254" />
+        <di:waypoint x="1170" y="1318" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EXP_di" bpmnElement="EXP" isHorizontal="false" color:background-color="#F2F2F2" color:border-color="#5F6368">
+        <dc:Bounds x="1408" y="20" width="64" height="1434" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Data_C4_DS_H_di" bpmnElement="Data_C4_DS_H">
+        <di:waypoint x="404" y="286" />
+        <di:waypoint x="929" y="286" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Data_DS_H_C1_di" bpmnElement="Data_DS_H_C1">
+        <di:waypoint x="954" y="311" />
+        <di:waypoint x="954" y="468" />
+        <di:waypoint x="754" y="468" />
+        <di:waypoint x="754" y="624" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Data_C1_DS_P_di" bpmnElement="Data_C1_DS_P">
+        <di:waypoint x="836" y="670" />
+        <di:waypoint x="954" y="670" />
+        <di:waypoint x="954" y="901" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Data_C2_DS_P_di" bpmnElement="Data_C2_DS_P">
+        <di:waypoint x="620" y="798" />
+        <di:waypoint x="754" y="798" />
+        <di:waypoint x="754" y="926" />
+        <di:waypoint x="929" y="926" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Data_DS_P_C3_di" bpmnElement="Data_DS_P_C3">
+        <di:waypoint x="954" y="951" />
+        <di:waypoint x="954" y="1208" />
+        <di:waypoint x="1088" y="1208" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Msg_C4_OWN_di" bpmnElement="Msg_C4_OWN">
+        <di:waypoint x="240" y="286" />
+        <di:waypoint x="84" y="286" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="119" y="242" width="87" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Msg_C3_EXP_di" bpmnElement="Msg_C3_EXP">
+        <di:waypoint x="1252" y="1194" />
+        <di:waypoint x="1408" y="1194" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1294" y="1163" width="73" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Msg_EXP_C3_di" bpmnElement="Msg_EXP_C3">
+        <di:waypoint x="1408" y="1222" />
+        <di:waypoint x="1252" y="1222" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1301" y="1204" width="59" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
