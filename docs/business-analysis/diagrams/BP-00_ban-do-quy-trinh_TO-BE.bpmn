@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" id="Defs_BP00_TOBE" targetNamespace="https://tai-sinh-di-san-so/bpmn/BP00_TOBE" exporter="tsds-ba-kit" exporterVersion="2.0">
-  <bpmn:dataStore id="Store_DS_H" name="Danh mục hiện vật (metadata.json)" />
+  <bpmn:dataStore id="Store_DS_H" name="Danh mục hiện vật" />
   <bpmn:dataStore id="Store_DS_P" name="Kho Design Passport" />
   <bpmn:collaboration id="Collab_BP00_TOBE">
-    <bpmn:participant id="OWN" name="Chủ sở hữu ảnh / bộ dữ liệu" />
+    <bpmn:participant id="OWN" name="Chủ sở hữu ảnh" />
     <bpmn:participant id="P" name="Nền tảng Tái Sinh Di Sản Số" processRef="Proc_P" />
     <bpmn:participant id="EXP" name="Hội đồng chuyên gia" />
-    <bpmn:messageFlow id="Msg_C4_OWN" name="Đề nghị cấp phép (khi quyền chưa rõ)" sourceRef="C4" targetRef="OWN" />
+    <bpmn:messageFlow id="Msg_C4_OWN" name="Đề nghị cấp phép" sourceRef="C4" targetRef="OWN" />
     <bpmn:messageFlow id="Msg_C3_EXP" name="Gói / link chấm mù" sourceRef="C3" targetRef="EXP" />
     <bpmn:messageFlow id="Msg_EXP_C3" name="Phiếu chấm" sourceRef="EXP" targetRef="C3" />
   </bpmn:collaboration>
@@ -17,12 +17,12 @@
         <bpmn:flowNodeRef>C4</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>E_D</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="L_USR" name="Nhà thiết kế (web)">
+      <bpmn:lane id="L_USR" name="Nhà thiết kế">
         <bpmn:flowNodeRef>S_U</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>C2</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>E_U</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="L_SYS" name="Hệ thống (web, API, pipeline AI)">
+      <bpmn:lane id="L_SYS" name="Hệ thống">
         <bpmn:flowNodeRef>C1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>S_Q</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>C3</bpmn:flowNodeRef>
@@ -43,7 +43,7 @@
     <bpmn:endEvent id="E_D" name="Hiện vật có trên Studio">
       <bpmn:incoming>Flow_C4_E_D</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:dataStoreReference id="DS_H" name="Danh mục hiện vật (metadata.json)" dataStoreRef="Store_DS_H" />
+    <bpmn:dataStoreReference id="DS_H" name="Danh mục hiện vật" dataStoreRef="Store_DS_H" />
     <bpmn:startEvent id="S_U" name="Cần một thiết kế">
       <bpmn:outgoing>Flow_S_U_C1</bpmn:outgoing>
     </bpmn:startEvent>
@@ -134,7 +134,7 @@
       <bpmndi:BPMNShape id="DS_H_di" bpmnElement="DS_H" color:background-color="#FFFFFF" color:border-color="#455A64">
         <dc:Bounds x="929" y="261" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="916" y="216" width="77" height="40" />
+          <dc:Bounds x="917" y="229" width="74" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="S_U_di" bpmnElement="S_U">
@@ -240,7 +240,7 @@
         <di:waypoint x="240" y="286" />
         <di:waypoint x="84" y="286" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="119" y="242" width="87" height="40" />
+          <dc:Bounds x="96" y="256" width="104" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Msg_C3_EXP_di" bpmnElement="Msg_C3_EXP">

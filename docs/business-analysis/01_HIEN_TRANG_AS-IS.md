@@ -126,7 +126,7 @@ không đầy đủ; **Thấp** = trình bày, quy ước.
 | Mã | Vấn đề | Mức | Căn cứ | Cách xử lý |
 |---|---|---|---|---|
 | U01 | Tác nhân "Người dùng đã đăng ký", ca UC01 "Đăng ký và đăng nhập", UC17 "Quản lý người dùng": hệ thống không có tài khoản; chỉ có một khoá API chung | Cao | `main.py::verify_api_key`, `edit-rules.js` (ID tự khai) | AS-IS bỏ; TO-BE đề xuất "Đăng nhập theo vai trò" |
-| U02 | Chuỗi tổng quát hoá Khách ← Người dùng đã đăng ký ← Nhà thiết kế không có khác biệt hành vi trong mã | Cao | Không có phân quyền | Gộp thành "Nhà thiết kế (người dùng web)" |
+| U02 | Chuỗi tổng quát hoá Khách ← Người dùng đã đăng ký ← Nhà thiết kế không có khác biệt hành vi trong mã | Cao | Không có phân quyền | Gộp thành "Nhà thiết kế" |
 | U03 | UC06 "Phân tích họa tiết", UC07 "Sinh họa tiết AI" là bước nội bộ, không phải mục tiêu của tác nhân; "Hệ thống xử lý AI" là thành phần bên trong ranh giới, không phải tác nhân | Cao | UML 2.5: actor nằm ngoài subject | Gộp vào "Tạo thiết kế áo dài" |
 | U04 | UC13 "Phê duyệt thiết kế" do QC thực hiện, «extend» UC12: trong mã, phê duyệt là hệ quả của quyết định chuyên gia (`decision = approve`), QC không có thao tác phê duyệt | Cao | `main.py::submit_review` | Bỏ; thay bằng "Xuất bản thiết kế" (có thật) |
 | U05 | Chuyên gia được vẽ như dùng hệ thống trực tiếp; thực tế chấm qua Google Form, QC nhập lại | Trung bình | `scripts/eval/` | Thêm Google Forms là hệ thống ngoài; tách "Điều phối thẩm định mù" (QC) và "Chấm mù" (chuyên gia) |

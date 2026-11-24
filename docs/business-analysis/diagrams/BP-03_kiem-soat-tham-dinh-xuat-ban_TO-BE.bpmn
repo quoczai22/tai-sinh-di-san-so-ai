@@ -4,7 +4,7 @@
   <bpmn:dataStore id="Store_DS2" name="Kho Design Passport" />
   <bpmn:collaboration id="Collab_BP03_TOBE">
     <bpmn:participant id="P" name="Nền tảng Tái Sinh Di Sản Số" processRef="Proc_P" />
-    <bpmn:participant id="EXP" name="Hội đồng chuyên gia (≥ 2 người)" processRef="Proc_EXP">
+    <bpmn:participant id="EXP" name="Hội đồng chuyên gia" processRef="Proc_EXP">
       <bpmn:participantMultiplicity minimum="2" maximum="5" />
     </bpmn:participant>
     <bpmn:messageFlow id="Msg_T4_ES" name="Link phiếu chấm mù" sourceRef="T4" targetRef="ES" />
@@ -22,7 +22,7 @@
         <bpmn:flowNodeRef>E4</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>E6</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="L_SYS" name="Hệ thống (API, hàng đợi thẩm định)">
+      <bpmn:lane id="L_SYS" name="Hệ thống">
         <bpmn:flowNodeRef>S</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>T1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>G1</bpmn:flowNodeRef>
@@ -70,14 +70,14 @@
       <bpmn:outgoing>Flow_G1_T2</bpmn:outgoing>
       <bpmn:outgoing>Flow_G1_M1</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:endEvent id="E1" name="Chờ sửa (hiện trên Thiết kế đã tạo)">
+    <bpmn:endEvent id="E1" name="Chờ sửa">
       <bpmn:incoming>Flow_G1_E1</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:userTask id="T2" name="Xử lý cảnh báo trên bảng QC">
       <bpmn:incoming>Flow_G1_T2</bpmn:incoming>
       <bpmn:outgoing>Flow_T2_G2</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:exclusiveGateway id="G2" name="Quyết định QC?">
+    <bpmn:exclusiveGateway id="G2" name="Quyết định&#10;QC?">
       <bpmn:incoming>Flow_T2_G2</bpmn:incoming>
       <bpmn:outgoing>Flow_G2_E2</bpmn:outgoing>
       <bpmn:outgoing>Flow_G2_M1</bpmn:outgoing>
@@ -121,7 +121,7 @@
         <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P7D</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
-    <bpmn:exclusiveGateway id="GR" name="Đã nhắc 2 lần?">
+    <bpmn:exclusiveGateway id="GR" name="Đã nhắc&#10;2 lần?">
       <bpmn:incoming>Flow_IC2_GR</bpmn:incoming>
       <bpmn:outgoing>Flow_GR_T5</bpmn:outgoing>
       <bpmn:outgoing>Flow_GR_T5b</bpmn:outgoing>
@@ -134,7 +134,7 @@
       <bpmn:incoming>Flow_GR_T5b</bpmn:incoming>
       <bpmn:outgoing>Flow_T5b_T4</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:businessRuleTask id="T6" name="Tổng hợp phiếu theo quy tắc ER-1.0, đánh dấu mâu thuẫn">
+    <bpmn:businessRuleTask id="T6" name="Tổng hợp phiếu, đánh dấu mâu thuẫn">
       <bpmn:incoming>Flow_IC1_T6</bpmn:incoming>
       <bpmn:outgoing>Flow_T6_G3</bpmn:outgoing>
       <bpmn:dataOutputAssociation id="Data_T6_DS2">
@@ -142,7 +142,7 @@
       </bpmn:dataOutputAssociation>
     </bpmn:businessRuleTask>
     <bpmn:dataStoreReference id="DS2" name="Kho Design Passport" dataStoreRef="Store_DS2" />
-    <bpmn:exclusiveGateway id="G3" name="Có mâu thuẫn quy tắc?">
+    <bpmn:exclusiveGateway id="G3" name="Có mâu thuẫn&#10;quy tắc?">
       <bpmn:incoming>Flow_T6_G3</bpmn:incoming>
       <bpmn:outgoing>Flow_G3_T7</bpmn:outgoing>
       <bpmn:outgoing>Flow_G3_M2</bpmn:outgoing>
@@ -162,7 +162,7 @@
       <bpmn:outgoing>Flow_G4_E4</bpmn:outgoing>
       <bpmn:outgoing>Flow_G4_T9</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="T8" name="Ghi lý do, mở lại để sửa (BP-02)">
+    <bpmn:serviceTask id="T8" name="Ghi lý do, mở lại để sửa">
       <bpmn:incoming>Flow_G4_T8</bpmn:incoming>
       <bpmn:outgoing>Flow_T8_E3</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -176,7 +176,7 @@
       <bpmn:incoming>Flow_G4_T9</bpmn:incoming>
       <bpmn:outgoing>Flow_T9_G5</bpmn:outgoing>
     </bpmn:businessRuleTask>
-    <bpmn:exclusiveGateway id="G5" name="Được xuất bản?">
+    <bpmn:exclusiveGateway id="G5" name="Được&#10;xuất bản?">
       <bpmn:incoming>Flow_T9_G5</bpmn:incoming>
       <bpmn:outgoing>Flow_G5_T10</bpmn:outgoing>
       <bpmn:outgoing>Flow_G5_E6</bpmn:outgoing>
@@ -193,10 +193,10 @@
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_S_T1" name="" sourceRef="S" targetRef="T1" />
     <bpmn:sequenceFlow id="Flow_T1_G1" name="" sourceRef="T1" targetRef="G1" />
-    <bpmn:sequenceFlow id="Flow_G1_E1" name="qa_failed" sourceRef="G1" targetRef="E1">
+    <bpmn:sequenceFlow id="Flow_G1_E1" name="Không đạt" sourceRef="G1" targetRef="E1">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">approval.status = qa_failed</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_G1_T2" name="qa_warning" sourceRef="G1" targetRef="T2">
+    <bpmn:sequenceFlow id="Flow_G1_T2" name="Có cảnh báo" sourceRef="G1" targetRef="T2">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">approval.status = qa_warning</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_T2_G2" name="" sourceRef="T2" targetRef="G2" />
@@ -253,7 +253,7 @@
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_T10_E5" name="" sourceRef="T10" targetRef="E5" />
   </bpmn:process>
-  <bpmn:process id="Proc_EXP" name="Hội đồng chuyên gia (≥ 2 người)" isExecutable="false">
+  <bpmn:process id="Proc_EXP" name="Hội đồng chuyên gia" isExecutable="false">
     <bpmn:laneSet id="LaneSet_EXP">
       <bpmn:lane id="L_EXP" name="Chuyên gia di sản, thiết kế">
         <bpmn:flowNodeRef>ES</bpmn:flowNodeRef>
@@ -265,7 +265,7 @@
       <bpmn:outgoing>Flow_ES_ET</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MED_ES" />
     </bpmn:startEvent>
-    <bpmn:userTask id="ET" name="Chấm mù trên cổng thẩm định (5 tiêu chí, quyết định)">
+    <bpmn:userTask id="ET" name="Chấm mù trên cổng thẩm định">
       <bpmn:incoming>Flow_ES_ET</bpmn:incoming>
       <bpmn:outgoing>Flow_ET_EE</bpmn:outgoing>
     </bpmn:userTask>
@@ -302,10 +302,10 @@
           <dc:Bounds x="688" y="315" width="112" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="G1_di" bpmnElement="G1" isMarkerVisible="true">
-        <dc:Bounds x="519" y="389" width="50" height="50" />
+      <bpmndi:BPMNShape id="G1_di" bpmnElement="G1" isMarkerVisible="false">
+        <dc:Bounds x="499" y="369" width="90" height="90" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="415" y="437" width="112" height="40" />
+          <dc:Bounds x="514" y="407" width="60" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="E1_di" bpmnElement="E1" color:background-color="#E1F3E4" color:border-color="#2E7D32">
@@ -317,10 +317,10 @@
       <bpmndi:BPMNShape id="T2_di" bpmnElement="T2" color:background-color="#E1F3E4" color:border-color="#2E7D32">
         <dc:Bounds x="246" y="496" width="164" height="92" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="G2_di" bpmnElement="G2" isMarkerVisible="true">
-        <dc:Bounds x="303" y="645" width="50" height="50" />
+      <bpmndi:BPMNShape id="G2_di" bpmnElement="G2" isMarkerVisible="false">
+        <dc:Bounds x="278" y="620" width="100" height="100" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="199" y="693" width="112" height="40" />
+          <dc:Bounds x="300" y="656" width="55" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="E2_di" bpmnElement="E2">
@@ -356,10 +356,10 @@
           <dc:Bounds x="768" y="1495" width="112" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="GR_di" bpmnElement="GR" isMarkerVisible="true" color:background-color="#E1F3E4" color:border-color="#2E7D32">
-        <dc:Bounds x="719" y="1618" width="50" height="50" />
+      <bpmndi:BPMNShape id="GR_di" bpmnElement="GR" isMarkerVisible="false" color:background-color="#E1F3E4" color:border-color="#2E7D32">
+        <dc:Bounds x="703" y="1602" width="82" height="82" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="761" y="1666" width="112" height="40" />
+          <dc:Bounds x="725" y="1629" width="38" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="T5_di" bpmnElement="T5" color:background-color="#E1F3E4" color:border-color="#2E7D32">
@@ -377,10 +377,10 @@
           <dc:Bounds x="688" y="1800" width="112" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="G3_di" bpmnElement="G3" isMarkerVisible="true">
-        <dc:Bounds x="519" y="1823" width="50" height="50" />
+      <bpmndi:BPMNShape id="G3_di" bpmnElement="G3" isMarkerVisible="false">
+        <dc:Bounds x="489" y="1793" width="110" height="110" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="574" y="1835" width="70" height="27" />
+          <dc:Bounds x="511" y="1834" width="66" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="T7_di" bpmnElement="T7" color:background-color="#E1F3E4" color:border-color="#2E7D32">
@@ -389,10 +389,10 @@
       <bpmndi:BPMNShape id="M2_di" bpmnElement="M2" isMarkerVisible="true">
         <dc:Bounds x="519" y="2079" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="G4_di" bpmnElement="G4" isMarkerVisible="true">
-        <dc:Bounds x="519" y="2207" width="50" height="50" />
+      <bpmndi:BPMNShape id="G4_di" bpmnElement="G4" isMarkerVisible="false">
+        <dc:Bounds x="504" y="2192" width="80" height="80" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="415" y="2255" width="112" height="40" />
+          <dc:Bounds x="520" y="2225" width="49" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="T8_di" bpmnElement="T8" color:background-color="#E4EEF9" color:border-color="#1F5A99">
@@ -413,10 +413,10 @@
       <bpmndi:BPMNShape id="T9_di" bpmnElement="T9" color:background-color="#EEE8FA" color:border-color="#5A3E99">
         <dc:Bounds x="462" y="2314" width="164" height="92" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="G5_di" bpmnElement="G5" isMarkerVisible="true">
-        <dc:Bounds x="519" y="2463" width="50" height="50" />
+      <bpmndi:BPMNShape id="G5_di" bpmnElement="G5" isMarkerVisible="false">
+        <dc:Bounds x="497" y="2441" width="94" height="94" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="574" y="2481" width="79" height="14" />
+          <dc:Bounds x="520" y="2474" width="49" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="T10_di" bpmnElement="T10" color:background-color="#E1F3E4" color:border-color="#2E7D32">
@@ -440,18 +440,18 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_T1_G1_di" bpmnElement="Flow_T1_G1">
         <di:waypoint x="544" y="332" />
-        <di:waypoint x="544" y="389" />
+        <di:waypoint x="544" y="369" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G1_E1_di" bpmnElement="Flow_G1_E1">
-        <di:waypoint x="569" y="414" />
+        <di:waypoint x="589" y="414" />
         <di:waypoint x="744" y="414" />
         <di:waypoint x="744" y="524" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="577" y="384" width="104" height="28" />
+          <dc:Bounds x="597" y="384" width="104" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G1_T2_di" bpmnElement="Flow_G1_T2">
-        <di:waypoint x="519" y="414" />
+        <di:waypoint x="499" y="414" />
         <di:waypoint x="328" y="414" />
         <di:waypoint x="328" y="496" />
         <bpmndi:BPMNLabel>
@@ -460,10 +460,10 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_T2_G2_di" bpmnElement="Flow_T2_G2">
         <di:waypoint x="328" y="588" />
-        <di:waypoint x="328" y="645" />
+        <di:waypoint x="328" y="620" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G2_E2_di" bpmnElement="Flow_G2_E2">
-        <di:waypoint x="303" y="670" />
+        <di:waypoint x="278" y="670" />
         <di:waypoint x="128" y="670" />
         <di:waypoint x="128" y="780" />
         <bpmndi:BPMNLabel>
@@ -471,18 +471,18 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G2_M1_di" bpmnElement="Flow_G2_M1">
-        <di:waypoint x="328" y="695" />
+        <di:waypoint x="328" y="720" />
         <di:waypoint x="328" y="798" />
         <di:waypoint x="519" y="798" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="334" y="699" width="104" height="28" />
+          <dc:Bounds x="334" y="724" width="104" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G1_M1_di" bpmnElement="Flow_G1_M1">
-        <di:waypoint x="544" y="439" />
+        <di:waypoint x="544" y="459" />
         <di:waypoint x="544" y="773" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="550" y="443" width="104" height="28" />
+          <dc:Bounds x="550" y="463" width="104" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_M1_T3_di" bpmnElement="Flow_M1_T3">
@@ -512,13 +512,13 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_IC2_GR_di" bpmnElement="Flow_IC2_GR">
         <di:waypoint x="744" y="1533" />
-        <di:waypoint x="744" y="1618" />
+        <di:waypoint x="744" y="1602" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_GR_T5_di" bpmnElement="Flow_GR_T5">
-        <di:waypoint x="769" y="1643" />
+        <di:waypoint x="785" y="1643" />
         <di:waypoint x="862" y="1643" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="777" y="1613" width="104" height="28" />
+          <dc:Bounds x="793" y="1613" width="104" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_T5_M3_di" bpmnElement="Flow_T5_M3">
@@ -527,7 +527,7 @@
         <di:waypoint x="569" y="1182" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_GR_T5b_di" bpmnElement="Flow_GR_T5b">
-        <di:waypoint x="719" y="1643" />
+        <di:waypoint x="703" y="1643" />
         <di:waypoint x="410" y="1643" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="418" y="1613" width="104" height="28" />
@@ -544,10 +544,10 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_T6_G3_di" bpmnElement="Flow_T6_G3">
         <di:waypoint x="544" y="1817" />
-        <di:waypoint x="544" y="1823" />
+        <di:waypoint x="544" y="1793" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G3_T7_di" bpmnElement="Flow_G3_T7">
-        <di:waypoint x="519" y="1848" />
+        <di:waypoint x="489" y="1848" />
         <di:waypoint x="328" y="1848" />
         <di:waypoint x="328" y="1930" />
         <bpmndi:BPMNLabel>
@@ -555,10 +555,10 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G3_M2_di" bpmnElement="Flow_G3_M2">
-        <di:waypoint x="544" y="1873" />
+        <di:waypoint x="544" y="1903" />
         <di:waypoint x="544" y="2079" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="550" y="1877" width="104" height="28" />
+          <dc:Bounds x="550" y="1907" width="104" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_T7_M2_di" bpmnElement="Flow_T7_M2">
@@ -568,18 +568,18 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_M2_G4_di" bpmnElement="Flow_M2_G4">
         <di:waypoint x="544" y="2129" />
-        <di:waypoint x="544" y="2207" />
+        <di:waypoint x="544" y="2192" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G4_T8_di" bpmnElement="Flow_G4_T8">
-        <di:waypoint x="569" y="2232" />
+        <di:waypoint x="584" y="2232" />
         <di:waypoint x="744" y="2232" />
         <di:waypoint x="744" y="2314" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="577" y="2202" width="104" height="28" />
+          <dc:Bounds x="592" y="2202" width="104" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G4_E4_di" bpmnElement="Flow_G4_E4">
-        <di:waypoint x="519" y="2232" />
+        <di:waypoint x="504" y="2232" />
         <di:waypoint x="328" y="2232" />
         <di:waypoint x="328" y="2342" />
         <bpmndi:BPMNLabel>
@@ -587,10 +587,10 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G4_T9_di" bpmnElement="Flow_G4_T9">
-        <di:waypoint x="544" y="2257" />
+        <di:waypoint x="544" y="2272" />
         <di:waypoint x="544" y="2314" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="550" y="2261" width="104" height="28" />
+          <dc:Bounds x="550" y="2276" width="104" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_T8_E3_di" bpmnElement="Flow_T8_E3">
@@ -599,17 +599,17 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_T9_G5_di" bpmnElement="Flow_T9_G5">
         <di:waypoint x="544" y="2406" />
-        <di:waypoint x="544" y="2463" />
+        <di:waypoint x="544" y="2441" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G5_T10_di" bpmnElement="Flow_G5_T10">
-        <di:waypoint x="544" y="2513" />
+        <di:waypoint x="544" y="2535" />
         <di:waypoint x="544" y="2570" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="550" y="2517" width="104" height="28" />
+          <dc:Bounds x="550" y="2539" width="104" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G5_E6_di" bpmnElement="Flow_G5_E6">
-        <di:waypoint x="519" y="2488" />
+        <di:waypoint x="497" y="2488" />
         <di:waypoint x="328" y="2488" />
         <di:waypoint x="328" y="2598" />
         <bpmndi:BPMNLabel>

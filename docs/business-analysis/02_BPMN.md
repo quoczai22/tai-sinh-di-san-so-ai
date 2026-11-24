@@ -40,27 +40,27 @@ hạn, mỗi lỗi đều có nhánh xử lý. Thay đổi chỉ để giảm s�
 Bốn quy trình nối với nhau qua hai kho dữ liệu: **Danh mục hiện vật** (`metadata.json`) và **Kho Design Passport**
 (`outputs/passports`). Các tiểu quy trình vẽ dạng Call Activity (viền đậm, dấu +).
 
-- **AS-IS**: BP-03 có sự kiện bắt đầu riêng "QC mở đợt thẩm định (thủ công)". Giữa BP-01/02 và BP-03 chỉ có kho dữ
+- **AS-IS**: BP-03 có sự kiện bắt đầu riêng "QC mở đợt thẩm định thủ công". Giữa BP-01/02 và BP-03 chỉ có kho dữ
   liệu, không có luồng điều khiển. Đây là lý do 13 thiết kế đang "chờ chuyên gia" mà chưa có phiếu nào.
 - **TO-BE**: BP-03 bắt đầu bằng sự kiện điều kiện "Thiết kế đổi trạng thái duyệt" (Conditional Start Event), do hệ
   thống phát hiện, không chờ người mở đợt.
 
 ## 4. BP-01 Tạo thiết kế áo dài (AS-IS = TO-BE)
 
-Pool Nền tảng gồm ba lane: Nhà thiết kế (web), Ứng dụng web và cổng Vercel, API và pipeline AI. Pool hộp đen: Người
+Pool Nền tảng gồm ba lane: Nhà thiết kế, Ứng dụng web, API và pipeline AI. Pool hộp đen: Người
 vận hành (Zalo).
 
 | Phần tử | Loại | Căn cứ trong mã |
 |---|---|---|
 | Chọn hiện vật, xem mô hình 3D và sổ hoa văn | User Task | `views/studio.js`, `components/artifact-book.js` |
 | Máy GPU sẵn sàng? | Exclusive Gateway | `core/data.js::canGenerate` đọc `health.generation_available` |
-| Trả bộ thiết kế sinh sẵn, ghi nhãn "đã sinh sẵn" | Service Task | `web_ui/api/live.js` (dự phòng), `result.js` |
-| Chuyển yêu cầu sinh tới API (10 lượt/giờ/IP) | Service Task | `live.js`, `_shared.js::checkRateLimit` |
-| Trong hạn mức, hàng chờ còn chỗ? | Exclusive Gateway | `main.py::rate_limit` (6/giờ/IP), `MAX_ACTIVE_JOBS = 3` |
-| Trả lỗi 429, cảnh báo vận hành | Send Task + message | `live.js` gọi `alertModalIssue('hàng chờ đầy (HTTP 429)')` |
+| Trả bộ thiết kế sinh sẵn | Service Task | `web_ui/api/live.js` (dự phòng), `result.js` |
+| Chuyển yêu cầu sinh tới API | Service Task | `live.js`, `_shared.js::checkRateLimit` |
+| Còn hạn mức? | Exclusive Gateway | `main.py::rate_limit` (6/giờ/IP), `MAX_ACTIVE_JOBS = 3` |
+| Báo vượt hạn mức, cảnh báo vận hành | Send Task + message | `live.js` gọi `alertModalIssue('hàng chờ đầy (HTTP 429)')` |
 | Kiểm tra quyền mục đích "thử nghiệm" → Được phép? | Business Rule Task + Gateway | `run.py`: `rights_gate(item, "experiment")`, `PermissionError` |
 | Chuẩn bị hoa văn; Sinh áo dài nền (LoRA, SAM) | Service Task | `run.py` (`cn.prepare`, `garment_lora.generate_garment`) |
-| Tạo 4 phương án (BP-01a) | Tiểu quy trình đa thể hiện tuần tự | `run.py` vòng `for index, variant` |
+| Tạo 4 phương án | Tiểu quy trình đa thể hiện tuần tự | `run.py` vòng `for index, variant` |
 | Không phương án nào thành công | Error Boundary Event | `run.py`: `RuntimeError("Không biến thể nào sinh thành công.")` |
 | Báo lỗi trên trang, cảnh báo vận hành | Send Task + message | `live.js` (`job failed`) |
 | Lập Design Passport; Gán trạng thái duyệt theo G2, G3 | Service + Business Rule Task | `builder.py`, `assess.py::approval_from_assessment` |

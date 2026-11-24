@@ -4,13 +4,13 @@ left to right direction
 skinparam packageStyle rectangle
 skinparam usecase { BackgroundColor #E8F0FA
  BorderColor #2B5C94 }
-actor "Nhà thiết kế (người dùng web)" as DES
+actor "Nhà thiết kế" as DES
 actor "Chuyên gia thẩm định" as EXP
 actor "QC Officer" as QC
 actor "Người vận hành" as OPS
 actor "Người quản lý dữ liệu" as DATA
 actor "Google Forms" as GF <<hệ thống ngoài>>
-actor "Zalo (kênh cảnh báo)" as ZALO <<hệ thống ngoài>>
+actor "Zalo" as ZALO <<hệ thống ngoài>>
 rectangle "Nền tảng Tái Sinh Di Sản Số" {
   usecase "UC01 – Tra cứu hiện vật" as UC01
   usecase "UC02 – Xem ý nghĩa hoa văn" as UC02
@@ -18,7 +18,7 @@ rectangle "Nền tảng Tái Sinh Di Sản Số" {
   usecase "UC06 – Tải lên bản chỉnh sửa" as UC06
   usecase "UC04 – Xem lại thiết kế đã tạo" as UC04
   usecase "UC05 – Tải thiết kế có nhãn AI" as UC05
-  usecase "UC08 – Kiểm định chất lượng tự động (G2, G3)" as UC08
+  usecase "UC08 – Kiểm định chất lượng tự động" as UC08
   usecase "UC09 – Ghi Design Passport" as UC09
   usecase "UC07 – Kiểm tra quyền sử dụng" as UC07
   usecase "UC10 – Xử lý cảnh báo chất lượng" as UC10

@@ -3,7 +3,7 @@
   <bpmn:dataStore id="Store_DS" name="Danh mục hiện vật" />
   <bpmn:collaboration id="Collab_BP04_TOBE">
     <bpmn:participant id="P" name="Nền tảng Tái Sinh Di Sản Số" processRef="Proc_P" />
-    <bpmn:participant id="OWN" name="Chủ sở hữu ảnh / bộ dữ liệu" />
+    <bpmn:participant id="OWN" name="Chủ sở hữu ảnh" />
     <bpmn:messageFlow id="Msg_T5c_OWN" name="Lời nhắc" sourceRef="T5c" targetRef="OWN" />
     <bpmn:messageFlow id="Msg_T5_OWN" name="Đề nghị cấp phép" sourceRef="T5" targetRef="OWN" />
     <bpmn:messageFlow id="Msg_OWN_IC1" name="Phản hồi" sourceRef="OWN" targetRef="IC1" />
@@ -18,7 +18,7 @@
         <bpmn:flowNodeRef>T6</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>T8</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="L_SYS" name="Script tiếp nhận, danh mục hiện vật">
+      <bpmn:lane id="L_SYS" name="Hệ thống tiếp nhận">
         <bpmn:flowNodeRef>T2</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>G1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>T3</bpmn:flowNodeRef>
@@ -45,7 +45,7 @@
       <bpmn:incoming>Flow_S_T1</bpmn:incoming>
       <bpmn:outgoing>Flow_T1_T2</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:serviceTask id="T2" name="Chạy script tiếp nhận: SHA-256, tách nền, tiêu chí C1–C4">
+    <bpmn:serviceTask id="T2" name="Tiếp nhận: tách nền, kiểm tiêu chí C1–C4">
       <bpmn:incoming>Flow_T1_T2</bpmn:incoming>
       <bpmn:outgoing>Flow_T2_G1</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -54,31 +54,31 @@
       <bpmn:outgoing>Flow_G1_T3</bpmn:outgoing>
       <bpmn:outgoing>Flow_G1_T4</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="T3" name="Ghi trạng thái retired kèm lý do">
+    <bpmn:serviceTask id="T3" name="Đánh dấu loại, ghi lý do">
       <bpmn:incoming>Flow_G1_T3</bpmn:incoming>
       <bpmn:outgoing>Flow_T3_E1</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:endEvent id="E1" name="Không đưa vào thư viện">
       <bpmn:incoming>Flow_T3_E1</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:businessRuleTask id="T4" name="Xác định tình trạng quyền (C3)">
+    <bpmn:businessRuleTask id="T4" name="Xác định tình trạng quyền">
       <bpmn:incoming>Flow_G1_T4</bpmn:incoming>
       <bpmn:outgoing>Flow_T4_G2</bpmn:outgoing>
     </bpmn:businessRuleTask>
-    <bpmn:exclusiveGateway id="G2" name="Tình trạng quyền?">
+    <bpmn:exclusiveGateway id="G2" name="Tình trạng&#10;quyền?">
       <bpmn:incoming>Flow_T4_G2</bpmn:incoming>
       <bpmn:outgoing>Flow_G2_E2</bpmn:outgoing>
       <bpmn:outgoing>Flow_G2_T5</bpmn:outgoing>
       <bpmn:outgoing>Flow_G2_M1</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:endEvent id="E2" name="Không được dùng (bị từ chối)">
+    <bpmn:endEvent id="E2" name="Không được dùng">
       <bpmn:incoming>Flow_G2_E2</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:manualTask id="T5" name="Soạn và gửi đề nghị cấp phép (email)">
+    <bpmn:manualTask id="T5" name="Gửi đề nghị cấp phép">
       <bpmn:incoming>Flow_G2_T5</bpmn:incoming>
       <bpmn:outgoing>Flow_T5_T5b</bpmn:outgoing>
     </bpmn:manualTask>
-    <bpmn:serviceTask id="T5b" name="Ghi trạng thái permission_requested, ngày gửi">
+    <bpmn:serviceTask id="T5b" name="Ghi trạng thái chờ cấp phép">
       <bpmn:incoming>Flow_T5_T5b</bpmn:incoming>
       <bpmn:outgoing>Flow_T5b_EB</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -100,7 +100,7 @@
         <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P14D</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
-    <bpmn:exclusiveGateway id="G3" name="Đã nhắc 2 lần?">
+    <bpmn:exclusiveGateway id="G3" name="Đã nhắc&#10;2 lần?">
       <bpmn:incoming>Flow_IC2_G3</bpmn:incoming>
       <bpmn:outgoing>Flow_G3_T5c</bpmn:outgoing>
       <bpmn:outgoing>Flow_G3_E3</bpmn:outgoing>
@@ -109,7 +109,7 @@
       <bpmn:incoming>Flow_G3_T5c</bpmn:incoming>
       <bpmn:outgoing>Flow_T5c_EB</bpmn:outgoing>
     </bpmn:sendTask>
-    <bpmn:userTask id="T6" name="Ghi phản hồi (cấp phép / từ chối, phạm vi) vào biểu mẫu quyền">
+    <bpmn:userTask id="T6" name="Ghi phản hồi vào biểu mẫu quyền">
       <bpmn:incoming>Flow_IC1_T6</bpmn:incoming>
       <bpmn:outgoing>Flow_T6_M1</bpmn:outgoing>
     </bpmn:userTask>
@@ -121,7 +121,7 @@
       <bpmn:incoming>Flow_T6_M1</bpmn:incoming>
       <bpmn:outgoing>Flow_M1_T7</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="T7" name="Ghi vào danh mục (metadata.json, active)">
+    <bpmn:serviceTask id="T7" name="Ghi vào danh mục hiện vật">
       <bpmn:incoming>Flow_M1_T7</bpmn:incoming>
       <bpmn:outgoing>Flow_T7_T8</bpmn:outgoing>
       <bpmn:dataOutputAssociation id="Data_T7_DS">
@@ -129,11 +129,11 @@
       </bpmn:dataOutputAssociation>
     </bpmn:serviceTask>
     <bpmn:dataStoreReference id="DS" name="Danh mục hiện vật" dataStoreRef="Store_DS" />
-    <bpmn:userTask id="T8" name="Viết mô tả, ý nghĩa hoa văn có nguồn (artifact_info)">
+    <bpmn:userTask id="T8" name="Viết mô tả, ý nghĩa hoa văn">
       <bpmn:incoming>Flow_T7_T8</bpmn:incoming>
       <bpmn:outgoing>Flow_T8_T9</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:serviceTask id="T9" name="Tự xuất dữ liệu web và mô hình 3D khi danh mục đổi (CI)">
+    <bpmn:serviceTask id="T9" name="Tự xuất dữ liệu web và mô hình 3D">
       <bpmn:incoming>Flow_T8_T9</bpmn:incoming>
       <bpmn:outgoing>Flow_T9_E4</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -157,7 +157,7 @@
     <bpmn:sequenceFlow id="Flow_G2_T5" name="Chưa xác minh" sourceRef="G2" targetRef="T5">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">rights_status = unverified</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_G2_M1" name="Mở / đã cấp phép / tự chụp" sourceRef="G2" targetRef="M1">
+    <bpmn:sequenceFlow id="Flow_G2_M1" name="Đã có quyền" sourceRef="G2" targetRef="M1">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">rights_status ∈ publishable_statuses</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_T5_T5b" name="" sourceRef="T5" targetRef="T5b" />
@@ -202,10 +202,10 @@
       <bpmndi:BPMNShape id="T2_di" bpmnElement="T2" color:background-color="#E4EEF9" color:border-color="#1F5A99">
         <dc:Bounds x="856" y="368" width="164" height="92" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="G1_di" bpmnElement="G1" isMarkerVisible="true">
-        <dc:Bounds x="913" y="517" width="50" height="50" />
+      <bpmndi:BPMNShape id="G1_di" bpmnElement="G1" isMarkerVisible="false">
+        <dc:Bounds x="887" y="491" width="102" height="102" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="809" y="565" width="112" height="40" />
+          <dc:Bounds x="902" y="535" width="71" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="T3_di" bpmnElement="T3" color:background-color="#E4EEF9" color:border-color="#1F5A99">
@@ -220,10 +220,10 @@
       <bpmndi:BPMNShape id="T4_di" bpmnElement="T4" color:background-color="#EEE8FA" color:border-color="#5A3E99">
         <dc:Bounds x="856" y="624" width="164" height="92" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="G2_di" bpmnElement="G2" isMarkerVisible="true">
-        <dc:Bounds x="913" y="773" width="50" height="50" />
+      <bpmndi:BPMNShape id="G2_di" bpmnElement="G2" isMarkerVisible="false">
+        <dc:Bounds x="888" y="748" width="100" height="100" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="809" y="821" width="112" height="40" />
+          <dc:Bounds x="910" y="784" width="55" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="E2_di" bpmnElement="E2">
@@ -253,10 +253,10 @@
           <dc:Bounds x="1161" y="1175" width="64" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="G3_di" bpmnElement="G3" isMarkerVisible="true" color:background-color="#E1F3E4" color:border-color="#2E7D32">
-        <dc:Bounds x="1113" y="1285" width="50" height="50" />
+      <bpmndi:BPMNShape id="G3_di" bpmnElement="G3" isMarkerVisible="false" color:background-color="#E1F3E4" color:border-color="#2E7D32">
+        <dc:Bounds x="1097" y="1269" width="82" height="82" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1155" y="1333" width="112" height="40" />
+          <dc:Bounds x="1119" y="1296" width="38" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="T5c_di" bpmnElement="T5c" color:background-color="#E1F3E4" color:border-color="#2E7D32">
@@ -306,14 +306,14 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_T2_G1_di" bpmnElement="Flow_T2_G1">
         <di:waypoint x="938" y="460" />
-        <di:waypoint x="938" y="517" />
+        <di:waypoint x="938" y="491" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G1_T3_di" bpmnElement="Flow_G1_T3">
-        <di:waypoint x="963" y="542" />
+        <di:waypoint x="989" y="542" />
         <di:waypoint x="1138" y="542" />
         <di:waypoint x="1138" y="624" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="971" y="512" width="104" height="28" />
+          <dc:Bounds x="997" y="512" width="104" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_T3_E1_di" bpmnElement="Flow_T3_E1">
@@ -321,26 +321,26 @@
         <di:waypoint x="1320" y="670" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G1_T4_di" bpmnElement="Flow_G1_T4">
-        <di:waypoint x="938" y="567" />
+        <di:waypoint x="938" y="593" />
         <di:waypoint x="938" y="624" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="944" y="571" width="104" height="28" />
+          <dc:Bounds x="944" y="597" width="104" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_T4_G2_di" bpmnElement="Flow_T4_G2">
         <di:waypoint x="938" y="716" />
-        <di:waypoint x="938" y="773" />
+        <di:waypoint x="938" y="748" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G2_E2_di" bpmnElement="Flow_G2_E2">
-        <di:waypoint x="963" y="798" />
+        <di:waypoint x="988" y="798" />
         <di:waypoint x="1138" y="798" />
         <di:waypoint x="1138" y="908" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="971" y="768" width="104" height="28" />
+          <dc:Bounds x="996" y="768" width="104" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G2_T5_di" bpmnElement="Flow_G2_T5">
-        <di:waypoint x="913" y="798" />
+        <di:waypoint x="888" y="798" />
         <di:waypoint x="522" y="798" />
         <di:waypoint x="522" y="880" />
         <bpmndi:BPMNLabel>
@@ -348,10 +348,10 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G2_M1_di" bpmnElement="Flow_G2_M1">
-        <di:waypoint x="938" y="823" />
+        <di:waypoint x="938" y="848" />
         <di:waypoint x="938" y="1464" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="944" y="827" width="104" height="28" />
+          <dc:Bounds x="944" y="852" width="104" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_T5_T5b_di" bpmnElement="Flow_T5_T5b">
@@ -373,10 +373,10 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_IC2_G3_di" bpmnElement="Flow_IC2_G3">
         <di:waypoint x="1138" y="1200" />
-        <di:waypoint x="1138" y="1285" />
+        <di:waypoint x="1138" y="1269" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G3_T5c_di" bpmnElement="Flow_G3_T5c">
-        <di:waypoint x="1113" y="1310" />
+        <di:waypoint x="1097" y="1310" />
         <di:waypoint x="604" y="1310" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="612" y="1280" width="104" height="28" />
@@ -388,11 +388,11 @@
         <di:waypoint x="713" y="1054" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_G3_E3_di" bpmnElement="Flow_G3_E3">
-        <di:waypoint x="1163" y="1310" />
+        <di:waypoint x="1179" y="1310" />
         <di:waypoint x="1338" y="1310" />
         <di:waypoint x="1338" y="1420" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1171" y="1280" width="104" height="28" />
+          <dc:Bounds x="1187" y="1280" width="104" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_IC1_T6_di" bpmnElement="Flow_IC1_T6">
