@@ -103,7 +103,7 @@ export function activateLive(heritageId, runId, variants = []) {
     });
 }
 // Trang cần dữ liệu máy chủ (Thiết kế đã tạo, Chỉnh sửa, Kết quả của một lượt cũ) chuyển sang chế độ trực tiếp.
-// Nếu máy chủ không trả lời, passports() tự rớt về chế độ trình diễn như mọi nơi khác.
+// Nếu máy chủ không trả lời, trang live báo lỗi; không thay ảnh của lượt sinh bằng ảnh mẫu.
 export function enterLive() { if (API) state.mode = 'live'; }
 export function liveDesignsFor(heritageId) {
     return state.latestResult?.heritageId === heritageId &&
@@ -147,8 +147,7 @@ export async function heritage() {
 
 export async function passports() {
     if (state.mode === 'live') {
-        try { return await cached('live:passports', () => getJson(`${API}/passports`)); }
-        catch { state.mode = 'demo'; }
+        return cached('live:passports', () => getJson(`${API}/passports`));
     }
     return cached('demo:passports', () => getJson('./data/passports.json'));
 }
@@ -157,8 +156,7 @@ export async function passports() {
 // scripts/demo/export_demo_data.py --only-result); trang chủ, Thư viện và Studio vẫn dùng passports() như cũ.
 export async function resultPassports() {
     if (state.mode === 'live') {
-        const live = await passports();                       // passports() có thể rớt về chế độ trình diễn nếu API lỗi
-        if (state.mode === 'live') return live;
+        return passports();
     }
     return cached('demo:result-passports', () => getJson('./data/result/passports.json'));
 }

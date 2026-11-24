@@ -51,6 +51,9 @@ async function main() {
         if (url.endsWith('/generate/missing')) {
             return Response.json({ detail: 'Không tìm thấy job' }, { status: 404 });
         }
+        if (url.endsWith('/generate/unavailable')) {
+            return Response.json({ detail: 'Modal unavailable' }, { status: 503 });
+        }
         if (url.endsWith('/passports')) {
             return Response.json([{
                 passport_id: 'DP-HV08-20261119T161848-V1',
@@ -75,6 +78,9 @@ async function main() {
     assert.equal(result.body.status, 'completed');
     result = await call('generate/missing', 'GET', undefined, { heritage_id: 'LR3D_61' });
     assert.equal(result.code, 404, 'a lost job must be retryable, not labeled demo');
+    result = await call('generate/unavailable', 'GET', undefined, { heritage_id: 'LR3D_61' });
+    assert.equal(result.code, 503, 'polling failure must remain an error');
+    assert.equal(result.body.backend, undefined, 'polling failure must not become a demo result');
 
     result = await call('generate', 'POST', { heritage_id: 'LR3D_61', seed: 47 });
     assert.equal(result.code, 429);
@@ -98,16 +104,16 @@ async function main() {
         throw new Error('mock connection failure');
     };
     result = await call('generate', 'POST', { heritage_id: 'LR3D_61', seed: 43 });
-    assert.equal(result.body.backend, 'demo');
-    assert.equal(result.body.demo_label, 'Kết quả đã sinh sẵn — không phải sinh trực tiếp');
+    assert.equal(result.code, 503);
+    assert.equal(result.body.backend, undefined);
     result = await call('generate', 'POST', { heritage_id: 'LR3D_61', seed: 44 });
-    assert.equal(result.body.backend, 'demo');
+    assert.equal(result.code, 503);
     assert.equal(alerts, alertsBeforeFailure + 1, 'Discord alert must respect cooldown');
 
     process.env.MODAL_URL = '';
     _resetAlertCooldown();
     result = await call('generate', 'POST', { heritage_id: 'LR3D_61', seed: 45 });
-    assert.equal(result.body.backend, 'demo');
+    assert.equal(result.code, 503);
     assert.equal(alerts, alertsBeforeFailure + 2, 'missing Modal configuration should alert');
 
     process.env.MODAL_URL = 'https://modal.mock';
@@ -119,7 +125,7 @@ async function main() {
     await handler(req, response());
     result = response();
     await handler(req, result);
-    assert.equal(result.body.reason, 'rate_limit_exceeded');
+    assert.equal(result.code, 429);
     console.log('live gateway: 11 contract checks passed (mock only)');
 }
 

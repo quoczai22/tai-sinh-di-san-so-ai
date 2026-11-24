@@ -52,7 +52,6 @@ export async function runGeneration(heritageId, seed, onProgress = () => {}) {
     if (!jobId) {
         data.audit('generation_requested', { step: 3, heritage_id: heritageId });
         const started = await beforeDeadline(data.startGeneration(heritageId, seed), deadline);
-        if (started.backend === 'demo') return started;
         jobId = started.job_id;
         rememberJob(heritageId, jobId);
     }
@@ -65,10 +64,6 @@ export async function runGeneration(heritageId, seed, onProgress = () => {}) {
             if (error.status === 404) forgetJob();
             if (error.status !== 404 && ++misses < 10) continue;
             throw error;
-        }
-        if (job.backend === 'demo') {
-            if (++misses < 10) continue;
-            throw new Error('Chưa kết nối lại được máy sinh ảnh. Lượt của bạn vẫn được lưu; hãy quay lại sau.');
         }
         misses = 0;
         onProgress(job.progress || 0, job);
