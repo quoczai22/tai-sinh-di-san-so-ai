@@ -10,7 +10,7 @@ export async function render() {
     data.enterLive();
     const runs = data.myRuns();
     if (!runs.length) {
-        return stateBox('', 'Bạn chưa tạo thiết kế nào', 'Các bộ thiết kế bạn tạo ở Studio sẽ hiện ở đây để xem lại.',
+        return stateBox('', 'Bạn chưa tạo thiết kế nào', 'Các bộ thiết kế bạn tạo ở Studio sẽ xuất hiện ở đây.',
             h('a', { class: 'btn primary', href: '#/studio' }, 'Vào Studio'));
     }
     const [{ items }, list] = await Promise.all([data.heritage(), data.passports()]);

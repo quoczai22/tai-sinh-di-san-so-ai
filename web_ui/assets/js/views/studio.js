@@ -2,6 +2,7 @@
 //  · Chưa chọn hiện vật: lưới picker-card để chọn đầu vào.
 //  · Đã chọn: khung 3D + thanh điều khiển, nút "Xem ý nghĩa hoa văn" (mở sổ hai trang, components/artifact-book.js), nút Tạo thiết kế.
 //    Có máy chủ GPU (data.canGenerate): bấm Tạo là sinh thật (core/generation.js), có thanh tiến độ, xong sang #/result.
+//    Nếu lúc mở trang /health chưa trả lời kịp thì bấm Tạo hỏi lại máy chủ (data.refreshHealth) trước khi kết luận không có GPU.
 //    Không có GPU: không giả lập việc sinh — bấm Tạo mở trang Kết quả với bộ thiết kế đã tạo trước đó trên GPU.
 // View chỉ lấy dữ liệu và ghép component; không tự định nghĩa component.
 import { h } from '../core/dom.js';
@@ -29,7 +30,7 @@ export async function render([heritageId]) {
 
     const hasDesigns = (await data.passports()).some((p) => p.heritage_id === heritageId);
     const recovering = pendingGeneration()?.heritageId === heritageId;
-    const can = data.canGenerate() || recovering;
+    let can = data.canGenerate() || recovering;
     const goToResult = () => { location.hash = `#/result/${encodeURIComponent(heritageId)}`; };
 
     const note = h('p', { class: 'out-note', role: 'status', 'aria-live': 'polite' });
@@ -37,6 +38,13 @@ export async function render([heritageId]) {
     const progress = h('div', { class: 'out-progress', hidden: true }, h('div', { class: 'progress' }, progressBar));
     const start = async () => {
         if (genBtn.disabled) return;
+        if (!can) {                                  // có thể chỉ là /health trả lời chậm lúc mở trang: hỏi lại trước khi kết luận không có GPU
+            genBtn.disabled = true;
+            note.textContent = 'Đang kết nối máy chủ…';
+            can = await data.refreshHealth();
+            genBtn.disabled = false;
+            note.textContent = '';
+        }
         if (!can) {
             // Không có GPU: mở trang Kết quả với bộ đã tạo trước
             if (!hasDesigns) { note.textContent = 'Hiện vật này chưa có thiết kế.'; return; }

@@ -42,7 +42,7 @@ export async function render([heritageId, runParam]) {
             for (let i = 0; i < designs.length; i++) {
                 const d = designs[i];
                 const src = fullImage(d, heritageId, data.media(shownPath(d), latestOf(d)));
-                await downloadImage(src, `thiet-ke-${heritageId}-V${i + 1}`);
+                await downloadImage(src, `thiet-ke-${heritageId}-V${i + 1}`, { edited: d.edits > 0 });
                 if (i < designs.length - 1) await new Promise((r) => setTimeout(r, 450));
             }
             downloadAllBtn.disabled = false;
