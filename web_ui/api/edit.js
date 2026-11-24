@@ -4,7 +4,7 @@
  * Tách khỏi live.js để một lỗi ở đây không làm hỏng route sinh ảnh và đọc Passport đang chạy.
  * - Kiểm tra lại mọi trường như EditRequest của API (tsds/api/main.py) và biểu mẫu (assets/js/core/edit-rules.js).
  * - Chỉ nhận ảnh PNG thật (đúng chữ ký tệp), tối đa 3 MB và cạnh dài tối đa 4096 px (đọc từ phần IHDR, không giải mã ảnh).
- * - Khóa ghi do máy chủ giữ: biến MODAL_WRITE_KEY (cùng giá trị TSDS_WRITE_KEY của Modal); thiếu thì dùng MODAL_KEY.
+ * - Khóa do máy chủ giữ: MODAL_KEY (cùng giá trị DH_API_KEY của Modal), cũng là khóa của route sinh ảnh.
  * - Tối đa EDIT_RATE_LIMIT_PER_HOUR (mặc định 5) lượt mỗi IP mỗi giờ, đếm trong bộ nhớ của từng instance.
  * - Không ghi nội dung biểu mẫu hay ảnh vào nhật ký; nhật ký chỉ có mã Passport. Chỉ trả về mã sửa, quyết định G3, trạng thái duyệt.
  */
@@ -82,7 +82,7 @@ async function handler(req, res) {
     if (checked.error) return res.status(checked.status).json({ detail: checked.error });
     if (!checkEditLimit(req).allowed) return res.status(429).json({ detail: 'Bạn gửi quá nhiều lần. Hãy thử lại sau.' });
 
-    const key = (process.env.MODAL_WRITE_KEY || '').trim() || config.modalKey;
+    const key = config.modalKey;
     try {
         const upstream = await fetchWithTimeout(config.modalUrl + '/passports/' + encodeURIComponent(id) + '/edits', {
             method: 'POST',

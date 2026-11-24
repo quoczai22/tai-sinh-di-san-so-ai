@@ -3,7 +3,7 @@
 
 Chạy bằng Node (không cần trình duyệt, mạng hay Modal): gateway được thử với fetch giả. Đáp án lấy từ đặc tả:
   - EditRequest của API: ID tài khoản bắt đầu bằng TSDS, tối đa 24 ký tự [A-Za-z0-9_-] (API rộng hơn: 2 đến 24 ký tự, không bắt buộc tiền tố), vai designer hoặc qc_officer, mô tả 5 đến 500, công cụ 2 đến 80;
-  - ảnh PNG thật, tối đa 3 MB, cạnh dài tối đa 4096 px; khóa ghi lấy từ MODAL_WRITE_KEY (thiếu thì MODAL_KEY);
+  - ảnh PNG thật, tối đa 3 MB, cạnh dài tối đa 4096 px; khóa gửi sang Modal là MODAL_KEY;
   - gateway không lộ ngược các trường của API ngoài mã sửa, quyết định G3, trạng thái duyệt; không ghi biểu mẫu vào nhật ký.
 """
 from __future__ import annotations
@@ -107,7 +107,7 @@ global.fetch = async (url, opts) => {
 """
     scenario = {"requests": requests, "upstream": upstream or {"status": 200, "json": {"edit_id": "E1", "approval_status": "pending_expert_review", "quality_decision": "PASS"}}}
     base_env = {**os.environ, "EDIT_JS": str(EDIT_JS), "SCENARIO": json.dumps(scenario), "MODAL_URL": "https://modal.test", "MODAL_KEY": "k_main",
-                "MODAL_WRITE_KEY": "k_write", "EDIT_RATE_LIMIT_PER_HOUR": "50", **(env or {})}
+                "EDIT_RATE_LIMIT_PER_HOUR": "50", **(env or {})}
     r = subprocess.run(["node", "-e", driver], capture_output=True, text=True, encoding="utf-8", env=base_env)
     assert r.returncode == 0, r.stderr
     return json.loads(r.stdout)
@@ -124,12 +124,12 @@ def test_gateway_forwards_valid_edit_with_write_key_and_hides_extra_fields():
     assert r["out"][0] == {"code": 200, "body": {"edit_id": "E1", "approval_status": "pending_expert_review", "quality_decision": "PASS"}}
     (call,) = r["calls"]
     assert call["url"] == f"https://modal.test/passports/{PASSPORT}/edits"
-    assert call["headers"]["X-API-Key"] == "k_write"
+    assert call["headers"]["X-API-Key"] == "k_main"
     assert call["body"]["editor_id"] == "TSDS01" and call["body"]["editor_role"] == "designer" and call["body"]["tool"] == "GIMP"
 
 
-def test_gateway_falls_back_to_modal_key_when_no_write_key():
-    r = _gateway([_req()], env={"MODAL_WRITE_KEY": ""})
+def test_gateway_chi_dung_modal_key_khong_doc_bien_khoa_ghi_rieng():
+    r = _gateway([_req()], env={"MODAL_WRITE_KEY": "k_ghi_la_khong_duoc_dung"})
     assert r["calls"][0]["headers"]["X-API-Key"] == "k_main"
 
 
@@ -206,7 +206,7 @@ def test_gateway_does_not_log_form_content():
     r = _gateway([_req({"editor_id": "TSDSKIEM01", "description": "mô tả riêng tư kiểm tra", "tool": "CongCuRieng"})])
     text = " ".join(r["logs"])
     assert "gateway_edit" in text and PASSPORT in text
-    for secret in ("TSDSKIEM01", "mô tả riêng tư kiểm tra", "CongCuRieng", _b64(_png())[:20], "k_write"):
+    for secret in ("TSDSKIEM01", "mô tả riêng tư kiểm tra", "CongCuRieng", _b64(_png())[:20], "k_main"):
         assert secret not in text
 
 

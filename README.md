@@ -160,7 +160,7 @@ uv run python scripts/data_prep/ingest_heritage_image.py --file <ảnh> --candid
 | `SD15_MODEL_ID`, `CONTROLNET_CANNY_ID` | Pipeline sinh ảnh | Id repo model |
 | `GEMINI_API_KEY` | Chỉ `scripts/data_prep/describe_heritage.py` | Chạy offline một lần |
 | `WEB_UI_ORIGINS` | API khi triển khai | Danh sách domain giao diện, phân tách bằng dấu phẩy |
-| `TSDS_WRITE_KEY` | API khi chạy công khai | Thao tác ghi phải gửi header `X-API-Key` |
+| `DH_API_KEY` | API khi chạy công khai | Một khoá bảo vệ cả route sinh ảnh và route ghi: phải gửi header `X-API-Key`. Không đặt = chế độ cục bộ, không kiểm tra |
 | `TSDS_GENERATE_PER_HOUR` | API | Giới hạn số lần sinh mỗi giờ cho một IP (mặc định 6) |
 
 ## 6. Tài liệu

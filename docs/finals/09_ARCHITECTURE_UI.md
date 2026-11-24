@@ -50,7 +50,7 @@ Endpoint cũ giữ nguyên đường dẫn và các trường trả về (có ca
 | Nguồn gốc | `GET /heritage/{id}/provenance`, `GET /provenance/catalog` |
 | Lần chạy | `GET /runs`, `GET /runs/{id}`, `GET /media/run/{id}/{tệp}`, `GET /media/artifact?path=` (chỉ trong `outputs/`, `data/heritage/`, `web_ui/assets/images/`) |
 | Passport | `GET /passports`, `GET /passports/{id}` (kèm dòng thời gian, kết quả kiểm tra toàn vẹn), `GET /passports/{id}/export` |
-| Ghi (cần `X-API-Key` khi đặt `TSDS_WRITE_KEY`) | `POST /passports/{id}/qc`, `/reviews`, `/edits`, `/publish` |
+| Ghi (cần `X-API-Key` khi đặt `DH_API_KEY`) | `POST /passports/{id}/qc`, `/reviews`, `/edits`, `/publish` |
 | Chất lượng, thí nghiệm | `GET /quality/designs`, `GET /experiments` |
 
 Bảo vệ: giới hạn 6 lần sinh/giờ/IP (`TSDS_GENERATE_PER_HOUR`), danh sách sự kiện audit được phép, kiểm tra mã định danh bằng biểu thức chính quy, chặn đường dẫn ra ngoài thư mục cho phép, ảnh chỉnh sửa ≤ 8 MB và phải là ảnh hợp lệ. Khi máy chủ không có PyTorch/GPU, `/generate` trả 503 với thông báo rõ thay vì lỗi 500.
