@@ -455,7 +455,7 @@ function recommendedAction(type) {
     if (/thiếu.*(MODAL|backend)|chưa cấu hình/i.test(type)) return 'Kiểm tra biến môi trường Vercel rồi redeploy phần cấu hình bị đổi.';
     if (/hàng chờ đầy|HTTP 429|HTTP 409/i.test(type)) return 'Kiểm tra hàng đợi và job đang chạy; chờ rồi thử lại.';
     if (/job.*failed|job không còn/i.test(type)) return 'Xem log job trong Modal và trạng thái ảnh/Volume trước khi tạo lại.';
-    if (/timeout|lỗi mạng|HTTP 50[234]/i.test(type)) return 'Kiểm tra Modal Logs, trạng thái GPU và credit; giữ bản demo cho người xem.';
+    if (/timeout|lỗi mạng|HTTP 50[234]/i.test(type)) return 'Kiểm tra Modal Logs, trạng thái GPU và credit; thông báo lỗi tạo ảnh cho người xem.';
     return 'Đối chiếu Vercel Runtime Logs và Modal Logs theo thời gian, endpoint.';
 }
 

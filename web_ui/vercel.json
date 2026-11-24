@@ -1,8 +1,6 @@
 {
   "cleanUrls": true,
   "functions": {
-    "api/generate.js": { "maxDuration": 60 },
-    "api/status.js": { "maxDuration": 60 },
     "api/media.js": { "maxDuration": 30 },
     "api/live.js": { "maxDuration": 60 },
     "api/edit.js": { "maxDuration": 60 }
