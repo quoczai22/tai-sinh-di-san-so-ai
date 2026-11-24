@@ -1,5 +1,5 @@
 const assert = require('node:assert/strict');
-const { formatUsageReport, formatCreditReport, formatGpuStatus } = require('../../web_ui/api/bot_ops_commands');
+const { formatUsageReport, formatCreditReport, formatGpuStatus, tryHandleOpsCommand } = require('../../web_ui/api/bot_ops_commands');
 const { tryHandleDesignCommand } = require('../../web_ui/api/bot_design_preview');
 const live = require('../../web_ui/api/live');
 
@@ -31,8 +31,26 @@ async function post(chatId, chatType, message) {
     assert.doesNotMatch(formatUsageReport(null, 0), /3\.16|2\.21|100% miễn phí/);
     assert.match(formatCreditReport(null), /chưa kết nối API billing/);
     assert.doesNotMatch(formatCreditReport(null), /0\.00\$|95 phút/);
-    assert.match(formatGpuStatus(null, 6000), /Không xác minh được/);
+    assert.match(formatGpuStatus(null, 6000, 'quá thời gian chờ'), /Chưa xác minh được GPU: quá thời gian chờ/);
     assert.doesNotMatch(formatGpuStatus(null, 6000), /đang ở chế độ ngủ/);
+
+    let healthTimeout = 0;
+    let failureText = '';
+    await tryHandleOpsCommand({ cleanText: '/gpu', chatId: 'owner',
+        zaloBase: 'https://zalo.test', zaloToken: 'test-bot',
+        getBackendConfig: () => ({ modalUrl: 'https://modal.test', modalKey: 'key', modalTimeoutMs: 25000 }),
+        buildBackendHeaders: () => ({}),
+        fetchWithTimeout: async (url, options, timeout) => {
+            if (String(url).endsWith('/health')) {
+                healthTimeout = timeout;
+                throw new Error('Timeout after 25000ms');
+            }
+            failureText = JSON.parse(options.body).text;
+            return new Response(JSON.stringify({ ok: true }), { status: 200 });
+        },
+    });
+    assert.equal(healthTimeout, 25000);
+    assert.match(failureText, /quá thời gian chờ Modal khởi động/);
 
     assert.equal((await post('group', 'GROUP', '/gpu')).ignored, 'operator_only');
     assert.equal(calls.length, 0);
