@@ -3,7 +3,7 @@
 //  · Đã chọn: khung 3D + thanh điều khiển, nút "Xem ý nghĩa hoa văn" (mở sổ hai trang, components/artifact-book.js), nút Tạo thiết kế.
 //    Có máy chủ GPU (data.canGenerate): bấm Tạo là sinh thật (core/generation.js), có thanh tiến độ, xong sang #/result.
 //    Nếu lúc mở trang /health chưa trả lời kịp thì bấm Tạo hỏi lại máy chủ (data.refreshHealth) trước khi kết luận không có GPU.
-//    Không có GPU: không giả lập việc sinh — bấm Tạo mở trang Kết quả với bộ thiết kế đã tạo trước đó trên GPU.
+//    Không có cấu hình GPU: nút Tạo báo rõ máy sinh ảnh chưa sẵn sàng (không giả lập việc sinh).
 // View chỉ lấy dữ liệu và ghép component; không tự định nghĩa component.
 import { h } from '../core/dom.js';
 import { icon } from '../core/icons.js';
@@ -28,7 +28,6 @@ export async function render([heritageId]) {
     if (!item) return stateBox('error', 'Không tìm thấy hiện vật', 'Hiện vật này không có trong Thư viện.', h('a', { class: 'btn', href: '#/studio' }, 'Chọn hiện vật khác'));
     data.audit('heritage_selected', { step: 1, heritage_id: heritageId });
 
-    const hasDesigns = (await data.passports()).some((p) => p.heritage_id === heritageId);
     const recovering = pendingGeneration()?.heritageId === heritageId;
     let can = data.canGenerate() || recovering;
     const goToResult = () => { location.hash = `#/result/${encodeURIComponent(heritageId)}`; };
@@ -46,9 +45,7 @@ export async function render([heritageId]) {
             note.textContent = '';
         }
         if (!can) {
-            // Không có GPU: mở trang Kết quả với bộ đã tạo trước
-            if (!hasDesigns) { note.textContent = 'Hiện vật này chưa có thiết kế.'; return; }
-            goToResult();
+            note.textContent = 'Máy sinh ảnh chưa sẵn sàng. Vui lòng thử lại sau hoặc báo nhóm vận hành.';
             return;
         }
         genBtn.disabled = true;
@@ -62,7 +59,9 @@ export async function render([heritageId]) {
             goToResult();
         } catch (err) {
             progress.hidden = true;
-            note.textContent = `Không tạo được thiết kế: ${err.message}`;
+            // Lỗi mạng của trình duyệt là TypeError tiếng Anh kỹ thuật ("Failed to fetch", "Load failed"...): đổi sang câu dễ hiểu
+            const reason = err instanceof TypeError ? 'Không kết nối được tới máy chủ. Hãy kiểm tra mạng rồi thử lại.' : err.message;
+            note.textContent = `Không tạo được thiết kế: ${reason}`;
             genBtn.disabled = false;
         }
     };

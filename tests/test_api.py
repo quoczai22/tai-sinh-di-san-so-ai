@@ -163,14 +163,31 @@ def test_audit_whitelist(api_client):
     assert r.status_code == 202 and api_client.audit_events[-1]["event"] == "design_viewed"
 
 
-def test_write_key_enforced(api_client, monkeypatch):
-    import tsds.api.main as main
-    monkeypatch.setattr(main, "WRITE_KEY", "khoa-bi-mat")
+def test_write_routes_need_api_key(api_client, monkeypatch):
+    # Một khoá DH_API_KEY bảo vệ cả route ghi (không còn khoá TSDS_WRITE_KEY riêng).
+    monkeypatch.setenv("DH_API_KEY", "khoa-bi-mat")
     body = {"officer_id": "QC01", "decision": "forward_to_expert"}
     pid = _warn_id(api_client)
     assert api_client.post(f"/passports/{pid}/qc", json=body).status_code == 401
+    assert api_client.post(f"/passports/{pid}/qc", json=body, headers={"X-API-Key": "sai"}).status_code == 401
     ok = api_client.post(f"/passports/{pid}/qc", json=body, headers={"X-API-Key": "khoa-bi-mat"})
     assert ok.status_code == 200
+    assert api_client.get("/health").json()["write_protection"] is True
+
+
+def test_no_api_key_means_local_mode(api_client):
+    # conftest xoá DH_API_KEY: chạy cục bộ thì không đòi khoá, health báo write_protection=False.
+    assert api_client.get("/health").json()["write_protection"] is False
+
+
+def test_every_post_route_is_protected_except_audit():
+    # Chặn lặp lại sự cố 24/11: route ghi mới thêm vào mà quên khoá sẽ mở công khai trên Modal.
+    import tsds.api.main as main
+    cong_khai = {"/audit"}
+    thieu = [r.path for r in main.app.routes
+             if "POST" in (getattr(r, "methods", None) or set()) and r.path not in cong_khai
+             and not any(d.dependency is main.verify_api_key for d in r.dependencies)]
+    assert not thieu, f"Route POST chưa có verify_api_key: {thieu}"
 
 
 # --------------------------------------------- quy trình phê duyệt ---

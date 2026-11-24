@@ -273,10 +273,12 @@ export function hoverSpin(card, box, heritageId) {
         failed = !view;
         if (view && hovering && !reducedMotion()) view.spin(true);
     };
-    new IntersectionObserver((entries, observer) => {
-        if (entries.some(e => e.isIntersecting)) { observer.disconnect(); load(); }
-    }, { rootMargin: '200px' }).observe(card);
-    const enter = () => { hovering = true; if (reducedMotion()) return; if (view) view.spin(true); else load(); };
+    const enter = (event) => {
+        if (event.type === 'pointerenter' && event.pointerType === 'touch') return;
+        hovering = true;
+        if (reducedMotion()) return;
+        if (view) view.spin(true); else load();
+    };
     const leave = () => { hovering = false; view?.spin(false); };
     card.addEventListener('pointerenter', enter);
     card.addEventListener('pointerleave', leave);

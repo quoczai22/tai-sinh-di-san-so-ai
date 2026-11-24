@@ -1,4 +1,5 @@
 """Gói mã đưa lên Modal và Hugging Face Space phải đủ: toàn bộ mã Python nằm trong tsds/, cộng config/ và data/."""
+import json
 import re
 from pathlib import Path
 
@@ -28,3 +29,14 @@ def test_khong_con_goi_python_o_goc_repo():
     # mọi gói Python phải nằm trong tsds/, không để sót thư mục có __init__.py ở gốc (trừ tests)
     sot = [p.name for p in ROOT.iterdir() if p.is_dir() and (p / "__init__.py").exists() and p.name not in {"tsds", "tests"}]
     assert not sot, f"Gói Python còn ở gốc repo: {sot}"
+
+def test_vercel_co_header_bao_mat_co_ban():
+    # Header an toàn rủi ro thấp cho mọi đường dẫn. Cố ý chưa đặt CSP (importmap nội tuyến, font Google) và
+    # X-Frame-Options (chặn việc nhúng link vào khung của cổng nộp bài); xem báo cáo kiểm thử 24/11.
+    cfg = json.loads((ROOT / "web_ui" / "vercel.json").read_text(encoding="utf-8"))
+    rule = next((h for h in cfg.get("headers", []) if h.get("source") == "/(.*)"), None)
+    assert rule, "web_ui/vercel.json thiếu quy tắc headers cho mọi đường dẫn"
+    got = {h["key"]: h["value"] for h in rule["headers"]}
+    assert got.get("X-Content-Type-Options") == "nosniff"
+    assert got.get("Referrer-Policy") == "strict-origin-when-cross-origin"
+    assert "camera=()" in got.get("Permissions-Policy", "")

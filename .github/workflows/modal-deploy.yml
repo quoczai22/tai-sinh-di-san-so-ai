@@ -1,0 +1,28 @@
+name: Check before AWS Modal deploy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: modal-production
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/modal-backend.yml
+
+  ready:
+    name: Show manual deployment link
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summarize next action
+        run: |
+          echo "## Ready for manual AWS CodeBuild deployment" >> "$GITHUB_STEP_SUMMARY"
+          echo "Checked commit: \`$GITHUB_SHA\`" >> "$GITHUB_STEP_SUMMARY"
+          echo '[Open CodeBuild in AWS Console](https://ap-southeast-2.console.aws.amazon.com/codesuite/codebuild/projects/tai-sinh-di-san-so-ai-modal-deploy/history?region=ap-southeast-2) and choose Start build.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Modal credentials remain in AWS Parameter Store. GitHub has no Modal or AWS deployment credentials.' >> "$GITHUB_STEP_SUMMARY"

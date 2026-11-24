@@ -46,7 +46,7 @@ def api_client(monkeypatch, tmp_path):
     monkeypatch.setattr(store, "EDITS", edits)
     events: list[dict] = []
     monkeypatch.setattr(main, "append_audit_event", lambda _root, ev: events.append(ev) or True)
-    monkeypatch.setattr(main, "WRITE_KEY", "")
+    monkeypatch.delenv("DH_API_KEY", raising=False)
     client = TestClient(main.app)
     client.audit_events = events
     client.passports_dir = passports

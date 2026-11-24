@@ -24,7 +24,7 @@ Vì sao dùng **generalization** cho tác nhân: mọi vai trò nội bộ đề
 
 | Mã | Ca sử dụng | Tác nhân | Triển khai | Mã nguồn / giao diện |
 |---|---|---|---|---|
-| UC01 | Đăng ký và đăng nhập | Người dùng đã đăng ký | Kế hoạch | Hiện chỉ có khoá ghi `TSDS_WRITE_KEY` |
+| UC01 | Đăng ký và đăng nhập | Người dùng đã đăng ký | Kế hoạch | Hiện chỉ có khoá API `DH_API_KEY` |
 | UC02 | Xem danh mục hiện vật | Khách | Đã chạy | `GET /heritage`, Trang chủ và lưới chọn ở Studio; sổ hoa văn ở Studio (ảnh tĩnh, ý nghĩa hoa văn, nguồn ảnh, đối chiếu bảo tàng) |
 | UC03 | Tải lên hiện vật | Nhà thiết kế | Một phần | Ảnh mới đưa vào bằng dòng lệnh; chưa có nút tải lên |
 | UC04 | Kiểm tra nguồn gốc hiện vật | (được include) | Đã chạy | `tsds/provenance/registry.py::assess_selection` |

@@ -51,6 +51,9 @@ async function main() {
         if (url.endsWith('/generate/missing')) {
             return Response.json({ detail: 'Không tìm thấy job' }, { status: 404 });
         }
+        if (url.endsWith('/generate/unavailable')) {
+            return Response.json({ detail: 'Modal unavailable' }, { status: 503 });
+        }
         if (url.endsWith('/passports')) {
             return Response.json([{
                 passport_id: 'DP-HV08-20261119T161848-V1',
@@ -75,6 +78,9 @@ async function main() {
     assert.equal(result.body.status, 'completed');
     result = await call('generate/missing', 'GET', undefined, { heritage_id: 'LR3D_61' });
     assert.equal(result.code, 404, 'a lost job must be retryable, not labeled demo');
+    result = await call('generate/unavailable', 'GET', undefined, { heritage_id: 'LR3D_61' });
+    assert.equal(result.code, 503, 'polling failure must remain an error');
+    assert.equal(result.body.backend, undefined, 'polling failure must not become a demo result');
 
     result = await call('generate', 'POST', { heritage_id: 'LR3D_61', seed: 47 });
     assert.equal(result.code, 429);
@@ -91,23 +97,24 @@ async function main() {
     result = await call('passports/DP-HV08-20261119T161848-V1/qc', 'POST', {});
     assert.equal(result.code, 404, 'write route must not be forwarded');
 
+    const alertsBeforeFailure = alerts;
     _resetAlertCooldown();
     global.fetch = async (url) => {
         if (url === 'https://alert.mock') { alerts++; return new Response(null, { status: 204 }); }
         throw new Error('mock connection failure');
     };
     result = await call('generate', 'POST', { heritage_id: 'LR3D_61', seed: 43 });
-    assert.equal(result.body.backend, 'demo');
-    assert.equal(result.body.demo_label, 'Kết quả đã sinh sẵn — không phải sinh trực tiếp');
+    assert.equal(result.code, 503);
+    assert.equal(result.body.backend, undefined);
     result = await call('generate', 'POST', { heritage_id: 'LR3D_61', seed: 44 });
-    assert.equal(result.body.backend, 'demo');
-    assert.equal(alerts, 1, 'Discord alert must respect cooldown');
+    assert.equal(result.code, 503);
+    assert.equal(alerts, alertsBeforeFailure + 1, 'Discord alert must respect cooldown');
 
     process.env.MODAL_URL = '';
     _resetAlertCooldown();
     result = await call('generate', 'POST', { heritage_id: 'LR3D_61', seed: 45 });
-    assert.equal(result.body.backend, 'demo');
-    assert.equal(alerts, 1, 'unconfigured Modal must not alert');
+    assert.equal(result.code, 503);
+    assert.equal(alerts, alertsBeforeFailure + 2, 'missing Modal configuration should alert');
 
     process.env.MODAL_URL = 'https://modal.mock';
     process.env.ALERT_DISCORD_WEBHOOK_URL = '';
@@ -118,8 +125,29 @@ async function main() {
     await handler(req, response());
     result = response();
     await handler(req, result);
-    assert.equal(result.body.reason, 'rate_limit_exceeded');
-    console.log('live gateway: 11 contract checks passed (mock only)');
+    assert.equal(result.code, 429);
+
+    // Thân JSON hỏng hoặc không phải object (client gửi Content-Type text/plain nên thân là chuỗi):
+    // phải trả 400, không ném lỗi thành HTTP 500 và không gọi Modal.
+    let upstreamCalls = 0;
+    global.fetch = async () => { upstreamCalls++; return Response.json({}, { status: 200 }); };
+    for (const route of ['generate', 'audit']) {
+        for (const bad of ['{bad', '[1,2]', '"x"', '42']) {
+            result = await call(route, 'POST', bad);
+            assert.equal(result.code, 400, route + ' với thân ' + bad + ' phải trả 400');
+        }
+    }
+    process.env.ALERT_ZALO_WEBHOOK_SECRET = 'secret-thu-nghiem';
+    const hook = (secret, body) => {
+        const r = response();
+        const headers = { 'x-forwarded-for': '203.0.113.9' };
+        if (secret) headers['x-bot-api-secret-token'] = secret;
+        return handler({ method: 'POST', body, query: { route: 'zalo-webhook' }, headers }, r).then(() => r);
+    };
+    assert.equal((await hook('', '{}')).code, 403, 'thiếu secret phải bị từ chối trước khi đọc thân');
+    assert.equal((await hook('secret-thu-nghiem', '{bad')).code, 400, 'qua khoá nhưng JSON hỏng phải trả 400');
+    assert.equal(upstreamCalls, 0, 'thân hỏng không được chạm tới Modal');
+    console.log('live gateway: 12 contract checks passed (mock only)');
 }
 
 main().catch((error) => { console.error(error); process.exitCode = 1; });

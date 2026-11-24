@@ -50,7 +50,7 @@ Endpoint cũ giữ nguyên đường dẫn và các trường trả về (có ca
 | Nguồn gốc | `GET /heritage/{id}/provenance`, `GET /provenance/catalog` |
 | Lần chạy | `GET /runs`, `GET /runs/{id}`, `GET /media/run/{id}/{tệp}`, `GET /media/artifact?path=` (chỉ trong `outputs/`, `data/heritage/`, `web_ui/assets/images/`) |
 | Passport | `GET /passports`, `GET /passports/{id}` (kèm dòng thời gian, kết quả kiểm tra toàn vẹn), `GET /passports/{id}/export` |
-| Ghi (cần `X-API-Key` khi đặt `TSDS_WRITE_KEY`) | `POST /passports/{id}/qc`, `/reviews`, `/edits`, `/publish` |
+| Ghi (cần `X-API-Key` khi đặt `DH_API_KEY`) | `POST /passports/{id}/qc`, `/reviews`, `/edits`, `/publish` |
 | Chất lượng, thí nghiệm | `GET /quality/designs`, `GET /experiments` |
 
 Bảo vệ: giới hạn 6 lần sinh/giờ/IP (`TSDS_GENERATE_PER_HOUR`), danh sách sự kiện audit được phép, kiểm tra mã định danh bằng biểu thức chính quy, chặn đường dẫn ra ngoài thư mục cho phép, ảnh chỉnh sửa ≤ 8 MB và phải là ảnh hợp lệ. Khi máy chủ không có PyTorch/GPU, `/generate` trả 503 với thông báo rõ thay vì lỗi 500.
@@ -71,7 +71,7 @@ Lấy cảm hứng từ cách các nền tảng di sản trực tuyến kể chu
 |---|---|
 | Điều hướng | Logo hoa sen ở giữa; trái: Trang chủ, Studio và Thiết kế đã tạo; phải: nút menu ☰ (menu có cùng các mục; trang Kết quả chỉ vào qua nút Tạo thiết kế) |
 | Trang chủ | Ảnh bìa với quạt thẻ Hiện vật → Hoa văn → Áo dài; chim phượng và câu mở đầu; Hành trình 3 chặng; lưới hiện vật; lưới áo dài; mặt trống đồng và lời kết |
-| Studio | Chọn hiện vật (Đầu vào) rồi nút Tạo thiết kế; tạo xong tự chuyển sang trang Kết quả. Có GPU: sinh thật kèm tiến độ. Không có GPU: mở bộ đã tạo trước trên GPU (từ 20/11/2026 giao diện không còn dòng ghi chú ngày tạo, nên báo cáo phải nêu rõ đây là bộ có sẵn khi chạy ngoại tuyến), không giả lập việc sinh |
+| Studio | Chọn hiện vật (Đầu vào) rồi nút Tạo thiết kế; tạo xong tự chuyển sang trang Kết quả. Có GPU: sinh thật kèm tiến độ. Không có GPU hoặc Modal lỗi: báo không tạo được, không mở bộ ảnh có sẵn như kết quả của lượt mới. |
 | Kết quả (`#/result/<mã hiện vật>` hoặc `#/result/<mã hiện vật>/<mã lượt chạy>`) | Bốn tà áo của bộ thiết kế mới nhất của hiện vật (hoặc đúng lượt chạy được chỉ định), nhãn AI; nút Tạo lại và Chọn hiện vật khác. Bấm một ảnh mở cửa sổ phóng to có nút Tải xuống và Tải lên chỉnh sửa. Thiết kế đã có bản sửa mang nhãn "Đã chỉnh sửa" ở góc trên bên phải, nhãn AI vẫn giữ. Không có khung chi tiết hay chỉ số kỹ thuật |
 | Thiết kế đã tạo (`#/mine`) | Các bộ thiết kế đã tạo trên trình duyệt này (danh sách lưu trong trình duyệt, tối đa 12 bộ, không đồng bộ giữa thiết bị), mỗi bộ có bốn ảnh nhỏ và nút Xem lại. Bộ không còn trên máy chủ báo rõ và cho xóa khỏi danh sách |
 | Tải bản chỉnh sửa (`#/edit/<mã Passport>`) | Ô tải tệp hoặc kéo thả ảnh PNG (tối đa 3 MB), biểu mẫu ID tài khoản (phải bắt đầu bằng TSDS), vai, mô tả, công cụ (không thu email hay họ tên). Nút Hủy (hộp "Thiết kế của bạn sẽ không được lưu. Bạn có muốn hủy?": Quay lại, Đồng ý) và Lưu bản chỉnh sửa (hộp "Xác nhận lưu bản chỉnh sửa": Hủy, Xác nhận, rồi "Đã cập nhật bản chỉnh sửa"). Chỉ dùng được với thiết kế tạo trực tiếp; thiết kế sinh sẵn thì nút bị khóa kèm lý do |

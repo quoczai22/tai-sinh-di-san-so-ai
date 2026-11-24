@@ -1,8 +1,13 @@
 const { getBackendConfig, buildBackendHeaders } = require('./_shared');
+const { timingSafeEqual } = require('node:crypto');
 
 module.exports = async function handler(req, res) {
-    if (req.method === 'OPTIONS') {
-        return res.status(204).end();
+    if (req.method !== 'POST') return res.status(405).json({ detail: 'Method Not Allowed' });
+    const expected = (process.env.WARMUP_KEY || '').trim();
+    const supplied = String(req.headers?.['x-warmup-key'] || '');
+    if (!expected || !supplied || Buffer.byteLength(expected) !== Buffer.byteLength(supplied) ||
+        !timingSafeEqual(Buffer.from(expected), Buffer.from(supplied))) {
+        return res.status(403).json({ detail: 'Forbidden' });
     }
     const config = getBackendConfig();
     if (config.modalUrl) {

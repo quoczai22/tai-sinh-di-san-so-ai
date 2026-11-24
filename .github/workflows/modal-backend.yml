@@ -1,0 +1,134 @@
+name: Modal backend checks
+
+on:
+  workflow_call:
+  pull_request:
+    paths:
+      - "modal_app.py"
+      - "Dockerfile"
+      - "requirements-api.txt"
+      - "mock_backend.py"
+      - "tsds/**"
+      - "config/**"
+      - "data/**"
+      - "web_ui/api/**"
+      - "web_ui/assets/js/core/data.js"
+      - "tests/test_api.py"
+      - "tests/test_deploy_files.py"
+      - "tests/manual/**"
+      - "scripts/deploy/test_alert.js"
+      - "scripts/deploy/aws-modal-cd.yaml"
+      - "docs/CI_MODAL.md"
+      - ".github/workflows/modal-deploy.yml"
+      - ".github/workflows/modal-backend.yml"
+  push:
+    branches: [main]
+    paths:
+      - "modal_app.py"
+      - "Dockerfile"
+      - "requirements-api.txt"
+      - "mock_backend.py"
+      - "tsds/**"
+      - "config/**"
+      - "data/**"
+      - "web_ui/api/**"
+      - "web_ui/assets/js/core/data.js"
+      - "tests/test_api.py"
+      - "tests/test_deploy_files.py"
+      - "tests/manual/**"
+      - "scripts/deploy/test_alert.js"
+      - "scripts/deploy/aws-modal-cd.yaml"
+      - "docs/CI_MODAL.md"
+      - ".github/workflows/modal-deploy.yml"
+      - ".github/workflows/modal-backend.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    name: API, queue and Modal package
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install CPU test dependencies
+        run: python -m pip install pytest==9.2.0 numpy==2.4.6 fastapi==0.163.2 uvicorn==0.54.0 httpx==0.28.1 pillow==13.0.0 opencv-python-headless==5.1.0.95 scikit-image==0.26.0 scipy==1.17.1
+      - name: Check Python syntax
+        run: python -m compileall -q modal_app.py tsds/api
+      - name: Test API and deployment package
+        run: python -m pytest tests/test_api.py tests/test_deploy_files.py -q
+      - name: Test API key protection
+        run: python tests/manual/test_api_key_guard.py
+      - name: Test generation queue
+        run: python tests/manual/test_generation_queue.py
+      - name: Test worker failure recovery
+        run: python tests/manual/test_worker_resilience.py
+
+  gateway:
+    name: Vercel gateway and live session
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install mock API dependencies
+        run: python -m pip install fastapi==0.163.2 uvicorn==0.54.0
+      - name: Test gateway against mock backend
+        run: node tests/manual/test_live_gateway_mock.js
+      - name: Test session resume without duplicate generation
+        run: node --experimental-default-type=module tests/manual/test_live_session.mjs
+      - name: Prove health endpoints do not wake Modal
+        run: node tests/manual/test_health_cpu.js
+      - name: Test live failure alerts with local mock servers
+        run: node tests/manual/test_live_alert_failover.js
+      - name: Test safe retry for read requests
+        run: node tests/manual/test_read_retry.js
+      - name: Reject retired generation endpoints without demo output
+        run: node tests/manual/test_legacy_endpoints.js
+      - name: Test operator alert script with local webhook
+        run: node tests/manual/test_alert_script.js
+      - name: Test Zalo webhook authorization without external calls
+        run: node tests/manual/test_zalo_bot_guard.js
+      - name: Test Zalo billing honesty and exact job results
+        run: node tests/manual/test_zalo_ops_results.js
+      - name: Test read-only Zalo CI/CD status
+        run: node tests/manual/test_zalo_ci_status.js
+      - name: Test warmup authorization without GPU
+        run: node tests/manual/test_warmup_guard.js
+      - name: Test alert delivery acknowledgement and cooldown
+        run: node tests/manual/test_alert_delivery.js
+
+  next-action:
+    name: Next action
+    if: always()
+    needs: [api, gateway]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Summarize action
+        env:
+          API_RESULT: ${{ needs.api.result }}
+          GATEWAY_RESULT: ${{ needs.gateway.result }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          echo "## Modal backend: next action" >> "$GITHUB_STEP_SUMMARY"
+          echo "API/package: **$API_RESULT** · Gateway/session: **$GATEWAY_RESULT**" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$API_RESULT" != success ] || [ "$GATEWAY_RESULT" != success ]; then
+            echo "Fix the failed job before deploying Modal. See docs/CI_MODAL.md for the response by failure type." >> "$GITHUB_STEP_SUMMARY"
+          elif [ "$GITHUB_EVENT_NAME" = push ] && git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null && git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA" | grep -Eq '^(modal_app\.py|Dockerfile|requirements-api\.txt|tsds/|config/|data/)'; then
+            echo "Backend code changed and checks passed. Review docs/CI_MODAL.md, then deploy Modal manually and run a live smoke test if this change must go live." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Checks passed. No Modal deployment is indicated by this run." >> "$GITHUB_STEP_SUMMARY"
+          fi

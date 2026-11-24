@@ -1,6 +1,7 @@
 # Secrets and machine-specific configuration
 .env
 .env.*
+*.env
 *.local
 
 # Python and virtual environments

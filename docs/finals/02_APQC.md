@@ -153,7 +153,7 @@ Nguồn của bộ demo: Passport trong `outputs/passports/` (`GET /quality/desi
 
 | Mã | Quy trình | AS-IS | Điểm nghẽn, rủi ro | TO-BE | Giá trị cải tiến |
 |---|---|---|---|---|---|
-| 5.1 | Quản lý người dùng | Không có tài khoản | Không phân biệt ai được ghi | Khoá ghi (`TSDS_WRITE_KEY`) cho thao tác ghi; tài khoản theo vai trò là kế hoạch | Ngăn ghi trái phép khi chạy công khai |
+| 5.1 | Quản lý người dùng | Không có tài khoản | Không phân biệt ai được ghi | Khoá API (`DH_API_KEY`) cho thao tác ghi và sinh ảnh; tài khoản theo vai trò là kế hoạch | Ngăn ghi trái phép khi chạy công khai |
 | 5.2 | Quản lý chuyên gia thẩm định | Không có | – | Mã người chấm, đồng ý lưu tên, chấm mù, ít nhất 3 người cho thí nghiệm | Giữ được tính độc lập của phiếu |
 | 5.3 | Tiếp nhận phản hồi | Không có | – | Phiếu chuyên gia có nhận xét; phản hồi người dùng (kế hoạch) | Có dữ liệu để cải tiến |
 | 5.4 | Cải tiến sản phẩm từ kết quả đánh giá | Không có | Ngưỡng đặt theo cảm tính | Hiệu chỉnh ngưỡng cổng theo mức đồng thuận với chuyên gia khi đủ ≥ 30 phiếu | Ngưỡng có cơ sở |

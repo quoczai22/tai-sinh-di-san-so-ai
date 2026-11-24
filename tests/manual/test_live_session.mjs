@@ -61,4 +61,6 @@ healthFails = true;
 await data.init();
 assert.equal(data.isLive(), true);
 assert.equal(data.liveRunFor('LR3D_33'), 'R-new');
+await assert.rejects(data.passports(), /Unexpected request: \/api\/live\/passports/);
+assert.equal(data.isLive(), true, 'a failed live read must not switch to static sample results');
 console.log('live session: returning browser restores the completed run without a second POST');
