@@ -365,6 +365,19 @@ async function handleZaloBotWebhook(body) {
 
     const normalizedText = text.toLocaleLowerCase('vi-VN').normalize('NFD')
         .replace(/\p{M}/gu, '').replace(/đ/g, 'd');
+    // Chỉ tài khoản vận hành được phép gọi backend GPU. Nhóm chat chỉ xem trạng thái CI.
+    const operatorId = (process.env.ALERT_ZALO_USER_CHAT_ID || '').trim();
+    const isOperator = chatType === 'PRIVATE' && operatorId && chatId === operatorId;
+    const isFixMode = /(?:^|[^a-z])(sua|fix|khac phuc|giai quyet|danh thuc|warmup|wake|khoi dong|thu lai|retry|cuu)(?=$|[^a-z])/.test(normalizedText);
+    if (isFixMode && !isOperator) return { ok: true, ignored: 'operator_only' };
+    const now = Date.now();
+    if (now - (lastBotReplyByChat.get(chatId) || 0) < 30_000) {
+        return { ok: true, ignored: 'rate_limited' };
+    }
+    lastBotReplyByChat.set(chatId, now);
+    if (!isOperator && /^(\/usage|usage|muc dung|chi phi|da dung|tieu thu|\/gpu|gpu|t4|cuda|thiet bi|\/runs|runs|lich su|danh sach sinh|cac luot sinh|lich|nhat ky)$/.test(normalizedText)) {
+        return { ok: true, ignored: 'operator_only' };
+    }
     const designResult = await tryHandleDesignCommand({
         text,
         normalizedText,
@@ -388,15 +401,9 @@ async function handleZaloBotWebhook(body) {
         buildBackendHeaders,
     });
     if (opsResult) return opsResult;
-    const isFixMode = /(?:^|[^a-z])(sua|fix|khac phuc|giai quyet|danh thuc|warmup|wake|khoi dong|thu lai|retry|cuu)(?=$|[^a-z])/.test(normalizedText);
-    if (isFixMode && chatId !== (process.env.ALERT_ZALO_USER_CHAT_ID || '').trim()) {
+    if (!isOperator && !/(?:^|[^a-z])(ci|cd|deploy|pipeline)(?=$|[^a-z])/.test(normalizedText)) {
         return { ok: true, ignored: 'operator_only' };
     }
-    const now = Date.now();
-    if (now - (lastBotReplyByChat.get(chatId) || 0) < 30_000) {
-        return { ok: true, ignored: 'rate_limited' };
-    }
-    lastBotReplyByChat.set(chatId, now);
     if (/(?:^|[^a-z])(ci|cd|deploy|pipeline)(?=$|[^a-z])/.test(normalizedText) ||
         normalizedText.includes('trang thai phat hanh')) {
         const replyText = await ciStatusReply(fetchWithTimeout);
