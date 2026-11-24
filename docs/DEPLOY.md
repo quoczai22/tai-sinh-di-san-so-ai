@@ -1,8 +1,10 @@
 # Hướng dẫn Triển khai Có Failover — Tái Sinh Di Sản Số
 
 > Với giao diện mới sau refactor, đọc `docs/DEPLOY_LIVE.md`. Các route `/api/generate`, `/api/status` và `/api/media` dưới đây mô tả gateway cũ; không dùng để deploy UI mới. Project Vercel chính thức đã chốt là `tai-sinh-di-san-so-ai`.
+>
+> **Từ 24/11/2026 gateway hiện hành (`/api/live/*`) không còn tự chuyển lượt sinh lỗi sang kết quả dựng sẵn**: khi Modal lỗi, giao diện báo lỗi và giữ người dùng ở Studio. Sơ đồ ở mục 1 và luồng "Failover sang Demo Mode" bên dưới mô tả gateway cũ (đã ngừng, trả HTTP `410`). Dữ liệu dựng sẵn trong `web_ui/data` chỉ dùng để trưng bày và chạy ngoại tuyến.
 
-Tài liệu vận hành kiến trúc triển khai 2 lớp có khả năng tự động chuyển đổi (**Modal GPU → Demo Mode kết quả thật**) cho vòng Chung kết Cuộc thi Sáng tạo trẻ 2026.
+Tài liệu vận hành kiến trúc triển khai **Vercel → Modal GPU** cho vòng Chung kết Cuộc thi Sáng tạo trẻ 2026.
 
 > [!NOTE]
 > **Về lớp Hugging Face Space**: Hugging Face hiện yêu cầu gói PRO trả phí để tạo Docker Space chạy phần cứng GPU. Do đó, hệ thống chính thức triển khai theo kiến trúc 2 lớp tối ưu chi phí: **Modal GPU (chính) → Demo Mode (kết quả thật $0)**. Toàn bộ mã nguồn đóng gói (`scripts/deploy/build_hf_space.py`) và logic kết nối HF Space vẫn được bảo toàn nguyên vẹn trong repo và có thể kích hoạt lại bất kỳ lúc nào bằng cách cấu hình biến môi trường trên Vercel.
@@ -101,10 +103,15 @@ flowchart LR
 uv run python scripts/demo/export_gateway_demo.py
 ```
 
-### 3.2. Kiểm thử tự động 8 tiêu chí nghiệm thu trên máy local (không tốn GPU)
+### 3.2. Kiểm thử tự động trên máy local (không tốn GPU)
 ```powershell
-python tests/manual/test_acceptance_1_8.py
+python tests/manual/test_api_key_guard.py
+python tests/manual/test_worker_resilience.py
+node tests/manual/test_live_gateway.js
+node tests/manual/test_live_gateway_mock.js   # đặt PYTHON_EXECUTABLE trỏ tới .venv nếu python mặc định thiếu fastapi
+python -m pytest tests/test_api.py tests/test_deploy_files.py tests/test_web_edit.py -q
 ```
+Danh sách đầy đủ các bước CI nằm ở `docs/DEPLOY_LIVE.md`, mục "Kiểm tra chưa tốn GPU".
 
 Hoặc chạy thủ công 3 cửa sổ terminal để trải nghiệm trực tiếp trên trình duyệt tại `http://127.0.0.1:3000`:
 ```powershell
@@ -152,10 +159,10 @@ modal deploy modal_app.py
 
 | Thao tác | Cách thực hiện |
 |---|---|
-| **Giả lập Modal sập (chuyển sang Demo)** | Chạy `modal app stop tai-sinh-di-san-so-api`. Lưu ý: **không** dùng cách đổi sai `MODAL_KEY` trên giao diện mới (`/api/live/generate`), vì lỗi 401/403 sẽ trả HTTP 503 báo lỗi xác thực thay vì chuyển sang Demo |
+| **Giả lập Modal sập (kiểm thử đường báo lỗi)** | Chạy `modal app stop tai-sinh-di-san-so-api`. Bấm Tạo trên giao diện sẽ hiện thông báo lỗi (gateway trả HTTP 503), **không** chuyển sang kết quả dựng sẵn; cảnh báo Discord được gửi theo cooldown nếu đã cấu hình webhook. Không dùng cách đổi sai `MODAL_KEY` để giả lập sập, vì lỗi 401/403 trả HTTP 503 báo lỗi xác thực |
 | **Bật lại Modal** | Chạy `modal deploy modal_app.py` |
 | **Đổi Modal từ T4 sang L4 (buổi phản biện)** | `$env:MODAL_GPU="L4"; modal deploy modal_app.py` |
-| **Ép chạy Demo Mode** | Dừng app Modal (`modal app stop tai-sinh-di-san-so-api`), hoặc xoá `MODAL_URL` trên Vercel rồi Redeploy |
+| **Ép giao diện về chế độ ngoại tuyến (chỉ xem ảnh dựng sẵn)** | Xoá `MODAL_URL` trên Vercel rồi Redeploy: `/api/live/health` báo `generation_available: false` và Studio chỉ mở bộ thiết kế dựng sẵn. **Không** dùng `modal app stop` cho mục đích này: health vẫn báo sẵn sàng nên Studio vẫn thử sinh và sẽ báo lỗi. Chỉ làm khi chủ ý tắt sinh ảnh trực tiếp, đừng làm lúc giám khảo đang chấm |
 | **Chuyển sang Laptop nhóm + Cloudflare Tunnel (dự phòng buổi phản biện)** | 1. Trên laptop có GPU NVIDIA của nhóm, chạy:<br>`$env:DH_API_KEY="<MODAL_KEY>"; python -m uvicorn tsds.api.main:app --host 127.0.0.1 --port 8000`<br>2. Mở terminal thứ 2 chạy:<br>`cloudflared tunnel --url http://localhost:8000`<br>3. Copy URL `https://*.trycloudflare.com` vừa sinh ra, dán vào biến `MODAL_URL` trên Vercel và Redeploy. |
 
 ---
@@ -196,7 +203,7 @@ Khi có giám khảo truy cập và Modal gặp sự cố (lỗi mạng, timeout
 > [!NOTE]
 > - Cảnh báo được bọc `try/catch` với timeout ngắn (3 giây) và không throw lỗi, đảm bảo lỗi gửi webhook không bao giờ làm ảnh hưởng đến trải nghiệm của giám khảo.
 > - Tuyệt đối không gửi token, API key hoặc địa chỉ IP người dùng vào tin nhắn.
-> - Khi rơi về Demo do người dùng vượt rate limit (10 lượt/IP/giờ), hệ thống **KHÔNG** gửi cảnh báo vì đây là hành vi bảo vệ bình thường.
+> - Khi người dùng vượt rate limit (10 lượt/IP/giờ), gateway trả HTTP 429 và Studio báo hết lượt trong giờ, không chuyển sang kết quả dựng sẵn; hệ thống **KHÔNG** gửi cảnh báo vì đây là hành vi bảo vệ bình thường.
 
 ### 5.3. Bảng "Nhận cảnh báo thì làm gì?"
 

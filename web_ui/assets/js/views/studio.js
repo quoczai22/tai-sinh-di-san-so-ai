@@ -51,7 +51,9 @@ export async function render([heritageId]) {
             goToResult();
         } catch (err) {
             progress.hidden = true;
-            note.textContent = `Không tạo được thiết kế: ${err.message}`;
+            // Lỗi mạng của trình duyệt là TypeError tiếng Anh kỹ thuật ("Failed to fetch", "Load failed"...): đổi sang câu dễ hiểu
+            const reason = err instanceof TypeError ? 'Không kết nối được tới máy chủ. Hãy kiểm tra mạng rồi thử lại.' : err.message;
+            note.textContent = `Không tạo được thiết kế: ${reason}`;
             genBtn.disabled = false;
         }
     };

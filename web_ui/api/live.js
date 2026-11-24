@@ -1,4 +1,5 @@
 const {
+    readJsonBody,
     checkRateLimit,
     getBackendConfig,
     buildBackendHeaders,
@@ -71,12 +72,14 @@ module.exports = async function handler(req, res) {
             !timingSafeEqual(Buffer.from(expected), Buffer.from(supplied))) {
             return res.status(403).json({ detail: 'Forbidden' });
         }
-        const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
+        const body = readJsonBody(req);
+        if (!body) return res.status(400).json({ detail: 'Yêu cầu không hợp lệ.' });
         const result = await handleZaloBotWebhook(body);
         return res.status(200).json(result);
     }
     if (route === 'generate' && req.method === 'POST') {
-        const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
+        const body = readJsonBody(req);
+        if (!body) return res.status(400).json({ detail: 'Yêu cầu không hợp lệ.' });
         const heritageId = String(body.heritage_id || '');
         const hasSeed = body.seed !== undefined && body.seed !== null;
         if (!ID.test(heritageId) || (hasSeed && (!Number.isInteger(body.seed) ||
@@ -179,8 +182,8 @@ module.exports = async function handler(req, res) {
         return forward(req, res, '/experiments', { endpoint: '/api/live/experiments' });
     }
     if (route === 'audit' && req.method === 'POST') {
-        const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-        if (!Number.isInteger(body.step) || typeof body.event !== 'string' ||
+        const body = readJsonBody(req);
+        if (!body || !Number.isInteger(body.step) || typeof body.event !== 'string' ||
             body.event.length > 80) return res.status(400).json({ detail: 'Audit không hợp lệ.' });
         try { return await forward(req, res, '/audit', { body, endpoint: '/api/live/audit', silent: true }); }
         catch { return res.status(202).json({ recorded: false }); }

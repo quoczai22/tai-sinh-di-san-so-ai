@@ -9,6 +9,19 @@ const path = require('path');
  */
 const ipBuckets = new Map();
 
+/**
+ * Đọc thân JSON của yêu cầu. Trả về object, hoặc null nếu thân hỏng hoặc không phải object (nơi gọi trả 400).
+ * Thân là chuỗi khi client gửi Content-Type khác application/json; JSON.parse không bọc sẽ ném lỗi và thành HTTP 500.
+ */
+function readJsonBody(req) {
+    let body = req.body;
+    if (typeof body === 'string') {
+        try { body = JSON.parse(body || '{}'); } catch { return null; }
+    }
+    if (body === undefined || body === null) return {};
+    return typeof body === 'object' && !Array.isArray(body) ? body : null;
+}
+
 function getClientIp(req) {
     const xff = req.headers['x-forwarded-for'];
     if (typeof xff === 'string' && xff.trim()) {
@@ -470,6 +483,7 @@ function httpFailureType(status) {
 }
 
 module.exports = {
+    readJsonBody,
     getClientIp,
     checkRateLimit,
     getBackendConfig,

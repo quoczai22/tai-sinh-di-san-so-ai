@@ -126,7 +126,28 @@ async function main() {
     result = response();
     await handler(req, result);
     assert.equal(result.code, 429);
-    console.log('live gateway: 11 contract checks passed (mock only)');
+
+    // Thân JSON hỏng hoặc không phải object (client gửi Content-Type text/plain nên thân là chuỗi):
+    // phải trả 400, không ném lỗi thành HTTP 500 và không gọi Modal.
+    let upstreamCalls = 0;
+    global.fetch = async () => { upstreamCalls++; return Response.json({}, { status: 200 }); };
+    for (const route of ['generate', 'audit']) {
+        for (const bad of ['{bad', '[1,2]', '"x"', '42']) {
+            result = await call(route, 'POST', bad);
+            assert.equal(result.code, 400, route + ' với thân ' + bad + ' phải trả 400');
+        }
+    }
+    process.env.ALERT_ZALO_WEBHOOK_SECRET = 'secret-thu-nghiem';
+    const hook = (secret, body) => {
+        const r = response();
+        const headers = { 'x-forwarded-for': '203.0.113.9' };
+        if (secret) headers['x-bot-api-secret-token'] = secret;
+        return handler({ method: 'POST', body, query: { route: 'zalo-webhook' }, headers }, r).then(() => r);
+    };
+    assert.equal((await hook('', '{}')).code, 403, 'thiếu secret phải bị từ chối trước khi đọc thân');
+    assert.equal((await hook('secret-thu-nghiem', '{bad')).code, 400, 'qua khoá nhưng JSON hỏng phải trả 400');
+    assert.equal(upstreamCalls, 0, 'thân hỏng không được chạm tới Modal');
+    console.log('live gateway: 12 contract checks passed (mock only)');
 }
 
 main().catch((error) => { console.error(error); process.exitCode = 1; });

@@ -13,7 +13,7 @@ Ngày cập nhật: 24/11/2026. Backend dùng Modal workspace doandt0612; các m
 ## Quyết định
 
 - Kiến trúc chính thức: giám khảo → **Vercel** (`tai-sinh-di-san-so-ai`) → **Modal GPU T4** (`tai-sinh-di-san-so-api`). Khi bấm Tạo mà Modal lỗi, giao diện báo lỗi và giữ người dùng ở Studio; không đổi lượt sinh thất bại thành ảnh đã sinh sẵn. Dữ liệu mẫu trong `web_ui/data` chỉ dùng để trưng bày và chạy ngoại tuyến.
-- Hai endpoint cũ `/api/generate` và `/api/status` đã ngừng dùng, trả HTTP `410`; chỉ `/api/live/generate` nhận lượt sinh mới. Các bài test cũ về failover demo trong `tests/manual/test_acceptance_1_8.py` và `tests/manual/test_alert_webhook.py` là tư liệu lịch sử, không còn là bài nghiệm thu bản hiện hành.
+- Hai endpoint cũ `/api/generate` và `/api/status` đã ngừng dùng, trả HTTP `410`; chỉ `/api/live/generate` nhận lượt sinh mới. Hai bài test cũ về failover demo (`test_acceptance_1_8.py`, `test_alert_webhook.py`) kiểm thử gateway đã ngừng nên được xoá khỏi nhánh chính ngày 24/11/2026; vẫn xem được trong lịch sử Git.
 - Chỉ bật live sau khi chủ tài khoản xác nhận Spend limit trên Modal. Người vận hành đã xác nhận ngày 24/11/2026 là đã đặt (mức cụ thể không ghi ở đây; chưa kiểm trên dashboard). Nếu đến 24/11 chưa ổn định live thì nộp bản demo.
 - UptimeRobot chỉ ping `/health` của Vercel (`https://tai-sinh-di-san-so-ai.vercel.app/health`). Route `/health` và `/api/live/health` đều chạy trên CPU (`runtime: "vercel-cpu"`), không đánh thức Modal.
 
@@ -105,7 +105,7 @@ Các hạng mục sau **chưa đo / chưa xác minh** tính đến ngày 24/11/2
 
 - node tests/manual/test_live_gateway.js
 - Đặt PYTHON_EXECUTABLE trỏ tới .venv rồi chạy node tests/manual/test_live_gateway_mock.js
-- Python từ .venv chạy tests/manual/test_api_key_guard.py, tests/manual/test_acceptance_1_8.py, tests/manual/test_alert_webhook.py, tests/manual/test_worker_resilience.py và pytest.
+- Python từ .venv chạy tests/manual/test_api_key_guard.py, tests/manual/test_worker_resilience.py và pytest.
 - python scripts/web/ui_index.py rồi kiểm tra diff của web_ui/index.html.
 
 ## Nhật ký kiểm thử kỹ thuật (21/11/2026)
