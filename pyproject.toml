@@ -32,6 +32,7 @@ dependencies = [
     # gói đang có trong môi trường, giữ lại để uv sync không gỡ (pymeshlab trên Windows cần msvc-runtime)
     "fast-simplification==0.2.0",
     "msvc-runtime==14.44.35112; sys_platform == 'win32'",
+    "python-docx>=1.2.0",
 ]
 
 [dependency-groups]
