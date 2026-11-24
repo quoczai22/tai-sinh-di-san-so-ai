@@ -12,26 +12,11 @@ const {
 } = require('./_shared');
 const { timingSafeEqual } = require('node:crypto');
 
-const DEMO_LABEL = 'Kết quả đã sinh sẵn — không phải sinh trực tiếp';
 const ID = /^[A-Za-z0-9_-]{1,80}$/;
 const JOB_ID = /^[A-Za-z0-9_-]{1,100}$/;
 const RUN_ID = /^R[0-9]{8}T[0-9]{6}-[A-Z0-9]{2,8}$/;
 const FILE = /^[A-Za-z0-9_.-]{1,80}\.png$/;
 const PASSPORT_ID = /^DP-[A-Z0-9]{2,8}-[0-9T]{8,15}-V[0-9]{1,2}$/;
-
-function demo(jobId, heritageId, reason) {
-    return {
-        job_id: jobId || 'demo_' + Date.now(),
-        heritage_id: heritageId,
-        backend: 'demo',
-        status: 'completed',
-        progress: 100,
-        failover: true,
-        demo_label: DEMO_LABEL,
-        label: DEMO_LABEL,
-        reason,
-    };
-}
 
 async function forward(req, res, upstreamPath, options = {}) {
     const config = getBackendConfig();
@@ -99,14 +84,14 @@ module.exports = async function handler(req, res) {
             return res.status(400).json({ detail: 'Hiện vật hoặc seed không hợp lệ.' });
         }
         if (!config.modalUrl || !config.modalKey) {
-            await alertModalIssue('thiếu MODAL_URL hoặc MODAL_KEY', '/api/live/generate', heritageId, 'bản demo');
-            return res.status(200).json(demo(null, heritageId, 'modal_not_configured'));
+            await alertModalIssue('thiếu MODAL_URL hoặc MODAL_KEY', '/api/live/generate', heritageId, 'lỗi');
+            return res.status(503).json({ detail: 'Máy sinh ảnh chưa được cấu hình. Vui lòng báo nhóm vận hành.' });
         }
         const rate = checkRateLimit(req);
         res.setHeader('X-RateLimit-Limit', String(rate.limit));
         res.setHeader('X-RateLimit-Remaining', String(rate.remaining));
         if (!rate.allowed) {
-            return res.status(200).json(demo(null, heritageId, 'rate_limit_exceeded'));
+            return res.status(429).json({ detail: 'Bạn đã dùng hết lượt tạo trong giờ này. Vui lòng thử lại sau.' });
         }
         try {
             const upstream = await fetchWithTimeout(config.modalUrl + '/generate', {
@@ -133,16 +118,16 @@ module.exports = async function handler(req, res) {
                 });
             }
             if (!upstream.ok) {
-                await alertModalIssue(httpFailureType(upstream.status), '/api/live/generate', heritageId, 'bản demo');
-                return res.status(200).json(demo(null, heritageId, 'modal_unavailable'));
+                await alertModalIssue(httpFailureType(upstream.status), '/api/live/generate', heritageId, 'lỗi');
+                return res.status(503).json({ detail: 'Máy sinh ảnh đang gặp lỗi. Lượt tạo chưa được xác nhận; vui lòng thử lại sau.' });
             }
             const job = await upstream.json();
             logGatewayAudit({ step: 3, event: 'gateway_generate', heritage_id: heritageId,
                 job_id: job.job_id, backend: 'modal', failover: false });
             return res.status(202).json({ ...job, backend: 'modal' });
         } catch (error) {
-            await alertModalIssue(upstreamErrorType(error), '/api/live/generate', heritageId, 'bản demo');
-            return res.status(200).json(demo(null, heritageId, 'modal_unavailable'));
+            await alertModalIssue(upstreamErrorType(error), '/api/live/generate', heritageId, 'lỗi');
+            return res.status(503).json({ detail: 'Chưa kết nối được máy sinh ảnh. Nếu yêu cầu vừa hết thời gian chờ, hãy đợi và kiểm tra trước khi tạo lại.' });
         }
     }
     const job = route.match(/^generate\/([^/]+)$/);
@@ -150,8 +135,8 @@ module.exports = async function handler(req, res) {
         const heritageId = String(req.query?.heritage_id || '');
         if (!ID.test(heritageId)) return res.status(400).json({ detail: 'Thiếu mã hiện vật.' });
         if (!config.modalUrl || !config.modalKey) {
-            await alertModalIssue('thiếu MODAL_URL hoặc MODAL_KEY', '/api/live/generate/:job_id', heritageId, 'bản demo');
-            return res.status(200).json(demo(job[1], heritageId, 'modal_not_configured'));
+            await alertModalIssue('thiếu MODAL_URL hoặc MODAL_KEY', '/api/live/generate/:job_id', heritageId, 'lỗi');
+            return res.status(503).json({ detail: 'Máy sinh ảnh chưa được cấu hình; mã lượt tạo vẫn được giữ trên trình duyệt.' });
         }
         try {
             const upstream = await fetchReadWithRetry(
@@ -162,8 +147,8 @@ module.exports = async function handler(req, res) {
                 return res.status(404).json({ detail: 'Lượt sinh không còn trên máy chủ. Vui lòng tạo lại.' });
             }
             if (!upstream.ok) {
-                await alertModalIssue(httpFailureType(upstream.status), '/api/live/generate/:job_id', heritageId, 'bản demo');
-                return res.status(200).json(demo(job[1], heritageId, 'modal_unavailable'));
+                await alertModalIssue(httpFailureType(upstream.status), '/api/live/generate/:job_id', heritageId, 'lỗi');
+                return res.status(503).json({ detail: 'Chưa đọc được tiến độ; mã lượt tạo vẫn được giữ để thử lại.' });
             }
             const result = await upstream.json();
             if (result.status === 'failed') {
@@ -171,8 +156,8 @@ module.exports = async function handler(req, res) {
             }
             return res.status(200).json(result);
         } catch (error) {
-            await alertModalIssue(upstreamErrorType(error), '/api/live/generate/:job_id', heritageId, 'bản demo');
-            return res.status(200).json(demo(job[1], heritageId, 'modal_unavailable'));
+            await alertModalIssue(upstreamErrorType(error), '/api/live/generate/:job_id', heritageId, 'lỗi');
+            return res.status(503).json({ detail: 'Tạm thời không đọc được tiến độ; mã lượt tạo vẫn được giữ để thử lại.' });
         }
     }
     if (route === 'heritage' && req.method === 'GET') {

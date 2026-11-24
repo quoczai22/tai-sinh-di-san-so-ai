@@ -12,7 +12,7 @@ Ngày cập nhật: 24/11/2026. Backend dùng Modal workspace doandt0612; các m
 
 ## Quyết định
 
-- Kiến trúc chính thức: giám khảo → **Vercel** (`tai-sinh-di-san-so-ai`) → **Modal GPU T4** (`tai-sinh-di-san-so-api`) → nếu lỗi (trừ lỗi xác thực 401/403, hàng đầy 429, xung đột 409) thì hiển thị **kết quả đã sinh sẵn** (dữ liệu thật trong `web_ui/data`, kèm nhãn "Kết quả đã sinh sẵn — không phải sinh trực tiếp").
+- Kiến trúc chính thức: giám khảo → **Vercel** (`tai-sinh-di-san-so-ai`) → **Modal GPU T4** (`tai-sinh-di-san-so-api`). Khi bấm Tạo mà Modal lỗi, giao diện báo lỗi và giữ người dùng ở Studio; không đổi lượt sinh thất bại thành ảnh đã sinh sẵn. Dữ liệu mẫu trong `web_ui/data` chỉ dùng để trưng bày và chạy ngoại tuyến.
 - Chỉ bật live sau khi chủ tài khoản xác nhận Spend limit trên Modal. Người vận hành đã xác nhận ngày 24/11/2026 là đã đặt (mức cụ thể không ghi ở đây; chưa kiểm trên dashboard). Nếu đến 24/11 chưa ổn định live thì nộp bản demo.
 - UptimeRobot chỉ ping `/health` của Vercel (`https://tai-sinh-di-san-so-ai.vercel.app/health`). Route `/health` và `/api/live/health` đều chạy trên CPU (`runtime: "vercel-cpu"`), không đánh thức Modal.
 
@@ -21,9 +21,10 @@ Ngày cập nhật: 24/11/2026. Backend dùng Modal workspace doandt0612; các m
 1. Trang đọc `web_ui/data` và gọi `GET /api/live/health`. Endpoint này chạy trên CPU và chỉ báo biến `MODAL_URL` và `MODAL_KEY` có được cấu hình hay không (`generation_available: true/false`); **không chứng minh** khoá đúng hay GPU sẵn sàng.
 2. Khi bấm "Tạo thiết kế", UI gửi `POST /api/live/generate` với `heritage_id` và `seed`. Gateway kiểm tra giới hạn `RATE_LIMIT_PER_HOUR` (mặc định 10 lượt/IP/giờ), gắn header `X-API-Key` phía server rồi gọi Modal.
 3. Modal nhận tối đa 3 lượt cùng lúc (`MAX_ACTIVE_JOBS = 3` trong `api/main.py`, `max_containers=1` trong `modal_app.py`): 1 lượt đang sinh trên T4, tối đa 2 lượt chờ theo thứ tự. UI hỏi `GET /api/live/generate/{job_id}?heritage_id=...` mỗi 1,2 giây, hiện vị trí chờ và tiến độ, tối đa 20 phút. Mã job được lưu trong `localStorage` (`dh:pending-generation`, thời hạn khôi phục 24 giờ) để quay lại cùng trình duyệt và cùng domain có thể tiếp tục theo dõi; kết quả job hoàn tất được lưu vào Modal Volume. Hàng chờ đầy trả `429` và xung đột trả `409` để người dùng thử lại, không chuyển sang demo. Nếu container bị dừng giữa lúc sinh và mất job (`404`), UI báo lỗi và cho người dùng tạo lại.
-4. Xử lý lỗi xác thực và failover demo trong `web_ui/api/live.js`:
+4. Xử lý lỗi trong `web_ui/api/live.js`:
    - Nếu Modal trả HTTP `401` hoặc `403` (commit `a7c1b39`): gateway trả HTTP **503** kèm thông báo `"Máy sinh ảnh chưa xác thực được. Vui lòng báo nhóm vận hành."`, **không** âm thầm chuyển sang demo.
-   - Nếu Modal lỗi kết nối, timeout, lỗi HTTP khác (5xx...), chưa cấu hình `MODAL_URL`/`MODAL_KEY` hoặc chạm rate limit: gateway trả `backend: "demo"` kèm `demo_label: "Kết quả đã sinh sẵn — không phải sinh trực tiếp"`.
+   - Nếu Modal lỗi kết nối, timeout, lỗi HTTP khác (5xx...), chưa cấu hình `MODAL_URL`/`MODAL_KEY`: gateway trả HTTP `503`. Quá giới hạn lượt gọi trả `429`. Không trường hợp nào của luồng Tạo tự chuyển sang ảnh mẫu.
+   - Nếu đã nhận mã job mà việc đọc tiến độ tạm lỗi, trình duyệt giữ mã để thử lại; không thay kết quả của job bằng ảnh mẫu.
 5. Sau khi sinh xong, job trả sẵn 4 biến thể kèm đường ảnh `/media/run/{run_id}/{filename}` để UI hiển thị trực tiếp qua `/api/live/media/run/...`; khi tải lại trang Kết quả (`localStorage` khóa `dh:last-live-run`), UI lấy Passport qua `/api/live/passports` và ảnh PNG qua `/api/live/media/artifact`. Gateway chỉ chuyển tiếp các route đọc cần thiết và `POST /api/live/audit`; các route ghi Passport/QC/thẩm định/chỉnh sửa/xuất bản không được chuyển tiếp (trả 404).
 
 ## Lưu ảnh và cấu hình Modal
@@ -126,7 +127,7 @@ Nếu webhook đã được đăng ký và chưa biết ID chat riêng, sau khi 
 
 `/api/warmup` chỉ nhận POST với `X-Warmup-Key` khớp biến `WARMUP_KEY` trên Vercel; nếu chưa đặt khóa thì endpoint từ chối mọi yêu cầu. Không dùng nó làm URL giám sát định kỳ. Chạy `node tests/manual/test_warmup_guard.js` để kiểm tra.
 
-Tin Discord có gợi ý xử lý theo mã lỗi để nhóm tra cứu nhanh trên điện thoại. Gateway thử lại đúng một lần các yêu cầu đọc GET khi gặp lỗi mạng hoặc HTTP 502/503/504. Không thử lại timeout dài, 401/403, hoặc POST `/generate`; tránh gửi hai lượt sinh ảnh và dùng GPU ngoài ý muốn. Khi vẫn lỗi, giao diện dùng cơ chế dự phòng và gửi cảnh báo như trước.
+Tin Discord có gợi ý xử lý theo mã lỗi để nhóm tra cứu nhanh trên điện thoại. Gateway thử lại đúng một lần các yêu cầu đọc GET khi gặp lỗi mạng hoặc HTTP 502/503/504. Không thử lại timeout dài, 401/403, hoặc POST `/generate`; tránh gửi hai lượt sinh ảnh và dùng GPU ngoài ý muốn. Khi vẫn lỗi, Studio báo lỗi và gateway gửi cảnh báo.
 
 Nhóm tự cấu hình theo thứ tự:
 
@@ -134,13 +135,13 @@ Nhóm tự cấu hình theo thứ tự:
 2. Trong Vercel project `tai-sinh-di-san-so-ai`, đặt biến production `ALERT_DISCORD_WEBHOOK_URL` và `ALERT_COOLDOWN_MIN` bằng `30`, sau đó **Redeploy** để biến mới có hiệu lực.
 3. Trên máy của người vận hành, điền URL vào `ALERT_DISCORD_WEBHOOK_URL` trong `.env.local` ở gốc repo (tệp này đã được Git bỏ qua), rồi chạy `node scripts/deploy/test_alert.js` đúng một lần. Script tự đọc tệp và chỉ in trạng thái gửi hoặc mã HTTP, không in URL.
 4. Trong UptimeRobot, chọn **Add New Monitor → HTTP(s)**, URL `https://tai-sinh-di-san-so-ai.vercel.app/health`, chu kỳ 5 phút và email cho 2–3 thành viên. Không tạo monitor trỏ vào Modal, `/api/warmup` hoặc endpoint sinh ảnh.
-5. Trên bản Vercel **Preview**, tạm bỏ `MODAL_URL`, redeploy Preview và bấm Tạo. Xác nhận Discord nhận tin và giao diện hiện nhãn bản demo. Khôi phục `MODAL_URL` rồi redeploy Preview. Không thử bằng cách xóa biến production.
+5. Trên bản Vercel **Preview**, tạm bỏ `MODAL_URL`, redeploy Preview và bấm Tạo. Xác nhận Discord nhận tin và Studio báo máy sinh ảnh chưa sẵn sàng, không mở ảnh mẫu như kết quả mới. Khôi phục `MODAL_URL` rồi redeploy Preview. Không thử bằng cách xóa biến production.
 
 | Tín hiệu | Nguyên nhân có thể | Xử lý |
 | --- | --- | --- |
 | Email UptimeRobot | Vercel hoặc route `/health` không phản hồi | Mở Vercel Deployments/Runtime Logs, kiểm tra domain và deployment mới nhất; rollback deployment lỗi nếu cần. |
 | Discord “Modal lỗi” | Timeout, 5xx, lỗi mạng, thiếu cấu hình hoặc job thất bại | Xem endpoint và thời gian trong tin, đối chiếu Vercel Runtime Logs và Modal Logs; kiểm tra container, Volume, secret và trạng thái job trước khi deploy lại. |
 | Discord “sai khóa 401” | `MODAL_KEY` ở Vercel không khớp `DH_API_KEY` trong Modal secret | Người có quyền kiểm tra hai giá trị trong dashboard riêng, cập nhật đúng secret/biến rồi redeploy phần bị đổi; không gửi khóa qua chat. |
-| Modal hết credit | GPU không khởi động hoặc Modal trả lỗi trong lúc sinh | Kiểm tra Billing, Usage, Spend limit và workspace; giữ giao diện demo dự phòng cho người xem, chỉ bật live khi chủ tài khoản xác nhận giới hạn chi tiêu. |
+| Modal hết credit | GPU không khởi động hoặc Modal trả lỗi trong lúc sinh | Kiểm tra Billing, Usage, Spend limit và workspace; Studio báo không tạo được thiết kế. Ảnh mẫu chỉ còn ở phần trưng bày. |
 
 CI `Modal backend checks` kiểm tra bằng mock CPU; nó không xác nhận GPU thật hoặc tự deploy Modal. Trước production, chạy thử 1 job sinh bốn ảnh và kiểm tra đường ảnh trên Vercel sau khi deploy Modal thủ công.

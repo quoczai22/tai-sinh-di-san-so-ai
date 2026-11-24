@@ -49,8 +49,8 @@ async function main() {
         const res = reply();
         await live({ method: 'POST', query: { route: 'generate' },
             body: { heritage_id: 'LR3D_33' }, headers: { 'x-forwarded-for': '203.0.113.20' } }, res);
-        assert.equal(res.code, 200);
-        assert.equal(res.body.backend, 'demo');
+        assert.equal(res.code, 503);
+        assert.equal(res.body.backend, undefined);
         return res;
     };
     try {
@@ -63,7 +63,7 @@ async function main() {
             assert.equal(messages.length, 1, `${failure}: one alert during cooldown`);
             const message = messages[0];
             for (const value of ['/api/live/generate', 'LR3D_33', 'giờ VN',
-                'đang thấy bản demo', failure]) assert.ok(message.includes(value), message);
+                'đang thấy lỗi', failure]) assert.ok(message.includes(value), message);
             for (const secret of ['test-only-key', process.env.MODAL_URL,
                 process.env.ALERT_DISCORD_WEBHOOK_URL, '203.0.113.20']) {
                 assert.equal(message.includes(secret), false);
@@ -109,7 +109,8 @@ async function main() {
         const missing = reply();
         await live({ method: 'POST', query: { route: 'generate' },
             body: { heritage_id: 'LR3D_61' }, headers: { 'x-forwarded-for': '203.0.113.22' } }, missing);
-        assert.equal(missing.body.backend, 'demo');
+        assert.equal(missing.code, 503);
+        assert.equal(missing.body.backend, undefined);
         assert.equal(messages.length, 1);
         assert.ok(messages[0].includes('thiếu MODAL_URL'));
 

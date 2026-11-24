@@ -86,9 +86,8 @@ async function main() {
         await new Promise((resolve) => child.once('exit', resolve));
         const fallback = await request('generate', 'POST',
             { heritage_id: 'LR3D_61', seed: 124 });
-        assert.equal(fallback.body.backend, 'demo');
-        assert.equal(fallback.body.demo_label,
-            'Kết quả đã sinh sẵn — không phải sinh trực tiếp');
+        assert.equal(fallback.code, 503);
+        assert.equal(fallback.body.backend, undefined);
         console.log('live gateway + FastAPI mock: 7 checks passed');
     } finally {
         if (child.exitCode === null) child.kill();
