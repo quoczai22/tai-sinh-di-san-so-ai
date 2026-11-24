@@ -23,6 +23,19 @@ Modal gắn Volume tại /data/outputs. Docker image phải để trống đư�
 
 Backend đặt TSDS_GENERATE_PER_HOUR=1000 mặc định để gateway kiểm soát theo IP người dùng. Giới hạn gateway là giới hạn mềm, lưu trong RAM từng Vercel Function instance.
 
+## Tải bản chỉnh sửa và Thiết kế đã tạo (thêm 24/11/2026, chưa deploy thử)
+
+Hai tính năng mới của giao diện. Phần deploy do người phụ trách deploy làm; mục này ghi những gì cần biết.
+
+- **Mã mới:** `web_ui/api/edit.js` (hàm gateway ghi bản sửa, tách khỏi `live.js`), `web_ui/vercel.json` (thêm hàm `api/edit.js` và rewrite `/api/live/passports/:id/edits` đặt trước rewrite chung `/api/live/:route*`), trang `#/mine` và `#/edit/<mã Passport>` trong `web_ui/assets/`. Route `POST /passports/{id}/edits` đã có sẵn trong `tsds/api/main.py`, không đổi.
+- **Phải tăng số phiên bản giao diện** khi phát hành, nếu không trình duyệt giữ mã cũ và báo lỗi module: `uv run python scripts/web/ui_index.py finals-N` (hiện là `finals-97`).
+- **Khóa ghi (bắt buộc kiểm trước):** route `/edits` của Modal chỉ được bảo vệ bởi biến `TSDS_WRITE_KEY`; nếu biến này không đặt trong Modal secret thì ai biết URL Modal cũng ghi được. Cần: (1) đặt `TSDS_WRITE_KEY` trong secret `tai-sinh-di-san-secret` và khởi động lại container; (2) đặt biến môi trường `MODAL_WRITE_KEY` trên Vercel với cùng giá trị (hàm `edit.js` dùng nó; thiếu thì dùng `MODAL_KEY`, chỉ chạy được khi hai khóa trùng nhau). Biến tùy chọn `EDIT_RATE_LIMIT_PER_HOUR` (mặc định 5 lượt mỗi IP mỗi giờ).
+- **Giới hạn ảnh:** PNG, tối đa 3 MB, cạnh dài tối đa 4096 px. Thân yêu cầu của hàm Vercel mặc định tối đa 4,5 MB, ảnh gửi dạng base64 lớn thêm khoảng 33%.
+- **Thử trước khi lên production:** deploy bản Preview, tạo một thiết kế trực tiếp, bấm vào thiết kế, Tải lên chỉnh sửa, rồi kiểm Passport của thiết kế đó trong Modal Volume. Mỗi bản sửa ghi vĩnh viễn (sổ cái chỉ thêm vào, không có chức năng xóa), nên đừng thử trên Passport của bộ minh chứng.
+- **ID tài khoản:** biểu mẫu và gateway `edit.js` bắt buộc ID bắt đầu bằng `TSDS` (tối đa 24 ký tự). API Python ở Modal không bắt buộc tiền tố (chỉ `[A-Za-z0-9_-]{2,24}`), nên ai gọi thẳng vào Modal vẫn ghi được ID khác.
+- **Dữ liệu người dùng:** ID tài khoản và mô tả hiện công khai trong Passport, không xóa được. Gateway không phục vụ ảnh người dùng tải lên (chỉ thư mục `outputs/runs/`), nhưng route `/media/artifact` trực tiếp trên Modal cho đọc mọi ảnh dưới `outputs/`, kể cả `outputs/edits/`; chưa siết.
+- **Thiết kế đã tạo** lưu danh sách trong trình duyệt (`localStorage`, khóa `dh:my-runs`); ảnh và Passport vẫn nằm trong Volume của Modal.
+
 ## Biến cần cấu hình
 
 Trên Vercel: MODAL_URL, MODAL_KEY, MODAL_TIMEOUT_MS (mặc định 25000), RATE_LIMIT_PER_HOUR (mặc định 10), ALERT_DISCORD_WEBHOOK_URL, ALERT_COOLDOWN_MIN (mặc định 30). Không đặt khóa trong frontend.

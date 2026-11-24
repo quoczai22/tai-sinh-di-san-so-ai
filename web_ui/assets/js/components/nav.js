@@ -4,19 +4,23 @@
 // Có nút bật/tắt chuyển động (core/motion.setMotion) trong menu.
 import { clear, h } from '../core/dom.js';
 import { icon } from '../core/icons.js';
+import { myRuns } from '../core/data.js';
 import { drum } from '../decor/drum.js';
 import { reduced, setMotion } from '../core/motion.js';
 import { CHAPTER_NOTE, ROUTES } from '../core/routes.js';
 
 /* ---------- Điều hướng trên cùng + menu toàn màn hình ---------- */
 export function renderNav(active) {
-    // Logo ở giữa: các mục chính bên trái, nút menu bên phải.
-    const primaries = ROUTES.filter((x) => x.primary);
+    // Logo ở giữa: các mục chính bên trái (Trang chủ, Studio, Thiết kế đã tạo), nút menu bên phải.
+    // Mục có needsRuns (Thiết kế đã tạo) chỉ hiện khi trình duyệt này đã tạo ít nhất một bộ thiết kế.
+    const hasRuns = myRuns().length > 0;
+    const visible = (r) => !r.hidden && (!r.needsRuns || hasRuns);
+    const primaries = ROUTES.filter((x) => x.primary && visible(x));
     const link = (r) => h('a', { href: `#/${r.id}`, 'aria-current': r.id === active ? 'page' : null }, r.short);
-    clear(document.getElementById('nav-left')).append(...primaries.slice(0, 2).map(link));
-    clear(document.getElementById('nav')).append(...primaries.slice(2).map(link));
+    clear(document.getElementById('nav-left')).append(...primaries.map(link));
+    clear(document.getElementById('nav'));
     const menu = clear(document.getElementById('menu-chapters'));
-    const shown = ROUTES.filter((r) => !r.hidden);
+    const shown = ROUTES.filter(visible);
     const groups = [...new Set(shown.map((r) => r.group))];
     groups.forEach((g, gi) => {
         menu.append(h('section', { class: 'menu-chapter', style: { '--i': String(gi) } },

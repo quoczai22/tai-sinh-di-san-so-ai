@@ -1,0 +1,75 @@
+/* components/confirm-dialog.css — HỘP XÁC NHẬN nổi: .cd (nền mờ, nằm trên cửa sổ phóng to), .cd-panel, .cd-title/.cd-text/.cd-note, .cd-error, .cd-actions. JS: components/confirm-dialog.js. */
+
+.cd {
+    position: fixed;
+    inset: 0;
+    z-index: 210;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(8, 21, 42, .78);
+    backdrop-filter: blur(6px);
+    animation: lb-in .25s ease both;
+}
+
+.cd-panel {
+    display: grid;
+    gap: 14px;
+    width: min(94vw, 460px);
+    padding: 32px 28px 24px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .6);
+    animation: lb-up .35s var(--ease-out) both;
+}
+
+.cd-title {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.3;
+    color: var(--ink);
+}
+
+/* Dấu tích xanh đứng trước chữ ở thông báo thành công */
+.cd-tick {
+    width: 26px;
+    height: 26px;
+    margin-right: 10px;
+    vertical-align: -5px;
+    color: var(--ngoc);
+    stroke-width: 2.4;
+}
+
+.cd-text, .cd-status {
+    color: var(--ink-2);
+}
+
+.cd-note, .cd-error {
+    padding: 10px 12px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.cd-note {
+    background: var(--warn-soft);
+    color: var(--warn);
+}
+
+.cd-error {
+    background: var(--fail-soft);
+    color: var(--error);
+}
+
+.cd-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.cd-actions .hero-btn.ghost {
+    color: var(--ink);
+    border-color: var(--ink-3);
+}

@@ -157,6 +157,7 @@ async function notifyAlert(message) {
 }
 
 module.exports = {
+    getClientIp,
     checkRateLimit,
     getBackendConfig,
     buildBackendHeaders,
