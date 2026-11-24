@@ -23,7 +23,7 @@ UC = {   # mã: (tên, cột x, y, loại)
     "UC06": ("Tải lên bản chỉnh sửa", A, 600, "main"),
     "UC04": ("Xem lại thiết kế đã tạo", A, 760, "main"),
     "UC05": ("Tải thiết kế có nhãn AI", A, 870, "main"),
-    "UC08": ("Kiểm định chất lượng tự động (G2, G3)", B, 400, "incl"),
+    "UC08": ("Kiểm định chất lượng tự động", B, 400, "incl"),
     "UC09": ("Ghi Design Passport", B, 600, "incl"),
     "UC07": ("Kiểm tra quyền sử dụng", B, 800, "incl"),
     "UC10": ("Xử lý cảnh báo chất lượng", C, 130, "main"),
@@ -37,13 +37,13 @@ UC = {   # mã: (tên, cột x, y, loại)
     "UC16": ("Cập nhật quyền sử dụng hiện vật", C, 1160, "main"),
 }
 ACTORS = {  # mã: (tên, x, y, kiểu)  kiểu: person | system
-    "DES": ("Nhà thiết kế (người dùng web)", 170, 560, "person"),
+    "DES": ("Nhà thiết kế", 170, 560, "person"),
     "EXP": ("Chuyên gia thẩm định", 1580, 330, "person"),
     "QC": ("QC Officer", 1580, 520, "person"),
     "OPS": ("Người vận hành", 1580, 860, "person"),
     "DATA": ("Người quản lý dữ liệu", 1580, 1110, "person"),
     "GF": ("Google Forms", 1580, 190, "system"),
-    "ZALO": ("Zalo (kênh cảnh báo)", 1580, 985, "system"),
+    "ZALO": ("Zalo", 1580, 985, "system"),
 }
 ASSOC = [("DES", "UC01"), ("DES", "UC03"), ("DES", "UC06"), ("DES", "UC04"), ("DES", "UC05"),
          ("QC", "UC10"), ("QC", "UC11"), ("QC", "UC14"), ("QC", "UC17"), ("QC", "UC13"),
@@ -122,7 +122,7 @@ def actor_anchor(a, tx, ty):
 
 def svg(model, title, subtitle):
     uc, act, assoc, rel, gen = model
-    DY = 30
+    DY = 10
     uc = {k: (n, x, y + DY, t) for k, (n, x, y, t) in uc.items()}
     act = {k: (n, x, y + DY, t) for k, (n, x, y, t) in act.items()}
     W = 1860 if any(k == "STAFF" for k in act) else 1760
@@ -134,9 +134,8 @@ def svg(model, title, subtitle):
          f'<path d="M0,0 L14,7 L0,14 z" fill="#fff" stroke="{INK}" stroke-width="1.3"/></marker></defs>',
          '<rect width="100%" height="100%" fill="#fff"/>',
          f'<text x="{W/2}" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="{INK}">{escape(title)}</text>',
-         f'<text x="{W/2}" y="54" text-anchor="middle" font-size="14" fill="#5F6368">{escape(subtitle)}</text>',
-         f'<rect x="300" y="72" width="1100" height="{H - 110}" rx="8" fill="none" stroke="{INK}" stroke-width="1.8"/>',
-         f'<text data-k="title" x="316" y="96" font-weight="700" fill="{INK}">Nền tảng Tái Sinh Di Sản Số (web, cổng Vercel, API, pipeline AI)</text>']
+         f'<rect x="300" y="52" width="1100" height="{H - 90}" rx="8" fill="none" stroke="{INK}" stroke-width="1.8"/>',
+         f'<text data-k="title" x="316" y="76" font-weight="700" fill="{INK}">Nền tảng Tái Sinh Di Sản Số</text>']
     # liên kết actor – ca sử dụng
     segs = []                      # (p, q, khoá) của mọi đường thẳng, để tránh khi đặt nhãn
     for a, u in assoc:

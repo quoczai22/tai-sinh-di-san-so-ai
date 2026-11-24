@@ -47,7 +47,7 @@ Các phần tử BPMN được dùng và lý do (không dùng phần tử nào c
 | User, Manual, Service, Send, Receive, Script, Business Rule Task | Theo bản chất từng bước | Phân biệt người và hệ thống; quyết định theo quy tắc dùng Business Rule Task |
 | Sub-process đa thể hiện tuần tự | BP-01 | 4 phương án chạy lần lượt trên một GPU |
 | Call Activity | BP-00 | Gọi các quy trình chi tiết |
-| Exclusive Gateway | Mọi quyết định | Mỗi quyết định chỉ một nhánh |
+| Exclusive Gateway | Mọi quyết định | Mỗi quyết định chỉ một nhánh. Cổng quyết định ghi câu hỏi ngay trong hình thoi (không vẽ dấu X, BPMN 2.0 cho phép với cổng XOR); cổng gộp nhánh không có câu hỏi giữ dấu X |
 | Event-based Gateway | BP-03 TO-BE, BP-04 TO-BE | Chờ "phản hồi đến" hoặc "hết hạn", cái nào đến trước |
 | Data Store | Mọi sơ đồ có ghi đọc dữ liệu | Danh mục hiện vật, kho Design Passport |
 | Participant multiplicity | BP-03 TO-BE | Hội đồng ≥ 2 chuyên gia |
@@ -63,7 +63,7 @@ Hai công cụ đo trên hình đã dựng thật (khung chữ do trình duyệt
 - `tools/layoutfix.py` (bpmn-js Modeler 17.11.1) cho BPMN. Đo: nhãn đè hình, nhãn đè nhãn, nhãn đè đường nối, nhãn
   đè hoặc sát đường kẻ pool/lane (chừa 5 px), hai đường nối chồng lên nhau trên cùng một đoạn, đường nối chạy dọc đường
   kẻ pool/lane, đường nối xuyên qua hình không phải điểm đầu/cuối của nó, chữ trong ô tràn khỏi ô hoặc bị biểu tượng
-  loại tác vụ che. Chạy với `--fix` thì tự đặt lại nhãn ngoài vào vị trí ít đè nhất.
+  loại tác vụ che, câu hỏi của cổng tràn khỏi hình thoi. Chạy với `--fix` thì tự đặt lại nhãn ngoài vào vị trí ít đè nhất.
 - `tools/ucchk.py` cho Use Case. Đo: chữ đè chữ, đường đè chữ, nền nhãn «include»/«extend» che đường khác, đường xuyên
   qua elip không phải điểm đầu/cuối, chữ tràn khỏi elip của nó, chữ đè elip hoặc hộp hệ thống ngoài khác.
 

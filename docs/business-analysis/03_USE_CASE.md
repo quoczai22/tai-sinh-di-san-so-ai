@@ -10,7 +10,7 @@ máy GPU nằm **trong** ranh giới (là phần mềm của nhóm chạy trên 
 
 | Tác nhân | Phân loại | Mục tiêu với hệ thống | AS-IS | TO-BE |
 |---|---|---|---|---|
-| Nhà thiết kế (người dùng web) | Primary | Tìm hiểu hiện vật, tạo, tải, sửa thiết kế | Có | Có |
+| Nhà thiết kế | Primary | Tìm hiểu hiện vật, tạo, tải, sửa thiết kế | Có | Có |
 | QC Officer | Primary | Xử lý cảnh báo kỹ thuật, điều phối thẩm định, xuất bản, thử nghiệm | Có | Có |
 | Chuyên gia thẩm định | Primary | Chấm mù, ra quyết định văn hoá và thẩm mỹ | Có | Có |
 | Người quản lý dữ liệu | Primary | Đưa hiện vật vào thư viện, quản lý quyền | Có | Có |
@@ -35,7 +35,7 @@ phân quyền (hệ thống không có tài khoản).
 | UC05 | Tải thiết kế có nhãn AI | Nhà thiết kế | — | Có | Đổi: kèm mã Passport | `core/download.js` |
 | UC06 | Tải lên bản chỉnh sửa | Nhà thiết kế | QC Officer | Có | Giữ | `POST /passports/{id}/edits` |
 | UC07 | Kiểm tra quyền sử dụng | (include) | — | Có | Giữ | `registry.py::rights_gate` |
-| UC08 | Kiểm định chất lượng tự động (G2, G3) | (include) | — | Có | Giữ | `quality/gate.py`, `assess.py` |
+| UC08 | Kiểm định chất lượng tự động | (include) | — | Có | Giữ | `quality/gate.py`, `assess.py` |
 | UC09 | Ghi Design Passport | (include) | — | Có | Giữ | `provenance/builder.py`, `passport.py` |
 | UC10 | Xử lý cảnh báo chất lượng | QC Officer | — | Qua API | Bảng QC | `POST /passports/{id}/qc` |
 | UC11 | Điều phối thẩm định mù | QC Officer | Google Forms | Có (script) | Đổi: Theo dõi hàng đợi thẩm định | `scripts/eval/` |
@@ -94,7 +94,7 @@ không vào kho sản phẩm.
 | 1. ID | UC03 |
 | 2. Tên | Tạo thiết kế áo dài |
 | 3. Mô tả | Từ một hiện vật trong thư viện, hệ thống sinh bốn phương án áo dài, kiểm định từng phương án và lập Design Passport |
-| 4. Tác nhân chính | Nhà thiết kế (người dùng web) |
+| 4. Tác nhân chính | Nhà thiết kế |
 | 5. Tác nhân hỗ trợ | Người vận hành (nhận cảnh báo qua Zalo khi lỗi) |
 | 6. Kích hoạt | Bấm "Tạo thiết kế" ở trang chi tiết hiện vật trong Studio |
 | 7. Tiền điều kiện | Hiện vật `active`; quyền không ở `permission_denied` |

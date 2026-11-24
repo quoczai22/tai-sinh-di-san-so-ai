@@ -45,7 +45,10 @@ async ([xml, fix]) => {
     return x2 >= r.x + 1 && x1 <= r.x + r.w - 1 && y2 >= r.y + 1 && y1 <= r.y + r.h - 1;
   };
   const inPart = r => parts.some(p => r.x >= p.x + 2 && r.y >= p.y + 36 && r.x + r.w <= p.x + p.width - 2 && r.y + r.h <= p.y + p.height - 2);
-  const labels = all.filter(isLabel);
+  // câu hỏi của cổng XOR không dấu X nằm giữa hình thoi: không dời, đo riêng
+  const inGw = l => l.labelTarget && l.labelTarget.type === 'bpmn:ExclusiveGateway' && l.labelTarget.di && l.labelTarget.di.isMarkerVisible === false;
+  const labels = all.filter(e => isLabel(e) && !inGw(e));
+  const gwLabels = all.filter(e => isLabel(e) && inGw(e));
   const pos = new Map(labels.map(l => [l.id, rect(l)]));
   // đường kẻ của pool và lane (biên dọc, vạch dưới tiêu đề)
   const rules = [];
@@ -150,6 +153,15 @@ async ([xml, fix]) => {
       const wp = cn.waypoints;
       for (let i = 0; i < wp.length - 1; i++) if (segHit(r, wp[i], wp[i + 1])) { issues.push(`đường ${cn.id} chạy xuyên "${name(s)}"`); break; }
     }
+  }
+  // câu hỏi trong hình thoi: mọi góc khung chữ thật phải nằm trong hình thoi, chừa lề 3 px
+  for (const l of gwLabels) {
+    const g = m.get('elementRegistry').getGraphics(l), t = g.querySelector('text'); if (!t) continue;
+    const b = t.getBBox(), gw = l.labelTarget;
+    const cx = gw.x + gw.width / 2, cy = gw.y + gw.height / 2, hw = gw.width / 2 - 3, hh = gw.height / 2 - 3;
+    const xs = [l.x + b.x, l.x + b.x + b.width], ys = [l.y + b.y + 2, l.y + b.y + b.height - 2];
+    let ok = true; for (const x of xs) for (const y of ys) if (Math.abs(x - cx) / hw + Math.abs(y - cy) / hh > 1) ok = false;
+    if (!ok) issues.push(`câu hỏi "${name(gw)}" tràn khỏi hình thoi`);
   }
   // chữ trong ô tác vụ: đo bằng DOM
   const gfx = m.get('elementRegistry');

@@ -21,6 +21,40 @@ POOLHEAD = 34        # chiều cao tiêu đề pool
 LANEHEAD = 34        # chiều cao tiêu đề lane
 Y0 = 30              # lề trên phần nội dung
 BBW = 64             # bề rộng pool hộp đen
+GW_LINE_H, GW_CHAR_W = 14, 5.5      # chữ trong hình thoi: cỡ 11 px của bpmn-js, bề rộng ký tự ước lượng (đo thật ~5,3)
+
+
+GW_BREAK = {"Quyết định QC?": ["Quyết định", "QC?"]}   # chỗ ngắt dòng tự động tách đôi từ ghép
+
+
+def gw_split(text):
+    """Câu hỏi dài tách hai dòng cân nhau (ngắt bằng xuống dòng trong tên) để hình thoi nhỏ gọn."""
+    if text in GW_BREAK:
+        return GW_BREAK[text]
+    words = text.split()
+    if len(text) <= 13 or len(words) < 2:
+        return [text]
+    best = min(range(1, len(words)), key=lambda i: max(len(" ".join(words[:i])), len(" ".join(words[i:]))))
+    return [" ".join(words[:best]), " ".join(words[best:])]
+
+
+def gw_inside(n):
+    """Cổng XOR có câu hỏi: câu hỏi nằm trong hình thoi, không vẽ dấu X."""
+    return n.type == "exclusiveGateway" and bool(n.name)
+
+
+def gw_size(text):
+    lines = gw_split(text)
+    tw, th = max(len(x) for x in lines) * GW_CHAR_W, len(lines) * GW_LINE_H
+    # khung chữ rộng tw, cao th nằm trong hình thoi cạnh s khi tw/s + th/s <= 1; chừa lề
+    return max(60, int(tw + th + 16 + 1) // 2 * 2)
+
+
+def gw_name(n):
+    """Tên ghi vào XML: câu hỏi của cổng dùng ký tự xuống dòng để bpmn-js ngắt đúng chỗ."""
+    return "&#10;".join(escape(x) for x in gw_split(n.name)) if gw_inside(n) else escape(n.name)
+
+
 SIZES = {"task": (164, 92), "event": (36, 36), "gateway": (50, 50), "data": (36, 50), "store": (50, 50)}
 TASKS = {"task", "userTask", "serviceTask", "manualTask", "businessRuleTask", "sendTask", "receiveTask",
          "scriptTask", "subProcess", "callActivity"}
@@ -158,6 +192,8 @@ class Diagram:
         self.width, self.height = x, top + height + 20
         for n in self.nodes.values():
             n.w, n.h = SIZES[kind_of(n.type)]
+            if gw_inside(n):
+                n.w = n.h = gw_size(n.name)
             if n.attach:
                 continue
             lx, ly, lw, lh, lo = self.lane_box[n.lane]
@@ -327,7 +363,7 @@ class Diagram:
         if n.type == "dataObjectReference":
             return (f'    <bpmn:dataObject id="DO_{n.id}"/>\n'
                     f'    <bpmn:dataObjectReference id="{n.id}" name="{escape(n.name)}" dataObjectRef="DO_{n.id}"/>')
-        attrs = f'id="{n.id}" name="{escape(n.name)}"'
+        attrs = f'id="{n.id}" name="{gw_name(n)}"'
         if n.type == "boundaryEvent":
             attrs += f' attachedToRef="{n.attach}"' + ('' if n.interrupting else ' cancelActivity="false"')
         if n.default:
@@ -383,6 +419,12 @@ class Diagram:
     def _label_bounds(self, n: Node) -> str:
         if not n.name or kind_of(n.type) == "task":
             return ""
+        if gw_inside(n):           # câu hỏi đặt giữa hình thoi
+            lines = gw_split(n.name)
+            lw, lh = int(max(len(x) for x in lines) * GW_CHAR_W), len(lines) * GW_LINE_H
+            lx, ly = n.x + n.w / 2 - lw / 2, n.y + n.h / 2 - lh / 2
+            return (f'<bpmndi:BPMNLabel><dc:Bounds x="{lx:.0f}" y="{ly:.0f}" width="{lw}" height="{lh}"/>'
+                    '</bpmndi:BPMNLabel>')
         lw, lh = 112, 40
         dy = -18 if kind_of(n.type) == "gateway" else 0
         if n.label == "right":
@@ -416,6 +458,8 @@ class Diagram:
                          f'<dc:Bounds x="{lx:.0f}" y="{ly:.0f}" width="{lw:.0f}" height="{lh:.0f}"/></bpmndi:BPMNShape>')
         for n in self.nodes.values():
             extra = ' isExpanded="false"' if n.type == "subProcess" else ""
+            if n.type == "exclusiveGateway":
+                extra = f' isMarkerVisible="{"false" if gw_inside(n) else "true"}"'
             D.append(f'      <bpmndi:BPMNShape id="{n.id}_di" bpmnElement="{n.id}"{extra}{self._color(n)}>'
                      f'<dc:Bounds x="{n.x:.0f}" y="{n.y:.0f}" width="{n.w:.0f}" height="{n.h:.0f}"/>{self._label_bounds(n)}'
                      '</bpmndi:BPMNShape>')
