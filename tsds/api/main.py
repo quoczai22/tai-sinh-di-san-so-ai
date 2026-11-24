@@ -67,7 +67,6 @@ _worker_running = False
 MAX_ACTIVE_JOBS = int(os.getenv("TSDS_MAX_ACTIVE_JOBS", "3"))
 _rate: dict[str, deque] = defaultdict(deque)
 GENERATE_LIMIT_PER_HOUR = int(os.getenv("TSDS_GENERATE_PER_HOUR", "6"))
-WRITE_KEY = os.getenv("TSDS_WRITE_KEY", "")
 MAX_EDIT_BYTES = 8 * 1024 * 1024
 
 
@@ -80,15 +79,9 @@ def _save_job(job_id: str) -> None:
 
 # ------------------------------------------------------------------ helpers --
 
-def require_write_key(x_api_key: str | None = Header(default=None)) -> None:
-    """Khi đặt TSDS_WRITE_KEY, mọi thao tác GHI (thẩm định, chỉnh sửa, phê duyệt,
-    xuất bản) phải gửi header X-API-Key. Không đặt = chế độ phát triển cục bộ."""
-    if WRITE_KEY and x_api_key != WRITE_KEY:
-        raise HTTPException(status_code=401, detail="Thiếu hoặc sai khoá ghi (X-API-Key).")
-
-
-def verify_gpu_api_key(x_api_key: str | None = Header(default=None, alias="X-API-Key")) -> None:
-    """Bảo vệ các route chạm GPU (/generate, /generate/{job_id}) khi deploy.
+def verify_api_key(x_api_key: str | None = Header(default=None, alias="X-API-Key")) -> None:
+    """Một khoá duy nhất DH_API_KEY bảo vệ cả route chạm GPU (/generate, /generate/{job_id}) lẫn
+    route GHI (/passports/{id}/qc, /reviews, /edits, /publish) khi deploy.
 
     Đặt DH_API_KEY (Modal secret) thì phải gửi đúng X-API-Key — cổng Vercel giữ khoá ở phía
     server. Không đặt (chạy local) thì không kiểm tra, giữ hành vi của bản chung kết.
@@ -239,7 +232,7 @@ def health() -> dict:
     except ImportError:
         cuda, device = False, "torch-not-installed"
     return {"status": "ok", "cuda": cuda, "device": device, "version": app.version,
-            "write_protection": bool(WRITE_KEY), "generation_available": cuda}
+            "write_protection": bool(os.getenv("DH_API_KEY", "").strip()), "generation_available": cuda}
 
 
 @app.get("/heritage")
@@ -278,7 +271,7 @@ def heritage_image(heritage_id: str) -> FileResponse:
     return FileResponse(cut if cut.exists() else PROJECT_ROOT / item["image_path"])
 
 
-@app.post("/generate", status_code=202, dependencies=[Depends(verify_gpu_api_key), Depends(rate_limit)])
+@app.post("/generate", status_code=202, dependencies=[Depends(verify_api_key), Depends(rate_limit)])
 def generate_designs(request: GenerateRequest) -> dict:
     global _worker_running
 
@@ -377,7 +370,7 @@ def record_audit_event(request: AuditRequest) -> dict:
     return {"status": "recorded" if is_recorded else "unavailable"}
 
 
-@app.get("/generate/{job_id}", dependencies=[Depends(verify_gpu_api_key)])
+@app.get("/generate/{job_id}", dependencies=[Depends(verify_api_key)])
 def generate_status(job_id: str) -> dict:
     with _jobs_lock:
         job = _jobs.get(job_id)
@@ -444,7 +437,7 @@ def passport_detail(passport_id: str) -> dict:
     return _public_passport(p)
 
 
-@app.post("/passports/{passport_id}/qc", dependencies=[Depends(require_write_key)])
+@app.post("/passports/{passport_id}/qc", dependencies=[Depends(verify_api_key)])
 def qc_decision(passport_id: str, request: QcRequest) -> dict:
     def apply(p: dict):
         if p["approval"]["status"] not in ("qa_warning", "qa_failed"):
@@ -464,7 +457,7 @@ def qc_decision(passport_id: str, request: QcRequest) -> dict:
     return result
 
 
-@app.post("/passports/{passport_id}/reviews", dependencies=[Depends(require_write_key)])
+@app.post("/passports/{passport_id}/reviews", dependencies=[Depends(verify_api_key)])
 def submit_review(passport_id: str, request: ReviewRequest) -> dict:
     import json                                                  # noqa: PLC0415
     rubric = json.loads((PROJECT_ROOT / "config" / "expert_rubric.json").read_text(encoding="utf-8"))
@@ -497,7 +490,7 @@ def submit_review(passport_id: str, request: ReviewRequest) -> dict:
     return result
 
 
-@app.post("/passports/{passport_id}/edits", dependencies=[Depends(require_write_key)])
+@app.post("/passports/{passport_id}/edits", dependencies=[Depends(verify_api_key)])
 def submit_edit(passport_id: str, request: EditRequest) -> dict:
     from PIL import Image                                         # noqa: PLC0415
     try:
@@ -546,7 +539,7 @@ def submit_edit(passport_id: str, request: EditRequest) -> dict:
     return result
 
 
-@app.post("/passports/{passport_id}/publish", dependencies=[Depends(require_write_key)])
+@app.post("/passports/{passport_id}/publish", dependencies=[Depends(verify_api_key)])
 def publish(passport_id: str) -> dict:
     p = store.get_passport(passport_id)
     if p is None:
