@@ -1,0 +1,78 @@
+/* components/dropzone.css — Ô TẢI TỆP của trang chỉnh sửa: .dropzone (viền nét đứt; .over khi kéo tệp vào, .has-file khi đã chọn), .dz-*. JS: components/dropzone.js. */
+
+.dropzone {
+    position: relative;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 10px;
+    min-height: 320px;
+    padding: 24px;
+    border: 2px dashed var(--ink-3);
+    background: var(--porcelain);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s ease, background-color .2s ease;
+}
+
+.dropzone:hover, .dropzone.over {
+    border-color: var(--lam);
+    background: var(--lam-soft);
+}
+
+.dropzone:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 3px;
+}
+
+.dropzone.has-file {
+    border-style: solid;
+    border-color: var(--ngoc);
+}
+
+.dz-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dz-prompt {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+}
+
+.dz-ico {
+    width: 40px;
+    height: 40px;
+    stroke: var(--lam);
+    fill: none;
+    stroke-width: 1.6;
+    transform: rotate(180deg);
+}
+
+.dz-title {
+    font-family: var(--font-serif);
+    font-size: 19px;
+    color: var(--ink);
+}
+
+.dz-hint, .dz-name {
+    font-size: 13.5px;
+    color: var(--ink-2);
+}
+
+.dz-preview {
+    max-width: 100%;
+    max-height: 360px;
+    object-fit: contain;
+    background: var(--vitrine);
+}
+
+.dz-error {
+    color: var(--error);
+    font-size: 14px;
+    font-weight: 500;
+}

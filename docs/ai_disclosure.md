@@ -61,6 +61,6 @@ Mô hình Gemini mặc định trong script là `gemini-3.7-flash`, đổi bằn
 
 ## 6. Giới hạn cần nêu trung thực
 
-- Chưa có người am hiểu di sản hoặc thiết kế thẩm định mẫu. Chưa có chấm mù của người thật. Xem `docs/evidence/README.md`.
+- Chưa có người am hiểu di sản hoặc thiết kế thẩm định mẫu. Có 28 phiếu chấm mù của người quan tâm, nhưng họ ít đồng thuận (alpha 0,03), nên chưa dùng điểm để kết luận. Xem `docs/evidence/README.md`.
 - Ghi công nguồn ảnh: 6 hiện vật thuộc bộ LR3D-CULT2 (CC BY 4.0, DOI 10.17632/jr23fnrvx2.1). Nhóm chưa xác minh riêng nguồn của từng vật (một phần mô hình trong bộ có thể lấy từ Sketchfab theo giấy phép học thuật). Chi tiết: `docs/DANH_MUC_NGUON_HIEN_VAT.md`.
 - Căn cứ pháp lý về dán nhãn nội dung AI: `[CẦN NHÓM ĐIỀN: trích văn bản gốc đã đối chiếu, không trích từ bài tổng hợp]`.

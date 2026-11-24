@@ -470,6 +470,7 @@ function httpFailureType(status) {
 }
 
 module.exports = {
+    getClientIp,
     checkRateLimit,
     getBackendConfig,
     buildBackendHeaders,

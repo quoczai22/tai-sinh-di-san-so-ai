@@ -1,6 +1,6 @@
 # Kiến trúc giao diện: web_ui và Streamlit
 
-Tài liệu này ghi **mỗi file làm gì** và **nằm ở bước nào của pipeline GUI**. Cập nhật lần cuối: 20/11/2026, sau đợt tách thư mục theo component.
+Tài liệu này ghi **mỗi file làm gì** và **nằm ở bước nào của pipeline GUI**. Cập nhật lần cuối: 24/11/2026, sau khi thêm trang Thiết kế đã tạo và trang Tải bản chỉnh sửa (đợt tách thư mục theo component là 20/11/2026).
 
 ## 1. Nguyên tắc
 
@@ -38,7 +38,9 @@ index.html ─► config.js (DH_API_BASE)
 | 0. Khám phá | `#/library` | `views/library.js` | `hero/fan`, `journey-card`, `artifact-card`, `gallery-item`, `chapter-head`; trang trí `decor/phoenix`, `decor/drum` | `data.heritage()`, `data.passports()` |
 | 1. Chọn đầu vào | `#/studio` | `views/studio.js` | `picker-card` (rê chuột thì xoay 3D qua `viewer3d.hoverSpin`) | `data.heritage()` |
 | 2. Tạo thiết kế | `#/studio/<mã>` | `views/studio.js` | `viewer3d`, `viewer-controls`, `artifact-book` (nút "Xem ý nghĩa hoa văn" mở sổ hai trang nổi trên trang), `layout.stateBox` | Có GPU: `tsds/core/generation.js` gọi `POST /generate` rồi hỏi `GET /generate/{id}`. Không có GPU: mở bộ đã sinh sẵn, không giả lập |
-| 3. Xem và tải đầu ra | `#/result/<mã>` | `views/result.js` | `design-card`, `lightbox`, `badges.demoNotice` | `data.passports()`, `tsds/core/download.js` |
+| 3. Xem và tải đầu ra | `#/result/<mã>` hoặc `#/result/<mã>/<mã lượt chạy>` (mở lại một bộ đã tạo) | `views/result.js` | `design-card`, `lightbox`, `badges.demoNotice` | `data.passports()`, `tsds/core/download.js` |
+| 4. Xem lại bộ đã tạo | `#/mine` (chỉ hiện trên thanh trên và menu khi trình duyệt đã tạo ít nhất một bộ) | `views/mine.js` | `run-card` | `data.myRuns()` (danh sách lưu trong trình duyệt, tối đa 12 bộ), `data.passports()` |
+| 5. Tải bản chỉnh sửa | `#/edit/<mã Passport>` (vào từ nút "Tải lên chỉnh sửa" trong cửa sổ phóng to; không nằm trong menu) | `views/edit.js` | `edit-panel` (gồm `dropzone`, `confirm-dialog`) | `data.submitEdit()` → gateway `api/edit.js` → `POST /passports/{id}/edits` |
 
 Nhãn AI (`components/badges.js#aiMark`) có trên **mọi** ảnh do AI hỗ trợ tạo, phục vụ YC3. Ở chế độ trình diễn, trang Kết quả luôn có dòng "Kết quả đã sinh sẵn".
 
@@ -58,6 +60,8 @@ web_ui/
     │   │   ├── data.js        lớp dữ liệu duy nhất: live/demo, heritage, passports, media, generate, audit
     │   │   ├── designs.js     quy tắc chọn ảnh thiết kế (latestOf, patternOf, byPref, pickPassport, fullImage)
     │   │   ├── generation.js  vòng sinh: POST /generate → hỏi trạng thái → báo tiến độ
+    │   │   ├── edit-rules.js  quy tắc kiểm tra biểu mẫu chỉnh sửa (khớp EditRequest của API); hàm thuần, test bằng Node
+    │   │   ├── upload.js      đọc tệp ảnh thành chuỗi base64 để gửi lên
     │   │   ├── download.js    tải ảnh về máy (luôn PNG/JPEG)
     │   │   ├── routes.js      bảng trang
     │   │   ├── router.js      đổi trang theo hash, chuyển cảnh mờ chéo
@@ -71,17 +75,19 @@ web_ui/
     │   │   ├── layout.js      section, stateBox
     │   │   ├── chapter-head.js, journey-card.js, artifact-card.js, gallery-item.js   (trang chủ)
     │   │   ├── picker-card.js, viewer3d.js, viewer-controls.js, artifact-book.js     (Studio)
-    │   │   └── design-card.js, lightbox.js                                           (Kết quả)
+    │   │   ├── design-card.js, lightbox.js                                           (Kết quả)
+    │   │   ├── run-card.js                                                           (Thiết kế đã tạo)
+    │   │   └── edit-panel.js, dropzone.js, confirm-dialog.js                         (Tải bản chỉnh sửa)
     │   ├── decor/             hình trang trí SVG: phoenix.js, drum.js (trống, mây, sợi chỉ)
-    │   ├── views/             library.js, studio.js, result.js — chỉ ghép component
+    │   ├── views/             library.js, studio.js, result.js, mine.js, edit.js — chỉ ghép component
     │   └── vendor/three/      Three.js (MIT), nạp qua import map, chỉ tải khi cần 3D
     ├── css/                   thứ tự nạp = assets/css/order.json
     │   ├── base/              tokens → reset → typography → layout → reveal  …  motion (nạp cuối)
     │   ├── components/        1 file cho 1 component JS (nav, menu, hero, hero-fan, journey-pin, journey-card,
-    │   │                      artifact-card, picker-card, gallery-item, design-card, lightbox, viewer3d, artifact-book, footer,
-    │   │                      buttons, badges, feedback)
+    │   │                      artifact-card, picker-card, gallery-item, design-card, lightbox, confirm-dialog, dropzone, edit-panel,
+    │   │                      run-card, viewer3d, artifact-book, footer, buttons, badges, feedback)
     │   ├── decor/             phoenix.css, drum.css
-    │   └── views/             home.css, studio.css, result.css
+    │   └── views/             home.css, studio.css, result.css, mine.css
     ├── models/                mô hình GLB của hiện vật (viewer3d)
     └── images/                ảnh PNG gốc để tải xuống ở chế độ trình diễn
 ```

@@ -55,5 +55,5 @@
     "shown_per_item": 1
   },
   "analysis": "Như EXP-B. Mức 'fixed' là đối chứng. Báo thêm tỉ lệ seed sinh được áo LoRA hợp lệ (status_counts).",
-  "status": "planned"
+  "status": "completed"
 }

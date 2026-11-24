@@ -13,4 +13,11 @@ export const ROUTES = [
     // Trang Kết quả chỉ vào qua nút Tạo thiết kế, không nằm trong menu
     { group: 'Khám phá', id: 'result', label: 'Kết quả', short: 'Kết quả', icon: 'studio', hidden: true, load: () => import('../views/result.js'),
       title: 'Kết quả thiết kế', lede: 'Bốn thiết kế áo dài dệt từ hoa văn của hiện vật bạn chọn.' },
+    // Thiết kế đã tạo: chỉ hiện trên thanh trên và menu khi trình duyệt này đã tạo ít nhất một bộ (needsRuns, xem components/nav.js)
+    { group: 'Khám phá', id: 'mine', label: 'Thiết kế đã tạo', short: 'Thiết kế đã tạo', icon: 'studio', primary: true, needsRuns: true,
+      load: () => import('../views/mine.js'), title: 'Thiết kế đã tạo',
+      lede: 'Khám phá các bản thiết kế đã tạo.' },
+    // Trang tải bản chỉnh sửa chỉ vào qua nút "Tải lên chỉnh sửa" ở cửa sổ phóng to một thiết kế, không nằm trong menu
+    { group: 'Khám phá', id: 'edit', label: 'Chỉnh sửa thiết kế', short: 'Chỉnh sửa', icon: 'studio', hidden: true, load: () => import('../views/edit.js'),
+      title: 'Chỉnh sửa thiết kế', lede: '' },
 ].map((r) => ({ ...r, chapter: CHAPTER[r.group] }));

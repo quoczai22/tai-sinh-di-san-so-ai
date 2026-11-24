@@ -9,4 +9,9 @@ export function aiMark() {
     return h('span', { class: 'ai-tag', title: 'Thiết kế có AI hỗ trợ tạo' }, AI_LABEL);
 }
 
+/** Nhãn "Đã chỉnh sửa" ở góc trên bên phải ảnh của thiết kế mà Passport đã ghi bản chỉnh sửa của người dùng (nhãn AI vẫn giữ nguyên). */
+export function editedMark() {
+    return h('span', { class: 'edited-mark' }, 'Đã chỉnh sửa');
+}
+
 /** Nhãn bắt buộc khi chạy chế độ trình diễn (không có GPU trực tuyến): ảnh là kết quả thật đã sinh sẵn. */

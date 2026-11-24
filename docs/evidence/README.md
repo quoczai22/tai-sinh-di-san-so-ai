@@ -1,6 +1,6 @@
 # Chỉ mục minh chứng theo ba yêu cầu cải tiến của ban tổ chức
 
-Tài liệu này không chép lại dữ liệu. Nó chỉ nói: mỗi minh chứng ở đâu, đã có hay chưa. Cột "Trạng thái" ghi thẳng sự thật tại ngày 22/11/2026 (nhánh `test`). **Chưa có** nghĩa là nhóm cần làm, không phải đã làm.
+Tài liệu này không chép lại dữ liệu. Nó chỉ nói: mỗi minh chứng ở đâu, đã có hay chưa. Cột "Trạng thái" ghi thẳng sự thật tại ngày 22/11/2026 (nhánh `test`). Các dòng về chấm mù và độ đồng thuận cập nhật ngày 24/11/2026. **Chưa có** nghĩa là nhóm cần làm, không phải đã làm.
 
 Quy ước cột "Vị trí": đường dẫn không ghi chú là đã nằm trong git. Mục ghi "chỉ trên máy" là ảnh hoặc gói thô theo quy tắc dự án không commit, nhóm cần tải lên Google Drive hoặc R2 và dán link vào cột "Link nộp".
 
@@ -12,7 +12,8 @@ Quy ước cột "Vị trí": đường dẫn không ghi chú là đã nằm tro
 | Kiểm tra giữ họa tiết và dáng áo sau xuất | Cổng G2, G3: `tsds/quality/`, ngưỡng `config/quality_gate.json` (QG-1.0), giải thích `docs/finals/05_QUALITY_ASSURANCE.md` | Có | |
 | Quy tắc loại và thử lại | `tsds/quality/pattern_retry.py`, `tsds/quality/retry.py`; mô tả ở `docs/finals/05_QUALITY_ASSURANCE.md` | Có | |
 | Ví dụ bị loại (khoảng 123 lượt) | `outputs/qc/pattern_rejects.csv` và ảnh trong `outputs/qc/pattern_rejects/` | Chỉ trên máy | `[CẦN NHÓM ĐIỀN]` |
-| Người am hiểu di sản và thiết kế xem mẫu, phiếu nhận xét | Tiêu chí phiếu: `config/expert_rubric.json`. Ghi phiếu qua API `POST /passports/{id}/reviews` | **Chưa có phiếu thật** | |
+| Người am hiểu di sản và thiết kế xem mẫu, phiếu nhận xét | Tiêu chí phiếu: `config/expert_rubric.json`. Ghi phiếu qua API `POST /passports/{id}/reviews`. Phiếu Google Form chuyên gia (12 ảnh, hai vai) dựng bằng `scripts/eval/build_google_form.py --audience expert`, xem `docs/CHAM_MU_GOOGLE_FORM.md` | Đã dựng phiếu, **chưa có phiếu thật** | |
+| Khảo sát điểm của cộng đồng (lượt riêng, không phải chuyên gia) | Form 48 ảnh dựng bằng `scripts/eval/build_google_form.py`. File điểm: `outputs/review/google_form_EXP-A/danh_gia_28_nguoi.xlsx` (chỉ trên máy). Nhập vào repo bằng `scripts/eval/import_google_form.py` | **Có 28 phiếu** của người quan tâm, nộp 22 đến 23/11/2026. Độ đồng thuận thấp, xem mục Yêu cầu 2 | `[CẦN NHÓM ĐIỀN]` |
 
 ## Yêu cầu 2: đối chứng có kiểm soát, nhiều seed
 
@@ -24,10 +25,10 @@ Quy ước cột "Vị trí": đường dẫn không ghi chú là đã nằm tro
 | EXP-A: trọng số ControlNet, 120 lượt, 5 seed (42, 7, 123, 2024, 31415) | `outputs/experiments/EXP-A/`, phân tích ở `docs/finals/06_EXPERIMENTS.md` | Có | |
 | Thống kê mức dao động theo seed | `docs/finals/06_EXPERIMENTS.md` (hệ số biến thiên theo từng ô hiện vật và mức; kiểm định Wilcoxon, Friedman) | Có | |
 | Gói chấm mù đã dựng sẵn (ảnh đổi mã, phiếu HTML) | `outputs/review/blind_review/` (72 thiết kế, nhiều seed), `outputs/review/blind_review_EXP-A/` (48 ảnh); khoá giải mã `GIU_RIENG/key.csv` giữ riêng | Chỉ trên máy | `[CẦN NHÓM ĐIỀN]` |
-| **Bảng điểm của người đánh giá mù** | cần có file điểm từ ít nhất 3 người chấm | **Chưa có** | |
-| Độ đồng thuận giữa người chấm (Krippendorff alpha, mục tiêu từ 0,667) | tính sau khi có điểm | **Chưa có** | |
+| Bảng điểm của người đánh giá mù | `outputs/experiments/EXP-A/blind/` (key.csv và 28 file `ratings_N01` đến `N28`, không có họ tên) | **Có, nhưng của người quan tâm, không phải chuyên gia.** 28 người, 48 ảnh, 4 tiêu chí, không thiếu ô nào. 4 người chấm gần như một mức: 2 người gần như toàn 5, 1 người toàn 1, 1 người toàn 4 | |
+| Độ đồng thuận giữa người chấm (Krippendorff alpha, mục tiêu từ 0,667) | `outputs/experiments/EXP-A/summary.json` (mục `agreement`) và `human_report.json` | **Có, không đạt mục tiêu.** Alpha 0,028 khi gộp 4 tiêu chí; từng tiêu chí từ -0,019 đến 0,05. Bỏ 4 người chấm một mức thì 0,06. Nên không dùng điểm trung bình để kết luận từng thiết kế | |
 
-Giới hạn đã nêu trong hồ sơ: mỗi mức EXP-A có 30 cặp (6 hiện vật nhân 5 seed); kiểm định chạy ba lần cho mỗi chỉ số, không hiệu chỉnh; chưa chấm mù nên chưa kết luận được "đẹp hơn" hay "giống vải in hơn".
+Giới hạn đã nêu trong hồ sơ: mỗi mức EXP-A có 30 cặp (6 hiện vật nhân 5 seed); kiểm định chạy ba lần cho mỗi chỉ số, không hiệu chỉnh. Điểm của 28 người có alpha 0,03 nên chưa kết luận được "đẹp hơn" hay "giống vải in hơn" cho từng thiết kế. Chỉ thấy xu hướng chung: điểm trung bình giảm khi hạ trọng số ControlNet, từ 3,72 ở 0,85 xuống 3,38 ở 0,25 (Friedman p dưới 0,001 trên 12 khối hiện vật nhân seed). Đây chưa phải kết luận của chuyên gia.
 
 ## Yêu cầu 3: bản quyền, nguồn gốc, truy vết
 
@@ -71,7 +72,7 @@ Sinh lại một bộ thiết kế (cần GPU): `uv run python scripts/demo/gene
 
 ## Việc nhóm cần làm để đủ bộ minh chứng
 
-1. Gửi gói chấm mù cho ít nhất 3 người chấm, thu điểm, tính Krippendorff alpha.
+1. Điểm cộng đồng đã có (28 người) nhưng alpha chỉ 0,03. Ghi đúng điều này trong hồ sơ và không dùng điểm trung bình để kết luận từng thiết kế. Muốn có kết luận thì cần chấm lại với người có chuyên môn.
 2. Mời ít nhất một người am hiểu di sản và một người am hiểu thiết kế xem mẫu, thu phiếu. Nếu hết hạn vẫn chưa có thì ghi đúng sự thật: đã liên hệ bao nhiêu nơi, chưa có phản hồi, thẩm định là hạng mục tiếp theo. Không ghi "đã thẩm định".
 3. Tải ví dụ bị loại và gói chấm mù lên Drive, dán link vào cột "Link nộp".
 4. Điền các chỗ `[CẦN NHÓM ĐIỀN]` trong `docs/ai_disclosure.md` và `docs/HUONG_DAN_THU_NGHIEM.md`.

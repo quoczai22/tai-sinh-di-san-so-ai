@@ -60,5 +60,5 @@
     "shown_per_item": 1
   },
   "analysis": "Trung bình ± độ lệch chuẩn, khoảng tin cậy 95% và hệ số biến thiên theo seed cho từng mức; so sánh cặp các mức trên cùng hiện vật + seed (Wilcoxon); độ đồng thuận người chấm (Krippendorff alpha).",
-  "status": "planned"
+  "status": "completed"
 }

@@ -69,15 +69,17 @@ Lấy cảm hứng từ cách các nền tảng di sản trực tuyến kể chu
 
 | Thành phần | Mô tả |
 |---|---|
-| Điều hướng | Logo hoa sen ở giữa; trái: Trang chủ, Studio; phải: nút menu ☰ (menu có Trang chủ và Studio; trang Kết quả chỉ vào qua nút Tạo thiết kế) |
+| Điều hướng | Logo hoa sen ở giữa; trái: Trang chủ, Studio và Thiết kế đã tạo (mục này chỉ hiện khi trình duyệt đã tạo ít nhất một bộ); phải: nút menu ☰ (menu có cùng các mục; trang Kết quả chỉ vào qua nút Tạo thiết kế) |
 | Trang chủ | Ảnh bìa với quạt thẻ Hiện vật → Hoa văn → Áo dài; chim phượng và câu mở đầu; Hành trình 3 chặng; lưới hiện vật; lưới áo dài; mặt trống đồng và lời kết |
 | Studio | Chọn hiện vật (Đầu vào) rồi nút Tạo thiết kế; tạo xong tự chuyển sang trang Kết quả. Có GPU: sinh thật kèm tiến độ. Không có GPU: mở bộ đã tạo trước trên GPU (từ 20/11/2026 giao diện không còn dòng ghi chú ngày tạo, nên báo cáo phải nêu rõ đây là bộ có sẵn khi chạy ngoại tuyến), không giả lập việc sinh |
-| Kết quả (`#/result/<mã hiện vật>`) | Bốn tà áo của bộ thiết kế mới nhất của hiện vật, nhãn AI; nút Tạo lại và Chọn hiện vật khác. Không có khung chi tiết hay chỉ số kỹ thuật |
+| Kết quả (`#/result/<mã hiện vật>` hoặc `#/result/<mã hiện vật>/<mã lượt chạy>`) | Bốn tà áo của bộ thiết kế mới nhất của hiện vật (hoặc đúng lượt chạy được chỉ định), nhãn AI; nút Tạo lại và Chọn hiện vật khác. Bấm một ảnh mở cửa sổ phóng to có nút Tải xuống và Tải lên chỉnh sửa. Thiết kế đã có bản sửa mang nhãn "Đã chỉnh sửa" ở góc trên bên phải, nhãn AI vẫn giữ. Không có khung chi tiết hay chỉ số kỹ thuật |
+| Thiết kế đã tạo (`#/mine`) | Các bộ thiết kế đã tạo trên trình duyệt này (danh sách lưu trong trình duyệt, tối đa 12 bộ, không đồng bộ giữa thiết bị), mỗi bộ có bốn ảnh nhỏ và nút Xem lại. Bộ không còn trên máy chủ báo rõ và cho xóa khỏi danh sách |
+| Tải bản chỉnh sửa (`#/edit/<mã Passport>`) | Ô tải tệp hoặc kéo thả ảnh PNG (tối đa 3 MB), biểu mẫu ID tài khoản (phải bắt đầu bằng TSDS), vai, mô tả, công cụ (không thu email hay họ tên). Nút Hủy (hộp "Thiết kế của bạn sẽ không được lưu. Bạn có muốn hủy?": Quay lại, Đồng ý) và Lưu bản chỉnh sửa (hộp "Xác nhận lưu bản chỉnh sửa": Hủy, Xác nhận, rồi "Đã cập nhật bản chỉnh sửa"). Chỉ dùng được với thiết kế tạo trực tiếp; thiết kế sinh sẵn thì nút bị khóa kèm lý do |
 | Chuyển động | Theo vị trí cuộn (chim phượng, câu mở đầu sáng dần, hiện vật nổi lên); chỉ chuyển động tự chạy dừng khi hệ điều hành bật giảm chuyển động; có nút tắt chuyển động trong menu |
 
 ### Phạm vi giao diện web (19/11/2026)
 
-Web chỉ dành cho người xem: **Trang chủ · Studio · Kết quả**. Các chức năng nghiệp vụ không còn là trang web mà nằm ở:
+Web chỉ dành cho người xem: **Trang chủ · Studio · Kết quả · Thiết kế đã tạo**, cộng một thao tác ghi duy nhất là tải bản chỉnh sửa (từ 24/11/2026, qua `web_ui/api/edit.js`). Các chức năng nghiệp vụ còn lại không là trang web mà nằm ở:
 
 | Chức năng | Nằm ở |
 |---|---|
@@ -91,7 +93,7 @@ Web chỉ dành cho người xem: **Trang chủ · Studio · Kết quả**. Các
 ### Hai chế độ
 
 - **Trực tiếp**: có API chạy cùng máy (`localhost`) → đọc và ghi qua API. Nhãn góc phải cho biết có GPU hay không.
-- **Trình diễn**: không có API (ví dụ bản đưa lên Vercel) → đọc dữ liệu đã xuất trong `web_ui/data/` bằng `scripts/demo/export_demo_data.py` từ dữ liệu thật. Riêng trang Kết quả đọc bộ riêng `web_ui/data/result/` và `web_ui/assets/images/result/` (xuất bằng `--only-result`, qua `data.resultPassports()`), nên bộ demo seed 42 mới chỉ đổi ở trang này; trang chủ, Thư viện, Studio và bảng chất lượng giữ dữ liệu cũ. Chạy lệnh không có cờ sẽ ghi lại toàn bộ `web_ui/data/`. Các nút ghi (phiếu thẩm định, quyết định QC) không giả vờ ghi: chúng xuất tệp JSON để nhóm nhập sau, và giao diện nói rõ điều đó.
+- **Trình diễn**: không có API (ví dụ bản đưa lên Vercel) → đọc dữ liệu đã xuất trong `web_ui/data/` bằng `scripts/demo/export_demo_data.py` từ dữ liệu thật. Riêng trang Kết quả đọc bộ riêng `web_ui/data/result/` và `web_ui/assets/images/result/` (xuất bằng `--only-result`, qua `data.resultPassports()`), nên bộ demo seed 42 mới chỉ đổi ở trang này; trang chủ, Thư viện, Studio và bảng chất lượng giữ dữ liệu cũ. Chạy lệnh không có cờ sẽ ghi lại toàn bộ `web_ui/data/`. Các nút ghi (phiếu thẩm định, quyết định QC) không giả vờ ghi: chúng xuất tệp JSON để nhóm nhập sau, và giao diện nói rõ điều đó. Riêng trang Tải bản chỉnh sửa ghi thật vào Passport ở chế độ trực tiếp; ở chế độ trình diễn nút "Tải lên chỉnh sửa" bị khóa kèm lý do.
 
 Không có nút nào bấm mà không làm gì. Chức năng chưa có máy chủ (sinh ảnh, ghi chỉnh sửa) hiện lý do bị khoá.
 

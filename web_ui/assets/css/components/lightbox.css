@@ -158,3 +158,12 @@ body.lb-open {
         transform: none;
     }
 }
+
+/* Nút "Tải lên chỉnh sửa" bị khóa: lý do hiện ngay dưới hàng nút */
+.lb-note {
+    max-width: 420px;
+    margin: 0;
+    color: var(--ink-2);
+    font-size: 13.5px;
+    text-align: center;
+}
