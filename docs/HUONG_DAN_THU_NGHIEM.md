@@ -22,6 +22,10 @@ Dành cho ban tổ chức. Một trang. Mục nào chưa có số đo thật th�
 
 Nút **Xem ý nghĩa hoa văn** ở Studio mở cuốn sổ mô tả hoa văn, nguồn ảnh và giấy phép CC BY 4.0.
 
+**Xem lại thiết kế đã tạo.** Sau khi tạo thiết kế trực tiếp, mục **Thiết kế đã tạo** xuất hiện cạnh Studio trên thanh trên. Bấm vào để mở lại các bộ đã tạo mà không phải tạo lại. Danh sách lưu trong trình duyệt đang dùng.
+
+**Thử bước chỉnh sửa (chỉ với thiết kế vừa tạo trực tiếp).** Ở trang Kết quả, bấm một thiết kế, bấm **Tải xuống**, chỉnh ảnh bằng công cụ bất kỳ, rồi quay lại bấm **Tải lên chỉnh sửa**. Tải ảnh PNG đã sửa lên, điền ID tài khoản (bắt đầu bằng TSDS, không nhập họ tên), vai, mô tả, công cụ, rồi bấm **Lưu bản chỉnh sửa**. Thiết kế có bản sửa mang nhãn "Đã chỉnh sửa" ở góc trên bên phải ảnh. Mỗi lần lưu ghi vĩnh viễn vào Passport của thiết kế đó và không xóa được. Thiết kế sinh sẵn của bản trình diễn không chỉnh sửa được.
+
 ## 3. Hệ thống hoạt động thế nào khi bạn bấm
 
 - Ảnh được sinh bằng GPU trên Modal (Tesla T4). Mỗi lần chỉ một lượt chạy, tối đa 2 lượt chờ. Hàng chờ đầy thì báo thử lại sau.
@@ -38,9 +42,10 @@ Nút **Xem ý nghĩa hoa văn** ở Studio mở cuốn sổ mô tả hoa văn, n
 
 ## 5. Giới hạn đã biết
 
-- Giao diện web chỉ còn 3 trang: chưa hiện Passport và chỉ số chất lượng.
+- Giao diện web không hiện Passport và chỉ số chất lượng. Passport nộp dưới dạng tệp JSON (không hiển thị trên web).
+- **Bước chỉnh sửa là bản demo (MVP).** Bản sửa được ghi thật vào Passport và cổng chất lượng G3 chấm lại, nhưng hệ thống chưa gửi thư và chưa có chuyên gia nhận bản sửa; thiết kế chuyển sang trạng thái "chờ chuyên gia thẩm định" trong Passport. ID tài khoản và mô tả hiển thị công khai trong Passport và không xóa được. Ảnh người dùng tải lên không hiện trên web (trang vẫn hiển thị ảnh do hệ thống tạo).
 - Có thiết kế được gắn nhãn "có cảnh báo" hoặc "không đạt" từ cổng chất lượng. Đây là hành vi đúng của hệ thống, không phải lỗi. Hiện vật LR3D_124 hay bị loại vì đường nối hoa văn.
-- **Chưa có người am hiểu di sản hoặc thiết kế thẩm định mẫu**, và chưa có chấm mù của người thật (xem `docs/evidence/README.md`).
+- **Chưa có người am hiểu di sản hoặc thiết kế thẩm định mẫu.** Có 28 phiếu chấm mù của người quan tâm (không phải chuyên gia). Họ ít đồng thuận với nhau (Krippendorff alpha 0,03, mục tiêu từ 0,667), nên nhóm không dùng điểm này để kết luận từng thiết kế (xem `docs/evidence/README.md`).
 - Chưa thử ba người dùng thật cùng lúc và chưa thử khởi động lại container sau khi job xong (`docs/DEPLOY_LIVE.md`).
 - Giấy phép ảnh nguồn là CC BY 4.0 của bộ dữ liệu LR3D-CULT2; nhóm chưa xác minh riêng nguồn của từng vật.
 
@@ -50,3 +55,4 @@ Nút **Xem ý nghĩa hoa văn** ở Studio mở cuốn sổ mô tả hoa văn, n
 - Khai báo công cụ AI: `docs/ai_disclosure.md`
 - Nguồn và giấy phép: `docs/DANH_MUC_NGUON_HIEN_VAT.md`
 - Cách triển khai: `docs/DEPLOY_LIVE.md`
+- Chấm mù bằng Google Form: `docs/CHAM_MU_GOOGLE_FORM.md`

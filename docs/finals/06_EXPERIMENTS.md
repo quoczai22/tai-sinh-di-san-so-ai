@@ -60,7 +60,7 @@ python -m tsds.evaluation.experiment analyze outputs/experiments/EXP-A          
 | Hiện vật | 6 hiện vật đang dùng | 6 hiện vật đang dùng | 6 hiện vật đang dùng | 6 hiện vật đang dùng |
 | Số lượt | 120 | 126 | 60 | 36 |
 | Trạng thái | **Đã chạy 120/120** (20/11/2026) | **Đã chạy 126/126** | **Đã chạy 60/60** | **Đã chạy 36/36** |
-| Chấm mù | Chưa | Chưa | Gói đã dựng (60 ảnh, 3 phiếu trống), **chưa có phiếu** | Chưa |
+| Chấm mù | **28 phiếu của người quan tâm, alpha 0,03** (xem mục Điểm của người chấm EXP-A) | Chưa | Gói đã dựng (60 ảnh, 3 phiếu trống), **chưa có phiếu** | Chưa |
 
 Hai thí nghiệm thêm ngày 20/11/2026, cùng cố định: áo LoRA, bố cục `front_panel`, ControlNet 0,65, bảng màu tự do, polish chỉ vùng áo 0,20 kèm khoá họa tiết; lặp theo 3 seed 42, 43, 44.
 
@@ -94,7 +94,25 @@ Chạy ngày 20/11/2026, cả 120 lượt hoàn tất. Mỗi mức 30 cặp (6 h
 - **Xem ảnh (seed 42) cho thấy điều chỉ số máy không thấy:** ở 0,25 hoa văn thành mảng hoa văn dày chung chung, LR3D_124 mất dải lông vũ và huy hiệu rồng, LR3D_61 mất hình rồng thành dải sóng. Trọng số thấp tránh dáng bình nhưng bỏ họa tiết gốc. Kết luận về "nhận ra họa tiết gốc" phải chờ phiếu chuyên gia.
 - **Theo hiện vật:** LR3D_38 lọt hình bình nhiều nhất ở 0,85 (VLS 0,213) và PPS giảm từ 0,934 xuống 0,892 ở 0,25; LR3D_50 và LR3D_97 gần như không lọt (VLS 0,0 đến 0,04).
 - **Dao động theo seed:** hệ số biến thiên của PPS trong từng ô (hiện vật × mức), trung bình 6 hiện vật, là 2,1% ở 0,85, 2,4% ở 0,65, 2,8% ở 0,45, 2,9% ở 0,25: tăng nhẹ khi trọng số giảm. VLS dao động rất lớn (hệ số biến thiên 81% đến 177%) vì hầu hết giá trị gần 0, vài seed cao.
-- **Giới hạn:** 30 cặp mỗi mức; Wilcoxon chạy ba lần cho mỗi chỉ số, không hiệu chỉnh; chưa chấm mù; chỉ số CLIP nêu trong đặc tả không có trong kết quả (cột `clip_similarity_pattern_vs_ceramic` không được ghi). EXP-A giữ cố định prompt, bảng màu và bố cục, còn bốn mức sáng tạo của bộ demo đổi cả prompt và bảng màu cùng trọng số, nên kết quả EXP-A không thay được so sánh bốn mức của bộ demo.
+- **Giới hạn:** 30 cặp mỗi mức; Wilcoxon chạy ba lần cho mỗi chỉ số, không hiệu chỉnh; chấm mù của người quan tâm có độ đồng thuận thấp (xem mục sau); chỉ số CLIP nêu trong đặc tả không có trong kết quả (cột `clip_similarity_pattern_vs_ceramic` không được ghi). EXP-A giữ cố định prompt, bảng màu và bố cục, còn bốn mức sáng tạo của bộ demo đổi cả prompt và bảng màu cùng trọng số, nên kết quả EXP-A không thay được so sánh bốn mức của bộ demo.
+
+## Điểm của người chấm EXP-A (28 người)
+
+Nguồn: bảng Excel của Google Form `outputs/review/google_form_EXP-A/danh_gia_28_nguoi.xlsx` (chỉ trên máy), nộp từ 22/11 đến 23/11/2026. Nhập vào repo bằng `scripts/eval/import_google_form.py`; số liệu ở `outputs/experiments/EXP-A/summary.json` và `human_report.json`. Mỗi người chấm đủ 48 ảnh (6 hiện vật, 4 trọng số, 2 seed là 42 và 7) theo 4 tiêu chí, thang 1 đến 5. Cả 28 người chọn vai "Người quan tâm", nên đây là lượt cộng đồng, **không phải chuyên gia**.
+
+| Tiêu chí | 0,85 | 0,65 | 0,45 | 0,25 | Alpha |
+|---|---|---|---|---|---|
+| Nhận ra họa tiết gốc | 3,73 | 3,62 | 3,37 | **3,00** | 0,050 |
+| Phù hợp văn hoá | 3,79 | 3,80 | 3,69 | 3,54 | -0,010 |
+| Thẩm mỹ thiết kế | 3,55 | 3,54 | 3,38 | 3,29 | 0,011 |
+| Toàn vẹn dáng áo dài | 3,81 | 3,85 | 3,77 | 3,71 | -0,019 |
+| Trung bình 4 tiêu chí | 3,72 | 3,70 | 3,55 | 3,38 | 0,028 (gộp) |
+
+- **Xu hướng chung:** điểm giảm khi hạ trọng số. Friedman p = 2,5 phần triệu trên 12 khối (hiện vật nhân seed). So với 0,85, mức 0,45 có Wilcoxon p = 0,012 và mức 0,25 có p = 0,0005; mức 0,65 chưa khác (p = 0,79). Chưa hiệu chỉnh đa so sánh. Chênh lệch lớn nhất là tiêu chí "nhận ra họa tiết gốc" (3,73 xuống 3,00), khớp với quan sát bằng mắt ở mục trên: trọng số thấp bỏ họa tiết gốc.
+- **Độ đồng thuận không đạt:** alpha gộp 0,028, mục tiêu từ 0,667 (quy tắc ở mục kiểm soát). Sau khi trừ mức dễ hay khó của từng người alpha là 0,123, vẫn thấp. Nghĩa là hai người chấm cùng một ảnh hầu như không cho điểm giống nhau. Theo quy tắc của nhóm, chưa dùng điểm trung bình để kết luận từng thiết kế. Xu hướng theo trọng số ở trên là hiệu ứng nhóm, mức chênh khoảng 0,3 điểm.
+- **Chất lượng phiếu:** không thiếu ô nào, không trùng giờ nộp. 4 người chấm gần như một mức (độ lệch chuẩn dưới 0,3): 2 người gần như toàn 5, 1 người toàn 1, 1 người toàn 4. Điểm trung bình mỗi người trải từ 1,0 đến 5,0. Bỏ 4 người này, alpha là 0,06 và xu hướng không đổi (3,71, 3,70, 3,52, 3,32).
+- **Với chỉ số máy:** điểm người (trung bình 28 người) không tương quan với đường nối, giữ họa tiết hay chi tiết mịn (|rho| nhỏ hơn hoặc bằng 0,14, n = 48). Lọt hình bình có rho +0,48 (p = 0,001), tức ảnh lọt hình bình nhiều lại được chấm cao hơn. Trong từng mức trọng số (12 ảnh mỗi mức) không còn ý nghĩa, nên nhiều khả năng do trọng số kéo cả hai cùng đi. Các chỉ số tự động chưa dự đoán được điểm người.
+- **Giới hạn:** người chấm không có chuyên môn di sản hay thiết kế; mỗi người chấm 48 ảnh liên tục (khoảng 45 phút) nên có thể mệt; chỉ 12 khối. Chưa có phiếu chuyên gia.
 
 ## Kết quả EXP-B: bước hoàn thiện (126 lượt)
 
