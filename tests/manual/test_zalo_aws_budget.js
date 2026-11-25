@@ -24,10 +24,12 @@ const { formatCreditReport } = require('../../web_ui/api/bot_ops_commands');
     assert.match(formatCreditReport(budget), /\$0\.42 \/ \$5\.00/);
     assert.match(formatCreditReport(budget), /cập nhật trễ/);
     assert.match(formatCreditReport(budget), /https:\/\/modal\.com\/settings/);
+    assert.match(formatCreditReport(budget), /1️⃣ Modal GPU Backend/);
+    assert.match(formatCreditReport(budget), /2️⃣ AWS CodeBuild CD & Parameter Store/);
     assert.doesNotMatch(formatCreditReport(budget), /credit còn lại|100% miễn phí/);
 
     assert.equal(await readAwsBudget(async () => { throw new Error('AccessDenied'); }), null);
-    assert.match(formatCreditReport(null), /Chưa xác minh được mức chi AWS Budget/);
+    assert.match(formatCreditReport(null), /Chưa lấy được mức chi AWS Budget/);
     process.env.AWS_BUDGET_ROLE_ARN = '';
     assert.equal(await readAwsBudget(() => { throw new Error('must not call'); }), null);
     console.log('Zalo AWS Budget: validated data, no guessed balance, safe fallback passed');
