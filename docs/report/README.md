@@ -4,10 +4,12 @@ Thư mục này là một dự án LaTeX của báo cáo cải tiến Tái sinh 
 
 ## Đưa lên Overleaf
 
-1. Nén cả thư mục `docs/report` thành một tệp `.zip` (gồm `main.tex`, `latexmkrc`, `figures/`).
+1. Nén cả thư mục `docs/report` thành một tệp `.zip` (gồm `main.tex`, `references.bib`, `latexmkrc`, `figures/`).
 2. Trên Overleaf: New Project, Upload Project, chọn tệp zip.
 3. Tệp chính là `main.tex`. Trình biên dịch phải là **XeLaTeX** (Menu, Compiler). Tệp `latexmkrc` và dòng `% !TEX program = xelatex` đầu `main.tex` đã đặt sẵn, nhưng nếu Overleaf vẫn dùng pdfLaTeX thì đổi tay.
 4. Bấm Recompile.
+
+Tài liệu tham khảo nằm trong `references.bib`, trích dẫn bằng `\parencite{khoa}` và in bằng `\printbibliography` (biblatex, kiểu APA 7, biber). Overleaf tự chạy biber, không cần chỉnh gì. Thêm nguồn mới: thêm một mục vào `references.bib` rồi dùng khóa đó, chỉ nguồn đã được trích dẫn mới hiện trong danh sách. Mỗi mục có dòng chú thích `% Đối chiếu:` ghi nguồn đã kiểm tra.
 
 Phông chữ dùng TeX Gyre Termes, TeX Gyre Heros và Latin Modern Mono, đều có sẵn trên Overleaf và có đủ dấu tiếng Việt. Dự án chưa được biên dịch thử trên máy này vì máy chưa cài LaTeX. Nếu Overleaf báo lỗi, gửi lại dòng lỗi để sửa.
 
@@ -23,9 +25,9 @@ Các phần cách nhau bằng dòng chú thích `% CHƯƠNG ...` (tìm bằng Ct
 | Chương 2 | Pipeline AI sinh ảnh thiết kế |
 | Chương 3, 4, 5 | Ba cải tiến theo yêu cầu của ban tổ chức: đánh giá thiết kế cuối; đối chứng nhiều seed và chấm mù; nguồn gốc, bản quyền, truy vết |
 | Chương 6 | Giới hạn và hướng tiếp theo |
+| Tài liệu tham khảo | In từ `references.bib`, đặt trước phụ lục |
 | Phụ lục A | Phân tích và thiết kế hệ thống: use case, BPMN, kiến trúc thành phần, mô hình dữ liệu Design Passport, trạng thái phê duyệt |
 | Phụ lục F | Khoảng trống quy trình và đề xuất cải tiến |
-| Cuối tệp | Tài liệu tham khảo |
 
 ## Phần chưa hoàn thiện
 

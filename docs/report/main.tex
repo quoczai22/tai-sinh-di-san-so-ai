@@ -24,6 +24,11 @@
 \usepackage{amsmath}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.17}
+% Tài liệu tham khảo: APA 7 qua biblatex-apa, nguồn là references.bib (Overleaf tự chạy biber).
+\usepackage{csquotes}
+\usepackage[style=apa,backend=biber]{biblatex}
+\DeclareLanguageMapping{english}{english-apa}
+\addbibresource{references.bib}
 \usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black,citecolor=blue!50!black]{hyperref}
 
 % Tiếng Việt: không ngắt từ bằng gạch nối (mỗi âm tiết đã là một từ), giãn dòng vừa phải
@@ -154,7 +159,7 @@ Hệ thống Tái sinh Di sản Số đưa hoa văn trên gốm men lam Bát Tr�
 \textbf{Yêu cầu cải tiến} & \textbf{Đã thực hiện} & \textbf{Hạn chế còn lại} \\
 \midrule
 1. Đánh giá thiết kế cuối, không chỉ hoa văn trung gian &
-Hai cổng chất lượng: G2 cho hoa văn, G3 cho thiết kế cuối với năm chỉ số. Hoàn thiện ảnh chỉ trong vùng áo, có khóa họa tiết. Vòng loại và thử lại tối đa 3 lần. &
+Hai cổng chất lượng: G2 cho hoa văn, G3 cho thiết kế cuối với năm chỉ số. Hoàn thiện ảnh chỉ trong vùng áo, có khóa họa tiết. Vòng loại và thử lại: tối đa 3 lần đổi seed ở mỗi cổng. &
 Chưa liên hệ được với người am hiểu di sản để xin nhận xét, đánh giá \\
 \addlinespace
 2. Đối chứng có kiểm soát, nhiều seed, chấm mù &
@@ -181,8 +186,8 @@ Gốm men lam Bát Tràng có hệ hoa văn phong phú: dây hoa, mẫu đơn, r
 
 Đầu vào của mô hình sinh là \emph{mảng hoa văn phẳng}, tức texture UV trải phẳng của mô hình 3D hiện vật, cạnh dài khoảng 2.048 điểm ảnh. Ảnh render cả bình chỉ dùng để hiển thị và nhận diện. Quy trình sinh ảnh có hai giai đoạn và được cải tiến thêm so với quy trình cũ:
 \begin{enumerate}
-  \item Stable Diffusion 1.5 kết hợp ControlNet Canny sinh \emph{hoa văn phẳng} từ mảng hoa văn gốc \cite{rombach2022,zhang2023controlnet}.
-  \item Hoa văn được \emph{ghép tất định} lên một chiếc áo dài nền do LoRA sinh ra \cite{hu2021lora}. Mô hình SAM tách vùng áo \cite{kirillov2023sam}, CLIP chọn bố cục họa tiết trên áo \cite{radford2021clip}, rồi một bước hoàn thiện img2img chỉ chạy trong vùng áo, có khóa họa tiết.
+  \item Stable Diffusion 1.5 kết hợp ControlNet Canny sinh \emph{hoa văn phẳng} từ mảng hoa văn gốc \parencite{rombach2022,zhang2023controlnet}.
+  \item Hoa văn được \emph{ghép tất định} lên một chiếc áo dài nền do LoRA sinh ra \parencite{hu2022lora}. Mô hình SAM tách vùng áo \parencite{kirillov2023sam}, CLIP chọn bố cục họa tiết trên áo \parencite{radford2021clip}, rồi một bước hoàn thiện img2img chỉ chạy trong vùng áo, có khóa họa tiết.
 \end{enumerate}
 
 
@@ -259,7 +264,7 @@ Bốn thiết kế trong các hình có bốn mức sáng tạo, từ trái sang
 
 \textbf{Bước 3. Ảnh tham chiếu.} Phần được cắt từ mảng phẳng, đưa về khung vuông 512 điểm ảnh.
 
-\textbf{Bước 4. Ảnh Canny điều khiển.} Bản đồ cạnh Canny chỉ giữ nét hoa văn, bỏ nét viền bình, để ControlNet bám theo hoa văn thay vì dáng bình.
+\textbf{Bước 4. Ảnh Canny điều khiển.} Bản đồ cạnh Canny \parencite{canny1986} chỉ giữ nét hoa văn, bỏ nét viền bình, để ControlNet bám theo hoa văn thay vì dáng bình.
 
 \begin{figure}[H]
 \centering
@@ -277,7 +282,7 @@ Bốn thiết kế trong các hình có bốn mức sáng tạo, từ trái sang
 
 \hinh{pipeline/buoc05_hoa_van_sinh_ra_4_muc.png}{\textwidth}{Bước 5: bốn hoa văn phẳng ứng với bốn mức trọng số ControlNet.}{fig:pl5}
 
-\textbf{Bước 6. Áo dài nền.} Một áo dài trắng do mô hình Stable Diffusion kèm LoRA dáng áo dài sinh ra. LoRA được huấn luyện từ bộ ảnh VietFashion \cite{cao2026vietfashion}. Giấy phép của bộ ảnh này là CC BY-NC 4.0 nên hệ thống bị ràng buộc \emph{chỉ dùng phi thương mại} (xem mục \ref{sec:rights}).
+\textbf{Bước 6. Áo dài nền.} Một áo dài trắng do mô hình Stable Diffusion \parencite{rombach2022} kèm LoRA dáng áo dài sinh ra. LoRA được huấn luyện từ bộ ảnh VietFashion \parencite{cao2026vietfashion}. Giấy phép của bộ ảnh này là CC BY-NC 4.0 nên hệ thống bị ràng buộc \emph{chỉ dùng phi thương mại} (xem mục \ref{sec:rights}).
 
 \textbf{Bước 7. Vùng áo.} Mô hình SAM tách vùng áo khỏi nền; hình tô đỏ vùng được chọn.
 
@@ -303,7 +308,7 @@ Bốn thiết kế trong các hình có bốn mức sáng tạo, từ trái sang
 
 \section{Hoàn thiện (bước 11)}
 
-\textbf{Bước 11. Kết quả sau hoàn thiện.} Một lượt img2img độ nhiễu 0,20 chỉ chạy trong vùng áo, làm mềm vải và ánh sáng. Sau đó \emph{khóa họa tiết} trả lại nét vẽ và màu họa tiết từ bản ghép thô, phần ánh sáng và bóng vải lấy từ bước hoàn thiện. Kết quả đi qua cổng G3 (mục \ref{sec:g3}).
+\textbf{Bước 11. Kết quả sau hoàn thiện.} Một lượt img2img của Stable Diffusion \parencite{rombach2022} độ nhiễu 0,20 chỉ chạy trong vùng áo, làm mềm vải và ánh sáng. Sau đó \emph{khóa họa tiết} trả lại nét vẽ và màu họa tiết từ bản ghép thô, phần ánh sáng và bóng vải lấy từ bước hoàn thiện. Kết quả đi qua cổng G3 (mục \ref{sec:g3}).
 
 \hinh{pipeline/buoc11_ket_qua_sau_polish_4_thiet_ke.png}{\textwidth}{Bước 11: bốn thiết kế cuối sau hoàn thiện.}{fig:pl11}
 
@@ -356,7 +361,7 @@ Các ký hiệu màu dùng trong cổng này thuộc không gian màu CIELAB (g�
 \]
 Giá trị càng lớn thì hai màu càng khác nhau.
 
-\textbf{Giữ họa tiết} (PPS, \ma{pattern_preservation}). Đây là chỉ số chính cho yêu cầu cải tiến 1. PPS là trung bình của hai hệ số tương quan chuẩn hóa (NCC) trong vùng họa tiết, sau khi căn \emph{final} về \emph{raw} bằng ECC: tương quan nét vẽ, tính trên dải tần trung của kênh sáng $L^*$ (hiệu hai bộ lọc Gauss, $\sigma=1{,}2$ và $4{,}0$, giữ nét vẽ họa tiết, bỏ bóng nếp vải và nhiễu hạt), và tương quan sắc độ, tính trên hai kênh màu $a^*$ và $b^*$.
+\textbf{Giữ họa tiết} (PPS, \ma{pattern_preservation}). Đây là chỉ số chính cho yêu cầu cải tiến 1. PPS là trung bình của hai hệ số tương quan chuẩn hóa (NCC) trong vùng họa tiết, sau khi căn \emph{final} về \emph{raw} bằng ECC \parencite{evangelidis2008ecc}: tương quan nét vẽ, tính trên dải tần trung của kênh sáng $L^*$ (hiệu hai bộ lọc Gauss, $\sigma=1{,}2$ và $4{,}0$, giữ nét vẽ họa tiết, bỏ bóng nếp vải và nhiễu hạt), và tương quan sắc độ, tính trên hai kênh màu $a^*$ và $b^*$.
 \[
 \begin{aligned}
 \mathrm{NCC}(a,b) &= \frac{\sum (a-\bar a)(b-\bar b)}{\sqrt{\sum (a-\bar a)^2\;\sum (b-\bar b)^2}}, \\
@@ -367,7 +372,7 @@ Giá trị càng lớn thì hai màu càng khác nhau.
 
 Hệ số NCC (normalized cross-correlation) là hệ số tương quan $r$, nên bình phương của nó là tỉ lệ phương sai giải thích được. Với tương quan nét vẽ: $r=0{,}6$ nghĩa là khoảng 36\% phương sai nét vẽ của bản ghép còn giải thích được trong thiết kế cuối; $r<0{,}4$ nghĩa là dưới 16\%, tức họa tiết đã bị vẽ lại. Cách diễn giải này đúng cho riêng thành phần nét vẽ. PPS là trung bình của hai thành phần nên chỉ là điểm tổng hợp, không phải một hệ số tương quan.
 
-\textbf{Giữ dáng áo} (\ma{garment_shape_iou}, GSC). Dáng áo của \emph{raw} và \emph{final} được tách bằng GrabCut, khởi tạo từ mask áo (lõi chắc chắn là áo, vành là có thể là áo, xa hơn là nền), rồi tính IoU. IoU dưới 0,92 tương đương lệch từ 8\% diện tích áo.
+\textbf{Giữ dáng áo} (\ma{garment_shape_iou}, GSC). Dáng áo của \emph{raw} và \emph{final} được tách bằng GrabCut \parencite{rother2004grabcut}, khởi tạo từ mask áo (lõi chắc chắn là áo, vành là có thể là áo, xa hơn là nền), rồi tính IoU. IoU dưới 0,92 tương đương lệch từ 8\% diện tích áo.
 \[
 \mathrm{GSC}=\frac{|S_{\text{raw}}\cap S_{\text{final}}|}{|S_{\text{raw}}\cup S_{\text{final}}|}
 \]
@@ -410,7 +415,12 @@ Mỗi chỉ số được xếp PASS, WARN hoặc FAIL theo ngưỡng. Quyết �
   \item \textbf{PASS}: đủ điều kiện chuyển chuyên gia thẩm định.
 \end{itemize}
 
-\textbf{Vòng loại và thử lại.} Khi G2 không đạt, hệ thống sinh lại hoa văn với seed kế tiếp hoặc giảm một mức trọng số ControlNet, giữ nguyên prompt và bảng màu. Khi G3 không đạt, hệ thống thử hoàn thiện lại bằng khóa họa tiết hoặc giảm độ nhiễu img2img (từ 0,40 xuống 0,25); nếu vẫn không đạt thì dùng bản ghép tất định, vì bản này đúng tuyệt đối về dáng áo. Mỗi thiết kế được thử lại tối đa 3 lần; quá 3 lần thì chuyển nhà thiết kế quyết định.
+\textbf{Vòng loại và thử lại.} Chỉ mức \emph{loại} mới kích hoạt thử lại; mức cảnh báo thì dùng luôn.
+\begin{itemize}
+  \item \textbf{G2 loại} (VLS từ 0,40 hoặc đường nối từ 2,0): hệ thống sinh lại hoa văn với seed kế tiếp, giữ nguyên prompt, trọng số ControlNet và bảng màu, tối đa 3 lần sinh lại (tổng cộng 4 lần). Nếu cả 4 lần đều loại thì giữ bản ít lỗi nhất, Passport ghi \texttt{qa\_failed}, thiết kế không được chuyển chuyên gia và không hiện ở thư viện trên giao diện.
+  \item \textbf{G3 loại} (PPS dưới 0,40 hoặc IoU dưới 0,92): hệ thống hoàn thiện lại với seed kế tiếp ở độ nhiễu 0,20, tối đa 3 lần, rồi thử thêm đúng một lần ở độ nhiễu thấp hơn là 0,12. Nếu vẫn loại thì dùng bản ghép thô, vì bản này đúng tuyệt đối về dáng áo, kèm nhãn “chưa qua bước hoàn thiện”. Các chỉ số G3 còn lại (độ nét, chi tiết mịn, lệch màu) chỉ cảnh báo, không kích hoạt thử lại.
+\end{itemize}
+Mọi lần bị loại đều được ghi lại cùng ảnh và chỉ số để làm minh chứng.
 
 \textbf{Hoàn thiện có kiểm soát.} Khác bản trước (img2img toàn ảnh, độ nhiễu 0,40), bản cải tiến chạy img2img độ nhiễu 0,20 \emph{chỉ trong vùng áo}, rồi áp khóa họa tiết: trả lại nét vẽ và màu họa tiết từ bản ghép thô, còn ánh sáng và bóng vải lấy từ bước hoàn thiện.
 
@@ -551,7 +561,7 @@ Trung bình bốn tiêu chí & 3,72 & 3,70 & 3,55 & 3,38 & 0,028 (gộp) \\
 
 \textbf{Xu hướng.} Điểm trung bình giảm khi hạ trọng số ControlNet, từ 3,72 ở mức 0,85 xuống 3,38 ở mức 0,25 (Friedman, $p$ dưới 0,001 trên 12 khối hiện vật $\times$ seed). So với mức 0,85, mức 0,65 chưa khác ($p=0{,}79$), mức 0,45 khác ($p=0{,}012$), mức 0,25 khác ($p=0{,}0005$). Tiêu chí nhạy nhất là \emph{nhận ra họa tiết gốc} (3,73 xuống 3,00). Điều này khớp với quan sát bằng mắt ở mục trước: chỉ số đánh giá bằng máy không thấy được việc hoa văn gốc bị thay, nhưng người xem thấy.
 
-\textbf{Độ đồng thuận không đạt.} Hệ số Krippendorff alpha khi gộp bốn tiêu chí chỉ là 0,028; từng tiêu chí chỉ từ $-0{,}019$ đến 0,050. Có 4 người chấm gần như một mức cho mọi ảnh (hai người gần như toàn 5, một người toàn 1, một người toàn 4); bỏ họ đi thì alpha chỉ lên 0,06. Vì vậy \textbf{điểm trung bình không dùng để kết luận từng thiết kế}, và không dùng để nói “đẹp hơn” hay “giống vải in hơn” cho một thiết kế cụ thể. Chỉ có xu hướng chung ở trên là đáng tin ở mức tham khảo.
+\textbf{Độ đồng thuận không đạt.} Hệ số Krippendorff alpha \parencite{krippendorff2011} khi gộp bốn tiêu chí chỉ là 0,028; từng tiêu chí chỉ từ $-0{,}019$ đến 0,050. Có 4 người chấm gần như một mức cho mọi ảnh (hai người gần như toàn 5, một người toàn 1, một người toàn 4); bỏ họ đi thì alpha chỉ lên 0,06. Vì vậy \textbf{điểm trung bình không dùng để kết luận từng thiết kế}, và không dùng để nói “đẹp hơn” hay “giống vải in hơn” cho một thiết kế cụ thể. Chỉ có xu hướng chung ở trên là đáng tin ở mức tham khảo.
 
 Mức độ phù hợp văn hóa chỉ là theo đánh giá khách quan của cộng đồng, chưa phản ánh mức độ phù hợp văn hóa thực tế. Việc này cần chuyên gia xem xét kĩ hơn.
 
@@ -567,7 +577,7 @@ Hệ thống cần chứng minh được thiết kế đi từ nguồn nào, ai 
 \section{Nguồn và giấy phép hiện vật}
 \label{sec:nguon}
 
-Sáu hiện vật đã được thay đổi và hiện tại đang dùng lấy từ bộ dữ liệu nghiên cứu LR3D-CULT2, “Vietnamese Ceramic Cultural Artifacts” \cite{lr3dcult2}: mô hình 3D, ảnh render đa góc và texture của gốm Việt. Bộ dữ liệu có mã định danh DOI và giấy phép công bố CC BY 4.0, nên nguồn kiểm chứng được. Nhóm ghi giấy phép này cho cả sáu vật và ghi công tác giả theo yêu cầu của giấy phép.
+Sáu hiện vật đã được thay đổi và hiện tại đang dùng lấy từ bộ dữ liệu nghiên cứu LR3D-CULT2, “Vietnamese Ceramic Cultural Artifacts” \parencite{lr3dcult2}: mô hình 3D, ảnh render đa góc và texture của gốm Việt. Bộ dữ liệu có mã định danh DOI và giấy phép công bố CC BY 4.0, nên nguồn kiểm chứng được. Nhóm ghi giấy phép này cho cả sáu vật và ghi công tác giả theo yêu cầu của giấy phép.
 
 \begin{table}[H]
 \centering
@@ -615,7 +625,7 @@ Thương mại & Bị chặn bởi ràng buộc cấp hệ thống (xem dưới)
 \end{tabularx}
 \end{table}
 
-\textbf{Ràng buộc cấp hệ thống.} Mô hình LoRA dáng áo dài được huấn luyện từ bộ ảnh VietFashion, giấy phép CC BY-NC 4.0 \cite{cao2026vietfashion}. Vì vậy mọi thiết kế của hệ thống chỉ được dùng \emph{phi thương mại}, bất kể giấy phép của ảnh hiện vật. Cổng chặn hành động thương mại trước mọi xét giấy phép ảnh.
+\textbf{Ràng buộc cấp hệ thống.} Mô hình LoRA dáng áo dài được huấn luyện từ bộ ảnh VietFashion, giấy phép CC BY-NC 4.0 \parencite{cao2026vietfashion}. Vì vậy mọi thiết kế của hệ thống chỉ được dùng \emph{phi thương mại}, bất kể giấy phép của ảnh hiện vật. Cổng chặn hành động thương mại trước mọi xét giấy phép ảnh.
 
 \section{Design Passport}
 \label{sec:passport}
@@ -799,26 +809,8 @@ Chương này nêu các việc chưa làm hoặc chưa kiểm chứng, sau đó 
 %==============================================================================
 % TÀI LIỆU THAM KHẢO (đặt trước phụ lục)
 %==============================================================================
-\begin{thebibliography}{9}
-\addcontentsline{toc}{chapter}{Tài liệu tham khảo}
-
-\bibitem{rombach2022} R. Rombach, A. Blattmann, D. Lorenz, P. Esser, B. Ommer. High-Resolution Image Synthesis with Latent Diffusion Models. \emph{CVPR}, 2022.
-
-\bibitem{zhang2023controlnet} L. Zhang, A. Rao, M. Agrawala. Adding Conditional Control to Text-to-Image Diffusion Models. \emph{ICCV}, 2023.
-
-\bibitem{hu2021lora} E. J. Hu, Y. Shen, P. Wallis, Z. Allen-Zhu, Y. Li, S. Wang, L. Wang, W. Chen. LoRA: Low-Rank Adaptation of Large Language Models. arXiv:2106.09685, 2021.
-
-\bibitem{kirillov2023sam} A. Kirillov và cộng sự. Segment Anything. \emph{ICCV}, 2023.
-
-\bibitem{radford2021clip} A. Radford và cộng sự. Learning Transferable Visual Models From Natural Language Supervision. \emph{ICML}, 2021.
-
-\bibitem{krippendorff2011} K. Krippendorff. Computing Krippendorff's Alpha-Reliability. \emph{Departmental Papers (ASC)}, University of Pennsylvania, 2011.
-
-\bibitem{lr3dcult2} Nguyen Le Huu Bao, Nguyen Van Nhat Nam, Nguyen The Trong Nha, Bui Cao Vu. LR3D-CULT2: Vietnamese Ceramic Cultural Artifacts. Mendeley Data, V1, 2026. DOI 10.17632/jr23fnrvx2.1. Giấy phép CC BY 4.0.
-
-\bibitem{cao2026vietfashion} Cao, Bui, Vo, Tran, Le. VietFashion: Benchmarking Sketch-Text Composed Image Retrieval for Cultural Outfits. \emph{ICMR}, 2026. DOI 10.1145/3805622.3810590. Giấy phép CC BY-NC 4.0.
-
-\end{thebibliography}
+% Danh sách lấy từ references.bib (biblatex, kiểu APA 7, biber). Chỉ in các mục đã được trích dẫn trong bài.
+\printbibliography[heading=bibintoc,title={Tài liệu tham khảo}]
 
 %==============================================================================
 % PHỤ LỤC
