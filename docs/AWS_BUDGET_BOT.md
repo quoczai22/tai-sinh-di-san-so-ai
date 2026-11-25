@@ -2,7 +2,7 @@
 
 Lệnh này chỉ dành cho ID chat riêng của người vận hành (`ALERT_ZALO_USER_CHAT_ID`). Bot đọc **mức chi toàn tài khoản AWS đã ghi nhận trong Budget tháng**, không gọi GPU và không có quyền triển khai. Budget 5 USD là ngưỡng gửi cảnh báo, không phải số dư hay khóa cứng chi tiêu. [AWS Budgets có thể cập nhật trễ nhiều giờ](https://docs.aws.amazon.com/cost-management/latest/userguide/bcm-lite-view-budget.html).
 
-Modal Starter chưa có API báo cáo billing chính thức cho bot. Credit và Spend limit Modal phải xem tại **Modal → Settings → Usage & Billing**. Bot không ước tính credit từ số lượt sinh hoặc giá GPU.
+Workspace Modal hiện tại đã được kiểm tra bằng `modal billing summary --json` và `modal billing report --for "this month" --json`: cả hai trả dữ liệu. Bot gọi endpoint CPU `billing_summary` trên Modal bằng `MODAL_KEY`; endpoint yêu cầu khóa và không khởi động GPU. Bot hiển thị chi phí ghi nhận, credit đã áp dụng, hóa đơn và phần credit Starter còn lại **ước tính** từ hạn mức gói. Chi phí một lượt sinh thay đổi nên bot không quy đổi credit thành số lượt. Spend limit và số dư chính thức vẫn cần đối chiếu tại **Modal → Settings → Usage & Billing**.
 
 ## Dòng dữ liệu
 

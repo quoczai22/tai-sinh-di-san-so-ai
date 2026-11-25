@@ -29,6 +29,7 @@ const { formatCreditReport, formatUsageReport, parseModalBillingSnapshot } = req
     assert.doesNotMatch(formatCreditReport(budget), /credit còn lại|100% miễn phí/);
 
     const modalSample = parseModalBillingSnapshot({
+        billing_version: 2,
         metered_cost: 4.04,
         billed_cost: 0,
         credits_applied: 3.99,
@@ -39,10 +40,11 @@ const { formatCreditReport, formatUsageReport, parseModalBillingSnapshot } = req
     assert.ok(modalSample);
     const withModal = formatCreditReport(budget, modalSample);
     assert.match(withModal, /\$4\.04/);
-    assert.match(withModal, /~\$25\.96/);
-    assert.match(withModal, /lượt sinh GPU T4/);
+    assert.match(withModal, /~\$26\.01/);
+    assert.match(withModal, /Số lượt sinh còn lại không thể suy ra chính xác/);
     assert.match(formatUsageReport(modalSample, 28), /\$4\.04/);
     assert.match(formatUsageReport(modalSample, 28), /28 lượt/);
+    assert.equal(parseModalBillingSnapshot({ metered_cost: 4.04, billed_cost: 0, credits_applied: 3.99 }).creditsApplied, null);
     assert.equal(parseModalBillingSnapshot({ metered_cost: -1, billed_cost: 0 }), null);
 
     assert.equal(await readAwsBudget(async () => { throw new Error('AccessDenied'); }), null);
