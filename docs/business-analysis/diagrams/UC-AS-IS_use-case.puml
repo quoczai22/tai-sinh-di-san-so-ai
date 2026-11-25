@@ -1,5 +1,5 @@
 @startuml
-title Sơ đồ Use Case AS-IS — Tái Sinh Di Sản Số
+title Sơ đồ Use Case
 left to right direction
 skinparam packageStyle rectangle
 skinparam usecase { BackgroundColor #E8F0FA

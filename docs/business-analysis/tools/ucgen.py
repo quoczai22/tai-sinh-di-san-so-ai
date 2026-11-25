@@ -266,7 +266,7 @@ if __name__ == "__main__":
     asis = (UC, ACTORS, ASSOC, REL, GEN)
     tobe = tobe_model()
     for name, model, title, sub in (
-        ("UC-AS-IS_use-case", asis, "Sơ đồ Use Case AS-IS — Tái Sinh Di Sản Số",
+        ("UC-AS-IS_use-case", asis, "Sơ đồ Use Case",
          "Hiện trạng theo mã nguồn (24/11/2026): 18 ca sử dụng, 5 tác nhân người, 2 hệ thống ngoài"),
         ("UC-TO-BE_use-case", tobe, "Sơ đồ Use Case TO-BE — Tái Sinh Di Sản Số",
          "Đề xuất tối ưu: 21 ca sử dụng; ca mới nét đứt màu xanh lá, ca thay đổi màu vàng"),
