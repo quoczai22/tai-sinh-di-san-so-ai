@@ -388,7 +388,7 @@ async function handleZaloBotWebhook(body) {
         return { ok: true, ignored: 'rate_limited' };
     }
     lastBotReplyByChat.set(chatId, now);
-    if (!isOperator && /^(\/usage|usage|muc dung|chi phi|da dung|tieu thu|\/gpu|gpu|t4|cuda|thiet bi|\/runs|runs|lich su|danh sach sinh|cac luot sinh|lich|nhat ky)$/.test(normalizedText)) {
+    if (!isOperator && /^(\/usage|usage|muc dung|chi phi|da dung|tieu thu|\/checkcredit|\/credit|checkcredit|credit|so du|con bao nhieu|tien|\/gpu|gpu|t4|cuda|thiet bi|\/runs|runs|lich su|danh sach sinh|cac luot sinh|lich|nhat ky)$/.test(normalizedText)) {
         return { ok: true, ignored: 'operator_only' };
     }
     const designResult = await tryHandleDesignCommand({
