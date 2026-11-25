@@ -1,5 +1,5 @@
 const assert = require('node:assert/strict');
-const { readAwsBudget, parseBudgetSnapshot } = require('../../web_ui/api/aws_budget_client');
+const { readAwsBudget, parseBudgetSnapshot } = require('../../web_ui/lib/aws_budget_client');
 const { formatCreditReport } = require('../../web_ui/api/bot_ops_commands');
 
 (async () => {

@@ -146,7 +146,7 @@ async function tryHandleOpsCommand({
 
     // 3. Kiểm tra credit: /checkcredit, /credit, credit, tien, so du
     if (/^(\/checkcredit|\/credit|checkcredit|credit|so du|con bao nhieu|tien)$/.test(text)) {
-        const { readAwsBudget } = require('./aws_budget_client');
+        const { readAwsBudget } = require('../lib/aws_budget_client');
         const reply = formatCreditReport(await readAwsBudget());
         await fetchWithTimeout(`${zaloBase}/bot${zaloToken}/sendMessage`, {
             method: 'POST',
