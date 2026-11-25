@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const { readAwsBudget, parseBudgetSnapshot } = require('../../web_ui/lib/aws_budget_client');
-const { formatCreditReport, formatUsageReport, parseModalBillingSnapshot } = require('../../web_ui/api/bot_ops_commands');
+const { formatCreditReport, formatUsageReport, parseModalBillingSnapshot, estimateRunRange } = require('../../web_ui/api/bot_ops_commands');
 
 (async () => {
     const sample = {
@@ -41,7 +41,15 @@ const { formatCreditReport, formatUsageReport, parseModalBillingSnapshot } = req
     const withModal = formatCreditReport(budget, modalSample);
     assert.match(withModal, /\$4\.04/);
     assert.match(withModal, /~\$26\.01/);
-    assert.match(withModal, /Số lượt sinh còn lại không thể suy ra chính xác/);
+    // credit còn lại ~26,01 USD: 26.01/(126.8*0.000164)=1250; 26.01/((126.8+420)*0.000164)=290
+    assert.deepEqual(estimateRunRange(26.01), { spaced: 290, consecutive: 1250 });
+    assert.equal(estimateRunRange(NaN), null);
+    assert.match(withModal, /~290 – 1\.250 lượt sinh GPU T4/);
+    assert.match(withModal, /mới đo 1 mẫu/);
+    assert.doesNotMatch(withModal, /\$0\.015/);
+    assert.match(formatUsageReport(modalSample, 28), /~290 – 1\.250 lượt/);
+    const noCredit = parseModalBillingSnapshot({ metered_cost: 4.04, billed_cost: 0 });
+    assert.match(formatCreditReport(budget, noCredit), /Chưa ước tính được số lượt còn lại/);
     assert.match(formatUsageReport(modalSample, 28), /\$4\.04/);
     assert.match(formatUsageReport(modalSample, 28), /28 lượt/);
     assert.equal(parseModalBillingSnapshot({ metered_cost: 4.04, billed_cost: 0, credits_applied: 3.99 }).creditsApplied, null);

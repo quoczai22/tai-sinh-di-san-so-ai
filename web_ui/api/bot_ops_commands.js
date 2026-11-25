@@ -9,10 +9,37 @@
  */
 
 const STARTER_MONTHLY_CREDIT_USD = 30.0;
+// Ước tính số lượt còn lại chỉ dựa trên số có nguồn:
+//  - Giá GPU T4: $0.000164/giây, niêm yết tại modal.com/pricing (đọc ngày 25/11/2026).
+//  - 126,8 giây/lượt: MỘT mẫu đo thật ngày 24/11/2026 (docs/DEPLOY_LIVE.md), container đang ấm.
+//  - 420 giây: thời gian giữ máy ấm sau lượt cuối (SCALEDOWN_SECONDS trong modal_app.py), vẫn tính tiền GPU.
+// Chưa gồm CPU/RAM (rất nhỏ so với GPU) và chưa đo lúc container nguội.
+const T4_USD_PER_SECOND = 0.000164;
+const MEASURED_RUN_SECONDS = 126.8;
+const WARM_IDLE_SECONDS = 420;
 
 function monthlyCreditAllowance() {
     const configured = Number(process.env.MODAL_MONTHLY_CREDIT);
     return Number.isFinite(configured) && configured > 0 ? configured : STARTER_MONTHLY_CREDIT_USD;
+}
+
+function estimateRunRange(remainingUsd) {
+    if (!Number.isFinite(remainingUsd) || remainingUsd < 0) return null;
+    const runsFor = (seconds) => Math.floor(remainingUsd / (seconds * T4_USD_PER_SECOND));
+    return {
+        spaced: runsFor(MEASURED_RUN_SECONDS + WARM_IDLE_SECONDS),
+        consecutive: runsFor(MEASURED_RUN_SECONDS),
+    };
+}
+
+function formatRunEstimate(remainingUsd) {
+    const range = estimateRunRange(remainingUsd);
+    if (!range) return '• Chưa ước tính được số lượt còn lại vì chưa xác minh credit còn lại.';
+    const fmt = (n) => n.toLocaleString('vi-VN');
+    return `• Ước tính còn chạy được: ~${fmt(range.spaced)} – ${fmt(range.consecutive)} lượt sinh GPU T4.\n` +
+        `   (${fmt(range.spaced)}: mỗi lượt cách nhau hơn 7 phút, tính cả thời gian giữ máy ấm; ` +
+        `${fmt(range.consecutive)}: chạy liên tiếp. Dựa trên giá T4 $${T4_USD_PER_SECOND}/giây × ` +
+        `${String(MEASURED_RUN_SECONDS).replace('.', ',')} giây/lượt, mới đo 1 mẫu; chưa gồm CPU/RAM.)`;
 }
 
 function parseModalBillingSnapshot(data) {
@@ -81,7 +108,7 @@ function formatUsageReport(summary, runsCount) {
         `• Credit gói Starter còn lại (ước tính từ $${allowance.toFixed(2)}): ${remaining === null ? 'chưa xác minh' : `~$${remaining.toFixed(2)}`}\n\n` +
         '🎯 Lượt sinh:\n' +
         `${count}\n` +
-        '• Không quy đổi credit thành số lượt vì chi phí mỗi lượt thay đổi theo thời gian GPU và lúc chờ.';
+        formatRunEstimate(remaining);
 }
 
 function formatCreditReport(budget, modalBilling = null) {
@@ -95,7 +122,7 @@ function formatCreditReport(budget, modalBilling = null) {
             `• Credit đã áp dụng: ${modalBilling.creditsApplied === null ? 'chưa xác minh' : `$${modalBilling.creditsApplied.toFixed(2)}`}\n` +
             `• Credit gói Starter còn lại (ước tính): ${remaining === null ? 'chưa xác minh' : `~$${remaining.toFixed(2)}`}\n` +
             `• Hóa đơn thực tế: $${modalBilling.billedCost.toFixed(2)}\n` +
-            '🎯 Số lượt sinh còn lại không thể suy ra chính xác từ credit.';
+            `🎯 ${formatRunEstimate(remaining).replace(/^• /, '')}`;
     } else {
         modalSection =
             '• Credit, mức đã dùng và Spend limit: bot chưa đọc được từ Modal.\n' +
@@ -326,4 +353,5 @@ module.exports = {
     formatHelpMenu,
     parseModalBillingSnapshot,
     readModalBilling,
+    estimateRunRange,
 };
