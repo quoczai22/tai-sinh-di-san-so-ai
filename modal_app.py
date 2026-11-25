@@ -37,6 +37,19 @@ BAKED_HF_CACHE = "/cache/huggingface"
 
 app = modal.App(APP_NAME)
 
+
+def _adjustment_amount(adjustments, name: str) -> float | None:
+    """Số tiền của một mục điều chỉnh billing, không phân biệt hoa/thường và dấu cách.
+
+    SDK Modal trả khóa dạng hiển thị ('Credits', 'Free Storage'); lệnh `modal billing ... --json`
+    đổi thành 'credits', 'free_storage'. Không tìm thấy thì trả None, để người gọi không giả số 0.
+    """
+    want = name.strip().lower().replace(" ", "_")
+    for key, value in dict(adjustments or {}).items():
+        if str(key).strip().lower().replace(" ", "_") == want:
+            return float(value)
+    return None
+
 # Chạy lệnh modal từ gốc repo để các lệnh COPY trong Dockerfile tìm thấy file.
 image = modal.Image.from_dockerfile("Dockerfile")
 billing_image = modal.Image.debian_slim(python_version="3.11").pip_install("fastapi[standard]")
@@ -104,7 +117,9 @@ def billing_summary():
         summary = ws.billing.summary("this month")
         metered_cost = float(summary.metered_cost)
         billed_cost = float(summary.billed_cost)
-        credits_applied = abs(float(summary.adjustments.get("credits", 0)))
+        credits_applied = _adjustment_amount(summary.adjustments, "credits")
+        if credits_applied is not None:
+            credits_applied = abs(credits_applied)
 
         today_cost: float | None = None
         week_cost: float | None = None
@@ -132,7 +147,8 @@ def billing_summary():
             "billing_version": 2,
             "metered_cost": round(metered_cost, 4),
             "billed_cost": round(billed_cost, 4),
-            "credits_applied": round(credits_applied, 4),
+            # None (JSON null) khi Modal không trả mục credit: bot ghi "chưa xác minh", không giả 0.
+            "credits_applied": round(credits_applied, 4) if credits_applied is not None else None,
             "today_cost": round(today_cost, 4) if today_cost is not None else None,
             "week_cost": round(week_cost, 4) if week_cost is not None else None,
             "daily": recent_days,
