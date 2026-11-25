@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const { readAwsBudget, parseBudgetSnapshot } = require('../../web_ui/lib/aws_budget_client');
-const { formatCreditReport } = require('../../web_ui/api/bot_ops_commands');
+const { formatCreditReport, formatUsageReport, parseModalBillingSnapshot } = require('../../web_ui/api/bot_ops_commands');
 
 (async () => {
     const sample = {
@@ -28,9 +28,26 @@ const { formatCreditReport } = require('../../web_ui/api/bot_ops_commands');
     assert.match(formatCreditReport(budget), /2️⃣ AWS CodeBuild CD & Parameter Store/);
     assert.doesNotMatch(formatCreditReport(budget), /credit còn lại|100% miễn phí/);
 
+    const modalSample = parseModalBillingSnapshot({
+        metered_cost: 4.04,
+        billed_cost: 0,
+        credits_applied: 3.99,
+        today_cost: 0.12,
+        week_cost: 2.5,
+        daily: [{ date: '2026-11-25', cost: 0.12 }],
+    });
+    assert.ok(modalSample);
+    const withModal = formatCreditReport(budget, modalSample);
+    assert.match(withModal, /\$4\.04/);
+    assert.match(withModal, /~\$25\.96/);
+    assert.match(withModal, /lượt sinh GPU T4/);
+    assert.match(formatUsageReport(modalSample, 28), /\$4\.04/);
+    assert.match(formatUsageReport(modalSample, 28), /28 lượt/);
+    assert.equal(parseModalBillingSnapshot({ metered_cost: -1, billed_cost: 0 }), null);
+
     assert.equal(await readAwsBudget(async () => { throw new Error('AccessDenied'); }), null);
     assert.match(formatCreditReport(null), /Chưa lấy được mức chi AWS Budget/);
     process.env.AWS_BUDGET_ROLE_ARN = '';
     assert.equal(await readAwsBudget(() => { throw new Error('must not call'); }), null);
-    console.log('Zalo AWS Budget: validated data, no guessed balance, safe fallback passed');
+    console.log('Zalo AWS Budget & Modal Billing: validated data, safe fallback passed');
 })().catch((error) => { console.error(error); process.exitCode = 1; });

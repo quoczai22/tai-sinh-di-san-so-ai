@@ -8,25 +8,101 @@
  *   - /menu, help, tro giup: Hướng dẫn danh mục lệnh cho người dùng.
  */
 
-function formatUsageReport(summary, runsCount) {
-    const count = Number.isInteger(runsCount) && runsCount >= 0
-        ? `Đã ghi nhận ${runsCount} lượt sinh trên backend.`
-        : 'Chưa xác minh được số lượt sinh.';
-    return `📊 [MỨC SỬ DỤNG]\n${count}\n` +
-        'Xem mức chi AWS Budget bằng lệnh "số dư". Credit Modal cần kiểm tra trong Usage & Billing của Modal.';
+const STARTER_MONTHLY_CREDIT_USD = 30.0;
+const EST_COST_PER_T4_RUN_USD = 0.015;
+
+function parseModalBillingSnapshot(data) {
+    if (!data || typeof data !== 'object') return null;
+    const meteredCost = Number(data.metered_cost);
+    const billedCost = Number(data.billed_cost);
+    if (!Number.isFinite(meteredCost) || meteredCost < 0) return null;
+    if (!Number.isFinite(billedCost) || billedCost < 0) return null;
+    const creditsApplied = Number.isFinite(Number(data.credits_applied)) ? Number(data.credits_applied) : null;
+    const todayCost = data.today_cost != null && Number.isFinite(Number(data.today_cost)) ? Number(data.today_cost) : null;
+    const weekCost = data.week_cost != null && Number.isFinite(Number(data.week_cost)) ? Number(data.week_cost) : null;
+    const daily = Array.isArray(data.daily)
+        ? data.daily
+            .filter((d) => d && typeof d.date === 'string' && Number.isFinite(Number(d.cost)))
+            .map((d) => ({ date: d.date, cost: Number(d.cost) }))
+        : [];
+    return { meteredCost, billedCost, creditsApplied, todayCost, weekCost, daily };
 }
 
-function formatCreditReport(budget) {
+async function readModalBilling(fetchWithTimeout, config, buildBackendHeaders) {
+    const billingUrl = (
+        config?.modalBillingUrl ||
+        (config?.modalUrl && config.modalUrl.includes('-fastapi-app.')
+            ? config.modalUrl.replace('-fastapi-app.', '-billing-summary.')
+            : '')
+    ).trim().replace(/\/$/, '');
+    if (!billingUrl || !config?.modalKey) return null;
+    try {
+        const res = await fetchWithTimeout(`${billingUrl}/summary`, {
+            headers: buildBackendHeaders('modal', config),
+        }, 10000);
+        if (!res.ok) return null;
+        return parseModalBillingSnapshot(await res.json());
+    } catch (_) {
+        return null;
+    }
+}
+
+function formatUsageReport(summary, runsCount) {
+    const count = Number.isInteger(runsCount) && runsCount >= 0
+        ? `• Đã ghi nhận ${runsCount} lượt sinh trên backend.`
+        : '• Chưa xác minh được số lượt sinh.';
+    if (!summary) {
+        return `📊 [MỨC SỬ DỤNG]\n${count}\n` +
+            'Xem mức chi AWS Budget bằng lệnh "số dư". Credit Modal cần kiểm tra trong Usage & Billing của Modal.';
+    }
+    const allowance = Math.max(0, Number(process.env.MODAL_MONTHLY_CREDIT || STARTER_MONTHLY_CREDIT_USD));
+    const remaining = Math.max(0, allowance - summary.meteredCost);
+    const estRuns = Math.floor(remaining / EST_COST_PER_T4_RUN_USD);
+    const dailyLines = [];
+    if (summary.todayCost !== null) dailyLines.push(`• Hôm nay: $${summary.todayCost.toFixed(4)}`);
+    if (summary.weekCost !== null) dailyLines.push(`• 7 ngày qua: $${summary.weekCost.toFixed(2)}`);
+    if (summary.daily.length > 0) {
+        const recent = summary.daily
+            .map((d) => `${d.date.slice(5).split('-').reverse().join('/')} ($${d.cost.toFixed(2)})`)
+            .join(', ');
+        dailyLines.push(`• Các ngày gần nhất: ${recent}`);
+    }
+    return '📊 [MỨC SỬ DỤNG MODAL GPU]\n\n' +
+        (dailyLines.length ? `📅 Theo ngày & tuần (số liệu thật):\n${dailyLines.join('\n')}\n\n` : '') +
+        '💳 Tháng này (số liệu thật từ Modal):\n' +
+        `• Đã tiêu dùng: $${summary.meteredCost.toFixed(2)}\n` +
+        `• Hóa đơn thực tế: $${summary.billedCost.toFixed(2)}\n` +
+        `• Số dư ước tính (gói Starter $${allowance.toFixed(2)}): ~$${remaining.toFixed(2)}\n\n` +
+        '🎯 Lượt sinh:\n' +
+        `${count}\n` +
+        `• Ước tính còn đủ chạy: ~${estRuns.toLocaleString('vi-VN')} lượt sinh GPU T4 (~$${EST_COST_PER_T4_RUN_USD.toFixed(3)}/lượt).`;
+}
+
+function formatCreditReport(budget, modalBilling = null) {
+    const allowance = Math.max(0, Number(process.env.MODAL_MONTHLY_CREDIT || STARTER_MONTHLY_CREDIT_USD));
+    let modalSection;
+    if (modalBilling) {
+        const remaining = Math.max(0, allowance - modalBilling.meteredCost);
+        const estRuns = Math.floor(remaining / EST_COST_PER_T4_RUN_USD);
+        modalSection =
+            `• Hạn mức gói Starter: $${allowance.toFixed(2)} / tháng\n` +
+            `• Đã tiêu dùng (thực tế): $${modalBilling.meteredCost.toFixed(2)}\n` +
+            `• Số dư khả dụng (ước tính): ~$${remaining.toFixed(2)}\n` +
+            `• Hóa đơn thực tế: $${modalBilling.billedCost.toFixed(2)}\n` +
+            `🎯 Dự kiến: Còn đủ chạy ~${estRuns.toLocaleString('vi-VN')} lượt sinh GPU T4 (~$${EST_COST_PER_T4_RUN_USD.toFixed(3)}/lượt)!`;
+    } else {
+        modalSection =
+            '• Credit, mức đã dùng và Spend limit: bot chưa đọc được từ Modal.\n' +
+            '• Xem số liệu hiện tại: https://modal.com/settings\n' +
+            '• Không ước tính số lượt sinh còn lại khi thiếu số liệu GPU thực tế.';
+    }
     const aws = budget
         ? `• Chi phí AWS đã ghi nhận: $${budget.actualUsd.toFixed(2)} / ` +
           `$${budget.limitUsd.toFixed(2)} Budget tháng này.\n` +
           '• Budget cảnh báo khi chạm ngưỡng, không khóa cứng chi tiêu. Dữ liệu có thể cập nhật trễ.'
         : '• Chưa lấy được mức chi AWS Budget; hãy kiểm tra AWS Billing trước khi chạy CodeBuild.';
     return '💳 [KIỂM TRA HẠN MỨC & CREDIT HỆ THỐNG]\n\n' +
-        '1️⃣ Modal GPU Backend:\n' +
-        '• Credit, mức đã dùng và Spend limit: bot chưa đọc được từ Modal Starter.\n' +
-        '• Xem số liệu hiện tại: https://modal.com/settings\n' +
-        '• Không ước tính số lượt sinh còn lại khi thiếu số liệu GPU thực tế.\n\n' +
+        '1️⃣ Modal GPU Backend:\n' + modalSection + '\n\n' +
         '2️⃣ AWS CodeBuild CD & Parameter Store:\n' + aws + '\n' +
         '• Phút CodeBuild đã dùng/còn lại: chưa kết nối dữ liệu sử dụng; xem trong AWS Billing.\n' +
         '• Token CD lưu trong Parameter Store SecureString; bot không đọc giá trị token.';
@@ -129,18 +205,23 @@ async function tryHandleOpsCommand({
     // 2. Kiểm tra mức dùng /usage: /usage, usage, muc dung, chi phi, da dung
     if (/^(\/usage|usage|muc dung|chi phi|da dung|tieu thu)$/.test(text)) {
         const config = getBackendConfig();
-        let runsCount = null;
-        try {
-            const rRes = await fetchWithTimeout(`${config.modalUrl}/runs`, {
-                headers: buildBackendHeaders('modal', config),
-            }, 5000);
-            if (rRes.ok) {
-                const list = await rRes.json();
-                if (Array.isArray(list)) runsCount = list.length;
-            }
-        } catch (_) {}
+        const [runsCount, modalBilling] = await Promise.all([
+            (async () => {
+                try {
+                    const rRes = await fetchWithTimeout(`${config.modalUrl}/runs`, {
+                        headers: buildBackendHeaders('modal', config),
+                    }, 5000);
+                    if (rRes.ok) {
+                        const list = await rRes.json();
+                        if (Array.isArray(list)) return list.length;
+                    }
+                } catch (_) {}
+                return null;
+            })(),
+            readModalBilling(fetchWithTimeout, config, buildBackendHeaders),
+        ]);
 
-        const reply = formatUsageReport(null, runsCount);
+        const reply = formatUsageReport(modalBilling, runsCount);
         await fetchWithTimeout(`${zaloBase}/bot${zaloToken}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -152,7 +233,12 @@ async function tryHandleOpsCommand({
     // 3. Kiểm tra credit: /checkcredit, /credit, credit, tien, so du
     if (/^(\/checkcredit|\/credit|checkcredit|credit|so du|con bao nhieu|tien)$/.test(text)) {
         const { readAwsBudget } = require('../lib/aws_budget_client');
-        const reply = formatCreditReport(await readAwsBudget());
+        const config = getBackendConfig();
+        const [budget, modalBilling] = await Promise.all([
+            readAwsBudget(),
+            readModalBilling(fetchWithTimeout, config, buildBackendHeaders),
+        ]);
+        const reply = formatCreditReport(budget, modalBilling);
         await fetchWithTimeout(`${zaloBase}/bot${zaloToken}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -232,4 +318,6 @@ module.exports = {
     formatGpuStatus,
     formatRunsHistory,
     formatHelpMenu,
+    parseModalBillingSnapshot,
+    readModalBilling,
 };
