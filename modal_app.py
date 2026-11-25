@@ -104,7 +104,7 @@ def billing_summary():
         summary = ws.billing.summary("this month")
         metered_cost = float(summary.metered_cost)
         billed_cost = float(summary.billed_cost)
-        credits_applied = abs(float(summary.adjustments["credits"]))
+        credits_applied = abs(float(summary.adjustments.get("credits", 0)))
 
         today_cost: float | None = None
         week_cost: float | None = None
