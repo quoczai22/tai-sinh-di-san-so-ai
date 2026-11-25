@@ -9,7 +9,11 @@
  */
 
 const STARTER_MONTHLY_CREDIT_USD = 30.0;
-const EST_COST_PER_T4_RUN_USD = 0.015;
+
+function monthlyCreditAllowance() {
+    const configured = Number(process.env.MODAL_MONTHLY_CREDIT);
+    return Number.isFinite(configured) && configured > 0 ? configured : STARTER_MONTHLY_CREDIT_USD;
+}
 
 function parseModalBillingSnapshot(data) {
     if (!data || typeof data !== 'object') return null;
@@ -17,7 +21,9 @@ function parseModalBillingSnapshot(data) {
     const billedCost = Number(data.billed_cost);
     if (!Number.isFinite(meteredCost) || meteredCost < 0) return null;
     if (!Number.isFinite(billedCost) || billedCost < 0) return null;
-    const creditsApplied = Number.isFinite(Number(data.credits_applied)) ? Number(data.credits_applied) : null;
+    const creditsApplied = data.billing_version === 2 && data.credits_applied != null &&
+        Number.isFinite(Number(data.credits_applied)) && Number(data.credits_applied) >= 0
+        ? Number(data.credits_applied) : null;
     const todayCost = data.today_cost != null && Number.isFinite(Number(data.today_cost)) ? Number(data.today_cost) : null;
     const weekCost = data.week_cost != null && Number.isFinite(Number(data.week_cost)) ? Number(data.week_cost) : null;
     const daily = Array.isArray(data.daily)
@@ -55,9 +61,8 @@ function formatUsageReport(summary, runsCount) {
         return `📊 [MỨC SỬ DỤNG]\n${count}\n` +
             'Xem mức chi AWS Budget bằng lệnh "số dư". Credit Modal cần kiểm tra trong Usage & Billing của Modal.';
     }
-    const allowance = Math.max(0, Number(process.env.MODAL_MONTHLY_CREDIT || STARTER_MONTHLY_CREDIT_USD));
-    const remaining = Math.max(0, allowance - summary.meteredCost);
-    const estRuns = Math.floor(remaining / EST_COST_PER_T4_RUN_USD);
+    const allowance = monthlyCreditAllowance();
+    const remaining = summary.creditsApplied === null ? null : Math.max(0, allowance - summary.creditsApplied);
     const dailyLines = [];
     if (summary.todayCost !== null) dailyLines.push(`• Hôm nay: $${summary.todayCost.toFixed(4)}`);
     if (summary.weekCost !== null) dailyLines.push(`• 7 ngày qua: $${summary.weekCost.toFixed(2)}`);
@@ -72,24 +77,25 @@ function formatUsageReport(summary, runsCount) {
         '💳 Tháng này (số liệu thật từ Modal):\n' +
         `• Đã tiêu dùng: $${summary.meteredCost.toFixed(2)}\n` +
         `• Hóa đơn thực tế: $${summary.billedCost.toFixed(2)}\n` +
-        `• Số dư ước tính (gói Starter $${allowance.toFixed(2)}): ~$${remaining.toFixed(2)}\n\n` +
+        `• Credit đã áp dụng: ${summary.creditsApplied === null ? 'chưa xác minh' : `$${summary.creditsApplied.toFixed(2)}`}\n` +
+        `• Credit gói Starter còn lại (ước tính từ $${allowance.toFixed(2)}): ${remaining === null ? 'chưa xác minh' : `~$${remaining.toFixed(2)}`}\n\n` +
         '🎯 Lượt sinh:\n' +
         `${count}\n` +
-        `• Ước tính còn đủ chạy: ~${estRuns.toLocaleString('vi-VN')} lượt sinh GPU T4 (~$${EST_COST_PER_T4_RUN_USD.toFixed(3)}/lượt).`;
+        '• Không quy đổi credit thành số lượt vì chi phí mỗi lượt thay đổi theo thời gian GPU và lúc chờ.';
 }
 
 function formatCreditReport(budget, modalBilling = null) {
-    const allowance = Math.max(0, Number(process.env.MODAL_MONTHLY_CREDIT || STARTER_MONTHLY_CREDIT_USD));
+    const allowance = monthlyCreditAllowance();
     let modalSection;
     if (modalBilling) {
-        const remaining = Math.max(0, allowance - modalBilling.meteredCost);
-        const estRuns = Math.floor(remaining / EST_COST_PER_T4_RUN_USD);
+        const remaining = modalBilling.creditsApplied === null ? null : Math.max(0, allowance - modalBilling.creditsApplied);
         modalSection =
             `• Hạn mức gói Starter: $${allowance.toFixed(2)} / tháng\n` +
             `• Đã tiêu dùng (thực tế): $${modalBilling.meteredCost.toFixed(2)}\n` +
-            `• Số dư khả dụng (ước tính): ~$${remaining.toFixed(2)}\n` +
+            `• Credit đã áp dụng: ${modalBilling.creditsApplied === null ? 'chưa xác minh' : `$${modalBilling.creditsApplied.toFixed(2)}`}\n` +
+            `• Credit gói Starter còn lại (ước tính): ${remaining === null ? 'chưa xác minh' : `~$${remaining.toFixed(2)}`}\n` +
             `• Hóa đơn thực tế: $${modalBilling.billedCost.toFixed(2)}\n` +
-            `🎯 Dự kiến: Còn đủ chạy ~${estRuns.toLocaleString('vi-VN')} lượt sinh GPU T4 (~$${EST_COST_PER_T4_RUN_USD.toFixed(3)}/lượt)!`;
+            '🎯 Số lượt sinh còn lại không thể suy ra chính xác từ credit.';
     } else {
         modalSection =
             '• Credit, mức đã dùng và Spend limit: bot chưa đọc được từ Modal.\n' +
