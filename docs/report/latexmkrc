@@ -1,0 +1,4 @@
+# Overleaf đọc tệp này: biên dịch bằng XeLaTeX (cần cho phông Unicode có đủ dấu tiếng Việt).
+$pdf_mode = 5;
+$dvi_mode = 0;
+$postscript_mode = 0;
