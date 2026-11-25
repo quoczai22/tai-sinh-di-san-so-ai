@@ -2,7 +2,7 @@
  * bot_ops_commands.js — Bộ lệnh kiểm tra hạ tầng, chi phí, credit & lịch sử cho Zalo Bot.
  * Các lệnh:
  *   - /usage, dung, chi phi: Mức độ sử dụng theo tuần và ngày + ước tính số lượt sinh còn lại.
- *   - /checkcredit, credit, tien: Số dư credit tháng này và số tiền thực trả.
+ *   - /checkcredit, credit, tien: Mức chi AWS Budget đã ghi nhận và đường dẫn Modal Billing.
  *   - /gpu, health, status: Tình trạng cụm GPU T4 (online/idle, cuda, version).
  *   - /runs, lich su: Thống kê số lượt sinh đã thực hiện và 3 lượt mới nhất.
  *   - /menu, help, tro giup: Hướng dẫn danh mục lệnh cho người dùng.
@@ -13,14 +13,18 @@ function formatUsageReport(summary, runsCount) {
         ? `Đã ghi nhận ${runsCount} lượt sinh trên backend.`
         : 'Chưa xác minh được số lượt sinh.';
     return `📊 [MỨC SỬ DỤNG]\n${count}\n` +
-        'Bot chưa kết nối API billing Modal/AWS nên không thể xác minh chi phí ngày, tuần hoặc số credit còn lại. ' +
-        'Hãy xem trực tiếp trong trang Billing của Modal và AWS.';
+        'Xem mức chi AWS Budget bằng lệnh "số dư". Credit Modal cần kiểm tra trong Usage & Billing của Modal.';
 }
 
-function formatCreditReport(summary) {
-    return '💳 [CREDIT VÀ CHI PHÍ]\nBot chưa kết nối API billing Modal/AWS. ' +
-        'Không thể xác minh số dư, hóa đơn hoặc hạn mức còn lại từ Zalo. ' +
-        'Hãy kiểm tra trang Billing của hai dịch vụ trước khi chạy GPU hoặc CodeBuild.';
+function formatCreditReport(budget) {
+    const aws = budget
+        ? `AWS Budget toàn tài khoản: đã ghi nhận $${budget.actualUsd.toFixed(2)} / ` +
+          `$${budget.limitUsd.toFixed(2)} trong tháng. Dữ liệu AWS có thể cập nhật trễ; ` +
+          'Budget chỉ cảnh báo, không khóa chi tiêu.'
+        : 'Chưa xác minh được mức chi AWS Budget. Kiểm tra AWS Billing trước khi chạy CodeBuild.';
+    return '💳 [CREDIT VÀ CHI PHÍ]\n' + aws + '\n' +
+        'Modal Starter chưa cung cấp API báo cáo billing cho bot; xem credit và Spend limit ' +
+        'trực tiếp tại Modal → Settings → Usage & Billing: https://modal.com/settings';
 }
 
 function formatGpuStatus(health, elapsedMs, failure) {
@@ -89,7 +93,7 @@ function formatHelpMenu() {
         '• "xem": Nhận lại 4 ảnh áo dài vừa sinh gần nhất từ GPU.\n\n' +
         '⚙️ Quản trị & Giám sát hệ thống (Song ngữ Anh - Việt):\n' +
         '• /usage (hoặc "mức dùng", "chi phí", "tiêu thụ"): Xem số lượt đã ghi nhận; chi phí cần kiểm tra trong Billing.\n' +
-        '• /checkcredit (hoặc "số dư", "tiền", "credit"): Hướng dẫn kiểm tra credit Modal và AWS.\n' +
+        '• /checkcredit (hoặc "số dư", "tiền", "credit"): Xem mức chi AWS Budget và đường dẫn kiểm tra Modal.\n' +
         '• /gpu (hoặc "trạng thái", "thiết bị", "phần cứng"): Kiểm tra tình trạng cụm GPU T4 (online/idle).\n' +
         '• /runs (hoặc "lịch sử", "danh sách sinh"): Xem tổng số lượt sinh và 3 lượt mới nhất.\n' +
         '• /deploy (hoặc "triển khai", "phát hành", "/cd"): Hướng dẫn & link triển khai AWS CodeBuild CD.'
@@ -142,7 +146,8 @@ async function tryHandleOpsCommand({
 
     // 3. Kiểm tra credit: /checkcredit, /credit, credit, tien, so du
     if (/^(\/checkcredit|\/credit|checkcredit|credit|so du|con bao nhieu|tien)$/.test(text)) {
-        const reply = formatCreditReport(null);
+        const { readAwsBudget } = require('./aws_budget_client');
+        const reply = formatCreditReport(await readAwsBudget());
         await fetchWithTimeout(`${zaloBase}/bot${zaloToken}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
