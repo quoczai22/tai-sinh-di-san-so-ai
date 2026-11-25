@@ -18,13 +18,18 @@ function formatUsageReport(summary, runsCount) {
 
 function formatCreditReport(budget) {
     const aws = budget
-        ? `AWS Budget toàn tài khoản: đã ghi nhận $${budget.actualUsd.toFixed(2)} / ` +
-          `$${budget.limitUsd.toFixed(2)} trong tháng. Dữ liệu AWS có thể cập nhật trễ; ` +
-          'Budget chỉ cảnh báo, không khóa chi tiêu.'
-        : 'Chưa xác minh được mức chi AWS Budget. Kiểm tra AWS Billing trước khi chạy CodeBuild.';
-    return '💳 [CREDIT VÀ CHI PHÍ]\n' + aws + '\n' +
-        'Modal Starter chưa cung cấp API báo cáo billing cho bot; xem credit và Spend limit ' +
-        'trực tiếp tại Modal → Settings → Usage & Billing: https://modal.com/settings';
+        ? `• Chi phí AWS đã ghi nhận: $${budget.actualUsd.toFixed(2)} / ` +
+          `$${budget.limitUsd.toFixed(2)} Budget tháng này.\n` +
+          '• Budget cảnh báo khi chạm ngưỡng, không khóa cứng chi tiêu. Dữ liệu có thể cập nhật trễ.'
+        : '• Chưa lấy được mức chi AWS Budget; hãy kiểm tra AWS Billing trước khi chạy CodeBuild.';
+    return '💳 [KIỂM TRA HẠN MỨC & CREDIT HỆ THỐNG]\n\n' +
+        '1️⃣ Modal GPU Backend:\n' +
+        '• Credit, mức đã dùng và Spend limit: bot chưa đọc được từ Modal Starter.\n' +
+        '• Xem số liệu hiện tại: https://modal.com/settings\n' +
+        '• Không ước tính số lượt sinh còn lại khi thiếu số liệu GPU thực tế.\n\n' +
+        '2️⃣ AWS CodeBuild CD & Parameter Store:\n' + aws + '\n' +
+        '• Phút CodeBuild đã dùng/còn lại: chưa kết nối dữ liệu sử dụng; xem trong AWS Billing.\n' +
+        '• Token CD lưu trong Parameter Store SecureString; bot không đọc giá trị token.';
 }
 
 function formatGpuStatus(health, elapsedMs, failure) {

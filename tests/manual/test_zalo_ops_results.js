@@ -29,7 +29,7 @@ async function post(chatId, chatType, message) {
 (async () => {
     assert.match(formatUsageReport(null, 0), /0 lượt/);
     assert.doesNotMatch(formatUsageReport(null, 0), /3\.16|2\.21|100% miễn phí/);
-    assert.match(formatCreditReport(null), /Chưa xác minh được mức chi AWS Budget/);
+    assert.match(formatCreditReport(null), /Chưa lấy được mức chi AWS Budget/);
     assert.doesNotMatch(formatCreditReport(null), /0\.00\$|95 phút/);
     assert.match(formatGpuStatus(null, 6000, 'quá thời gian chờ'), /Chưa xác minh được GPU: quá thời gian chờ/);
     assert.doesNotMatch(formatGpuStatus(null, 6000), /đang ở chế độ ngủ/);
