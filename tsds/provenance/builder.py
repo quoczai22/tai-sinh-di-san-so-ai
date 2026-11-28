@@ -14,6 +14,7 @@ from . import passport as P
 from .registry import rights_gate
 
 from tsds.core.paths import ROOT
+from tsds.core.timing import SCHEMA as TIMING_SCHEMA
 LORA_LICENSE = "VietFashion CC BY-NC 4.0: chỉ dùng phi thương mại"
 LORA_CITATION = ("Cao, Bui, Vo, Tran, Le. VietFashion: Benchmarking Sketch-Text Composed Image Retrieval for "
                  "Cultural Outfits. ICMR 2026. doi:10.1145/3805622.3810590")
@@ -47,9 +48,13 @@ def _garment_block(garment: dict | None, rec: dict) -> dict:
 def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict, paths: dict,
                           assessment: dict | None, now: str, root: Path = ROOT,
                           polish_prompt: str = "", polish_negative: str = "",
-                          garment: dict | None = None) -> dict:
+                          garment: dict | None = None, run_timing: dict | None = None) -> dict:
     """`rec`: bản ghi chuẩn hoá của một thiết kế. `paths`: Path tuyệt đối
     của source/reference/canny/pattern/raw/final.
+
+    `run_timing`: thời gian dùng chung cả lượt chạy (áo nền, nạp model, tổng cả bộ), copy vào Passport
+    của từng thiết kế kèm nhãn phạm vi. Có `rec["timing"]` thì Passport ghi khối `generation.timing`
+    (định nghĩa từng số ở docs/DO_THOI_GIAN.md); Passport cũ không có khối này.
 
     `garment`: thông tin áo nền (khóa `garment` trong manifest của runner): source "lora" (luồng hiện tại) hay "fixed" (lần chạy cũ),
     seed, LoRA, các ứng viên đã thử, đường dẫn ảnh áo và mặt nạ. None nghĩa là áo mẫu cố định."""
@@ -94,6 +99,8 @@ def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict,
                            "seed": int(rec["seed"]), "prompt": polish_prompt, "negative_prompt": polish_negative},
         "reference_metrics": {"clip_similarity_pattern_vs_ceramic": float(rec["similarity_pattern_vs_ceramic"]),
                               "note": "CLIP đo trên hoa văn GIAI ĐOẠN 1, trước ghép và img2img — chỉ để tham khảo."},
+        # CHỈ là thời gian gọi Stable Diffusion của lần sinh hoa văn được chọn (không gồm áo nền, sinh lại, polish, kiểm tra).
+        # Thời gian đầy đủ từng giai đoạn nằm ở generation.timing.
         "duration_s": float(rec.get("duration_s") or 0),
         "garment": _garment_block(garment, rec),
     }
@@ -156,6 +163,11 @@ def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict,
                      "phần ánh sáng và bóng vải lấy từ polish.") if locked else None)
     P.add_version(pp, kind="ai_generated", artifact=fin, created_by="pipeline", actor_type="ai", at=ts,
                   note="Thiết kế cuối do pipeline sinh.")
+    if rec.get("timing"):
+        P.record_timing(pp, {"schema": TIMING_SCHEMA, "clock": "perf_counter", "unit": "s",
+                             "design": rec["timing"],
+                             "run": {**(run_timing or {}), "scope": "chung cả lượt chạy, KHÔNG cộng cho từng thiết kế"}},
+                      at=ts)                       # cùng mốc với các bước khác để dòng thời gian không bị đảo thứ tự
     if assessment:
         ov = assessment["overall"]
         P.add_step(pp, step="quality_gate", label=f"Cổng chất lượng G2+G3: {ov['decision']}",

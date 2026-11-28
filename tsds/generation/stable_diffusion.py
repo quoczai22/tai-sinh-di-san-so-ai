@@ -70,7 +70,7 @@ class Generator:
         if not ready:
             raise RuntimeError(detail)
         self.torch = torch
-        t0 = time.time()
+        t0 = time.perf_counter()
         cn = ControlNetModel.from_pretrained(
             os.environ["CONTROLNET_CANNY_ID"], dtype=torch.float16, variant="fp16")
         pipe = StableDiffusionControlNetPipeline.from_pretrained(
@@ -92,13 +92,13 @@ class Generator:
         except AttributeError:
             pipe.enable_vae_slicing()
         self.pipe, self.controlnet = pipe, cn
-        self.load_seconds = time.time() - t0
+        self.load_seconds = time.perf_counter() - t0
         self.gpu = f"{p.name} {p.total_memory / 1024**3:.0f}GB"
 
     def generate(self, positive: str, negative: str, control: Image.Image,
                  weight: float, seed: int) -> tuple[Image.Image, float, float]:
         self.torch.cuda.reset_peak_memory_stats()
-        t0 = time.time()
+        t0 = time.perf_counter()
         img = self.pipe(
             prompt=positive, negative_prompt=negative, image=control,
             num_inference_steps=STEPS, guidance_scale=GUIDANCE,
@@ -106,7 +106,7 @@ class Generator:
             generator=self.torch.Generator("cuda").manual_seed(seed),
         ).images[0]
         peak = self.torch.cuda.max_memory_allocated() / 1024**3
-        return img, time.time() - t0, peak
+        return img, time.perf_counter() - t0, peak
 
     def set_seamless(self, on: bool = True) -> None:
         """Bật/tắt chế độ sinh ảnh LẶP LIỀN MẠCH.

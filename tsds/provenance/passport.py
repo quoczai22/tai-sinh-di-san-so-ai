@@ -158,6 +158,14 @@ def record_quality(passport: dict, gate_result: dict, config_version: str, at: s
                  {"decision": gate_result.get("overall", {}).get("decision"), "config_version": config_version}, at=at)
 
 
+def record_timing(passport: dict, timing: dict, at: str | None = None) -> None:
+    """Ghi thời gian đo được vào khối generation VÀ vào sổ cái. Khối generation không nằm trong chuỗi băm,
+    nên bản sao trong sổ cái là chỗ để verify() phát hiện việc sửa số sau này."""
+    passport["generation"]["timing"] = timing
+    append_event(passport, "timing", "pipeline", "system",
+                 {"label": "Thời gian đo từng giai đoạn", "timing": timing}, at=at)
+
+
 def record_review(passport: dict, review: dict) -> None:
     passport["reviews"].append(review)
     append_event(passport, "expert_review", review["reviewer_id"], "human",
@@ -203,6 +211,13 @@ def verify(passport: dict, root: Path = ROOT, check_files: bool = True) -> dict:
                 problems.append(f"phiên bản v{v['version']} không khớp sổ cái")
     if sum(1 for e in ledger if e["event"] == "expert_review") != len(passport.get("reviews", [])):
         problems.append("số phiếu thẩm định không khớp sổ cái")
+    # Thời gian đo: khối timing và sự kiện timing cuối trong sổ cái phải khớp nhau. Thêm, sửa hoặc xóa khối đều bị báo.
+    # Passport cũ không có cả hai thì bỏ qua.
+    timing_now = (passport.get("generation") or {}).get("timing")
+    timing_events = [e["payload"].get("timing") for e in ledger if e["event"] == "timing"]
+    timing_last = timing_events[-1] if timing_events else None
+    if (timing_now is not None or timing_events) and timing_now != timing_last:
+        problems.append("khối thời gian không khớp sổ cái")
     files_checked = 0
     if check_files:
         for art in passport["artifacts"]:
