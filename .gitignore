@@ -5,6 +5,7 @@
 *.local
 
 # Python and virtual environments
+node_modules/
 venv/
 backend/venv/
 __pycache__/

@@ -45,6 +45,7 @@ async function post(chatId, text, secret) {
     calls.length = 0;
     assert.equal((await post('stranger', 'đánh thức GPU', 'test-webhook-secret')).body.ignored, true);
     assert.equal((await post('group-456', 'đánh thức GPU', 'test-webhook-secret')).body.ignored, 'operator_only');
+    assert.equal((await post('group-456', 'số dư', 'test-webhook-secret')).body.ignored, 'operator_only');
     assert.equal(calls.length, 0);
     const owner = await post('owner-123', 'đánh thức GPU', 'test-webhook-secret');
     assert.equal(owner.body.mode, 'fix');

@@ -48,6 +48,10 @@ function checkRateLimit(req) {
 
 function getBackendConfig() {
     const modalUrl = (process.env.MODAL_URL || '').trim().replace(/\/$/, '');
+    const modalBillingUrl = (
+        process.env.MODAL_BILLING_URL ||
+        (modalUrl.includes('-fastapi-app.') ? modalUrl.replace('-fastapi-app.', '-billing-summary.') : '')
+    ).trim().replace(/\/$/, '');
     const modalKey = (process.env.MODAL_KEY || '').trim();
     const hfSpaceUrl = (process.env.HF_SPACE_URL || '').trim().replace(/\/$/, '');
     const hfToken = (process.env.HF_TOKEN || '').trim();
@@ -55,7 +59,7 @@ function getBackendConfig() {
     // Mặc định 25 giây: đủ cho Modal khởi động container nguội trước khi bị coi là sập.
     const modalTimeoutMs = Math.max(500, parseInt(process.env.MODAL_TIMEOUT_MS || '25000', 10));
     const hfTimeoutMs = Math.max(500, parseInt(process.env.HF_TIMEOUT_MS || '6000', 10));
-    return { modalUrl, modalKey, hfSpaceUrl, hfToken, hfApiKey, modalTimeoutMs, hfTimeoutMs };
+    return { modalUrl, modalBillingUrl, modalKey, hfSpaceUrl, hfToken, hfApiKey, modalTimeoutMs, hfTimeoutMs };
 }
 
 function buildBackendHeaders(backend, config = getBackendConfig()) {
@@ -388,7 +392,7 @@ async function handleZaloBotWebhook(body) {
         return { ok: true, ignored: 'rate_limited' };
     }
     lastBotReplyByChat.set(chatId, now);
-    if (!isOperator && /^(\/usage|usage|muc dung|chi phi|da dung|tieu thu|\/gpu|gpu|t4|cuda|thiet bi|\/runs|runs|lich su|danh sach sinh|cac luot sinh|lich|nhat ky)$/.test(normalizedText)) {
+    if (!isOperator && /^(\/usage|usage|muc dung|chi phi|da dung|tieu thu|\/checkcredit|\/credit|checkcredit|credit|so du|con bao nhieu|tien|\/gpu|gpu|t4|cuda|thiet bi|\/runs|runs|lich su|danh sach sinh|cac luot sinh|lich|nhat ky)$/.test(normalizedText)) {
         return { ok: true, ignored: 'operator_only' };
     }
     const designResult = await tryHandleDesignCommand({

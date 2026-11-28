@@ -25,6 +25,27 @@ def test_hf_space_copy_dirs_khop_dockerfile():
     assert CAN_DONG_GOI <= dirs and dirs == _dockerfile_copied()
 
 
+def _adjustment_amount_tu_modal_app():
+    # modal_app.py import `modal` (CI không cài), nên chỉ tách riêng hàm cần thử.
+    import ast
+    tree = ast.parse((ROOT / "modal_app.py").read_text(encoding="utf-8"))
+    node = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "_adjustment_amount")
+    ns: dict = {}
+    exec(compile(ast.Module(body=[node], type_ignores=[]), "modal_app.py", "exec"), {"__builtins__": __builtins__}, ns)
+    return ns["_adjustment_amount"]
+
+
+def test_billing_doc_khoa_credits_khong_phan_biet_hoa_thuong():
+    f = _adjustment_amount_tu_modal_app()
+    # khóa thật của SDK Modal (kiểm ngày 25/11/2026 trong container): 'Credits' viết hoa
+    assert f({"Free Storage": "-0.0018", "Credits": "-4.07"}, "credits") == -4.07
+    assert f({"credits": "-4.07"}, "credits") == -4.07  # dạng JSON của CLI
+    assert f({"Network Egress Allowance": "-0.05"}, "network_egress_allowance") == -0.05
+    # không có mục: None chứ không phải 0, để bot ghi "chưa xác minh"
+    assert f({"Free Storage": "-0.0018"}, "credits") is None
+    assert f({}, "credits") is None and f(None, "credits") is None
+
+
 def test_khong_con_goi_python_o_goc_repo():
     # mọi gói Python phải nằm trong tsds/, không để sót thư mục có __init__.py ở gốc (trừ tests)
     sot = [p.name for p in ROOT.iterdir() if p.is_dir() and (p / "__init__.py").exists() and p.name not in {"tsds", "tests"}]
