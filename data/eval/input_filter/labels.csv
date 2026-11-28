@@ -1,0 +1,130 @@
+file,group,label_expected,object_id,parent_file,source,license,split,note
+A/H_LR3D_124.png,A,pass,ceramic_vases_124,,data/heritage/LR3D_124.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,ảnh hiện vật
+A/H_LR3D_33.png,A,pass,ceramic_vases_33,,data/heritage/LR3D_33.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,ảnh hiện vật
+A/H_LR3D_38.png,A,pass,ceramic_vases_38,,data/heritage/LR3D_38.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,ảnh hiện vật
+A/H_LR3D_50.png,A,pass,ceramic_vases_50,,data/heritage/LR3D_50.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,ảnh hiện vật
+A/H_LR3D_61.png,A,pass,ceramic_vases_61,,data/heritage/LR3D_61.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,ảnh hiện vật
+A/H_LR3D_97.png,A,pass,ceramic_vases_97,,data/heritage/LR3D_97.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,ảnh hiện vật
+A/E_ceramic_vases_124_e025.png,A,pass,ceramic_vases_124,,data/elements/ceramic_vases_124/ceramic_vases_124_e025.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_124_e005.png,A,pass,ceramic_vases_124,,data/elements/ceramic_vases_124/ceramic_vases_124_e005.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_124_e000.png,A,pass,ceramic_vases_124,,data/elements/ceramic_vases_124/ceramic_vases_124_e000.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_15_e047.png,A,pass,ceramic_vases_15,,data/elements/ceramic_vases_15/ceramic_vases_15_e047.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_15_e017.png,A,pass,ceramic_vases_15,,data/elements/ceramic_vases_15/ceramic_vases_15_e017.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_15_e015.png,A,pass,ceramic_vases_15,,data/elements/ceramic_vases_15/ceramic_vases_15_e015.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_33_e022.png,A,pass,ceramic_vases_33,,data/elements/ceramic_vases_33/ceramic_vases_33_e022.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_33_e008.png,A,pass,ceramic_vases_33,,data/elements/ceramic_vases_33/ceramic_vases_33_e008.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_33_e057.png,A,pass,ceramic_vases_33,,data/elements/ceramic_vases_33/ceramic_vases_33_e057.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_37_e006.png,A,pass,ceramic_vases_37,,data/elements/ceramic_vases_37/ceramic_vases_37_e006.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_37_e043.png,A,pass,ceramic_vases_37,,data/elements/ceramic_vases_37/ceramic_vases_37_e043.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_37_e047.png,A,pass,ceramic_vases_37,,data/elements/ceramic_vases_37/ceramic_vases_37_e047.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_38_e006.png,A,pass,ceramic_vases_38,,data/elements/ceramic_vases_38/ceramic_vases_38_e006.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_38_e035.png,A,pass,ceramic_vases_38,,data/elements/ceramic_vases_38/ceramic_vases_38_e035.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_38_e002.png,A,pass,ceramic_vases_38,,data/elements/ceramic_vases_38/ceramic_vases_38_e002.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_50_e001.png,A,pass,ceramic_vases_50,,data/elements/ceramic_vases_50/ceramic_vases_50_e001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_50_e006.png,A,pass,ceramic_vases_50,,data/elements/ceramic_vases_50/ceramic_vases_50_e006.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_50_e016.png,A,pass,ceramic_vases_50,,data/elements/ceramic_vases_50/ceramic_vases_50_e016.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_61_e010.png,A,pass,ceramic_vases_61,,data/elements/ceramic_vases_61/ceramic_vases_61_e010.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_61_e023.png,A,pass,ceramic_vases_61,,data/elements/ceramic_vases_61/ceramic_vases_61_e023.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_61_e026.png,A,pass,ceramic_vases_61,,data/elements/ceramic_vases_61/ceramic_vases_61_e026.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_97_e000.png,A,pass,ceramic_vases_97,,data/elements/ceramic_vases_97/ceramic_vases_97_e000.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_97_e024.png,A,pass,ceramic_vases_97,,data/elements/ceramic_vases_97/ceramic_vases_97_e024.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"phần tử cắt, nền trong suốt"
+A/E_ceramic_vases_97_e006.png,A,pass,ceramic_vases_97,,data/elements/ceramic_vases_97/ceramic_vases_97_e006.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"phần tử cắt, nền trong suốt"
+B/ceramic_vases_106.png,B,pass,ceramic_vases_106,,ceramic_vases_6.zip:ceramic_vases_106/images/sketchfab_collection_3_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"render camera 1, khung 1"
+B/ceramic_vases_13.png,B,pass,ceramic_vases_13,,ceramic_vases_1.zip:ceramic_vases_13/images/sketchfab_collection_1_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"render camera 1, khung 1"
+B/ceramic_vases_18.png,B,pass,ceramic_vases_18,,ceramic_vases_1.zip:ceramic_vases_18/images/sketchfab_collection_1_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"render camera 1, khung 1"
+B/ceramic_vases_19.png,B,pass,ceramic_vases_19,,ceramic_vases_1.zip:ceramic_vases_19/images/sketchfab_collection_1_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"render camera 1, khung 1"
+B/ceramic_vases_22.png,B,pass,ceramic_vases_22,,ceramic_vases_2.zip:ceramic_vases_22/images/sketchfab_collection_1_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"render camera 1, khung 1"
+B/ceramic_vases_32.png,B,pass,ceramic_vases_32,,ceramic_vases_2.zip:ceramic_vases_32/images/sketchfab_collection_1_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"render camera 1, khung 1"
+B/ceramic_vases_34.png,B,pass,ceramic_vases_34,,ceramic_vases_2.zip:ceramic_vases_34/images/sketchfab_collection_1_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"render camera 1, khung 1"
+B/ceramic_vases_35.png,B,pass,ceramic_vases_35,,ceramic_vases_2.zip:ceramic_vases_35/images/sketchfab_collection_1_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"render camera 1, khung 1"
+B/ceramic_vases_39.png,B,pass,ceramic_vases_39,,ceramic_vases_2.zip:ceramic_vases_39/images/sketchfab_collection_1_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"render camera 1, khung 1"
+B/ceramic_vases_4.png,B,pass,ceramic_vases_4,,ceramic_vases_1.zip:ceramic_vases_4/images/sketchfab_collection_1_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"render camera 1, khung 1"
+B/ceramic_vases_43.png,B,pass,ceramic_vases_43,,ceramic_vases_3.zip:ceramic_vases_43/images/sketchfab_collection_1_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"render camera 1, khung 1"
+B/ceramic_vases_5.png,B,pass,ceramic_vases_5,,ceramic_vases_1.zip:ceramic_vases_5/images/sketchfab_collection_1_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"render camera 1, khung 1"
+B/ceramic_vases_65.png,B,pass,ceramic_vases_65,,ceramic_vases_4.zip:ceramic_vases_65/images/sketchfab_collection_2_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"render camera 1, khung 1"
+B/ceramic_vases_75.png,B,pass,ceramic_vases_75,,ceramic_vases_4.zip:ceramic_vases_75/images/sketchfab_collection_2_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"render camera 1, khung 1"
+B/ceramic_vases_80.png,B,pass,ceramic_vases_80,,ceramic_vases_4.zip:ceramic_vases_80/images/sketchfab_collection_3_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"render camera 1, khung 1"
+B/ceramic_vases_82.png,B,pass,ceramic_vases_82,,ceramic_vases_5.zip:ceramic_vases_82/images/sketchfab_collection_3_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"render camera 1, khung 1"
+B/ceramic_vases_86.png,B,pass,ceramic_vases_86,,ceramic_vases_5.zip:ceramic_vases_86/images/sketchfab_collection_3_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"render camera 1, khung 1"
+B/ceramic_vases_88.png,B,pass,ceramic_vases_88,,ceramic_vases_5.zip:ceramic_vases_88/images/sketchfab_collection_3_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"render camera 1, khung 1"
+B/ceramic_vases_92.png,B,pass,ceramic_vases_92,,ceramic_vases_5.zip:ceramic_vases_92/images/sketchfab_collection_3_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"render camera 1, khung 1"
+B/ceramic_vases_98.png,B,pass,ceramic_vases_98,,ceramic_vases_5.zip:ceramic_vases_98/images/sketchfab_collection_3_CAM1_1.0001.png,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"render camera 1, khung 1"
+C/H_LR3D_124__cat00.png,C,pass,ceramic_vases_124,A/H_LR3D_124.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,cắt lệch giữ 81%
+C/H_LR3D_33__xoay01.png,C,pass,ceramic_vases_33,A/H_LR3D_33.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,xoay 3.6 độ
+C/H_LR3D_38__sang02.png,C,pass,ceramic_vases_38,A/H_LR3D_38.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,đổi sáng x0.57
+C/H_LR3D_50__jpeg03.png,C,pass,ceramic_vases_50,A/H_LR3D_50.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,nén JPEG chất lượng 25
+C/H_LR3D_61__cat04.png,C,pass,ceramic_vases_61,A/H_LR3D_61.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,cắt lệch giữ 87%
+C/H_LR3D_97__cat05.png,C,pass,ceramic_vases_97,A/H_LR3D_97.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,cắt lệch giữ 82%
+C/E_ceramic_vases_124_e025__xoay06.png,C,pass,ceramic_vases_124,A/E_ceramic_vases_124_e025.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,xoay 11.1 độ
+C/E_ceramic_vases_124_e005__cat07.png,C,pass,ceramic_vases_124,A/E_ceramic_vases_124_e005.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,cắt lệch giữ 85%
+C/E_ceramic_vases_124_e000__nen08.png,C,pass,ceramic_vases_124,A/E_ceramic_vases_124_e000.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"đổi nền (0, 0, 0)"
+C/E_ceramic_vases_15_e047__nho09.png,C,pass,ceramic_vases_15,A/E_ceramic_vases_15_e047.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,thu nhỏ về cạnh dài 160 px
+C/E_ceramic_vases_15_e017__xoay10.png,C,pass,ceramic_vases_15,A/E_ceramic_vases_15_e017.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,xoay 9.0 độ
+C/E_ceramic_vases_15_e015__xoay11.png,C,pass,ceramic_vases_15,A/E_ceramic_vases_15_e015.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,xoay 0.7 độ
+C/E_ceramic_vases_33_e022__sang12.png,C,pass,ceramic_vases_33,A/E_ceramic_vases_33_e022.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,đổi sáng x1.43
+C/E_ceramic_vases_33_e008__sang13.png,C,pass,ceramic_vases_33,A/E_ceramic_vases_33_e008.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,đổi sáng x1.37
+C/E_ceramic_vases_33_e057__jpeg14.png,C,pass,ceramic_vases_33,A/E_ceramic_vases_33_e057.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,nén JPEG chất lượng 23
+C/E_ceramic_vases_37_e006__jpeg15.png,C,pass,ceramic_vases_37,A/E_ceramic_vases_37_e006.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,nén JPEG chất lượng 12
+C/E_ceramic_vases_37_e043__jpeg16.png,C,pass,ceramic_vases_37,A/E_ceramic_vases_37_e043.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,nén JPEG chất lượng 27
+C/E_ceramic_vases_37_e047__xoay17.png,C,pass,ceramic_vases_37,A/E_ceramic_vases_37_e047.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,xoay 3.0 độ
+C/E_ceramic_vases_38_e006__nen18.png,C,pass,ceramic_vases_38,A/E_ceramic_vases_38_e006.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"đổi nền (128, 128, 128)"
+C/E_ceramic_vases_38_e035__nho19.png,C,pass,ceramic_vases_38,A/E_ceramic_vases_38_e035.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,thu nhỏ về cạnh dài 160 px
+C/E_ceramic_vases_38_e002__nho20.png,C,pass,ceramic_vases_38,A/E_ceramic_vases_38_e002.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,thu nhỏ về cạnh dài 160 px
+C/E_ceramic_vases_50_e001__nho21.png,C,pass,ceramic_vases_50,A/E_ceramic_vases_50_e001.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,thu nhỏ về cạnh dài 160 px
+C/E_ceramic_vases_50_e006__jpeg22.png,C,pass,ceramic_vases_50,A/E_ceramic_vases_50_e006.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,nén JPEG chất lượng 30
+C/E_ceramic_vases_50_e016__nho23.png,C,pass,ceramic_vases_50,A/E_ceramic_vases_50_e016.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,thu nhỏ về cạnh dài 160 px
+C/E_ceramic_vases_61_e010__sang24.png,C,pass,ceramic_vases_61,A/E_ceramic_vases_61_e010.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,đổi sáng x0.57
+C/E_ceramic_vases_61_e023__sang25.png,C,pass,ceramic_vases_61,A/E_ceramic_vases_61_e023.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,đổi sáng x1.41
+C/E_ceramic_vases_61_e026__nen26.png,C,pass,ceramic_vases_61,A/E_ceramic_vases_61_e026.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,"đổi nền (0, 0, 0)"
+C/E_ceramic_vases_97_e000__jpeg27.png,C,pass,ceramic_vases_97,A/E_ceramic_vases_97_e000.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,nén JPEG chất lượng 17
+C/E_ceramic_vases_97_e024__cat28.png,C,pass,ceramic_vases_97,A/E_ceramic_vases_97_e024.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,cắt lệch giữ 87%
+C/E_ceramic_vases_97_e006__cat29.png,C,pass,ceramic_vases_97,A/E_ceramic_vases_97_e006.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,cắt lệch giữ 80%
+C/E_ceramic_vases_124_e000__sang30.png,C,pass,ceramic_vases_124,A/E_ceramic_vases_124_e000.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,đổi sáng x1.36
+C/E_ceramic_vases_33_e008__nen31.png,C,pass,ceramic_vases_33,A/E_ceramic_vases_33_e008.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"đổi nền (128, 128, 128)"
+C/E_ceramic_vases_37_e006__xoay32.png,C,pass,ceramic_vases_37,A/E_ceramic_vases_37_e006.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,xoay 3.1 độ
+C/E_ceramic_vases_97_e006__xoay33.png,C,pass,ceramic_vases_97,A/E_ceramic_vases_97_e006.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,xoay -6.6 độ
+C/H_LR3D_38__cat34.png,C,pass,ceramic_vases_38,A/H_LR3D_38.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,cắt lệch giữ 82%
+C/E_ceramic_vases_15_e047__nen35.png,C,pass,ceramic_vases_15,A/E_ceramic_vases_15_e047.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,"đổi nền (0, 0, 0)"
+C/E_ceramic_vases_15_e017__cat36.png,C,pass,ceramic_vases_15,A/E_ceramic_vases_15_e017.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,cắt lệch giữ 82%
+C/H_LR3D_124__cat37.png,C,pass,ceramic_vases_124,A/H_LR3D_124.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",test,cắt lệch giữ 91%
+C/E_ceramic_vases_61_e023__jpeg38.png,C,pass,ceramic_vases_61,A/E_ceramic_vases_61_e023.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,nén JPEG chất lượng 24
+C/E_ceramic_vases_97_e000__sang39.png,C,pass,ceramic_vases_97,A/E_ceramic_vases_97_e000.png,tự tạo từ nhóm A,"CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",tune,đổi sáng x1.42
+D/cigarette_01.jpg,D,block,,,https://universe.roboflow.com/phonedt/cigarette-bkjaq; tệp gốc 359_jpg.rf.fd91d8ea11650b4844939f24c76df913.jpg,CC BY 4.0,test,cigarette
+D/cigarette_02.jpg,D,block,,,https://universe.roboflow.com/phonedt/cigarette-bkjaq; tệp gốc rk_190_jpg.rf.f4e2acc43e4bacebfdf01c25c311e0f8.jpg,CC BY 4.0,test,cigarette
+D/cigarette_03.jpg,D,block,,,https://universe.roboflow.com/phonedt/cigarette-bkjaq; tệp gốc smoking_1100_jpg.rf.8556d9074bfceb27da00071eca305cf5.jpg,CC BY 4.0,tune,cigarette
+D/cigarette_04.jpg,D,block,,,https://universe.roboflow.com/phonedt/cigarette-bkjaq; tệp gốc WIN_20220508_19_11_34_Pro_jpg.rf.522875457373cd60984e2faff0a5625b.jpg,CC BY 4.0,tune,cigarette
+D/cigarette_05.jpg,D,block,,,https://universe.roboflow.com/phonedt/cigarette-bkjaq; tệp gốc 257_jpg.rf.25140994db5f97154afef35c5de3a696.jpg,CC BY 4.0,tune,cigarette
+D/cigarette_06.jpg,D,block,,,https://universe.roboflow.com/phonedt/cigarette-bkjaq; tệp gốc abc013_jpg.rf.adba565d3a1143cc92787847542e1208.jpg,CC BY 4.0,test,cigarette
+D/cigarette_07.jpg,D,block,,,https://universe.roboflow.com/phonedt/cigarette-bkjaq; tệp gốc smoking_0541_jpg.rf.1f77ecbb7728c786822b367682ff5b55.jpg,CC BY 4.0,test,cigarette
+D/cigarette_08.jpg,D,block,,,https://universe.roboflow.com/phonedt/cigarette-bkjaq; tệp gốc smoking_1034_jpg.rf.edce96ae61f01e83206216acbb1feef9.jpg,CC BY 4.0,tune,cigarette
+D/cigarette_09.jpg,D,block,,,https://universe.roboflow.com/phonedt/cigarette-bkjaq; tệp gốc smoking_0728_jpg.rf.c7e0e30a2a59c0870ee2cdb3f598ea63.jpg,CC BY 4.0,tune,cigarette
+D/cigarette_10.jpg,D,block,,,https://universe.roboflow.com/phonedt/cigarette-bkjaq; tệp gốc frame2552_jpg.rf.5e94b303225bc99f1bfd90798680e85f.jpg,CC BY 4.0,test,cigarette
+D/food_01.jpg,D,block,,,"Roboflow Universe, Food v1 (không ghi URL); tệp gốc 0f7db3c4302b50eb_jpg.rf.588e37d699738c38e01e6f2e73a8a1fe.jpg",CC BY 4.0,tune,food
+D/food_02.jpg,D,block,,,"Roboflow Universe, Food v1 (không ghi URL); tệp gốc 4d09e433a4c76988_jpg.rf.ea0d7e0a3747ad0e6e4e9c820666d6f6.jpg",CC BY 4.0,test,food
+D/food_03.jpg,D,block,,,"Roboflow Universe, Food v1 (không ghi URL); tệp gốc 9909c21a705b7efa_jpg.rf.576d7fbe642fec1953a163c0c252357c.jpg",CC BY 4.0,tune,food
+D/food_05.jpg,D,block,,,"Roboflow Universe, Food v1 (không ghi URL); tệp gốc d6bbbd6c4968075a_jpg.rf.0ade871cca61875417af6bf13e76c4ad.jpg",CC BY 4.0,tune,food
+D/food_06.jpg,D,block,,,"Roboflow Universe, Food v1 (không ghi URL); tệp gốc 0cc693e881457fb1_jpg.rf.1eca4118a10567551bd929c7c3ab1c3f.jpg",CC BY 4.0,tune,food
+D/food_07.jpg,D,block,,,"Roboflow Universe, Food v1 (không ghi URL); tệp gốc 29bd21b4ed49a13b_jpg.rf.366d95cc15dd3a76ba58313e8160be07.jpg",CC BY 4.0,tune,food
+D/food_08.jpg,D,block,,,"Roboflow Universe, Food v1 (không ghi URL); tệp gốc c1affa48f853e41c_jpg.rf.f8dacac668f1c196a7520c609225aa0f.jpg",CC BY 4.0,test,food
+D/food_09.jpg,D,block,,,"Roboflow Universe, Food v1 (không ghi URL); tệp gốc cb8e3d1f25c81c36_jpg.rf.7c47b66e538b2372b21f5d4b736022f1.jpg",CC BY 4.0,test,food
+D/food_10.jpg,D,block,,,"Roboflow Universe, Food v1 (không ghi URL); tệp gốc acdd090b674702d3_jpg.rf.da47b95f7d47dfd62adf79a3cf7c09ee.jpg",CC BY 4.0,tune,food
+D/selfie_01.jpg,D,block,,,https://universe.roboflow.com/aivle-ojibj/selfie-x4wje; tệp gốc 3cwqg832gvsb1_jpg.rf.2089c52fed270910073777df3b1cf580.jpg,CC BY 4.0,tune,selfie
+D/selfie_02.jpg,D,block,,,https://universe.roboflow.com/aivle-ojibj/selfie-x4wje; tệp gốc 8b4da759ce830aaf07094bed35353a94_jpg.rf.bdace38fd044ba622607eedb763187cb.jpg,CC BY 4.0,test,selfie
+D/selfie_03.jpg,D,block,,,https://universe.roboflow.com/aivle-ojibj/selfie-x4wje; tệp gốc cute-model-asian-boy-Favim-com-6559284_jpg.rf.541b4e47078863b1f93f5a31fa6674fc.jpg,CC BY 4.0,tune,selfie
+D/selfie_04.jpg,D,block,,,https://universe.roboflow.com/aivle-ojibj/selfie-x4wje; tệp gốc selfie-captions-5_jpg.rf.8d2638f445038db804f09acb08694fec.jpg,CC BY 4.0,test,selfie
+D/selfie_05.jpg,D,block,,,https://universe.roboflow.com/aivle-ojibj/selfie-x4wje; tệp gốc d6960e9edfdce6c4df3bd7c484194048_jpg.rf.59345065408e02a7e939644073c095ce.jpg,CC BY 4.0,test,selfie
+D/selfie_06.jpg,D,block,,,https://universe.roboflow.com/aivle-ojibj/selfie-x4wje; tệp gốc images-1-_jpg.rf.4cb3a07747c8f5d1d22a48b31b957588.jpg,CC BY 4.0,tune,selfie
+D/selfie_07.jpg,D,block,,,https://universe.roboflow.com/aivle-ojibj/selfie-x4wje; tệp gốc istockphoto-970732924-612x612_jpg.rf.1d8b493db6cbe1bfa11d3ddf073564d4.jpg,CC BY 4.0,test,selfie
+D/selfie_08.jpg,D,block,,,https://universe.roboflow.com/aivle-ojibj/selfie-x4wje; tệp gốc 360_F_863871612_FsWMB5l7SBuwZXTYWZjcTygGPSDGgCOv_jpg.rf.46e911dfda2bc560029ce1c852fc26e6.jpg,CC BY 4.0,tune,selfie
+D/selfie_09.jpg,D,block,,,https://universe.roboflow.com/aivle-ojibj/selfie-x4wje; tệp gốc male-model-selfies-from-paris-2016-01_webp.rf.0f58161c214b5a5d25d2b400ca8bfc71.jpg,CC BY 4.0,test,selfie
+D/selfie_10.jpg,D,block,,,https://universe.roboflow.com/aivle-ojibj/selfie-x4wje; tệp gốc 6e3c46fef99a33bbbeac106f4cfa7635_jpg.rf.dbe2ab70bfae4f448d187053941e5414.jpg,CC BY 4.0,test,selfie
+D/vehicle_01.jpg,D,block,,,https://universe.roboflow.com/sebelas-maret-university-an7tl/counting-vehicle; tệp gốc 211_jpg.rf.89315d18c00c07d655ce3460b486aa0f.jpg,CC BY 4.0,tune,vehicle
+D/vehicle_02.jpg,D,block,,,https://universe.roboflow.com/sebelas-maret-university-an7tl/counting-vehicle; tệp gốc Cutting-sticker-truck-canter-kuning-_jpg.rf.be2f0b47d56ef109f7e6cfaa3436ccba.jpg,CC BY 4.0,tune,vehicle
+D/vehicle_03.jpg,D,block,,,https://universe.roboflow.com/sebelas-maret-university-an7tl/counting-vehicle; tệp gốc REDR20190730LContinuo0111103-086_jpg.rf.5fff8bc1e1d6f77db2225c8c386e2745.jpg,CC BY 4.0,test,vehicle
+D/vehicle_04.jpg,D,block,,,https://universe.roboflow.com/sebelas-maret-university-an7tl/counting-vehicle; tệp gốc street-cyclist84_jpg.rf.e9335cf2a0e00e399ea2d08393086dc9.jpg,CC BY 4.0,tune,vehicle
+D/vehicle_05.jpg,D,block,,,https://universe.roboflow.com/sebelas-maret-university-an7tl/counting-vehicle; tệp gốc 166_jpg.rf.21c12535b2b44c03c5237623a22f44bc.jpg,CC BY 4.0,tune,vehicle
+D/vehicle_06.jpg,D,block,,,https://universe.roboflow.com/sebelas-maret-university-an7tl/counting-vehicle; tệp gốc buses-en-calles-chile624_jpg.rf.170ec7ec7eb563ac493fbcc64cce4b4e.jpg,CC BY 4.0,tune,vehicle
+D/vehicle_07.jpg,D,block,,,https://universe.roboflow.com/sebelas-maret-university-an7tl/counting-vehicle; tệp gốc Motor-292-_jpg.rf.921dc35b35cbcda29a1bd64eaa8238a9.jpg,CC BY 4.0,test,vehicle
+D/vehicle_08.jpg,D,block,,,https://universe.roboflow.com/sebelas-maret-university-an7tl/counting-vehicle; tệp gốc r68_png_jpg.rf.f0ba1f9b2c4b9c9cce1d06296fa525b0.jpg,CC BY 4.0,tune,vehicle
+D/vehicle_09.jpg,D,block,,,https://universe.roboflow.com/sebelas-maret-university-an7tl/counting-vehicle; tệp gốc P17820190516LREDC7211203-100_jpg.rf.9b6d2fb34ee6971fc8c1dbdada0bf993.jpg,CC BY 4.0,tune,vehicle
+D/vehicle_10.jpg,D,block,,,https://universe.roboflow.com/sebelas-maret-university-an7tl/counting-vehicle; tệp gốc buses-en-transito283_jpg.rf.df381f8e81125f879f75247ac734fd01.jpg,CC BY 4.0,tune,vehicle

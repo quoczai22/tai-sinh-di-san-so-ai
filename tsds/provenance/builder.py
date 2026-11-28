@@ -48,13 +48,18 @@ def _garment_block(garment: dict | None, rec: dict) -> dict:
 def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict, paths: dict,
                           assessment: dict | None, now: str, root: Path = ROOT,
                           polish_prompt: str = "", polish_negative: str = "",
-                          garment: dict | None = None, run_timing: dict | None = None) -> dict:
+                          garment: dict | None = None, run_timing: dict | None = None,
+                          input_gate: dict | None = None) -> dict:
     """`rec`: bản ghi chuẩn hoá của một thiết kế. `paths`: Path tuyệt đối
     của source/reference/canny/pattern/raw/final.
 
     `run_timing`: thời gian dùng chung cả lượt chạy (áo nền, nạp model, tổng cả bộ), copy vào Passport
     của từng thiết kế kèm nhãn phạm vi. Có `rec["timing"]` thì Passport ghi khối `generation.timing`
     (định nghĩa từng số ở docs/DO_THOI_GIAN.md); Passport cũ không có khối này.
+
+    `input_gate`: kết quả cổng kiểm tra ảnh đầu vào của cả lượt chạy (tsds/quality/input_gate.py, hàm gate_block).
+    Có thì Passport ghi khối `generation.input_gate` (chỉ có ảnh pass, vì ảnh block làm lượt chạy dừng trước đó).
+    Passport cũ có thể còn verdict "warn" từ bản cổng có vùng cảnh báo; `verify()` vẫn đọc được.
 
     `garment`: thông tin áo nền (khóa `garment` trong manifest của runner): source "lora" (luồng hiện tại) hay "fixed" (lần chạy cũ),
     seed, LoRA, các ứng viên đã thử, đường dẫn ảnh áo và mặt nạ. None nghĩa là áo mẫu cố định."""
@@ -188,6 +193,8 @@ def build_design_passport(*, item: dict, run_id: str, run_stamp: str, rec: dict,
         from tsds.quality.assess import approval_from_assessment          # noqa: PLC0415
         status, reason = approval_from_assessment(assessment)
         P.set_approval(pp, status, by="quality_gate", actor_type="system", at=now, reason=reason)
+    if input_gate:
+        P.record_input_gate(pp, input_gate, at=ts)
     pp["rights"] = {a: rights_gate(item, a, root).as_dict()
                     for a in ("demo_display", "publish_public", "commercial_use")}
     return pp

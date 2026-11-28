@@ -96,3 +96,7 @@ dist/
 
 # Tài liệu nội bộ, không đưa lên git
 docs/HUONG_CAI_TIEN_V2.md
+
+# Tập thử cổng kiểm tra ảnh đầu vào: ảnh nằm ngoài git, labels.csv và meta_*.json thì commit được
+data/eval/input_filter/images/
+data/eval/input_filter/b_candidates.json

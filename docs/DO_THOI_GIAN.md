@@ -27,6 +27,7 @@ Các số này giống nhau trong cả 4 Passport của một lượt. Đừng c
 
 | Khóa | Nghĩa |
 |---|---|
+| `input_gate_s` | Cổng kiểm tra ảnh đầu vào (nạp CLIP chạy CPU, nhúng ảnh, chấm điểm). Lượt đầu của tiến trình gồm cả thời gian nạp CLIP. Xem `docs/CONG_ANH_DAU_VAO.md`. |
 | `prepare_s` | Tách nền hiện vật, tạo ảnh tham chiếu và ảnh Canny. |
 | `garment_s` | Sinh áo nền bằng LoRA và tách vùng áo bằng SAM. Thường là bước đơn lẻ lớn nhất. |
 | `load_models_s` | Nạp Stable Diffusion + ControlNet và nạp CLIP chấm điểm tương đồng (`Scorer`). Không gồm model polish và CLIP của bước bố cục, hai model này nạp lười và nằm trong `polish_s`, `layout_s` của thiết kế đầu. |

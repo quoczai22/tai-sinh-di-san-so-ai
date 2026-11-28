@@ -1,0 +1,212 @@
+[
+ {
+  "file": "A/H_LR3D_124.png",
+  "object_id": "ceramic_vases_124",
+  "source": "data/heritage/LR3D_124.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "ảnh hiện vật"
+ },
+ {
+  "file": "A/H_LR3D_33.png",
+  "object_id": "ceramic_vases_33",
+  "source": "data/heritage/LR3D_33.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "ảnh hiện vật"
+ },
+ {
+  "file": "A/H_LR3D_38.png",
+  "object_id": "ceramic_vases_38",
+  "source": "data/heritage/LR3D_38.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "ảnh hiện vật"
+ },
+ {
+  "file": "A/H_LR3D_50.png",
+  "object_id": "ceramic_vases_50",
+  "source": "data/heritage/LR3D_50.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "ảnh hiện vật"
+ },
+ {
+  "file": "A/H_LR3D_61.png",
+  "object_id": "ceramic_vases_61",
+  "source": "data/heritage/LR3D_61.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "ảnh hiện vật"
+ },
+ {
+  "file": "A/H_LR3D_97.png",
+  "object_id": "ceramic_vases_97",
+  "source": "data/heritage/LR3D_97.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "ảnh hiện vật"
+ },
+ {
+  "file": "A/E_ceramic_vases_124_e025.png",
+  "object_id": "ceramic_vases_124",
+  "source": "data/elements/ceramic_vases_124/ceramic_vases_124_e025.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_124_e005.png",
+  "object_id": "ceramic_vases_124",
+  "source": "data/elements/ceramic_vases_124/ceramic_vases_124_e005.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_124_e000.png",
+  "object_id": "ceramic_vases_124",
+  "source": "data/elements/ceramic_vases_124/ceramic_vases_124_e000.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_15_e047.png",
+  "object_id": "ceramic_vases_15",
+  "source": "data/elements/ceramic_vases_15/ceramic_vases_15_e047.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_15_e017.png",
+  "object_id": "ceramic_vases_15",
+  "source": "data/elements/ceramic_vases_15/ceramic_vases_15_e017.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_15_e015.png",
+  "object_id": "ceramic_vases_15",
+  "source": "data/elements/ceramic_vases_15/ceramic_vases_15_e015.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_33_e022.png",
+  "object_id": "ceramic_vases_33",
+  "source": "data/elements/ceramic_vases_33/ceramic_vases_33_e022.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_33_e008.png",
+  "object_id": "ceramic_vases_33",
+  "source": "data/elements/ceramic_vases_33/ceramic_vases_33_e008.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_33_e057.png",
+  "object_id": "ceramic_vases_33",
+  "source": "data/elements/ceramic_vases_33/ceramic_vases_33_e057.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_37_e006.png",
+  "object_id": "ceramic_vases_37",
+  "source": "data/elements/ceramic_vases_37/ceramic_vases_37_e006.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_37_e043.png",
+  "object_id": "ceramic_vases_37",
+  "source": "data/elements/ceramic_vases_37/ceramic_vases_37_e043.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_37_e047.png",
+  "object_id": "ceramic_vases_37",
+  "source": "data/elements/ceramic_vases_37/ceramic_vases_37_e047.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_38_e006.png",
+  "object_id": "ceramic_vases_38",
+  "source": "data/elements/ceramic_vases_38/ceramic_vases_38_e006.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_38_e035.png",
+  "object_id": "ceramic_vases_38",
+  "source": "data/elements/ceramic_vases_38/ceramic_vases_38_e035.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_38_e002.png",
+  "object_id": "ceramic_vases_38",
+  "source": "data/elements/ceramic_vases_38/ceramic_vases_38_e002.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_50_e001.png",
+  "object_id": "ceramic_vases_50",
+  "source": "data/elements/ceramic_vases_50/ceramic_vases_50_e001.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_50_e006.png",
+  "object_id": "ceramic_vases_50",
+  "source": "data/elements/ceramic_vases_50/ceramic_vases_50_e006.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_50_e016.png",
+  "object_id": "ceramic_vases_50",
+  "source": "data/elements/ceramic_vases_50/ceramic_vases_50_e016.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_61_e010.png",
+  "object_id": "ceramic_vases_61",
+  "source": "data/elements/ceramic_vases_61/ceramic_vases_61_e010.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_61_e023.png",
+  "object_id": "ceramic_vases_61",
+  "source": "data/elements/ceramic_vases_61/ceramic_vases_61_e023.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_61_e026.png",
+  "object_id": "ceramic_vases_61",
+  "source": "data/elements/ceramic_vases_61/ceramic_vases_61_e026.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_97_e000.png",
+  "object_id": "ceramic_vases_97",
+  "source": "data/elements/ceramic_vases_97/ceramic_vases_97_e000.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_97_e024.png",
+  "object_id": "ceramic_vases_97",
+  "source": "data/elements/ceramic_vases_97/ceramic_vases_97_e024.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ },
+ {
+  "file": "A/E_ceramic_vases_97_e006.png",
+  "object_id": "ceramic_vases_97",
+  "source": "data/elements/ceramic_vases_97/ceramic_vases_97_e006.png",
+  "license": "CC BY 4.0 (LR3D-CULT2, chưa xác minh riêng từng vật)",
+  "note": "phần tử cắt, nền trong suốt"
+ }
+]

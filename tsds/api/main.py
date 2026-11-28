@@ -24,6 +24,7 @@ from tsds.provenance import passport as P
 from tsds.provenance.registry import (all_items, assess_selection, completeness, get_item,
                                  load_registry, load_selection_config, rights_gate)
 from tsds.provenance.heritage import load_heritage_metadata
+from tsds.quality.input_gate import InputRejected
 
 from tsds.core.paths import ROOT as PROJECT_ROOT
 log = logging.getLogger("tsds.api")
@@ -340,6 +341,19 @@ def generate_designs(request: GenerateRequest) -> dict:
                 try:
                     append_audit_event(PROJECT_ROOT, {"step": 3, "event": "generation_completed",
                                                       "heritage_id": heritage_id, "job_id": current_id})
+                except Exception:
+                    log.exception("Không ghi được audit cho job %s", current_id)
+            except InputRejected:
+                # Cổng kiểm tra ảnh đầu vào đã ghi chi tiết vào outputs/audit/input_gate.jsonl. Không nêu điểm hay ngưỡng cho client.
+                log.warning("Job %s bị cổng ảnh đầu vào chặn", current_id)
+                with _jobs_lock:
+                    _jobs[current_id].update(status="failed",
+                                             label="Ảnh đầu vào không đạt kiểm tra. Đã ghi nhật ký máy chủ.")
+                    _save_job(current_id)
+                try:
+                    append_audit_event(PROJECT_ROOT, {"step": 3, "event": "generation_failed",
+                                                      "heritage_id": heritage_id, "job_id": current_id,
+                                                      "reason": "input_rejected"})
                 except Exception:
                     log.exception("Không ghi được audit cho job %s", current_id)
             except Exception:                                      # noqa: BLE001

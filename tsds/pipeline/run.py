@@ -25,6 +25,7 @@ from PIL import Image
 from tsds.generation.pattern import controlnet as cn, element_library, palette, pattern
 
 from tsds.generation.garment import garment, layout_select
+from tsds.quality import input_gate
 from tsds.generation.stable_diffusion import Generator
 
 from tsds.core.paths import PASSPORTS_DIR, ROOT, RUNS_DIR
@@ -111,6 +112,14 @@ def generate_design_set(
         return cache[key]
 
     inputs = element_library.variant_inputs(heritage_id, source, root=ROOT)
+    # Cổng kiểm tra ảnh đầu vào (tsds/quality/input_gate.py): chạy trước khi tốn GPU. Có ảnh bị chặn thì ném InputRejected.
+    # Luôn kiểm cả ảnh hiện vật mặc định, vì prep() quay về ảnh này khi file phần tử hỏng.
+    default_image = ROOT / item["image_path"]
+    gate_images = [("hien_vat", default_image)] + [(label, path) for label, path in inputs if path is not None]
+    report(3, "Đang kiểm tra ảnh đầu vào...")
+    with timed(run_t, "input_gate_s"):
+        gate_results = input_gate.check_inputs(gate_images, context={"heritage_id": heritage_id})
+    gate_info = input_gate.gate_block(gate_results)
     with timed(run_t, "prepare_s"):
         try:
             prepared_list = [prep(p) for _, p in inputs]
@@ -309,7 +318,7 @@ def generate_design_set(
         pp = build_design_passport(item=item, run_id=run_id, run_stamp=run_stamp, rec=rec, paths=paths,
                                    assessment=assessment, now=now, root=ROOT,
                                    polish_prompt=garment.POLISH_PROMPT, polish_negative=garment.POLISH_NEG,
-                                   garment=garment_info, run_timing=run_timing)
+                                   garment=garment_info, run_timing=run_timing, input_gate=gate_info)
         P.save(pp, passport_dir or PASSPORT_DIR)
         rel = rec["design_path_abs"].relative_to(ROOT).as_posix()
         results.append({
@@ -328,7 +337,7 @@ def generate_design_set(
     manifest = {"schema": "run-manifest/1.0", "run_id": run_id, "heritage_id": heritage_id,
                 "code": item["code"], "seed": seed, "created_at": now, "versions": versions,
                 "rights_gate_experiment": gate.as_dict(), "garment": garment_info, "timing": run_timing,
-                "designs": manifest_designs}
+                "input_gate": gate_info, "designs": manifest_designs}
     (run_dir / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2, default=str) + "\n",
                                            encoding="utf-8")
     done = sum(1 for r in results if r["status"] == "completed")

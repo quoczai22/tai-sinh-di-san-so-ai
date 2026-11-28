@@ -1,0 +1,9 @@
+{
+  "version": "input-gate/20261128-proto",
+  "calibrated": true,
+  "note": "Chỉ dùng cách P (nguyên mẫu). Điểm s_proto >= t là pass, thấp hơn là block. Đặt lại ngưỡng bằng scripts/eval/run_input_gate_eval.py --write-config.",
+  "P": {
+    "k": 3,
+    "t": 0.7114600817362468
+  }
+}

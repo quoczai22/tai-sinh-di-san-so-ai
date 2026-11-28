@@ -27,7 +27,7 @@ def anh(path, mau):
     return path
 
 
-def tao_passport(work, garment, **rec_extra):
+def tao_passport(work, garment, builder_extra=None, **rec_extra):
     item = get_item("LR3D_61", ROOT)
     paths = {k: anh(work / f"{k}.png", (i * 30, 0, 0)) for i, k in
              enumerate(("source", "reference", "canny", "pattern", "raw", "final"))}
@@ -39,7 +39,7 @@ def tao_passport(work, garment, **rec_extra):
            "similarity_pattern_vs_ceramic": 0.8, **rec_extra}
     return build_design_passport(item=item, run_id="R20261119T000000-HV08", run_stamp="20261119T000000", rec=rec,
                                  paths=paths, assessment=None, now="2026-11-19T00:00:01+00:00", root=ROOT,
-                                 garment=garment)
+                                 garment=garment, **(builder_extra or {}))
 
 
 def thong_tin_ao_lora(work):
