@@ -57,6 +57,18 @@ def test_passport_co_khoi_timing_va_nhan_pham_vi(work):    # noqa: F811
     assert P.verify(pp, check_files=False)["ok"]
 
 
+def test_passport_giu_input_gate_s_trong_khoi_run(work):    # noqa: F811
+    run = {"input_gate_s": 3.21, "prepare_s": 0.7, "set_s": 100.0}
+    pp = tao_passport(work, thong_tin_ao_lora(work), builder_extra={"run_timing": run},
+                      timing={"design_s": 18.9})
+    gh = pp["generation"]["timing"]["run"]
+    assert gh["input_gate_s"] == 3.21 and gh["set_s"] == 100.0       # ghi riêng, không cộng vào set_s
+    assert P.verify(tai_lai(pp), check_files=False)["ok"]
+    sua = tai_lai(pp)
+    sua["generation"]["timing"]["run"]["input_gate_s"] = 0.1          # sửa số cổng ảnh phải bị phát hiện
+    assert not P.verify(sua, check_files=False)["ok"]
+
+
 def test_passport_cu_khong_co_timing_van_hop_le(work):    # noqa: F811
     pp = tao_passport(work, thong_tin_ao_lora(work))
     assert "timing" not in pp["generation"]

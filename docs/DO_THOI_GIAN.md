@@ -27,13 +27,14 @@ Các số này giống nhau trong cả 4 Passport của một lượt. Đừng c
 
 | Khóa | Nghĩa |
 |---|---|
+| `input_gate_s` | Cổng kiểm tra ảnh đầu vào (chạy trên CPU, trước khi sinh áo): nhúng ảnh bằng CLIP và chấm với nguyên mẫu. Lượt đầu sau khi khởi động còn gồm thời gian tính nguyên mẫu (cỡ chục giây theo `docs/CONG_ANH_DAU_VAO.md`), các lượt sau dùng đệm nên nhỏ hơn nhiều. Số này **không nằm trong `set_s`**. |
 | `prepare_s` | Tách nền hiện vật, tạo ảnh tham chiếu và ảnh Canny. |
 | `garment_s` | Sinh áo nền bằng LoRA và tách vùng áo bằng SAM. Thường là bước đơn lẻ lớn nhất. |
 | `load_models_s` | Nạp Stable Diffusion + ControlNet và nạp CLIP chấm điểm tương đồng (`Scorer`). Không gồm model polish và CLIP của bước bố cục, hai model này nạp lười và nằm trong `polish_s`, `layout_s` của thiết kế đầu. |
-| `set_s` | Tổng thời gian cả bộ, từ đầu thân hàm `generate_design_set` (sau các lệnh import) đến hết kiểm tra chất lượng. Không gồm bước ghi Passport và manifest (chưa đo, chỉ là ghi tệp). **Không gồm cổng kiểm tra ảnh đầu vào**: cổng là luồng riêng, thời gian của nó được trừ khỏi `set_s` và không lưu ở đâu trong Passport hay manifest (xem `docs/CONG_ANH_DAU_VAO.md`). |
+| `set_s` | Tổng thời gian cả bộ, từ đầu thân hàm `generate_design_set` (sau các lệnh import) đến hết kiểm tra chất lượng. Không gồm bước ghi Passport và manifest (chưa đo, chỉ là ghi tệp). **Không gồm cổng kiểm tra ảnh đầu vào**: cổng là luồng riêng, thời gian của nó được trừ khỏi `set_s` và ghi riêng ở `input_gate_s` (xem `docs/CONG_ANH_DAU_VAO.md`). Muốn có tổng thời gian cả lượt gồm cả cổng thì cộng `set_s` với `input_gate_s`. |
 | `gpu`, `low_vram` | Máy đo. `low_vram` là `true` khi model chạy chế độ offload CPU, chậm hơn rõ rệt. |
 
-`set_s` không bằng tổng `design_s` của 4 thiết kế, vì còn `prepare_s`, `garment_s`, `load_models_s`, thời gian của biến thể lỗi (nếu có, biến thể lỗi không có `design_s`), việc giải phóng model và vài bước nhỏ ở đầu hàm (đọc hiện vật, lưu ảnh tham chiếu). Mẫu đo thật ngày 28/11/2026 (hiện vật LR3D_61, RTX 4060 Laptop, một lượt): tổng `design_s` 97,52 giây cộng `prepare_s`, `garment_s`, `load_models_s` được 126,33 giây, `set_s` là 126,39 giây. Mẫu này đo trước khi có cổng ảnh đầu vào. Từ khi có cổng, `set_s` vẫn không gồm thời gian cổng, nên mẫu này không bị lệch.
+`set_s` không bằng tổng `design_s` của 4 thiết kế, vì còn `prepare_s`, `garment_s`, `load_models_s`, thời gian của biến thể lỗi (nếu có, biến thể lỗi không có `design_s`), việc giải phóng model và vài bước nhỏ ở đầu hàm (đọc hiện vật, lưu ảnh tham chiếu). Mẫu đo thật ngày 28/11/2026 (hiện vật LR3D_61, RTX 4060 Laptop, một lượt): tổng `design_s` 97,52 giây cộng `prepare_s`, `garment_s`, `load_models_s` được 126,33 giây, `set_s` là 126,39 giây. Mẫu này đo trước khi có cổng ảnh đầu vào, nên chưa có `input_gate_s`. Từ khi có cổng, `set_s` vẫn không gồm thời gian cổng, nên mẫu này không bị lệch. Passport và manifest tạo trước khi có `input_gate_s` không có khóa này.
 
 ## Chưa đo
 
