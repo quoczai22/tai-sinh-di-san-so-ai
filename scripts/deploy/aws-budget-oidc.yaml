@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Allow only the Vercel production project to read one AWS Budget through OIDC.
+
+Resources:
+  VercelOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://oidc.vercel.com/quoczai22s-projects
+      ClientIdList:
+        - https://vercel.com/quoczai22s-projects
+
+  BudgetReadRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: tai-sinh-di-san-so-ai-budget-read
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref VercelOidcProvider
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                'oidc.vercel.com/quoczai22s-projects:aud': https://vercel.com/quoczai22s-projects
+                'oidc.vercel.com/quoczai22s-projects:sub': owner:quoczai22s-projects:project:tai-sinh-di-san-so-ai:environment:production
+      Policies:
+        - PolicyName: read-one-budget
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: budgets:ViewBudget
+                Resource: !Sub arn:aws:budgets::${AWS::AccountId}:budget/tai-sinh-di-san-so-ai-aws-5usd
+
+Outputs:
+  BudgetReadRoleArn:
+    Value: !GetAtt BudgetReadRole.Arn

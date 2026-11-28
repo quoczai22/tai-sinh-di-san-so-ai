@@ -1,0 +1,9 @@
+{
+  "name": "tai-sinh-di-san-so-ai-web-ui",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "@aws-sdk/client-budgets": "^3.0.0",
+    "@vercel/oidc-aws-credentials-provider": "^3.0.0"
+  }
+}

@@ -19,6 +19,8 @@ Cách chạy và vận hành:
 """
 from __future__ import annotations
 
+import datetime
+import hmac
 import os
 from pathlib import Path
 
@@ -35,8 +37,22 @@ BAKED_HF_CACHE = "/cache/huggingface"
 
 app = modal.App(APP_NAME)
 
+
+def _adjustment_amount(adjustments, name: str) -> float | None:
+    """Số tiền của một mục điều chỉnh billing, không phân biệt hoa/thường và dấu cách.
+
+    SDK Modal trả khóa dạng hiển thị ('Credits', 'Free Storage'); lệnh `modal billing ... --json`
+    đổi thành 'credits', 'free_storage'. Không tìm thấy thì trả None, để người gọi không giả số 0.
+    """
+    want = name.strip().lower().replace(" ", "_")
+    for key, value in dict(adjustments or {}).items():
+        if str(key).strip().lower().replace(" ", "_") == want:
+            return float(value)
+    return None
+
 # Chạy lệnh modal từ gốc repo để các lệnh COPY trong Dockerfile tìm thấy file.
 image = modal.Image.from_dockerfile("Dockerfile")
+billing_image = modal.Image.debian_slim(python_version="3.11").pip_install("fastapi[standard]")
 
 output_volume = modal.Volume.from_name("tai-sinh-di-san-outputs", create_if_missing=True)
 api_secret = modal.Secret.from_name("tai-sinh-di-san-secret")
@@ -75,3 +91,72 @@ def fastapi_app():
     from tsds.api.main import app as web_app
 
     return web_app
+
+
+@app.function(
+    image=billing_image,
+    max_containers=1,
+    scaledown_window=60,
+    timeout=30,
+    secrets=[api_secret],
+)
+@modal.asgi_app()
+def billing_summary():
+    """Đọc số liệu chi phí thật của Modal Workspace trên CPU (không bật GPU)."""
+    from fastapi import FastAPI, HTTPException, Request
+
+    billing_app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
+
+    def get_summary(request):
+        expected = (os.environ.get("DH_API_KEY") or "").strip()
+        provided = (request.headers.get("x-api-key") or "").strip()
+        if not expected or not hmac.compare_digest(provided, expected):
+            raise HTTPException(status_code=401, detail="Unauthorized")
+
+        ws = modal.Workspace.from_context()
+        summary = ws.billing.summary("this month")
+        metered_cost = float(summary.metered_cost)
+        billed_cost = float(summary.billed_cost)
+        credits_applied = _adjustment_amount(summary.adjustments, "credits")
+        if credits_applied is not None:
+            credits_applied = abs(credits_applied)
+
+        today_cost: float | None = None
+        week_cost: float | None = None
+        recent_days: list[dict[str, object]] = []
+        try:
+            now = datetime.datetime.now(datetime.timezone.utc)
+            today_start = datetime.datetime(now.year, now.month, now.day, tzinfo=datetime.timezone.utc)
+            week_ago = today_start - datetime.timedelta(days=7)
+            items = ws.billing.report(start=week_ago, end=now, resolution="d")
+            daily_map: dict[str, float] = {}
+            for item in items:
+                day_key = item.interval_start.strftime("%Y-%m-%d")
+                daily_map[day_key] = daily_map.get(day_key, 0.0) + float(item.cost)
+            today_key = today_start.strftime("%Y-%m-%d")
+            today_cost = daily_map.get(today_key, 0.0)
+            week_cost = sum(daily_map.values())
+            recent_days = [
+                {"date": day, "cost": round(cost, 4)}
+                for day, cost in sorted(daily_map.items(), reverse=True)[:3]
+            ]
+        except Exception:
+            pass
+
+        return {
+            "billing_version": 2,
+            "metered_cost": round(metered_cost, 4),
+            "billed_cost": round(billed_cost, 4),
+            # None (JSON null) khi Modal không trả mục credit: bot ghi "chưa xác minh", không giả 0.
+            "credits_applied": round(credits_applied, 4) if credits_applied is not None else None,
+            "today_cost": round(today_cost, 4) if today_cost is not None else None,
+            "week_cost": round(week_cost, 4) if week_cost is not None else None,
+            "daily": recent_days,
+            "currency": "USD",
+        }
+
+    get_summary.__annotations__ = {"request": Request}
+    billing_app.add_api_route("/", get_summary, methods=["GET"])
+    billing_app.add_api_route("/summary", get_summary, methods=["GET"])
+
+    return billing_app
