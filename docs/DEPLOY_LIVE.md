@@ -52,6 +52,18 @@ Hai tính năng mới của giao diện. Phần deploy do người phụ trách 
 - **Dữ liệu người dùng:** ID tài khoản và mô tả hiện công khai trong Passport, không xóa được. Gateway không phục vụ ảnh người dùng tải lên (chỉ thư mục `outputs/runs/`), nhưng route `/media/artifact` trực tiếp trên Modal cho đọc mọi ảnh dưới `outputs/`, kể cả `outputs/edits/`; chưa siết.
 - **Thiết kế đã tạo** lưu danh sách trong trình duyệt (`localStorage`, khóa `dh:my-runs`); ảnh và Passport vẫn nằm trong Volume của Modal.
 
+## Cổng kiểm tra ảnh đầu vào (thêm 28/11/2026, chưa deploy thử)
+
+Cổng chặn ảnh không thuộc miền gốm và hoa văn trước khi sinh áo. Mô tả đầy đủ ở `docs/CONG_ANH_DAU_VAO.md`. Mục này chỉ ghi những gì người deploy cần biết.
+
+- **Cần deploy lại Modal, không cần deploy lại Vercel.** Mã mới nằm ở `tsds/quality/input_gate.py`, `tsds/pipeline/run.py`, `tsds/api/main.py`, `tsds/provenance/` và `config/input_gate.json` (commit `3164824` trên nhánh `test`, chưa merge vào `main`). Không file nào trong `web_ui/` đổi, nên không cần tăng số phiên bản giao diện.
+- **CI không deploy.** Workflow `Modal backend checks` chỉ kiểm thử bằng CPU. Deploy Modal vẫn qua CodeBuild theo `docs/CI_MODAL.md`, sau khi merge vào `main`.
+- **Đóng gói:** `Dockerfile` đã `COPY config/` và `COPY data/`, và đã tải sẵn `openai/clip-vit-base-patch32` vào image (đúng model mà cổng dùng). Không thêm thư viện mới. Ảnh tập thử (`data/eval/input_filter/images/`) không nằm trong git nên không vào image, cổng không cần chúng.
+- **Lượt sinh đầu tiên chậm hơn** cỡ chục giây vì cổng tính nguyên mẫu (khoảng 90 ảnh trên CPU) rồi lưu đệm ở `outputs/input_gate/`. `modal_app.py` nối `/app/outputs` tới Volume nên đệm có thể giữ qua các lần khởi động, **chưa kiểm chứng**.
+- **Cổng lỗi thì chặn.** Nếu CLIP hoặc ảnh nguyên mẫu không nạp được trên Modal, mọi lượt sinh sẽ `failed` với thông báo "Ảnh đầu vào không đạt kiểm tra". Nguyên nhân thật nằm ở `outputs/audit/input_gate.jsonl` (sự kiện `input_gate_error`, trong Volume vì `DH_OUTPUT_DIR=/data/outputs`).
+- **Thử sau khi deploy (tốn credit GPU, cần người vận hành duyệt):** một lượt sinh `LR3D_61`. Mong đợi: job hoàn tất 4/4, `manifest.json` có khối `input_gate` với `verdict: pass` (thời gian cổng không được lưu, theo `docs/DO_THOI_GIAN.md`), Passport có `generation.input_gate`. Nếu job `failed` ngay vì lý do cổng, xem log nói trên trước khi nghi ngờ phần khác.
+- **Giới hạn cần nhớ:** cổng chỉ kiểm ảnh nạp vào, không kiểm ảnh sinh ra và không kiểm ảnh tải ở `POST /passports/{id}/edits`. Ngưỡng đã đo trên tập nhỏ.
+
 ## Biến cần cấu hình
 
 - **Trên Vercel** (project `tai-sinh-di-san-so-ai` → Settings → Environment Variables): `MODAL_URL`, `MODAL_KEY`, `MODAL_TIMEOUT_MS` (mặc định `25000`), `RATE_LIMIT_PER_HOUR` (mặc định `10`), `ALERT_DISCORD_WEBHOOK_URL`, `ALERT_COOLDOWN_MIN` (mặc định `30`). Không đặt khoá trong frontend.
@@ -87,6 +99,7 @@ Các hạng mục sau **chưa đo / chưa xác minh** tính đến ngày 24/11/2
 - **Phí thực tế** trên Modal (chi phí mỗi lượt sinh và chi phí giữ container chờ): *chưa đo*.
 - **Độ bền lưu ảnh trên Modal Volume sau khi container tự tắt** (sau chu kỳ `scaledown_window` tự động): *chưa xác minh* (trước đó mới thử dừng app thủ công rồi deploy lại trên Preview, chưa chờ container tự tắt).
 - **Gửi chỉnh sửa thật qua trang `edit` trên production**: *chưa xác minh* (khóa ghi đã đúng trên Modal, nhưng chưa có lượt gửi chỉnh sửa nào đi qua gateway).
+- **Cổng kiểm tra ảnh đầu vào trên Modal** (thêm 28/11/2026): *chưa chạy trên Modal*. Mới đo trên máy phát triển (CPU). Chưa biết thời gian lượt đầu (tính nguyên mẫu) và việc đệm nguyên mẫu có giữ qua cold start hay không.
 - Đã xác minh ngày 24/11/2026 (không còn là mục chưa kiểm chứng): với cấu hình Root Directory = `web_ui`, Framework = Other, bản production build từ `main` (commit `6c6c25f`) trên Vercel thành công (trạng thái Ready).
 - Đã xác minh ngày 24/11/2026 sau khi deploy lại Modal từ `main` (`66dd279`): `GET /health` của Modal báo `write_protection: true`, `cuda: true`, GPU `Tesla T4`; `POST` vào `qc`, `reviews`, `edits`, `publish` và `/generate` khi không có khóa hoặc sai khóa đều trả HTTP 401; route đọc (`/heritage`, `/passports`) vẫn mở. Trước khi sửa, `/health` từng báo `write_protection: false`.
 - Đã xác minh ngày 24/11/2026: một lượt sinh thật qua gateway production thành công, khóa `MODAL_KEY` (Vercel) và `DH_API_KEY` (Modal) khớp.

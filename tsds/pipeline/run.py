@@ -117,7 +117,9 @@ def generate_design_set(
     default_image = ROOT / item["image_path"]
     gate_images = [("hien_vat", default_image)] + [(label, path) for label, path in inputs if path is not None]
     report(3, "Đang kiểm tra ảnh đầu vào...")
-    with timed(run_t, "input_gate_s"):
+    # Cổng ảnh là luồng riêng: thời gian của nó KHÔNG lưu vào timing và bị trừ khỏi set_s (xem docs/DO_THOI_GIAN.md).
+    gate_t: dict[str, float] = {}
+    with timed(gate_t, "gate"):
         gate_results = input_gate.check_inputs(gate_images, context={"heritage_id": heritage_id})
     gate_info = input_gate.gate_block(gate_results)
     with timed(run_t, "prepare_s"):
@@ -301,7 +303,7 @@ def generate_design_set(
         # design_s: từ lúc bắt đầu thiết kế đến hết kiểm tra chất lượng. Không gồm áo nền và nạp model (dùng chung cả bộ).
         rec["timing"]["design_s"] = rec["timing"].pop("variant_s") + rec["timing"]["quality_s"]
         rec["timing"] = rounded(rec["timing"])
-    run_t["set_s"] = time.perf_counter() - t_set
+    run_t["set_s"] = time.perf_counter() - t_set - gate_t.get("gate", 0.0)       # không gồm thời gian cổng ảnh đầu vào
     run_timing = rounded(run_t) | {"gpu": versions["gpu"], "low_vram": low_vram}
 
     # Pha 2: dựng và lưu Passport, kết quả trả về, manifest.
